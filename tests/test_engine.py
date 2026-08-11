@@ -435,3 +435,163 @@ def test_small_account_profit_target():
     trades2 = _make_trades([10.1])
     result2 = run_simulation(trades2, rules)
     assert result2.terminal_condition == "profit_target"
+
+
+# =========================================================================
+# Phase 4 — Edge cases
+# =========================================================================
+
+
+def test_all_wins_no_stop():
+    """All wins below target → completed, no violations."""
+    trades = _make_trades([1.0] * 9)  # 9 wins of 1R = 9% gain, under 10% target
+    result = run_simulation(trades, _standard_rules())
+    assert result.terminal_condition == "completed"
+    assert result.trades_executed == 9
+    assert result.equity_curve[-1] == 109_000.0
+
+
+def test_all_losses_stop_at_drawdown():
+    """All losses → should eventually hit max drawdown."""
+    trades = _make_trades([-1.0] * 20)
+    result = run_simulation(trades, _standard_rules(max_drawdown_pct=0.10))
+    assert result.terminal_condition == "max_drawdown"
+    assert result.trades_executed <= 10  # -1R at 1% = -1% per trade → 10 trades = 10%
+
+
+def test_daily_loss_many_small_vs_one_big():
+    """5× -1% triggers same 5% daily limit as 1× -5%."""
+    rules = _standard_rules(daily_loss_limit_pct=0.05)
+    trades = [
+        Trade(r_result=-1.0, trade_id="t0", date="2024-01-01"),
+        Trade(r_result=-1.0, trade_id="t1", date="2024-01-01"),
+        Trade(r_result=-1.0, trade_id="t2", date="2024-01-01"),
+        Trade(r_result=-1.0, trade_id="t3", date="2024-01-01"),
+        Trade(r_result=-1.0, trade_id="t4", date="2024-01-01"),
+    ]
+    result = run_simulation(trades, rules)
+    assert result.terminal_condition == "daily_loss"
+
+
+def test_tiny_r_results():
+    """Very small R values (±0.0001) should not cause FP issues."""
+    # All on same day to avoid date overflow with _make_trades
+    trades = [Trade(r_result=0.0001, trade_id=f"t{i:04d}", date="2024-01-01") for i in range(1000)]
+    result = run_simulation(trades, _standard_rules())
+    assert result.terminal_condition == "completed"
+    assert result.final_equity > 100_000.0
+
+    trades2 = [Trade(r_result=-0.0001, trade_id=f"t{i:04d}", date="2024-01-01") for i in range(1000)]
+    result2 = run_simulation(trades2, _standard_rules())
+    assert result2.final_equity < 100_000.0
+
+
+def test_profit_target_first_trade():
+    """Profit target reached on very first trade."""
+    trades = _make_trades([10.0])
+    result = run_simulation(trades, _standard_rules())
+    assert result.terminal_condition == "profit_target"
+    assert result.trades_executed == 1
+
+
+def test_drawdown_first_trade():
+    """Drawdown violation on very first trade."""
+    trades = _make_trades([-10.0])
+    result = run_simulation(trades, _standard_rules(max_drawdown_pct=0.10))
+    assert result.terminal_condition == "max_drawdown"
+    assert result.trades_executed == 1
+
+
+def test_daily_loss_first_trade():
+    """Daily loss violation on very first trade."""
+    trades = _make_trades([-5.0])
+    result = run_simulation(trades, _standard_rules(daily_loss_limit_pct=0.05))
+    assert result.terminal_condition == "daily_loss"
+    assert result.trades_executed == 1
+
+
+def test_max_trades_exactly_limit():
+    """max_trades=5 should stop at trade 5, not 4 or 6."""
+    trades = _make_trades([0.5] * 10)
+    result = run_simulation(trades, _standard_rules(max_trades=5))
+    assert result.terminal_condition == "max_trades"
+    assert result.trades_executed == 5
+
+
+def test_near_miss_profit_target():
+    """Equity within 1 cent of target should still trigger via tolerance."""
+    rules = _standard_rules(profit_target_pct=0.10)
+    # +9.99999R → equity = 100_000 + 9.99999 * 1000 = 109_999.99
+    # target = 110_000.00 → should NOT trigger (outside tolerance)
+    trades = _make_trades([9.99999])
+    result = run_simulation(trades, rules)
+    assert result.terminal_condition != "profit_target"
+
+    # +10.00001R → equity = 110_000.01 → should trigger
+    trades2 = _make_trades([10.00001])
+    result2 = run_simulation(trades2, rules)
+    assert result2.terminal_condition == "profit_target"
+
+
+def test_equity_never_goes_negative():
+    """Even with catastrophic losses, equity curve is tracked correctly."""
+    trades = _make_trades([-200.0])  # -200R at 1% → equity = 100K - 200K = -100K
+    result = run_simulation(trades, _standard_rules())
+    assert result.final_equity == -100_000.0
+    # This should trigger max_drawdown (100%+ DD) on the first trade
+    assert result.terminal_condition == "max_drawdown"
+
+
+def test_profit_and_drawdown_close():
+    """Sequence where equity oscillates near limits but doesn't trigger."""
+    trades = [
+        Trade(r_result=8.0, trade_id="t0", date="2024-01-01"),
+        Trade(r_result=-4.0, trade_id="t1", date="2024-01-02"),
+        Trade(r_result=-4.0, trade_id="t2", date="2024-01-03"),
+        Trade(r_result=8.0, trade_id="t3", date="2024-01-04"),
+        Trade(r_result=-4.0, trade_id="t4", date="2024-01-05"),
+        Trade(r_result=-4.0, trade_id="t5", date="2024-01-06"),
+    ]
+    result = run_simulation(trades, _standard_rules())
+    assert result.max_drawdown_historical > 0.0
+    assert result.terminal_condition == "completed"
+
+
+def test_large_sequence():
+    """1000 trades without terminal conditions should complete cleanly."""
+    from src.synthetic import generate_trades
+    from src.types import SyntheticConfig
+
+    config = SyntheticConfig(
+        seed=42, n_trades=1000, win_rate=0.50,
+        avg_win_r=0.5, avg_loss_r=0.5,
+        std_win_r=0.1, std_loss_r=0.1,
+    )
+    trades = generate_trades(config)
+    # Use very loose rules so it completes
+    rules = _standard_rules(
+        profit_target_pct=0.99,
+        max_drawdown_pct=0.99,
+        daily_loss_limit_pct=0.99,
+    )
+    result = run_simulation(trades, rules)
+    assert result.terminal_condition == "completed"
+    assert result.trades_executed == 1000
+    assert len(result.equity_curve) == 1000
+
+
+def test_risk_per_trade_near_zero():
+    """Very small risk (0.0001 = 0.01%) should work correctly."""
+    rules = _standard_rules(risk_per_trade=0.0001)
+    trades = _make_trades([100.0])  # +100R at 0.01% risk = +1% of account
+    result = run_simulation(trades, rules)
+    assert result.final_equity == 101_000.0
+
+
+def test_risk_per_trade_near_one():
+    """Very high risk (0.99 = 99%) should magnify gains and losses."""
+    rules = _standard_rules(risk_per_trade=0.99, profit_target_pct=0.99)
+    trades = _make_trades([1.0])  # +1R at 99% risk = +99% → almost doubles
+    result = run_simulation(trades, rules)
+    assert result.terminal_condition == "profit_target"
+    assert result.final_equity == pytest.approx(199_000.0)

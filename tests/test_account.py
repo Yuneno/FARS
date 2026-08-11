@@ -353,3 +353,150 @@ def test_daily_loss_eod_mode():
     # start_of_day = 105K, loss = 4K / 105K ≈ 3.81%
     expected = 4000 / 105000
     assert account.daily_loss_today() == pytest.approx(expected)
+
+
+# =========================================================================
+# Phase 4 — Account edge cases
+# =========================================================================
+
+
+def test_peak_to_trough_always_uses_peak():
+    """peak_to_trough_drawdown ignores drawdown_mode, always uses peak_equity."""
+    # Static mode: win → lose, DD should be from peak
+    rules = FundedAccountRules(
+        initial_balance=100_000, profit_target_pct=0.10,
+        max_drawdown_pct=0.10, daily_loss_limit_pct=0.05,
+        drawdown_mode="static", risk_per_trade=0.01,
+    )
+    acc = AccountState(rules=rules)
+    acc.apply_trade(r_result=5.0, date="2024-01-01")  # → 105K
+    acc.apply_trade(r_result=-2.0, date="2024-01-01")  # → 103K
+    # rule DD (static): equity > initial → 0
+    assert acc.rule_drawdown() == 0.0
+    # peak-to-trough DD: (105K - 103K) / 105K
+    assert acc.peak_to_trough_drawdown() == pytest.approx(2000 / 105000)
+
+
+def test_very_large_r_values():
+    """Extreme R values (±1000) should not cause overflow."""
+    rules = FundedAccountRules(
+        initial_balance=100_000, profit_target_pct=0.99,
+        max_drawdown_pct=0.99, daily_loss_limit_pct=0.99,
+        risk_per_trade=0.01,
+    )
+    acc = AccountState(rules=rules)
+    acc.apply_trade(r_result=1000.0, date="2024-01-01")
+    assert acc.equity == 1_100_000.0  # 100K + 1000*1000
+
+
+def test_daily_loss_base_eod_with_small_equity():
+    """eod mode with equity well below initial still computes correctly."""
+    rules = FundedAccountRules(
+        initial_balance=100_000, profit_target_pct=0.10,
+        max_drawdown_pct=0.10, daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01, daily_loss_base="eod",
+    )
+    acc = AccountState(rules=rules)
+    acc.apply_trade(r_result=-30.0, date="2024-01-01")  # → 70K
+    # Next day: loss from 70K
+    acc.apply_trade(r_result=-3.5, date="2024-01-02")  # → 66.5K
+    # eod DD: 3.5K / 70K = 5%
+    assert acc.daily_loss_today() == pytest.approx(0.05)
+    assert acc.is_daily_loss_violated()
+
+
+def test_multiple_days_complex():
+    """Multi-day sequence with varying daily outcomes."""
+    rules = FundedAccountRules(
+        initial_balance=100_000, profit_target_pct=0.50,
+        max_drawdown_pct=0.20, daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01, drawdown_mode="trailing",
+    )
+    acc = AccountState(rules=rules)
+
+    # Day 1: win
+    acc.apply_trade(r_result=5.0, date="2024-01-01")
+    assert acc.daily_loss_today() == 0.0
+    assert acc.equity == 105_000.0
+
+    # Day 2: lose but under limit
+    acc.apply_trade(r_result=-4.0, date="2024-01-02")
+    assert acc.daily_loss_today() == pytest.approx(0.04)
+    assert not acc.is_daily_loss_violated()
+
+    # Day 3: win
+    acc.apply_trade(r_result=3.0, date="2024-01-03")
+    assert acc.daily_loss_today() == 0.0
+
+    # Day 4: big win, then lose → trailing DD updates
+    acc.apply_trade(r_result=20.0, date="2024-01-04")  # → 124K (104K + 20K)
+    assert acc.peak_equity == 124_000.0
+
+    acc.apply_trade(r_result=-25.0, date="2024-01-04")  # → 99K
+    # Trailing DD from 124K: (124K - 99K) / 124K
+    assert acc.peak_to_trough_drawdown() == pytest.approx(25000 / 124000)
+    assert acc.is_max_drawdown_violated()  # >20%
+
+
+def test_first_trade_is_loss():
+    """Very first trade is a loss — drawdown starts tracking immediately."""
+    rules = FundedAccountRules(
+        initial_balance=100_000, profit_target_pct=0.10,
+        max_drawdown_pct=0.10, daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01,
+    )
+    acc = AccountState(rules=rules)
+    acc.apply_trade(r_result=-3.0, date="2024-01-01")
+    assert acc.current_drawdown() == pytest.approx(0.03)
+    assert acc.peak_to_trough_drawdown() == pytest.approx(0.03)
+    assert acc.equity == 97_000.0
+
+
+# =========================================================================
+# Overflow / underflow regression
+# =========================================================================
+
+
+def test_overflow_rejected():
+    """r_result=1e308 with normal risk should raise ValueError on overflow."""
+    rules = FundedAccountRules(
+        initial_balance=100_000, profit_target_pct=0.10,
+        max_drawdown_pct=0.10, daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01,
+    )
+    acc = AccountState(rules=rules)
+    with pytest.raises(ValueError, match="non-finite"):
+        acc.apply_trade(r_result=1e308, date="2024-01-01")
+
+
+def test_negative_overflow_rejected():
+    """r_result=-1e308 should also be caught."""
+    rules = FundedAccountRules(
+        initial_balance=100_000, profit_target_pct=0.10,
+        max_drawdown_pct=0.10, daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01,
+    )
+    acc = AccountState(rules=rules)
+    with pytest.raises(ValueError, match="non-finite"):
+        acc.apply_trade(r_result=-1e308, date="2024-01-01")
+
+
+def test_underflow_dollar_risk_rejected():
+    """Extremely small balance causing dollar_risk=0 should be rejected by AccountState."""
+    rules = FundedAccountRules(
+        initial_balance=5e-324, profit_target_pct=0.10,
+        max_drawdown_pct=0.10, daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01,
+    )
+    with pytest.raises(ValueError, match="risk_per_trade"):
+        AccountState(rules=rules)
+
+
+def test_zero_balance_rejected():
+    """initial_balance=0 should be rejected (already validated in FAR)."""
+    with pytest.raises(ValueError, match="initial_balance"):
+        FundedAccountRules(
+            initial_balance=0.0, profit_target_pct=0.10,
+            max_drawdown_pct=0.10, daily_loss_limit_pct=0.05,
+            risk_per_trade=0.01,
+        )

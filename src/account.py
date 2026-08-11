@@ -47,6 +47,15 @@ class AccountState:
         self.peak_equity = self.rules.initial_balance
         self.start_of_day_equity = self.rules.initial_balance
 
+        # Validate that risk parameters produce a meaningful dollar risk
+        self._dollar_risk = self.rules.risk_per_trade * self.rules.initial_balance
+        if self._dollar_risk <= 0.0 or not math.isfinite(self._dollar_risk):
+            raise ValueError(
+                f"risk_per_trade * initial_balance must be finite and > 0, "
+                f"got {self._dollar_risk} "
+                f"(risk={self.rules.risk_per_trade}, balance={self.rules.initial_balance})"
+            )
+
     # ------------------------------------------------------------------
     # Trade application
     # ------------------------------------------------------------------
@@ -55,7 +64,8 @@ class AccountState:
         """
         Apply a single trade to the account.
 
-        Raises ValueError if r_result is NaN or infinite.
+        Raises ValueError if r_result is NaN/infinite, or if the
+        resulting equity would overflow (become non-finite).
         """
         if not math.isfinite(r_result):
             raise ValueError(
@@ -67,8 +77,18 @@ class AccountState:
 
         self.current_date = date
 
-        dollar_risk = self.rules.risk_per_trade * self.rules.initial_balance
-        self.equity += r_result * dollar_risk
+        # Compute P&L and new equity, guarding against overflow
+        pnl = r_result * self._dollar_risk
+        new_equity = self.equity + pnl
+
+        if not math.isfinite(new_equity):
+            raise ValueError(
+                f"Trade caused non-finite equity: "
+                f"equity={self.equity} + r_result={r_result} * "
+                f"dollar_risk={self._dollar_risk} = {new_equity}"
+            )
+
+        self.equity = new_equity
         self.trades_applied += 1
 
         if self.equity > self.peak_equity:

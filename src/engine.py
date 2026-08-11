@@ -31,6 +31,12 @@ class SimulationResult:
       - "max_trades"     — reached max trades without passing or failing
       - "completed"      — all trades applied, none of the above
 
+    Conditions are checked in priority order (profit > DD > DL > max_trades).
+    A trade that violates multiple conditions is attributed to the first one
+    hit. However, max_drawdown_hit and daily_loss_hit still record the worst
+    values seen during the entire simulation, including conditions that
+    weren't the primary stop reason.
+
     max_drawdown_hit: worst rule-based DD seen (mode-dependent).
     max_drawdown_historical: worst peak-to-trough DD seen (always from
       peak_equity, regardless of drawdown_mode). This feeds statistical
