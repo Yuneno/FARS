@@ -253,6 +253,7 @@ def test_result_not_passed():
         final_equity=90_000, terminal_condition="max_drawdown",
         trades_executed=1, max_drawdown_hit=0.10,
         max_drawdown_historical=0.10, daily_loss_hit=0.0,
+        violated_conditions=("max_drawdown",),
     )
     assert not result.passed
 
@@ -411,6 +412,181 @@ def test_rejects_nonsense_date():
     ]
     with pytest.raises(ValueError, match="invalid date"):
         run_simulation(trades, _standard_rules())
+
+
+# ---------------------------------------------------------------------------
+# Simultaneous violations: violated_conditions records ALL triggered rules
+# ---------------------------------------------------------------------------
+
+
+def test_simultaneous_dd_and_daily_loss():
+    """-10R on 100K violates both max_drawdown (10%) AND daily_loss (10% > 5%)."""
+    trades = [Trade(r_result=-10.0, trade_id="t0", date="2024-01-01")]
+    result = run_simulation(trades, _standard_rules())
+    assert result.terminal_condition == "max_drawdown"
+    assert result.violated_conditions == ("max_drawdown", "daily_loss")
+
+
+def test_simultaneous_dd_and_max_trades():
+    """Drawdown accumulates across days to 10% on the 4th trade, which also
+    reaches max_trades=4, without tripping daily loss (each day < 5%)."""
+    trades = _make_trades([-3.0, -3.0, -3.0, -1.0])
+    result = run_simulation(trades, _standard_rules(max_trades=4))
+    assert result.terminal_condition == "max_drawdown"
+    assert result.violated_conditions == ("max_drawdown", "max_trades")
+
+
+def test_simultaneous_daily_loss_and_max_trades():
+    """-6R with max_trades=1 violates daily_loss (6% > 5%) and reaches
+    max_trades, without tripping max_drawdown (6% < 10%)."""
+    trades = [Trade(r_result=-6.0, trade_id="t0", date="2024-01-01")]
+    result = run_simulation(trades, _standard_rules(max_trades=1))
+    assert result.terminal_condition == "daily_loss"
+    assert result.violated_conditions == ("daily_loss", "max_trades")
+
+
+def test_simultaneous_all_three_conditions():
+    """-12R with max_trades=1 violates max_drawdown, daily_loss AND max_trades."""
+    trades = [Trade(r_result=-12.0, trade_id="t0", date="2024-01-01")]
+    result = run_simulation(trades, _standard_rules(max_trades=1))
+    assert result.terminal_condition == "max_drawdown"
+    assert result.violated_conditions == (
+        "max_drawdown", "daily_loss", "max_trades",
+    )
+
+
+# ---------------------------------------------------------------------------
+# violated_conditions coherence validation (SimulationResult.__post_init__)
+# ---------------------------------------------------------------------------
+
+
+def test_violated_conditions_reject_duplicates():
+    with pytest.raises(ValueError, match="duplicates"):
+        SimulationResult(
+            final_equity=90_000, terminal_condition="max_drawdown",
+            trades_executed=1, max_drawdown_hit=0.10,
+            max_drawdown_historical=0.10, daily_loss_hit=0.05,
+            violated_conditions=("max_drawdown", "max_drawdown"),
+        )
+
+
+def test_violated_conditions_reject_wrong_order():
+    with pytest.raises(ValueError, match="priority order"):
+        SimulationResult(
+            final_equity=90_000, terminal_condition="daily_loss",
+            trades_executed=1, max_drawdown_hit=0.10,
+            max_drawdown_historical=0.10, daily_loss_hit=0.05,
+            violated_conditions=("max_trades", "daily_loss"),
+        )
+
+
+def test_violated_conditions_reject_invalid_entry():
+    with pytest.raises(ValueError, match="violated_conditions"):
+        SimulationResult(
+            final_equity=90_000, terminal_condition="max_drawdown",
+            trades_executed=1, max_drawdown_hit=0.10,
+            max_drawdown_historical=0.10, daily_loss_hit=0.0,
+            violated_conditions=("bogus",),
+        )
+
+
+def test_violated_conditions_incoherent_profit_target():
+    """profit_target result must have empty violated_conditions."""
+    with pytest.raises(ValueError, match="profit_target"):
+        SimulationResult(
+            final_equity=110_000, terminal_condition="profit_target",
+            trades_executed=1, max_drawdown_hit=0.0,
+            max_drawdown_historical=0.0, daily_loss_hit=0.0,
+            violated_conditions=("max_drawdown",),
+        )
+
+
+def test_violated_conditions_incoherent_daily_loss():
+    """daily_loss result must include 'daily_loss' in violated_conditions."""
+    with pytest.raises(ValueError, match="daily_loss"):
+        SimulationResult(
+            final_equity=95_000, terminal_condition="daily_loss",
+            trades_executed=1, max_drawdown_hit=0.0,
+            max_drawdown_historical=0.0, daily_loss_hit=0.06,
+            violated_conditions=("max_drawdown",),
+        )
+
+
+def test_violated_conditions_incoherent_max_trades():
+    """max_trades result must include 'max_trades' in violated_conditions."""
+    with pytest.raises(ValueError, match="max_trades"):
+        SimulationResult(
+            final_equity=100_000, terminal_condition="max_trades",
+            trades_executed=3, max_drawdown_hit=0.0,
+            max_drawdown_historical=0.0, daily_loss_hit=0.0,
+            violated_conditions=("daily_loss",),
+        )
+
+
+def test_violated_conditions_terminal_must_match_highest_priority():
+    """terminal_condition must equal violated_conditions[0] for failures.
+
+    A 'daily_loss' terminal whose vc starts with 'max_drawdown' is
+    incoherent: max_drawdown has higher priority and should have been the
+    terminal condition. The old membership check ('daily_loss' in vc) let
+    these pass.
+    """
+    with pytest.raises(ValueError, match="violated_conditions"):
+        SimulationResult(
+            final_equity=90_000, terminal_condition="daily_loss",
+            trades_executed=1, max_drawdown_hit=0.10,
+            max_drawdown_historical=0.10, daily_loss_hit=0.05,
+            violated_conditions=("max_drawdown", "daily_loss"),
+        )
+
+    with pytest.raises(ValueError, match="violated_conditions"):
+        SimulationResult(
+            final_equity=90_000, terminal_condition="max_trades",
+            trades_executed=1, max_drawdown_hit=0.10,
+            max_drawdown_historical=0.10, daily_loss_hit=0.05,
+            violated_conditions=("daily_loss", "max_trades"),
+        )
+
+
+def test_violated_conditions_normalized_to_tuple():
+    """A mutable list passed as violated_conditions must be frozen to a tuple."""
+    result = SimulationResult(
+        final_equity=90_000, terminal_condition="max_drawdown",
+        trades_executed=1, max_drawdown_hit=0.10,
+        max_drawdown_historical=0.10, daily_loss_hit=0.0,
+        violated_conditions=["max_drawdown"],  # list, not tuple  # type: ignore[arg-type]
+    )
+    assert isinstance(result.violated_conditions, tuple)
+    assert result.violated_conditions == ("max_drawdown",)
+
+
+# ---------------------------------------------------------------------------
+# Relative tolerance: tiny limits must not fail a 0R trade (Codex CRITICAL)
+# ---------------------------------------------------------------------------
+
+
+def test_tiny_drawdown_limit_zero_r_trade_completes():
+    """0R trade with max_drawdown_pct=5e-13 must NOT fail on max_drawdown."""
+    trades = _make_trades([0.0])
+    result = run_simulation(trades, _standard_rules(max_drawdown_pct=5e-13))
+    assert result.terminal_condition == "completed"
+    assert result.violated_conditions == ()
+
+
+def test_tiny_daily_loss_limit_zero_r_trade_completes():
+    """0R trade with daily_loss_limit_pct=5e-13 must NOT fail on daily_loss."""
+    trades = _make_trades([0.0])
+    result = run_simulation(trades, _standard_rules(daily_loss_limit_pct=5e-13))
+    assert result.terminal_condition == "completed"
+    assert result.violated_conditions == ()
+
+
+def test_tiny_profit_target_zero_r_trade_completes():
+    """0R trade with profit_target_pct=5e-13 must NOT pass (Codex CRITICAL)."""
+    trades = _make_trades([0.0])
+    result = run_simulation(trades, _standard_rules(profit_target_pct=5e-13))
+    assert result.terminal_condition == "completed"
+    assert result.violated_conditions == ()
 
 
 # ---------------------------------------------------------------------------

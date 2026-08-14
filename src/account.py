@@ -28,8 +28,9 @@ class AccountState:
     """
     Mutable account state during a single simulation.
 
-    Constraint checks use relative tolerance (1e-12) for floating-point
-    safety. This correctly handles accounts from $1 to $100M+.
+    Constraint checks use exact comparison against dollar thresholds (no
+    tolerance); the profit target is computed consistently with the equity
+    update. See the "Constraint checks" section below.
     """
 
     rules: FundedAccountRules
@@ -55,20 +56,64 @@ class AccountState:
         """
         Apply a single trade to the account.
 
-        Raises ValueError if r_result is NaN or infinite.
+        Raises ValueError for:
+          - non-finite r_result (NaN / inf)
+          - dollar_risk underflow/overflow
+          - P&L overflow (r_result * dollar_risk → ±inf)
+          - equity overflow (equity + P&L → ±inf)
+          - P&L underflow (non-zero r_result but P&L rounds to 0.0)
+          - P&L absorption (non-zero P&L but equity doesn't move)
+
+        Atomicity: every quantity is computed and validated BEFORE any
+        state is mutated. A rejected trade leaves the account unchanged
+        (current_date, start_of_day_equity, equity, peak_equity, curve).
         """
         if not math.isfinite(r_result):
             raise ValueError(
                 f"r_result must be a finite real number, got {r_result!r}"
             )
 
+        # --- Compute + validate everything first (atomicity) ---
+
+        dollar_risk = self.rules.risk_per_trade * self.rules.initial_balance
+        if not math.isfinite(dollar_risk) or dollar_risk <= 0.0:
+            raise ValueError(
+                f"dollar_risk must be finite and positive, got {dollar_risk!r}"
+            )
+
+        pnl = r_result * dollar_risk
+        if not math.isfinite(pnl):
+            raise ValueError(
+                f"Trade P&L overflowed float precision: "
+                f"r_result={r_result!r} * dollar_risk={dollar_risk!r}"
+            )
+
+        new_equity = self.equity + pnl
+        if not math.isfinite(new_equity):
+            raise ValueError(
+                f"Trade equity overflowed float precision: "
+                f"equity={self.equity!r} + pnl={pnl!r}"
+            )
+
+        if r_result != 0.0 and pnl == 0.0:
+            raise ValueError(
+                f"Trade P&L underflowed to zero: "
+                f"r_result={r_result!r} * dollar_risk={dollar_risk!r}"
+            )
+
+        if pnl != 0.0 and new_equity == self.equity:
+            raise ValueError(
+                f"Trade P&L was absorbed by float precision: "
+                f"equity={self.equity!r} + pnl={pnl!r} == {new_equity!r}"
+            )
+
+        # --- All guards passed: commit state mutations atomically ---
+
         if self.current_date is not None and date != self.current_date:
             self.start_of_day_equity = self.equity
 
         self.current_date = date
-
-        dollar_risk = self.rules.risk_per_trade * self.rules.initial_balance
-        self.equity += r_result * dollar_risk
+        self.equity = new_equity
         self.trades_applied += 1
 
         if self.equity > self.peak_equity:
@@ -136,20 +181,43 @@ class AccountState:
             return loss_dollars / self.start_of_day_equity
 
     # ------------------------------------------------------------------
-    # Constraint checks — relative tolerance for FP safety
+    # Constraint checks — exact dollar comparison (no tolerance)
     # ------------------------------------------------------------------
+    #
+    # Boundaries are compared exactly against DOLLAR thresholds, not ratios.
+    # The ratio form (balance - equity)/balance rounds through a division, so
+    # a trade that lands exactly on the threshold can compute a drawdown one
+    # ULP below the limit and be missed (e.g. balance 28778.7, 12% limit,
+    # -16R → equity exactly 25325.256 but ratio drawdown 0.11999999999999998).
+    # The profit target is likewise balance + balance*pct (bit-for-bit
+    # consistent with the equity update). Any non-zero tolerance would widen
+    # the boundary into a band and misclassify values just below a limit.
 
     def is_profit_target_reached(self) -> bool:
-        target = self.rules.initial_balance * (1 + self.rules.profit_target_pct)
-        return self.equity >= target * (1 - 1e-12) or math.isclose(
-            self.equity, target, rel_tol=1e-12
-        )
+        return self.equity >= self.profit_target
 
     def is_max_drawdown_violated(self) -> bool:
-        return self.rule_drawdown() >= self.rules.max_drawdown_pct - 1e-12
+        if self.rules.drawdown_mode == "static":
+            threshold = (
+                self.rules.initial_balance
+                - self.rules.initial_balance * self.rules.max_drawdown_pct
+            )
+        else:  # "trailing"
+            threshold = self.peak_equity - self.peak_equity * self.rules.max_drawdown_pct
+        return self.equity <= threshold
 
     def is_daily_loss_violated(self) -> bool:
-        return self.daily_loss_today() >= self.rules.daily_loss_limit_pct - 1e-12
+        if self.rules.daily_loss_base == "initial":
+            threshold = (
+                self.start_of_day_equity
+                - self.rules.initial_balance * self.rules.daily_loss_limit_pct
+            )
+        else:  # "eod"
+            threshold = (
+                self.start_of_day_equity
+                - self.start_of_day_equity * self.rules.daily_loss_limit_pct
+            )
+        return self.equity <= threshold
 
     def is_max_trades_reached(self) -> bool:
         if self.rules.max_trades is None:
@@ -170,4 +238,9 @@ class AccountState:
 
     @property
     def profit_target(self) -> float:
-        return self.rules.initial_balance * (1 + self.rules.profit_target_pct)
+        # balance + balance*pct (not balance*(1+pct)) — bit-for-bit consistent
+        # with the equity update, so an exact-boundary trade reaches exactly.
+        return (
+            self.rules.initial_balance
+            + self.rules.initial_balance * self.rules.profit_target_pct
+        )

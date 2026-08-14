@@ -35,6 +35,12 @@ class SimulationResult:
     max_drawdown_historical: worst peak-to-trough DD seen (always from
       peak_equity, regardless of drawdown_mode). This feeds statistical
       reporting (median, P95, P99) in Monte Carlo analysis.
+
+    violated_conditions: tuple of ALL rule violations triggered by the
+      terminal trade, in priority order (max_drawdown, daily_loss,
+      max_trades). For any failure, terminal_condition == violated_conditions[0].
+      Empty for profit_target/completed. Normalized to an immutable tuple
+      in __post_init__.
     """
 
     final_equity: float
@@ -44,21 +50,68 @@ class SimulationResult:
     max_drawdown_historical: float
     daily_loss_hit: float
     equity_curve: list[float] = field(default_factory=list)
+    violated_conditions: tuple[str, ...] = ()
 
     @property
     def passed(self) -> bool:
         return self.terminal_condition == "profit_target"
 
+    _VALID_TERMINAL = {
+        "profit_target", "max_drawdown", "daily_loss", "max_trades", "completed",
+    }
+    _VIOLATION_PRIORITY = {"max_drawdown": 0, "daily_loss": 1, "max_trades": 2}
+
     def __post_init__(self):
-        valid = {
-            "profit_target", "max_drawdown", "daily_loss",
-            "max_trades", "completed",
-        }
-        if self.terminal_condition not in valid:
+        # Normalize violated_conditions to an immutable tuple up front. The
+        # field is declared tuple[str, ...], but a caller can still pass a
+        # mutable list; freezing it here preserves this frozen dataclass's
+        # immutability contract.
+        object.__setattr__(self, "violated_conditions", tuple(self.violated_conditions))
+
+        if self.terminal_condition not in self._VALID_TERMINAL:
             raise ValueError(
-                f"terminal_condition must be one of {valid}, "
+                f"terminal_condition must be one of {self._VALID_TERMINAL}, "
                 f"got {self.terminal_condition!r}"
             )
+
+        vc = self.violated_conditions
+
+        # Entries must be valid failure conditions
+        for cond in vc:
+            if cond not in self._VIOLATION_PRIORITY:
+                raise ValueError(
+                    f"violated_conditions must contain only "
+                    f"{sorted(self._VIOLATION_PRIORITY)}, got {cond!r}"
+                )
+
+        # No duplicates
+        if len(vc) != len(set(vc)):
+            raise ValueError(
+                f"violated_conditions must not contain duplicates, got {vc!r}"
+            )
+
+        # Priority order: max_drawdown < daily_loss < max_trades
+        for i in range(len(vc) - 1):
+            if self._VIOLATION_PRIORITY[vc[i]] > self._VIOLATION_PRIORITY[vc[i + 1]]:
+                raise ValueError(
+                    f"violated_conditions out of priority order, got {vc!r}"
+                )
+
+        # Coherence with terminal_condition. For PASS/completed, vc must be
+        # empty. For any failure, terminal_condition must equal the
+        # highest-priority violation (vc[0]).
+        if self.terminal_condition in ("profit_target", "completed"):
+            if vc:
+                raise ValueError(
+                    f"{self.terminal_condition} result must have empty "
+                    f"violated_conditions, got {vc!r}"
+                )
+        else:
+            if not vc or vc[0] != self.terminal_condition:
+                raise ValueError(
+                    f"failure terminal_condition {self.terminal_condition!r} "
+                    f"must equal violated_conditions[0], got {vc!r}"
+                )
 
 
 def _parse_date(date_str: str, trade_id: str) -> str:
@@ -132,6 +185,24 @@ def run_simulation(
             max_dl = dl
 
         # --- Terminal condition checks ---
+        #
+        # PASS (profit target) is checked first and alone: a trade that
+        # simultaneously reaches the target AND would violate a rule is a
+        # PASS. (FARS_SPEC §7 lists the terminal conditions but does not
+        # specify precedence; PASS-first is this implementation's chosen
+        # policy.)
+        #
+        # Failures are collected together: a single trade can violate
+        # multiple rules (e.g. -10R blows through both max_drawdown AND
+        # daily_loss). We record ALL of them in violated_conditions, in
+        # priority order, and use the highest-priority one as the primary
+        # terminal_condition. Recording only the first would understate
+        # per-condition failure probabilities in Monte Carlo analysis.
+        #
+        # NOTE: this makes failure attribution INCLUSIVE, not mutually
+        # exclusive — one simulation can count toward multiple
+        # failure_probability_* buckets. Phase 5/6 must either sum them with
+        # this in mind or define an explicit primary-cause attribution.
 
         if account.is_profit_target_reached():
             return SimulationResult(
@@ -144,37 +215,24 @@ def run_simulation(
                 equity_curve=account.equity_curve,
             )
 
+        violated: list[str] = []
         if account.is_max_drawdown_violated():
-            return SimulationResult(
-                final_equity=account.equity,
-                terminal_condition="max_drawdown",
-                trades_executed=account.trades_applied,
-                max_drawdown_hit=max_rule_dd,
-                max_drawdown_historical=max_hist_dd,
-                daily_loss_hit=max_dl,
-                equity_curve=account.equity_curve,
-            )
-
+            violated.append("max_drawdown")
         if account.is_daily_loss_violated():
-            return SimulationResult(
-                final_equity=account.equity,
-                terminal_condition="daily_loss",
-                trades_executed=account.trades_applied,
-                max_drawdown_hit=max_rule_dd,
-                max_drawdown_historical=max_hist_dd,
-                daily_loss_hit=max_dl,
-                equity_curve=account.equity_curve,
-            )
-
+            violated.append("daily_loss")
         if account.is_max_trades_reached():
+            violated.append("max_trades")
+
+        if violated:
             return SimulationResult(
                 final_equity=account.equity,
-                terminal_condition="max_trades",
+                terminal_condition=violated[0],
                 trades_executed=account.trades_applied,
                 max_drawdown_hit=max_rule_dd,
                 max_drawdown_historical=max_hist_dd,
                 daily_loss_hit=max_dl,
                 equity_curve=account.equity_curve,
+                violated_conditions=tuple(violated),
             )
 
     return SimulationResult(

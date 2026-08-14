@@ -193,3 +193,52 @@ class FundedAccountRules:
             raise ValueError(
                 f"drawdown_mode must be 'static' or 'trailing', got {self.drawdown_mode!r}"
             )
+
+        # Numeric safety: dollar_risk must be finite and positive.
+        # Without this, initial_balance * risk_per_trade can underflow to
+        # 0.0 (e.g. initial_balance=5e-324, risk_per_trade=0.01), which means
+        # trades never move equity and the account "passes" instantly with
+        # zero real gains.
+        dollar_risk = self.risk_per_trade * self.initial_balance
+        if not isfinite(dollar_risk) or dollar_risk <= 0.0:
+            raise ValueError(
+                f"risk_per_trade * initial_balance (dollar_risk) must be "
+                f"finite and positive, got {dollar_risk!r}"
+            )
+
+        # Numeric safety: the profit target must be strictly above the balance.
+        #
+        # Computed as balance + balance*pct (NOT balance*(1+pct)) so it stays
+        # consistent with the equity update balance + Σ(r·risk·balance). The
+        # (1+pct) form rounds one ULP high (e.g. 100000*1.10 = 110000.00000000001)
+        # and would make an exact-boundary +10R trade fall short. The `<= balance`
+        # check rejects underflow (pct*balance → 0) and rounding-to-balance.
+        target = self.initial_balance + self.initial_balance * self.profit_target_pct
+        if not isfinite(target) or target <= self.initial_balance:
+            raise ValueError(
+                f"profit target must be strictly greater than initial_balance, "
+                f"got target={target!r} vs balance={self.initial_balance!r}"
+            )
+
+        # Numeric safety: the drawdown and daily-loss DOLLAR thresholds must be
+        # strictly below their reference. At construction the reference is the
+        # initial balance (peak_equity and start_of_day_equity both start at
+        # balance). If balance*pct absorbs into balance (pct below ~machine
+        # epsilon, e.g. 5e-324), a zero-loss trade (equity == balance) would be
+        # flagged as a violation because the threshold rounds back to balance.
+        if (
+            self.initial_balance - self.initial_balance * self.max_drawdown_pct
+            >= self.initial_balance
+        ):
+            raise ValueError(
+                f"max_drawdown_pct too small: balance - balance*pct rounds to "
+                f"balance, got {self.max_drawdown_pct!r}"
+            )
+        if (
+            self.initial_balance - self.initial_balance * self.daily_loss_limit_pct
+            >= self.initial_balance
+        ):
+            raise ValueError(
+                f"daily_loss_limit_pct too small: balance - balance*pct rounds to "
+                f"balance, got {self.daily_loss_limit_pct!r}"
+            )

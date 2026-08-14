@@ -353,3 +353,170 @@ def test_daily_loss_eod_mode():
     # start_of_day = 105K, loss = 4K / 105K ≈ 3.81%
     expected = 4000 / 105000
     assert account.daily_loss_today() == pytest.approx(expected)
+
+
+# ---------------------------------------------------------------------------
+# Numeric safety: overflow / underflow / absorption / atomicity
+# ---------------------------------------------------------------------------
+
+
+def _numeric_rules(**kwargs) -> FundedAccountRules:
+    defaults = dict(
+        initial_balance=100_000.0,
+        profit_target_pct=0.10,
+        max_drawdown_pct=0.10,
+        daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01,
+    )
+    defaults.update(kwargs)
+    return FundedAccountRules(**defaults)
+
+
+def test_apply_trade_overflow_positive_r_result():
+    """r_result=1e308 × dollar_risk=1000 → P&L overflows to inf → reject."""
+    account = AccountState(rules=_numeric_rules())
+    with pytest.raises(ValueError, match="overflow"):
+        account.apply_trade(r_result=1e308, date="2024-01-01")
+
+
+def test_apply_trade_overflow_negative_r_result():
+    """r_result=-1e308 → P&L overflows to -inf → reject."""
+    account = AccountState(rules=_numeric_rules())
+    with pytest.raises(ValueError, match="overflow"):
+        account.apply_trade(r_result=-1e308, date="2024-01-01")
+
+
+def test_apply_trade_equity_addition_overflow():
+    """Finite P&L (8.5e307) pushes equity past float max → reject."""
+    account = AccountState(rules=_numeric_rules(
+        initial_balance=1.7e308, profit_target_pct=0.01, risk_per_trade=0.5,
+    ))
+    with pytest.raises(ValueError, match="overflow"):
+        account.apply_trade(r_result=1.0, date="2024-01-01")
+
+
+def test_apply_trade_pnl_underflow_subnormal_dollar_risk():
+    """Subnormal dollar_risk (5e-324) × r_result=0.1 → P&L underflows to 0."""
+    account = AccountState(rules=_numeric_rules(
+        initial_balance=5e-322, risk_per_trade=0.01,
+    ))
+    with pytest.raises(ValueError, match="underflow"):
+        account.apply_trade(r_result=0.1, date="2024-01-01")
+
+
+def test_apply_trade_zero_r_not_rejected():
+    """A legitimate 0R trade must not trip the underflow/absorption guards."""
+    account = AccountState(rules=_numeric_rules())
+    account.apply_trade(r_result=0.0, date="2024-01-01")
+    assert account.equity == 100_000.0
+    assert account.trades_applied == 1
+
+
+def test_apply_trade_absorption():
+    """equity=1e200 + pnl=1.0 → sum unchanged → reject (silent accounting error)."""
+    account = AccountState(rules=_numeric_rules(
+        initial_balance=1e200, risk_per_trade=0.01,
+    ))
+    with pytest.raises(ValueError, match="absorbed"):
+        account.apply_trade(r_result=1e-198, date="2024-01-01")
+
+
+def test_apply_trade_atomicity_on_rejected_trade():
+    """A rejected trade must leave account state completely unchanged."""
+    account = AccountState(rules=_numeric_rules())
+    account.apply_trade(r_result=1.0, date="2024-01-01")  # valid trade
+    snapshot = (
+        account.equity, account.current_date, account.start_of_day_equity,
+        account.trades_applied, account.peak_equity, len(account.equity_curve),
+    )
+    with pytest.raises(ValueError, match="overflow"):
+        account.apply_trade(r_result=1e308, date="2024-01-02")  # rejected
+    assert (
+        account.equity, account.current_date, account.start_of_day_equity,
+        account.trades_applied, account.peak_equity, len(account.equity_curve),
+    ) == snapshot
+
+
+# ---------------------------------------------------------------------------
+# Relative tolerance: tiny limits must not turn a 0R trade into a violation
+# ---------------------------------------------------------------------------
+
+
+def test_tiny_drawdown_limit_zero_r_not_violated():
+    """A 0R trade with max_drawdown_pct < 1e-12 must NOT violate (an absolute
+    tolerance of -1e-12 would make the threshold negative)."""
+    account = AccountState(rules=_numeric_rules(max_drawdown_pct=5e-13))
+    account.apply_trade(r_result=0.0, date="2024-01-01")
+    assert account.rule_drawdown() == 0.0
+    assert not account.is_max_drawdown_violated()
+
+
+def test_tiny_daily_loss_limit_zero_r_not_violated():
+    """A 0R trade with daily_loss_limit_pct < 1e-12 must NOT violate."""
+    account = AccountState(rules=_numeric_rules(daily_loss_limit_pct=5e-13))
+    account.apply_trade(r_result=0.0, date="2024-01-01")
+    assert account.daily_loss_today() == 0.0
+    assert not account.is_daily_loss_violated()
+
+
+# ---------------------------------------------------------------------------
+# Relative tolerance: genuinely sub-limit values must not violate
+# ---------------------------------------------------------------------------
+
+
+def test_drawdown_slightly_below_limit_not_violated():
+    """A drawdown genuinely below the limit must NOT violate, even within a
+    hair of it (regression: a tolerance band flagged sub-limit values)."""
+    account = AccountState(rules=_numeric_rules(max_drawdown_pct=0.10))
+    account.apply_trade(r_result=-9.9999999999995, date="2024-01-01")
+    assert account.rule_drawdown() < 0.10
+    assert not account.is_max_drawdown_violated()
+
+
+def test_daily_loss_slightly_below_limit_not_violated():
+    """A daily loss genuinely below the limit must NOT violate."""
+    account = AccountState(rules=_numeric_rules(daily_loss_limit_pct=0.05))
+    account.apply_trade(r_result=-4.99999999999975, date="2024-01-01")
+    assert account.daily_loss_today() < 0.05
+    assert not account.is_daily_loss_violated()
+
+
+def test_tiny_profit_target_zero_r_not_reached():
+    """A 0R trade with a tiny (but representable) profit target must NOT pass.
+    The old tolerance swallowed the target delta and declared a zero-gain
+    account as having passed (Codex CRITICAL)."""
+    account = AccountState(rules=_numeric_rules(profit_target_pct=5e-13))
+    account.apply_trade(r_result=0.0, date="2024-01-01")
+    assert account.equity < account.profit_target
+    assert not account.is_profit_target_reached()
+
+
+def test_profit_target_consistent_with_equity():
+    """The profit target uses balance + balance*pct (not balance*(1+pct)), so a
+    +10R trade reaches the 10% target bit-for-bit (the (1+pct) form rounds one
+    ULP high, e.g. 100000*1.10 == 110000.00000000001)."""
+    account = AccountState(rules=_numeric_rules(profit_target_pct=0.10))
+    account.apply_trade(r_result=10.0, date="2024-01-01")
+    assert account.equity == account.profit_target  # exact, not 1 ULP short
+    assert account.is_profit_target_reached()
+
+
+def test_drawdown_exact_boundary_dollar_comparison():
+    """A trade that lands exactly on the drawdown threshold must be flagged.
+    (Regression: the ratio form (balance-equity)/balance rounded the drawdown
+    one ULP below the limit — 0.11999999999999998 vs 0.12 — and missed it.)"""
+    account = AccountState(rules=_numeric_rules(
+        initial_balance=28778.7, max_drawdown_pct=0.12, risk_per_trade=0.0075,
+    ))
+    account.apply_trade(r_result=-16.0, date="2024-01-01")
+    assert account.equity <= 28778.7 - 28778.7 * 0.12  # exactly at threshold
+    assert account.is_max_drawdown_violated()
+
+
+def test_daily_loss_exact_boundary_dollar_comparison():
+    """A trade that lands exactly on the daily-loss threshold must be flagged."""
+    account = AccountState(rules=_numeric_rules(
+        initial_balance=28778.7, daily_loss_limit_pct=0.12, risk_per_trade=0.0075,
+    ))
+    account.apply_trade(r_result=-16.0, date="2024-01-01")
+    assert account.is_daily_loss_violated()

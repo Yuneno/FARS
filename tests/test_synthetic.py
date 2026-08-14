@@ -634,3 +634,68 @@ def test_seed_none_unique_trade_ids_across_calls():
         f"seed=None should produce unique IDs across calls, "
         f"but found overlap"
     )
+
+
+# =========================================================================
+# Numeric safety: FundedAccountRules config-level guards (Phase 4)
+# =========================================================================
+
+def test_far_rejects_underflow_dollar_risk():
+    """initial_balance=5e-324 × risk=0.01 → dollar_risk underflows to 0."""
+    with pytest.raises(ValueError, match="dollar_risk"):
+        FundedAccountRules(
+            initial_balance=5e-324,
+            profit_target_pct=0.10,
+            max_drawdown_pct=0.10,
+            daily_loss_limit_pct=0.05,
+            risk_per_trade=0.01,
+        )
+
+
+def test_far_rejects_one_plus_pct_rounding():
+    """profit_target_pct below float64 epsilon → target == balance → reject."""
+    with pytest.raises(ValueError, match="profit target"):
+        FundedAccountRules(
+            initial_balance=1e200,
+            profit_target_pct=1e-20,
+            max_drawdown_pct=0.10,
+            daily_loss_limit_pct=0.05,
+            risk_per_trade=0.01,
+        )
+
+
+def test_far_rejects_profit_target_overflow():
+    """initial_balance=1e308 × 1.9 → target overflows to inf → reject."""
+    with pytest.raises(ValueError, match="profit target"):
+        FundedAccountRules(
+            initial_balance=1e308,
+            profit_target_pct=0.9,
+            max_drawdown_pct=0.10,
+            daily_loss_limit_pct=0.05,
+            risk_per_trade=0.01,
+        )
+
+
+def test_far_rejects_absorbing_max_drawdown_pct():
+    """max_drawdown_pct=5e-324 → balance*pct absorbs into balance, so a zero-loss
+    trade would be flagged as a violation (threshold rounds back to balance)."""
+    with pytest.raises(ValueError, match="max_drawdown_pct"):
+        FundedAccountRules(
+            initial_balance=100_000.0,
+            profit_target_pct=0.10,
+            max_drawdown_pct=5e-324,
+            daily_loss_limit_pct=0.05,
+            risk_per_trade=0.01,
+        )
+
+
+def test_far_rejects_absorbing_daily_loss_limit_pct():
+    """daily_loss_limit_pct=5e-324 → balance*pct absorbs into balance."""
+    with pytest.raises(ValueError, match="daily_loss_limit_pct"):
+        FundedAccountRules(
+            initial_balance=100_000.0,
+            profit_target_pct=0.10,
+            max_drawdown_pct=0.10,
+            daily_loss_limit_pct=5e-324,
+            risk_per_trade=0.01,
+        )
