@@ -83,16 +83,16 @@ n_bootstrap=0). P(PASS) reports its standard error; convergence mode
 uses it as the stopping criterion.
 """
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from datetime import datetime
 from math import isfinite, sqrt
+from numbers import Real
 from types import MappingProxyType
 
 import numpy as np
 from scipy import stats as sp_stats
 
-from src.engine import SimulationResult, run_simulation
 from src.synthetic import generate_trade_sequences
 from src.types import FundedAccountRules, SyntheticConfig, Trade
 
@@ -116,6 +116,27 @@ CODE_MAX_DRAWDOWN = 1
 CODE_DAILY_LOSS = 2
 CODE_MAX_TRADES = 3
 CODE_COMPLETED = 4
+
+
+def _normal_critical_value(confidence_level: float) -> float:
+    """Return a finite positive two-sided Normal critical value."""
+    if (
+        isinstance(confidence_level, (bool, np.bool_))
+        or not isinstance(confidence_level, Real)
+        or not isfinite(confidence_level)
+        or not 0.0 < confidence_level < 1.0
+    ):
+        raise ValueError(
+            "confidence_level must be finite and in (0, 1), got "
+            f"{confidence_level!r}"
+        )
+    z = float(sp_stats.norm.isf((1.0 - confidence_level) / 2.0))
+    if not isfinite(z) or z <= 0.0:
+        raise ValueError(
+            "confidence_level is too close to 0 or 1 for float64 inference, "
+            f"got {confidence_level!r}"
+        )
+    return z
 
 
 # ---------------------------------------------------------------------------
@@ -144,12 +165,17 @@ class MonteCarloConfig:
 
     n_bootstrap: number of bootstrap resamples for drawdown-quantile CIs.
         0 disables them (the CI fields become None).
+
+    batch_size: maximum simulation paths materialized at once. In convergence
+        mode it is also the interval between stopping checks. Changing it in
+        fixed-n mode must not change seeded results.
     """
 
     n_simulations: int | None = 10_000
     seed: int | None = None
 
-    # Convergence-mode parameters (ignored when n_simulations is set)
+    # Convergence parameters. batch_size also bounds working memory in
+    # fixed-n mode; the remaining fields are ignored when n_simulations is set.
     se_target: float = 0.005
     min_simulations: int = 1_000
     max_simulations: int = 100_000
@@ -171,9 +197,13 @@ class MonteCarloConfig:
                     f"got {self.n_simulations!r}"
                 )
         if self.seed is not None and (
-            not isinstance(self.seed, int) or isinstance(self.seed, bool)
+            not isinstance(self.seed, int)
+            or isinstance(self.seed, bool)
+            or self.seed < 0
         ):
-            raise ValueError(f"seed must be an integer or None, got {self.seed!r}")
+            raise ValueError(
+                f"seed must be a non-negative integer or None, got {self.seed!r}"
+            )
         if not isfinite(self.se_target) or not 0.0 < self.se_target < 1.0:
             raise ValueError(
                 f"se_target must be finite and in (0, 1), got {self.se_target}"
@@ -189,11 +219,7 @@ class MonteCarloConfig:
                 f"max_simulations ({self.max_simulations}) must be >= "
                 f"min_simulations ({self.min_simulations})"
             )
-        if not isfinite(self.confidence_level) or not 0.0 < self.confidence_level < 1.0:
-            raise ValueError(
-                f"confidence_level must be finite and in (0, 1), "
-                f"got {self.confidence_level}"
-            )
+        _normal_critical_value(self.confidence_level)
         if (
             not isinstance(self.n_bootstrap, int)
             or isinstance(self.n_bootstrap, bool)
@@ -471,12 +497,7 @@ def wilson_ci(
         raise ValueError(f"successes must be an integer, got {successes!r}")
     if not 0 <= successes <= n:
         raise ValueError(f"successes must be in [0, {n}], got {successes!r}")
-    if not isfinite(confidence_level) or not 0.0 < confidence_level < 1.0:
-        raise ValueError(
-            f"confidence_level must be finite and in (0, 1), got {confidence_level}"
-        )
-
-    z = float(sp_stats.norm.ppf(1.0 - (1.0 - confidence_level) / 2.0))
+    z = _normal_critical_value(confidence_level)
     p_hat = successes / n
     z2 = z * z
     denom = 1.0 + z2 / n
@@ -504,9 +525,21 @@ def wilson_se(
     the Wilson SE proxy is half_width / z, which stays strictly positive and scales
     as O(1/n) at boundaries.
     """
-    lo, hi = wilson_ci(successes, n, confidence_level)
-    z = float(sp_stats.norm.ppf(1.0 - (1.0 - confidence_level) / 2.0))
-    return (hi - lo) / (2.0 * z)
+    if not isinstance(n, int) or isinstance(n, bool) or n <= 0:
+        raise ValueError(f"n must be a positive integer, got {n!r}")
+    if not isinstance(successes, int) or isinstance(successes, bool):
+        raise ValueError(f"successes must be an integer, got {successes!r}")
+    if not 0 <= successes <= n:
+        raise ValueError(f"successes must be in [0, {n}], got {successes!r}")
+    # Algebraically equivalent to Wilson half-width / z, without dividing by
+    # a z-score that can round to zero for confidence levels near zero.
+    z = _normal_critical_value(confidence_level)
+    p_hat = successes / n
+    z2 = z * z
+    numerator = sqrt(
+        p_hat * (1.0 - p_hat) / n + z2 / (4.0 * n * n)
+    )
+    return numerator / (1.0 + z2 / n)
 
 
 def bootstrap_quantiles_ci(
@@ -527,16 +560,32 @@ def bootstrap_quantiles_ci(
     """
     if not isinstance(values, np.ndarray) or values.ndim != 1 or len(values) == 0:
         raise ValueError("values must be a non-empty 1-D numpy array")
+    if not np.issubdtype(values.dtype, np.number) or np.issubdtype(
+        values.dtype, np.complexfloating
+    ):
+        raise ValueError("values must contain real numeric data")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("values must contain only finite numbers")
     if not quantiles_pct:
         raise ValueError("quantiles_pct must be non-empty")
     for q in quantiles_pct:
+        if isinstance(q, (bool, np.bool_)) or not isinstance(
+            q, (int, float, np.integer, np.floating)
+        ):
+            raise ValueError(f"quantiles_pct entries must be numeric, got {q!r}")
         if not isfinite(q) or not 0.0 <= q <= 100.0:
             raise ValueError(f"quantiles_pct entries must be in [0, 100], got {q}")
     if not isinstance(n_bootstrap, int) or isinstance(n_bootstrap, bool) or n_bootstrap <= 0:
         raise ValueError(f"n_bootstrap must be a positive integer, got {n_bootstrap!r}")
-    if not isfinite(confidence_level) or not 0.0 < confidence_level < 1.0:
+    if (
+        isinstance(confidence_level, (bool, np.bool_))
+        or not isinstance(confidence_level, Real)
+        or not isfinite(confidence_level)
+        or not 0.0 < confidence_level < 1.0
+    ):
         raise ValueError(
-            f"confidence_level must be finite and in (0, 1), got {confidence_level}"
+            "confidence_level must be finite and in (0, 1), got "
+            f"{confidence_level!r}"
         )
     if not isinstance(batch_size, int) or isinstance(batch_size, bool) or batch_size <= 0:
         raise ValueError(f"batch_size must be a positive integer, got {batch_size!r}")
@@ -689,8 +738,8 @@ def run_monte_carlo(
     mode draws come from one sequential RNG stream with the same prefix
     property.
 
-    Raises ValueError for invalid inputs. Engine-level numeric errors
-    (overflow mid-run) propagate as ValueError from run_simulation.
+    Raises ValueError for invalid inputs. Simulation-kernel numeric errors
+    (overflow/underflow mid-run) propagate as ValueError.
     """
     if config is None:
         config = MonteCarloConfig()
@@ -700,7 +749,7 @@ def run_monte_carlo(
             "exactly one of synthetic_config or trades must be provided"
         )
 
-    if trades is not None and not assume_iid:
+    if trades is not None and assume_iid is not True:
         raise ValueError(
             "Resampling historical/observed trades assumes IID exchangeability. "
             "Pass assume_iid=True to explicitly confirm this assumption after "
@@ -759,7 +808,9 @@ def run_monte_carlo(
 
     if not convergence_mode:
         assert config.n_simulations is not None  # narrowed by convergence_mode
-        _run_batch(config.n_simulations, 0)
+        while total < config.n_simulations:
+            batch_n = min(config.batch_size, config.n_simulations - total)
+            _run_batch(batch_n, total)
         converged = True
     else:
         while True:
@@ -875,6 +926,114 @@ def run_monte_carlo(
     )
 
 
+def _simulate_path_fast(
+    r_results: Sequence[float] | np.ndarray,
+    is_new_day: Sequence[bool] | np.ndarray,
+    rules: FundedAccountRules,
+) -> tuple[int, float, int, float, bool, bool]:
+    """
+    Fast simulation kernel for a single funded-account trajectory.
+
+    Avoids creating intermediate Trade / SimulationResult objects and string parsing,
+    performing exact dollar comparisons with bit-for-bit equivalence to run_simulation.
+
+    Returns:
+      (terminal_code, final_equity, trades_executed, max_drawdown_historical,
+       violated_max_drawdown, violated_daily_loss)
+    """
+    initial_balance = rules.initial_balance
+    dollar_risk = rules.risk_per_trade * initial_balance
+    profit_target_pct = rules.profit_target_pct
+    max_drawdown_pct = rules.max_drawdown_pct
+    daily_loss_limit_pct = rules.daily_loss_limit_pct
+    max_trades = rules.max_trades
+    drawdown_mode = rules.drawdown_mode
+    daily_loss_base = rules.daily_loss_base
+
+    target_equity = initial_balance + initial_balance * profit_target_pct
+    static_dd_threshold = initial_balance - initial_balance * max_drawdown_pct
+
+    equity = initial_balance
+    peak_equity = initial_balance
+    start_of_day_equity = initial_balance
+    max_hist_dd = 0.0
+    trades_applied = 0
+
+    for t, r in enumerate(r_results):
+        if not isfinite(r):
+            raise ValueError(f"non-finite r_result: {r}")
+
+        pnl = r * dollar_risk
+        if not isfinite(pnl):
+            raise ValueError(
+                f"Trade P&L overflowed float precision: "
+                f"r_result={r!r} * dollar_risk={dollar_risk!r}"
+            )
+        new_equity = equity + pnl
+        if not isfinite(new_equity):
+            raise ValueError(
+                f"Trade equity overflowed float precision: "
+                f"equity={equity!r} + pnl={pnl!r}"
+            )
+        if r != 0.0 and pnl == 0.0:
+            raise ValueError(
+                f"Trade P&L underflowed to zero: "
+                f"r_result={r!r} * dollar_risk={dollar_risk!r}"
+            )
+        if pnl != 0.0 and new_equity == equity:
+            raise ValueError(
+                f"Trade P&L was absorbed by float precision: "
+                f"equity={equity!r} + pnl={pnl!r} == {new_equity!r}"
+            )
+
+        # Commit day transition
+        if is_new_day[t]:
+            start_of_day_equity = equity
+
+        equity = new_equity
+        trades_applied += 1
+
+        if equity > peak_equity:
+            peak_equity = equity
+
+        # Historical peak-to-trough drawdown
+        hist_dd = max(0.0, (peak_equity - equity) / peak_equity)
+        if hist_dd > max_hist_dd:
+            max_hist_dd = hist_dd
+
+        # Priority 1: Profit target (PASS)
+        if equity >= target_equity:
+            return CODE_PROFIT_TARGET, equity, trades_applied, max_hist_dd, False, False
+
+        # Priority 2/3/4: Check violations
+        if drawdown_mode == "static":
+            viol_dd = equity <= static_dd_threshold
+        else:
+            trailing_threshold = peak_equity - peak_equity * max_drawdown_pct
+            viol_dd = equity <= trailing_threshold
+
+        # Daily loss: use bit-for-bit identical threshold construction as
+        # AccountState.is_daily_loss_violated() to avoid float64 divergence.
+        if daily_loss_base == "initial":
+            dl_limit_amount = initial_balance * daily_loss_limit_pct
+        else:
+            dl_limit_amount = start_of_day_equity * daily_loss_limit_pct
+        dl_threshold = start_of_day_equity - dl_limit_amount
+        viol_dl = equity <= dl_threshold
+        viol_mt = (max_trades is not None and trades_applied >= max_trades)
+
+        if viol_dd or viol_dl or viol_mt:
+            if viol_dd:
+                primary = CODE_MAX_DRAWDOWN
+            elif viol_dl:
+                primary = CODE_DAILY_LOSS
+            else:
+                primary = CODE_MAX_TRADES
+            return primary, equity, trades_applied, max_hist_dd, viol_dd, viol_dl
+
+    return CODE_COMPLETED, equity, trades_applied, max_hist_dd, False, False
+
+
 def _simulate_batch(
     *,
     rules: FundedAccountRules,
@@ -902,7 +1061,6 @@ def _simulate_batch(
     viol_dd = np.zeros(batch_n, dtype=bool)
     viol_dl = np.zeros(batch_n, dtype=bool)
 
-    sequences: list[list[Trade]]
     if synthetic_config is not None:
         batch_config = synthetic_config
         effective_seed = (
@@ -916,53 +1074,37 @@ def _simulate_batch(
                 synthetic_config, seed=effective_seed + start_index
             )
         sequences = generate_trade_sequences(batch_config, batch_n)
+        for k, sequence in enumerate(sequences):
+            r_seq = [t.r_result for t in sequence]
+            is_new_day = [
+                i == 0 or sequence[i].date != sequence[i - 1].date
+                for i in range(len(sequence))
+            ]
+            c, eq, n_tr, dd, v_dd, v_dl = _simulate_path_fast(r_seq, is_new_day, rules)
+            codes[k] = c
+            equities[k] = eq
+            n_trades_exec[k] = n_tr
+            dds[k] = dd
+            viol_dd[k] = v_dd
+            viol_dl[k] = v_dl
     else:
         assert r_values is not None and dates is not None and resample_rng is not None
-        sequences = _resample_batch(resample_rng, r_values, dates, batch_n, start_index)
+        length = len(dates)
+        m = len(r_values)
+        all_indices = resample_rng.integers(0, m, size=(batch_n, length))
+        is_new_day = np.array(
+            [i == 0 or dates[i] != dates[i - 1] for i in range(length)],
+            dtype=bool,
+        )
 
-    for k, sequence in enumerate(sequences):
-        result = run_simulation(sequence, rules)
-        codes[k] = _TERMINAL_TO_CODE[result.terminal_condition]
-        equities[k] = result.final_equity
-        n_trades_exec[k] = result.trades_executed
-        dds[k] = result.max_drawdown_historical
-        violated = result.violated_conditions
-        viol_dd[k] = "max_drawdown" in violated
-        viol_dl[k] = "daily_loss" in violated
+        for k in range(batch_n):
+            r_seq = r_values[all_indices[k]]
+            c, eq, n_tr, dd, v_dd, v_dl = _simulate_path_fast(r_seq, is_new_day, rules)
+            codes[k] = c
+            equities[k] = eq
+            n_trades_exec[k] = n_tr
+            dds[k] = dd
+            viol_dd[k] = v_dd
+            viol_dl[k] = v_dl
 
     return codes, equities, n_trades_exec, dds, viol_dd, viol_dl
-
-
-def _resample_batch(
-    rng: np.random.Generator,
-    r_values: np.ndarray,
-    dates: list[str],
-    batch_n: int,
-    start_index: int,
-) -> list[list[Trade]]:
-    """
-    Draw batch_n IID bootstrap sequences of length len(dates).
-
-    Values are sampled with replacement from r_values; each position
-    keeps its original date (the date scaffolding), preserving the
-    trades-per-day structure that drives daily-loss aggregation.
-    """
-    length = len(dates)
-    m = len(r_values)
-    sequences: list[list[Trade]] = []
-    for k in range(batch_n):
-        idx = rng.integers(0, m, size=length)
-        sim_index = start_index + k
-        # Position keeps its original date (the scaffolding); only the
-        # R value is resampled. This preserves chronological order and
-        # the trades-per-day structure that drives daily-loss resets.
-        sequence = [
-            Trade(
-                r_result=float(r_values[j]),
-                date=dates[pos],
-                trade_id=f"mc-{sim_index}-{pos:06d}",
-            )
-            for pos, j in enumerate(idx)
-        ]
-        sequences.append(sequence)
-    return sequences

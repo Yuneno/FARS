@@ -20,7 +20,6 @@ Tests cover:
 """
 
 import math
-from datetime import datetime
 
 import numpy as np
 import pytest
@@ -34,12 +33,14 @@ from src.monte_carlo import (
     TERMINAL_CONDITIONS,
     MonteCarloConfig,
     MonteCarloResult,
+    _simulate_path_fast,
     bootstrap_quantile_ci,
     bootstrap_quantiles_ci,
     run_monte_carlo,
     wilson_ci,
     wilson_se,
 )
+from src.engine import run_simulation
 from src.types import FundedAccountRules, SyntheticConfig, Trade
 
 
@@ -115,7 +116,7 @@ def test_mc_config_rejects_invalid_n_simulations(invalid_n):
         MonteCarloConfig(n_simulations=invalid_n)
 
 
-@pytest.mark.parametrize("invalid_seed", [1.5, True, False, "42"])
+@pytest.mark.parametrize("invalid_seed", [-1, 1.5, True, False, "42"])
 def test_mc_config_rejects_invalid_seed(invalid_seed):
     with pytest.raises(ValueError, match="seed"):
         MonteCarloConfig(seed=invalid_seed)
@@ -140,7 +141,10 @@ def test_mc_config_rejects_max_less_than_min():
         MonteCarloConfig(min_simulations=5000, max_simulations=1000)
 
 
-@pytest.mark.parametrize("invalid_cl", [0.0, 1.0, -0.1, 1.1, math.nan, math.inf])
+@pytest.mark.parametrize(
+    "invalid_cl",
+    [0.0, 1.0, -0.1, 1.1, math.nan, math.inf, np.nextafter(0.0, 1.0)],
+)
 def test_mc_config_rejects_invalid_confidence_level(invalid_cl):
     with pytest.raises(ValueError, match="confidence_level"):
         MonteCarloConfig(confidence_level=invalid_cl)
@@ -193,7 +197,10 @@ def test_wilson_ci_rejects_invalid_successes(invalid_s):
         wilson_ci(invalid_s, 100)
 
 
-@pytest.mark.parametrize("invalid_cl", [0.0, 1.0, -0.1, 1.1, math.nan, math.inf])
+@pytest.mark.parametrize(
+    "invalid_cl",
+    [0.0, 1.0, -0.1, 1.1, math.nan, math.inf, np.nextafter(0.0, 1.0)],
+)
 def test_wilson_ci_rejects_invalid_cl(invalid_cl):
     with pytest.raises(ValueError, match="confidence_level"):
         wilson_ci(50, 100, invalid_cl)
@@ -252,6 +259,34 @@ def test_bootstrap_quantile_ci_rejects_empty():
     data = np.array([])
     with pytest.raises(ValueError, match="values"):
         bootstrap_quantile_ci(data, 50.0, 100, 0.95, rng)
+
+
+@pytest.mark.parametrize(
+    "invalid_values",
+    [
+        np.array([0.1, math.nan]),
+        np.array([0.1, math.inf]),
+        np.array([1 + 2j]),
+        np.array(["0.1", "0.2"]),
+    ],
+)
+def test_bootstrap_quantile_ci_rejects_nonfinite_or_nonreal_values(invalid_values):
+    with pytest.raises(ValueError, match="values"):
+        bootstrap_quantile_ci(
+            invalid_values, 50.0, 10, 0.95, np.random.default_rng(42)
+        )
+
+
+@pytest.mark.parametrize("invalid_q", [True, False, "95"])
+def test_bootstrap_quantile_ci_rejects_non_numeric_quantiles(invalid_q):
+    with pytest.raises(ValueError, match="quantiles_pct"):
+        bootstrap_quantile_ci(
+            np.array([0.1, 0.2]),
+            invalid_q,  # type: ignore[arg-type]
+            10,
+            0.95,
+            np.random.default_rng(42),
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -410,6 +445,76 @@ def test_mc_synthetic_prefix_property():
     )
 
 
+def test_mc_synthetic_fixed_n_is_bitwise_invariant_to_batch_size():
+    rules = _standard_rules(risk_per_trade=0.01)
+    synth = SyntheticConfig(win_rate=0.50, n_trades=30, seed=17)
+    cfg_one_batch = MonteCarloConfig(
+        n_simulations=37, seed=999, batch_size=100, n_bootstrap=20
+    )
+    cfg_many_batches = MonteCarloConfig(
+        n_simulations=37, seed=999, batch_size=7, n_bootstrap=20
+    )
+
+    one_batch = run_monte_carlo(rules, synthetic_config=synth, config=cfg_one_batch)
+    many_batches = run_monte_carlo(
+        rules, synthetic_config=synth, config=cfg_many_batches
+    )
+
+    np.testing.assert_array_equal(one_batch.terminal_codes, many_batches.terminal_codes)
+    np.testing.assert_array_equal(one_batch.final_equities, many_batches.final_equities)
+    np.testing.assert_array_equal(one_batch.trades_executed, many_batches.trades_executed)
+    np.testing.assert_array_equal(
+        one_batch.max_drawdowns_historical,
+        many_batches.max_drawdowns_historical,
+    )
+    assert one_batch.pass_ci == many_batches.pass_ci
+    assert one_batch.p95_max_drawdown_ci == many_batches.p95_max_drawdown_ci
+
+
+def test_mc_synthetic_fixed_n_honors_memory_batch_size(monkeypatch):
+    import src.monte_carlo as monte_carlo_module
+
+    observed_batch_sizes = []
+    original_generate = monte_carlo_module.generate_trade_sequences
+
+    def recording_generate(config, n_sequences):
+        observed_batch_sizes.append(n_sequences)
+        return original_generate(config, n_sequences)
+
+    monkeypatch.setattr(
+        monte_carlo_module, "generate_trade_sequences", recording_generate
+    )
+    run_monte_carlo(
+        _standard_rules(),
+        synthetic_config=SyntheticConfig(n_trades=5),
+        config=MonteCarloConfig(
+            n_simulations=23, seed=4, batch_size=5, n_bootstrap=0
+        ),
+    )
+    assert observed_batch_sizes == [5, 5, 5, 5, 3]
+
+
+def test_mc_synthetic_source_seed_is_batch_invariant_without_master_seed():
+    rules = _standard_rules()
+    synth = SyntheticConfig(n_trades=20, seed=17)
+    one_batch = run_monte_carlo(
+        rules,
+        synthetic_config=synth,
+        config=MonteCarloConfig(
+            n_simulations=23, seed=None, batch_size=100, n_bootstrap=0
+        ),
+    )
+    many_batches = run_monte_carlo(
+        rules,
+        synthetic_config=synth,
+        config=MonteCarloConfig(
+            n_simulations=23, seed=None, batch_size=5, n_bootstrap=0
+        ),
+    )
+    np.testing.assert_array_equal(one_batch.terminal_codes, many_batches.terminal_codes)
+    np.testing.assert_array_equal(one_batch.final_equities, many_batches.final_equities)
+
+
 def test_mc_synthetic_convergence_mode():
     rules = _standard_rules(
         initial_balance=100_000.0,
@@ -500,6 +605,8 @@ def test_mc_trades_requires_explicit_assume_iid():
     trades = [Trade(r_result=1.0, date="2024-01-01")]
     with pytest.raises(ValueError, match="assume_iid=True"):
         run_monte_carlo(rules, trades=trades, assume_iid=False)
+    with pytest.raises(ValueError, match="assume_iid=True"):
+        run_monte_carlo(rules, trades=trades, assume_iid=1)  # type: ignore[arg-type]
 
 
 def test_mc_resampled_basic():
@@ -544,6 +651,40 @@ def test_mc_resampled_reproducibility():
 
     np.testing.assert_array_equal(res1.terminal_codes, res2.terminal_codes)
     np.testing.assert_array_equal(res1.final_equities, res2.final_equities)
+
+
+def test_mc_resampled_fixed_n_is_bitwise_invariant_to_batch_size():
+    rules = _standard_rules(risk_per_trade=0.01)
+    trades = [
+        Trade(r_result=1.5 if i % 2 == 0 else -1.0, date=f"2024-01-{i+1:02d}")
+        for i in range(10)
+    ]
+    one_batch = run_monte_carlo(
+        rules,
+        trades=trades,
+        assume_iid=True,
+        config=MonteCarloConfig(
+            n_simulations=37, seed=777, batch_size=100, n_bootstrap=20
+        ),
+    )
+    many_batches = run_monte_carlo(
+        rules,
+        trades=trades,
+        assume_iid=True,
+        config=MonteCarloConfig(
+            n_simulations=37, seed=777, batch_size=7, n_bootstrap=20
+        ),
+    )
+
+    np.testing.assert_array_equal(one_batch.terminal_codes, many_batches.terminal_codes)
+    np.testing.assert_array_equal(one_batch.final_equities, many_batches.final_equities)
+    np.testing.assert_array_equal(one_batch.trades_executed, many_batches.trades_executed)
+    np.testing.assert_array_equal(
+        one_batch.max_drawdowns_historical,
+        many_batches.max_drawdowns_historical,
+    )
+    assert one_batch.pass_ci == many_batches.pass_ci
+    assert one_batch.p95_max_drawdown_ci == many_batches.p95_max_drawdown_ci
 
 
 def test_mc_resampled_rejects_invalid_inputs():
@@ -833,3 +974,128 @@ def test_mc_negative_equity_and_drawdown_exceeding_one():
     assert res.median_max_drawdown_ci[0] == pytest.approx(1.50)
     assert res.median_max_drawdown_ci[1] == pytest.approx(1.50)
 
+
+# ---------------------------------------------------------------------------
+# Fast simulation kernel equivalence tests
+#
+# _simulate_path_fast() is a hot-path reimplementation of run_simulation() used
+# by _simulate_batch(). It must be bit-for-bit equivalent to the canonical
+# engine for every terminal condition, drawdown mode, and daily-loss base.
+# These tests guard against the two implementations silently diverging.
+# ---------------------------------------------------------------------------
+
+_TERM_TO_CODE = {
+    "profit_target": CODE_PROFIT_TARGET,
+    "max_drawdown": CODE_MAX_DRAWDOWN,
+    "daily_loss": CODE_DAILY_LOSS,
+    "max_trades": CODE_MAX_TRADES,
+    "completed": CODE_COMPLETED,
+}
+
+
+def _trades_from(r_results, dates):
+    return [
+        Trade(r_result=r, trade_id=f"t{i:04d}", date=d)
+        for i, (r, d) in enumerate(zip(r_results, dates))
+    ]
+
+
+@pytest.mark.parametrize(
+    "rules_kwargs,r_results,dates",
+    [
+        # profit target reached (PASS)
+        (dict(), [2.0, 1.0, 3.0, 1.5, 4.0, 2.0, 3.0], None),
+        # profit target reached exactly at the boundary (equity == target)
+        (dict(profit_target_pct=0.10), [10.0], None),
+        # max drawdown violated (static)
+        (dict(max_drawdown_pct=0.10), [2.0, -3.0, -4.0, -5.0, -6.0], None),
+        # trailing drawdown violated (peak-relative threshold)
+        (dict(drawdown_mode="trailing", max_drawdown_pct=0.10),
+         [5.0, -3.0, -4.0, -3.0, -4.0], None),
+        # daily loss violated (multiple losses within one day)
+        (dict(daily_loss_limit_pct=0.03), [1.0, -2.0, -2.0, -2.0],
+         ["2024-01-01", "2024-01-02", "2024-01-02", "2024-01-02"]),
+        # daily loss violated with eod base (start-of-day denominator)
+        (dict(daily_loss_base="eod", daily_loss_limit_pct=0.03),
+         [1.0, -2.0, -2.0, -2.0],
+         ["2024-01-01", "2024-01-02", "2024-01-02", "2024-01-02"]),
+        # max_trades reached (timeout)
+        (dict(max_trades=4), [0.5, 0.5, -0.5, -0.5, 0.5], None),
+        # completed (all trades applied, no terminal condition)
+        (dict(max_trades=None), [0.5, -0.3, 0.2, 0.1], None),
+        # simultaneous multi-violation (max_drawdown AND daily_loss)
+        (dict(max_drawdown_pct=0.10, daily_loss_limit_pct=0.05), [-12.0], None),
+        # day transition exercises start_of_day reset (3 trades day 1, 2 day 2)
+        (dict(daily_loss_limit_pct=0.05), [1.0, -1.5, 0.5, -2.0, -2.0],
+         ["2024-01-01", "2024-01-01", "2024-01-01", "2024-01-02", "2024-01-02"]),
+    ],
+)
+def test_simulate_path_fast_bit_for_bit_equivalent(rules_kwargs, r_results, dates):
+    rules = _standard_rules(**rules_kwargs)
+    if dates is None:
+        trades = _make_trades(r_results)
+    else:
+        assert len(dates) == len(r_results)
+        trades = _trades_from(r_results, dates)
+
+    canonical = run_simulation(trades, rules)
+
+    is_new_day = [
+        i == 0 or trades[i].date != trades[i - 1].date for i in range(len(trades))
+    ]
+    code, equity, n_tr, dd, v_dd, v_dl = _simulate_path_fast(
+        [t.r_result for t in trades], is_new_day, rules
+    )
+
+    # Exact (bit-for-bit) comparison — no tolerance. A single-ULP divergence
+    # between the hot path and the canonical engine is a bug.
+    assert code == _TERM_TO_CODE[canonical.terminal_condition]
+    assert equity == canonical.final_equity
+    assert n_tr == canonical.trades_executed
+    assert dd == canonical.max_drawdown_historical
+    assert v_dd == ("max_drawdown" in canonical.violated_conditions)
+    assert v_dl == ("daily_loss" in canonical.violated_conditions)
+
+
+def test_simulate_path_fast_matches_canonical_across_random_sequences():
+    """Fuzz-style equivalence across 200 seeded random rule/sequence combos."""
+    rng = np.random.default_rng(2024_08_15)
+    for _ in range(200):
+        n = int(rng.integers(1, 20))
+        r_results = [float(x) for x in np.round(rng.normal(0, 2.0, size=n), 4)]
+
+        # Non-decreasing valid dates with random grouping into days.
+        dates = []
+        day = 1
+        for _ in range(n):
+            dates.append(f"2024-01-{day:02d}")
+            if rng.random() < 0.5:
+                day += 1
+
+        _max_trades_choices = [3, 8, None]
+        rules = _standard_rules(
+            max_drawdown_pct=float(rng.choice([0.05, 0.10, 0.15])),
+            daily_loss_limit_pct=float(rng.choice([0.03, 0.05, 0.08])),
+            risk_per_trade=float(rng.choice([0.005, 0.01, 0.02])),
+            max_trades=_max_trades_choices[int(rng.integers(0, 3))],
+            drawdown_mode=str(rng.choice(["static", "trailing"])),
+            daily_loss_base=str(rng.choice(["initial", "eod"])),
+        )
+
+        trades = _trades_from(r_results, dates)
+        canonical = run_simulation(trades, rules)
+
+        is_new_day = [
+            i == 0 or trades[i].date != trades[i - 1].date
+            for i in range(len(trades))
+        ]
+        code, equity, n_tr, dd, v_dd, v_dl = _simulate_path_fast(
+            r_results, is_new_day, rules
+        )
+
+        assert code == _TERM_TO_CODE[canonical.terminal_condition]
+        assert equity == canonical.final_equity
+        assert n_tr == canonical.trades_executed
+        assert dd == canonical.max_drawdown_historical
+        assert v_dd == ("max_drawdown" in canonical.violated_conditions)
+        assert v_dl == ("daily_loss" in canonical.violated_conditions)
