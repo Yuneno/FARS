@@ -26,4 +26,6 @@ python main.py
 
 See `FARS_SPEC.md` for the full specification and development phases.
 
-Phase 1 (current): project structure, configuration, synthetic data.
+Phase 6 (current): configurable risk-per-trade grid search, Common Random
+Numbers comparisons, empirical drawdown VaR/CVaR, uncertainty-aware candidate
+selection, and configurable FRES scoring.
