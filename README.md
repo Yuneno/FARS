@@ -26,6 +26,6 @@ python main.py
 
 See `FARS_SPEC.md` for the full specification and development phases.
 
-Phase 6 (current): configurable risk-per-trade grid search, Common Random
-Numbers comparisons, empirical drawdown VaR/CVaR, uncertainty-aware candidate
-selection, and configurable FRES scoring.
+Phase 7 (current): interpretable Matplotlib diagnostics for pass probability,
+drawdown tail risk, final equity, losing streaks, and terminal outcomes across
+candidate risk levels.
