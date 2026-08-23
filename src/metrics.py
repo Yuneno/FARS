@@ -32,6 +32,8 @@ JUSTIFICATION: v0.1 needs baseline statistical characterization
 
 from dataclasses import dataclass, field
 import math
+import warnings
+from numbers import Real
 
 import numpy as np
 from scipy import stats as sp_stats
@@ -248,6 +250,74 @@ def losing_streak_distribution(r_results: list[float]) -> dict[int, int]:
 # ---------------------------------------------------------------------------
 
 
+_ALWAYS_FINITE_METRICS = (
+    "win_rate",
+    "avg_win_r",
+    "avg_loss_r",
+    "expectancy_r",
+    "max_drawdown_r",
+)
+# Minimum sample size below which each metric is documented as undefined (NaN).
+_UNDEFINED_MIN_N = {"std_r": 2, "skewness": 3, "kurtosis": 4}
+
+
+def _check_derived_overflow(metrics: Metrics, r_results: list[float]) -> None:
+    """Reject values made invalid by overflow or underflow during computation.
+
+    Inputs are validated as finite, so an infinite result — or a NaN outside
+    the documented undefined cases (n below the metric's minimum sample size,
+    or truly constant data) — means intermediate arithmetic was numerically
+    unsafe. Such values must not be confused with statistically undefined
+    metrics.
+    """
+    for name in _ALWAYS_FINITE_METRICS:
+        value = getattr(metrics, name)
+        if not math.isfinite(value):
+            raise ValueError(
+                f"derived metric {name} overflowed to {value!r} for the given "
+                "inputs; this numeric range cannot be analyzed safely"
+            )
+
+    n = len(r_results)
+    is_constant = n > 0 and all(
+        value == r_results[0] for value in r_results[1:]
+    )
+
+    std_value = metrics.std_r
+    if n < _UNDEFINED_MIN_N["std_r"]:
+        if not math.isnan(std_value):
+            raise ValueError(
+                f"derived metric std_r must be NaN for n={n}, got {std_value!r}"
+            )
+    elif is_constant:
+        if std_value != 0.0:
+            raise ValueError(
+                "derived metric std_r must be zero for constant finite inputs, "
+                f"got {std_value!r}"
+            )
+    elif not math.isfinite(std_value) or std_value <= 0.0:
+        raise ValueError(
+            f"derived metric std_r underflowed or overflowed to {std_value!r} "
+            "for non-constant finite inputs; this numeric range cannot be "
+            "analyzed safely"
+        )
+
+    for name in ("skewness", "kurtosis"):
+        min_n = _UNDEFINED_MIN_N[name]
+        value = getattr(metrics, name)
+        if math.isinf(value):
+            raise ValueError(
+                f"derived metric {name} overflowed to {value!r} for the given "
+                "inputs; this numeric range cannot be analyzed safely"
+            )
+        if math.isnan(value) and not (n < min_n or is_constant):
+            raise ValueError(
+                f"derived metric {name} is unexpectedly NaN for n={n} "
+                "non-constant inputs; intermediate arithmetic underflowed or "
+                "overflowed, so this numeric range cannot be analyzed safely"
+            )
+
+
 def compute_metrics(
     r_results: list[float],
 ) -> Metrics:
@@ -267,24 +337,41 @@ def compute_metrics(
       - Empty list: all rates/means are 0, n_trades = 0
       - All wins: avg_loss_r = 0, max_losing_streak = 0
       - All losses: win_rate = 0, avg_win_r = 0
-      - Single trade: std = 0, skewness = NaN, kurtosis = NaN
+      - Single trade: std = NaN, skewness = NaN, kurtosis = NaN
       - Constant values: std = 0, skewness = NaN, kurtosis = NaN
     """
     for i, r in enumerate(r_results):
-        if not math.isfinite(r):
+        if isinstance(r, (bool, np.bool_)) or not isinstance(r, Real):
             raise ValueError(
                 f"r_results[{i}] must be a finite real number, got {r!r}"
             )
-    return Metrics(
-        n_trades=n_trades(r_results),
-        win_rate=win_rate(r_results),
-        avg_win_r=avg_win_r(r_results),
-        avg_loss_r=avg_loss_r(r_results),
-        expectancy_r=expectancy_r(r_results),
-        std_r=std_r(r_results),
-        skewness=skewness(r_results),
-        kurtosis=kurtosis(r_results),
-        max_drawdown_r=max_drawdown_r(r_results),
-        max_losing_streak=max_losing_streak(r_results),
-        losing_streak_distribution=losing_streak_distribution(r_results),
-    )
+        try:
+            finite = math.isfinite(r)
+        except (OverflowError, TypeError, ValueError) as exc:
+            raise ValueError(
+                f"r_results[{i}] must be a finite float64-compatible real number, "
+                f"got {r!r}"
+            ) from exc
+        if not finite:
+            raise ValueError(
+                f"r_results[{i}] must be a finite real number, got {r!r}"
+            )
+    # Overflow RuntimeWarnings from intermediate arithmetic are superseded by
+    # the explicit derived-overflow check below, which raises ValueError.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        metrics = Metrics(
+            n_trades=n_trades(r_results),
+            win_rate=win_rate(r_results),
+            avg_win_r=avg_win_r(r_results),
+            avg_loss_r=avg_loss_r(r_results),
+            expectancy_r=expectancy_r(r_results),
+            std_r=std_r(r_results),
+            skewness=skewness(r_results),
+            kurtosis=kurtosis(r_results),
+            max_drawdown_r=max_drawdown_r(r_results),
+            max_losing_streak=max_losing_streak(r_results),
+            losing_streak_distribution=losing_streak_distribution(r_results),
+        )
+    _check_derived_overflow(metrics, r_results)
+    return metrics

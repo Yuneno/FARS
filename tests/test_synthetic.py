@@ -472,6 +472,21 @@ def test_config_rejects_bool_n_trades():
         SyntheticConfig(n_trades=True)
 
 
+@pytest.mark.parametrize("invalid_seed", [-1, 1.5, True, "42"])
+def test_config_rejects_invalid_seed(invalid_seed):
+    with pytest.raises(ValueError, match="seed"):
+        SyntheticConfig(seed=invalid_seed)
+
+
+@pytest.mark.parametrize(
+    "invalid_start_date",
+    ["2024-02-30", "2024-1-01", "01-01-2024", "", None],
+)
+def test_config_rejects_invalid_start_date(invalid_start_date):
+    with pytest.raises(ValueError, match="start_date"):
+        SyntheticConfig(start_date=invalid_start_date)
+
+
 def test_config_rejects_float_trades_per_day():
     """trades_per_day must be a strict int."""
     with pytest.raises(ValueError, match="trades_per_day"):

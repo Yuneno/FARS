@@ -26,7 +26,9 @@ Key responsibilities:
 4. Funded Risk Efficiency Score (FRES):
    Computes the multi-objective risk-adjusted efficiency score:
      FRES(r) = P_pass - λ * P_fail - γ * DD_P95_norm - δ * CVaR_norm
-   where drawdown terms are expressed as multiples of the account drawdown budget.
+   where historical peak-to-trough drawdown terms are expressed as multiples
+   of the configured account drawdown budget. Rule-defined drawdown remains
+   separately reported as funded-rule budget consumption.
 
 5. Optimal Risk Identification:
    Identifies:
@@ -453,6 +455,9 @@ class RiskLevelEvaluation:
         95th percentile of historical peak-to-trough max drawdown.
     p99_max_drawdown : float
         99th percentile of historical peak-to-trough max drawdown.
+    p95_rule_drawdown : float
+        95th percentile of rule-defined maximum drawdown. This uses the same
+        denominator as the configured funded-account drawdown limit.
     var_95 : float
         Value at Risk at 95% confidence (worst 5% threshold).
     cvar_95 : float
@@ -461,6 +466,8 @@ class RiskLevelEvaluation:
         Value at Risk at 99% confidence (worst 1% threshold).
     cvar_99 : float
         Conditional Value at Risk at 99% confidence (Expected Shortfall).
+    cvar_95_rule_drawdown : float
+        Expected shortfall of rule-defined maximum drawdown at 95% confidence.
     pass_ci : tuple[float, float]
         Wilson confidence interval for P(PASS).
     fail_ci : tuple[float, float]
@@ -474,7 +481,7 @@ class RiskLevelEvaluation:
     p99_max_drawdown_ci : tuple[float, float] | None
         Bootstrap confidence interval for P99 max drawdown.
     se_probability_pass : float
-        Standard error of P(PASS) estimate.
+        Wilson-derived precision proxy for the conditional P(PASS) estimate.
     smoothed_probability_pass : float
         Kernel-smoothed P(PASS) estimate.
     fres_score : float
@@ -496,10 +503,12 @@ class RiskLevelEvaluation:
     median_max_drawdown: float
     p95_max_drawdown: float
     p99_max_drawdown: float
+    p95_rule_drawdown: float
     var_95: float
     cvar_95: float
     var_99: float
     cvar_99: float
+    cvar_95_rule_drawdown: float
     pass_ci: tuple[float, float]
     fail_ci: tuple[float, float]
     timeout_ci: tuple[float, float]
@@ -551,9 +560,13 @@ class OptimizationResult:
     probabilities_fail : np.ndarray
         Array of P(FAIL) values (read-only).
     p95_drawdowns : np.ndarray
-        Array of P95 max drawdowns (read-only).
+        Array of historical peak-to-trough P95 max drawdowns (read-only).
     cvar_95_values : np.ndarray
-        Array of CVaR_95 values (read-only).
+        Array of historical peak-to-trough CVaR_95 values (read-only).
+    p95_rule_drawdowns : np.ndarray
+        Array of rule-defined P95 drawdowns (read-only).
+    cvar_95_rule_values : np.ndarray
+        Array of rule-defined CVaR_95 values (read-only).
     fres_scores : np.ndarray
         Array of FRES scores (read-only).
     """
@@ -578,6 +591,8 @@ class OptimizationResult:
     probabilities_fail: np.ndarray = field(repr=False)
     p95_drawdowns: np.ndarray = field(repr=False)
     cvar_95_values: np.ndarray = field(repr=False)
+    p95_rule_drawdowns: np.ndarray = field(repr=False)
+    cvar_95_rule_values: np.ndarray = field(repr=False)
     fres_scores: np.ndarray = field(repr=False)
 
     def __post_init__(self):
@@ -589,6 +604,8 @@ class OptimizationResult:
             "probabilities_fail",
             "p95_drawdowns",
             "cvar_95_values",
+            "p95_rule_drawdowns",
+            "cvar_95_rule_values",
             "fres_scores",
         ):
             arr = getattr(self, arr_name)
@@ -704,6 +721,8 @@ def optimize_risk_per_trade(
     raw_fail_probs = []
     p95_dds = []
     cvar_95s = []
+    p95_rule_dds = []
+    cvar_95_rule_dds = []
     var_95s = []
     cvar_99s = []
     var_99s = []
@@ -727,12 +746,19 @@ def optimize_risk_per_trade(
         # VaR_99 / CVaR_99 are strictly at alpha=0.99 (worst 1%)
         v95, cv95 = compute_var_cvar(res.max_drawdowns_historical, alpha=0.95)
         v99, cv99 = compute_var_cvar(res.max_drawdowns_historical, alpha=0.99)
+        # Keep the P95 convention aligned with MonteCarloResult (NumPy's
+        # default linear percentile). CVaR uses the exact empirical upper-tail
+        # mass implemented by compute_var_cvar().
+        rule_p95 = float(np.percentile(res.max_drawdowns_rule, 95.0))
+        _, rule_cv95 = compute_var_cvar(res.max_drawdowns_rule, alpha=0.95)
 
         raw_pass_probs.append(res.probability_pass)
         raw_fail_probs.append(res.probability_fail)
         p95_dds.append(res.p95_max_drawdown)
         var_95s.append(v95)
         cvar_95s.append(cv95)
+        p95_rule_dds.append(rule_p95)
+        cvar_95_rule_dds.append(rule_cv95)
         var_99s.append(v99)
         cvar_99s.append(cv99)
 
@@ -740,6 +766,8 @@ def optimize_risk_per_trade(
     raw_fail_arr = np.array(raw_fail_probs, dtype=np.float64)
     p95_dd_arr = np.array(p95_dds, dtype=np.float64)
     cvar_95_arr = np.array(cvar_95s, dtype=np.float64)
+    p95_rule_dd_arr = np.array(p95_rule_dds, dtype=np.float64)
+    cvar_95_rule_dd_arr = np.array(cvar_95_rule_dds, dtype=np.float64)
 
     # 2. Kernel smoothing on P(PASS | r)
     # Derive bandwidth dynamically from the evaluated grid spacing if not specified
@@ -759,10 +787,10 @@ def optimize_risk_per_trade(
     )
 
     # 3. FRES calculation
-    # Normalize relative to the maximum allowable account drawdown limit so
-    # DD == limit maps to 1.0. Do not clip: an overshoot above the funded-account
-    # budget is worse than merely reaching the limit and FRES must retain that
-    # tail-severity information.
+    # FARS_SPEC §9 defines DD_P95 and CVaR as tail-risk penalties. Use the
+    # historical peak-to-trough distribution so profitable peak givebacks remain
+    # visible in static-rule mode. The rule-defined distribution is reported
+    # separately as account-budget consumption. Do not clip terminal overshoots.
     dd_limit = rules.max_drawdown_pct
     dd_p95_norm, cvar_norm = _normalize_drawdown_risk(
         p95_dd_arr, cvar_95_arr, dd_limit
@@ -796,10 +824,12 @@ def optimize_risk_per_trade(
             median_max_drawdown=res.median_max_drawdown,
             p95_max_drawdown=res.p95_max_drawdown,
             p99_max_drawdown=res.p99_max_drawdown,
+            p95_rule_drawdown=p95_rule_dds[i],
             var_95=var_95s[i],
             cvar_95=cvar_95s[i],
             var_99=var_99s[i],
             cvar_99=cvar_99s[i],
+            cvar_95_rule_drawdown=cvar_95_rule_dds[i],
             pass_ci=res.pass_ci,
             fail_ci=res.fail_ci,
             timeout_ci=res.timeout_ci,
@@ -883,6 +913,8 @@ def optimize_risk_per_trade(
         probabilities_fail=raw_fail_arr,
         p95_drawdowns=p95_dd_arr,
         cvar_95_values=cvar_95_arr,
+        p95_rule_drawdowns=p95_rule_dd_arr,
+        cvar_95_rule_values=cvar_95_rule_dd_arr,
         fres_scores=fres_arr,
     )
 
@@ -919,7 +951,9 @@ def compute_fres_sensitivity(
     """
     dd_limit = opt_result.rules_template.max_drawdown_pct
     dd_p95_norm, cvar_norm = _normalize_drawdown_risk(
-        opt_result.p95_drawdowns, opt_result.cvar_95_values, dd_limit
+        opt_result.p95_drawdowns,
+        opt_result.cvar_95_values,
+        dd_limit,
     )
     pass_probs = opt_result.probabilities_pass
     fail_probs = opt_result.probabilities_fail

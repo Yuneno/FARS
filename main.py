@@ -1,41 +1,65 @@
 """
 FARS — Funded Account Risk System
 =================================
-Phase 1 entry point: project structure, configuration, synthetic data.
+Experimental end-to-end demo for the implemented Phase 1–7 pipeline.
 
 Usage:
     python main.py              # run demo
-    python -m pytest tests/ -v  # run test suite
+    python -m pytest -p no:debugging tests/ -v  # run test suite
 """
 
-from src.synthetic import generate_trades
-from src.types import SyntheticConfig
+from src.monte_carlo import MonteCarloConfig
+from src.optimization import OptimizationConfig, optimize_risk_per_trade
+from src.types import FundedAccountRules, SyntheticConfig
 
 
 def main():
-    config = SyntheticConfig(
+    synthetic = SyntheticConfig(
         seed=42,
-        n_trades=20,
+        n_trades=100,
         win_rate=0.45,
         avg_win_r=2.0,
         avg_loss_r=1.0,
     )
-    trades = generate_trades(config)
+    rules = FundedAccountRules(
+        initial_balance=100_000.0,
+        profit_target_pct=0.10,
+        max_drawdown_pct=0.10,
+        daily_loss_limit_pct=0.05,
+        risk_per_trade=0.01,
+        max_trades=100,
+    )
+    result = optimize_risk_per_trade(
+        rules,
+        synthetic_config=synthetic,
+        mc_config=MonteCarloConfig(
+            n_simulations=200,
+            seed=42,
+            batch_size=100,
+            n_bootstrap=50,
+        ),
+        opt_config=OptimizationConfig(risk_levels=(0.005, 0.010, 0.015)),
+    )
 
-    print(f"FARS v0.1 — Phase 1: Synthetic Trade Generator\n")
-    print(f"Config: {config}\n")
-    print(f"Generated {len(trades)} trades:\n")
+    print("FARS v0.1 — experimental synthetic risk analysis")
+    print("Results are conditional on the synthetic IID model and fixed-dollar sizing.\n")
+    print(" risk   pass    fail  timeout  hist.P95  rule.P95    FRES")
+    for evaluation in result.evaluations:
+        print(
+            f"{evaluation.risk_per_trade:>5.2%} "
+            f"{evaluation.probability_pass:>7.2%} "
+            f"{evaluation.probability_fail:>7.2%} "
+            f"{evaluation.timeout_probability:>8.2%} "
+            f"{evaluation.p95_max_drawdown:>9.2%} "
+            f"{evaluation.p95_rule_drawdown:>9.2%} "
+            f"{evaluation.fres_score:>8.3f}"
+        )
 
-    wins = [t for t in trades if t.r_result > 0]
-    losses = [t for t in trades if t.r_result < 0]
-
-    for t in trades:
-        tag = "WIN " if t.r_result > 0 else "LOSS"
-        print(f"  [{tag}] {t.trade_id}  {t.date}  {t.r_result:+.4f}R")
-
-    print(f"\nSummary: {len(wins)} wins, {len(losses)} losses")
+    print(f"\nRaw pass-probability optimum: {result.optimal_risk_raw:.2%}")
+    print(f"FRES optimum:                {result.optimal_risk_fres:.2%}")
     print(
-        f"Empirical win rate: {len(wins) / len(trades):.1%}"
+        "Plausible raw candidates:     "
+        + ", ".join(f"{risk:.2%}" for risk in result.plausible_risk_levels)
     )
 
 

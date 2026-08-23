@@ -269,6 +269,17 @@ def test_compute_metrics_rejects_inf():
         compute_metrics([1.0, float("-inf"), -1.0])
 
 
+@pytest.mark.parametrize("invalid", [True, "1.0", 1 + 2j, None])
+def test_compute_metrics_rejects_non_real_values(invalid):
+    with pytest.raises(ValueError, match="finite real number"):
+        compute_metrics([1.0, invalid, -1.0])
+
+
+def test_compute_metrics_normalizes_unrepresentable_real_to_value_error():
+    with pytest.raises(ValueError, match="float64-compatible"):
+        compute_metrics([10**1000])
+
+
 # =========================================================================
 # max_drawdown_r
 # =========================================================================
@@ -471,3 +482,50 @@ def test_metrics_on_synthetic_data():
 
     # max_losing_streak should be > 0
     assert m.max_losing_streak > 0
+
+
+# =========================================================================
+# Derived-overflow rejection (regression: extreme finite inputs)
+# =========================================================================
+
+
+def test_compute_metrics_rejects_overflowing_extreme_values():
+    with pytest.raises(ValueError, match="overflow"):
+        compute_metrics([1e308, 1e308])
+
+
+def test_compute_metrics_rejects_infinite_std_from_extreme_spread():
+    with pytest.raises(ValueError, match="overflow"):
+        compute_metrics([1e308, -1e308])
+
+
+def test_compute_metrics_rejects_unexpected_nan_from_overflow():
+    # n=3 non-constant: skewness is statistically defined, so a NaN result
+    # means intermediate moments overflowed.
+    with pytest.raises(ValueError, match="unexpectedly NaN"):
+        compute_metrics([1e150, -1e150, 2e150])
+
+
+def test_compute_metrics_rejects_nan_kurtosis_from_overflow():
+    with pytest.raises(ValueError, match="unexpectedly NaN"):
+        compute_metrics([1e150, -1e150, 2e150, 0.5e150])
+
+
+def test_compute_metrics_rejects_std_underflow_for_nonconstant_values():
+    with pytest.raises(ValueError, match="underflowed or overflowed"):
+        compute_metrics([1e-162, -1e-162, 2e-162, -0.5e-162])
+
+
+def test_compute_metrics_allows_truly_constant_tiny_values():
+    m = compute_metrics([1e-200, 1e-200, 1e-200, 1e-200])
+    assert m.std_r == 0.0
+    assert math.isnan(m.skewness)
+    assert math.isnan(m.kurtosis)
+
+
+def test_compute_metrics_large_but_safe_values_still_work():
+    m = compute_metrics([1e50, -1e50, 2e50, -0.5e50])
+    assert math.isfinite(m.expectancy_r)
+    assert math.isfinite(m.std_r)
+    assert math.isfinite(m.skewness)
+    assert math.isfinite(m.kurtosis)

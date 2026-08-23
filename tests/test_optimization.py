@@ -562,6 +562,10 @@ def test_optimize_risk_array_read_only_protection():
         res.probabilities_pass[0] = 0.99
     with pytest.raises(ValueError, match="read-only"):
         res.fres_scores[0] = 0.99
+    with pytest.raises(ValueError, match="read-only"):
+        res.p95_rule_drawdowns[0] = 0.99
+    with pytest.raises(ValueError, match="read-only"):
+        res.cvar_95_rule_values[0] = 0.99
 
 
 # ---------------------------------------------------------------------------
@@ -692,6 +696,44 @@ def test_fres_preserves_drawdown_overshoot_severity():
     # Both tail terms are four times the 5% budget. Clipping them to 1 would
     # incorrectly produce -3 instead of preserving the overshoot severity.
     assert evaluation.fres_score == pytest.approx(-9.0)
+
+
+def test_fres_static_mode_penalizes_profitable_peak_giveback():
+    """FRES tail risk remains historical even when static-rule use is zero."""
+    rules = FundedAccountRules(
+        initial_balance=100_000.0,
+        profit_target_pct=0.50,
+        max_drawdown_pct=0.10,
+        daily_loss_limit_pct=0.99,
+        risk_per_trade=0.01,
+        drawdown_mode="static",
+    )
+    # Seed 1 resamples source indices [0, 1]: +20R reaches 120k, then -12R
+    # finishes at 108k. Historical drawdown is 10%, while static rule drawdown
+    # is exactly zero because equity never falls below the initial balance.
+    trades = [
+        Trade(r_result=20.0, trade_id="gain", date="2024-01-01"),
+        Trade(r_result=-12.0, trade_id="giveback", date="2024-01-02"),
+    ]
+    result = optimize_risk_per_trade(
+        rules,
+        trades=trades,
+        assume_iid=True,
+        mc_config=MonteCarloConfig(n_simulations=1, seed=1, n_bootstrap=0),
+        opt_config=OptimizationConfig(
+            risk_levels=(0.01,),
+            fres_lambda=0.0,
+            fres_gamma=1.0,
+            fres_delta=1.0,
+        ),
+    )
+
+    evaluation = result.evaluations[0]
+    assert evaluation.p95_max_drawdown == pytest.approx(0.10)
+    assert evaluation.p95_rule_drawdown == 0.0
+    assert evaluation.cvar_95_rule_drawdown == 0.0
+    assert evaluation.cvar_95 == pytest.approx(0.10)
+    assert evaluation.fres_score == pytest.approx(-2.0)
 
 
 def test_plausible_risk_interval():

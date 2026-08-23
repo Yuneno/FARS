@@ -11,8 +11,8 @@ risk level. Phase 5 deliberately scopes a single risk level per call.
 
 Input modes (exactly one must be provided)
 -------------------------------------------
-1. Parametric ("synthetic"): a SyntheticConfig generates a fresh trade
-   sequence for every simulation via generate_trade_sequences().
+1. Parametric ("synthetic"): a SyntheticConfig generates a fresh R-outcome
+   sequence for every simulation without materializing unused Trade metadata.
    Sequence i uses derived seed = seed + i (existing convention), which
    gives the prefix property: the first k simulations of an n > k run
    are identical to a k-simulation run with the same seed.
@@ -76,11 +76,13 @@ peak; statistical reporting must reflect what really happened.
 
 Uncertainty
 -----------
-Every probability reports a Wilson binomial confidence interval
+Every probability reports a pointwise Wilson binomial confidence interval
 (better coverage than the normal/Wald interval near 0 or 1). Drawdown
-quantiles report bootstrap CIs (configurable, disable with
-n_bootstrap=0). P(PASS) reports its standard error; convergence mode
-uses it as the stopping criterion.
+quantiles report percentile-bootstrap CIs (configurable, disable with
+n_bootstrap=0). These intervals quantify Monte Carlo error conditional on
+the configured input model; they do not include parameter, historical-sample,
+or model uncertainty. P(PASS) reports a Wilson-derived precision proxy;
+convergence mode uses it as the stopping criterion.
 """
 
 from collections.abc import Mapping, Sequence
@@ -93,7 +95,7 @@ from types import MappingProxyType
 import numpy as np
 from scipy import stats as sp_stats
 
-from src.synthetic import generate_trade_sequences
+from src.synthetic import _generate_r_results
 from src.types import FundedAccountRules, SyntheticConfig, Trade
 
 # ---------------------------------------------------------------------------
@@ -153,12 +155,13 @@ class MonteCarloConfig:
 
     1. Fixed-n (default): run exactly n_simulations.
     2. Convergence (n_simulations=None): run batches of batch_size until
-       SE(P_pass) <= se_target, with min_simulations as a safety floor
+       Wilson precision proxy(P_pass) <= se_target, with min_simulations as a safety floor
        and max_simulations as a hard cap.
 
-    seed: master seed. None -> non-deterministic run. With a fixed seed,
-        the entire run (simulation draws AND bootstrap CIs) is
-        reproducible bit-for-bit.
+    seed: master seed. In synthetic mode, None delegates to
+        synthetic_config.seed; otherwise None means a non-deterministic run.
+        With an effective fixed seed, the entire run (simulation draws AND
+        bootstrap CIs) is reproducible bit-for-bit.
 
     confidence_level: coverage for Wilson probability CIs and bootstrap
         quantile CIs.
@@ -252,6 +255,7 @@ class MonteCarloResult:
       terminal_codes          int8 codes into TERMINAL_CONDITIONS
       final_equities          float64
       trades_executed         int64
+      max_drawdowns_rule      float64, rule-defined drawdown in [0, inf)
       max_drawdowns_historical float64, in [0, ∞)
       violated_max_drawdown   bool — rule present in violated_conditions
       violated_daily_loss     bool — rule present in violated_conditions
@@ -299,13 +303,14 @@ class MonteCarloResult:
     p95_max_drawdown_ci: tuple[float, float] | None
     p99_max_drawdown_ci: tuple[float, float] | None
 
-    # Uncertainty of the headline estimate
+    # Wilson-derived precision proxy for the headline estimate
     se_probability_pass: float
 
     # Per-simulation raw data (read-only)
     terminal_codes: np.ndarray = field(repr=False)
     final_equities: np.ndarray = field(repr=False)
     trades_executed: np.ndarray = field(repr=False)
+    max_drawdowns_rule: np.ndarray = field(repr=False)
     max_drawdowns_historical: np.ndarray = field(repr=False)
     violated_max_drawdown: np.ndarray = field(repr=False)
     violated_daily_loss: np.ndarray = field(repr=False)
@@ -401,6 +406,7 @@ class MonteCarloResult:
             "terminal_codes": self.terminal_codes,
             "final_equities": self.final_equities,
             "trades_executed": self.trades_executed,
+            "max_drawdowns_rule": self.max_drawdowns_rule,
             "max_drawdowns_historical": self.max_drawdowns_historical,
             "violated_max_drawdown": self.violated_max_drawdown,
             "violated_daily_loss": self.violated_daily_loss,
@@ -414,6 +420,10 @@ class MonteCarloResult:
                 )
         if not np.all(np.isfinite(self.final_equities)):
             raise ValueError("final_equities must be finite")
+        if not np.all(np.isfinite(self.max_drawdowns_rule)):
+            raise ValueError("max_drawdowns_rule must be finite")
+        if np.any(self.max_drawdowns_rule < 0.0):
+            raise ValueError("max_drawdowns_rule must be >= 0")
         if not np.all(np.isfinite(self.max_drawdowns_historical)):
             raise ValueError("max_drawdowns_historical must be finite")
         if np.any(self.max_drawdowns_historical < 0.0):
@@ -442,6 +452,7 @@ class MonteCarloResult:
             self.terminal_codes,
             self.final_equities,
             self.trades_executed,
+            self.max_drawdowns_rule,
             self.max_drawdowns_historical,
             self.violated_max_drawdown,
             self.violated_daily_loss,
@@ -731,8 +742,9 @@ def run_monte_carlo(
     least config.min_simulations and never more than
     config.max_simulations.
 
-    Determinism: with a fixed config.seed the full result — including
-    per-simulation arrays and bootstrap CIs — is reproducible. In
+    Determinism: with a fixed config.seed, or a fixed synthetic_config.seed
+    when config.seed is None, the full result — including per-simulation
+    arrays and bootstrap CIs — is reproducible. In
     synthetic mode the first k simulations of any run equal a k-run
     with the same seed (derived-seed prefix property). In resampled
     mode draws come from one sequential RNG stream with the same prefix
@@ -764,13 +776,21 @@ def run_monte_carlo(
         source = "resampled"
         r_values, dates = _prepare_resampling_source(trades, rules)
 
+    # Resolve one seed for every stochastic component. Previously a seed on
+    # SyntheticConfig reproduced the paths but not the bootstrap intervals,
+    # because bootstrap consulted config.seed independently.
+    effective_seed = config.seed
+    if effective_seed is None and synthetic_config is not None:
+        effective_seed = synthetic_config.seed
+
     convergence_mode = config.n_simulations is None
 
     # --- Pre-allocate / collect ---
     code_chunks: list[np.ndarray] = []
     equity_chunks: list[np.ndarray] = []
     trades_chunks: list[np.ndarray] = []
-    dd_chunks: list[np.ndarray] = []
+    rule_dd_chunks: list[np.ndarray] = []
+    historical_dd_chunks: list[np.ndarray] = []
     viol_dd_chunks: list[np.ndarray] = []
     viol_dl_chunks: list[np.ndarray] = []
 
@@ -779,13 +799,21 @@ def run_monte_carlo(
 
     # Resampling RNG: one sequential stream, deterministic in seed.
     resample_rng = (
-        np.random.default_rng(config.seed) if source == "resampled" else None
+        np.random.default_rng(effective_seed) if source == "resampled" else None
     )
 
     def _run_batch(batch_n: int, start_index: int) -> None:
         nonlocal total, total_passes
 
-        codes, equities, n_trades_exec, dds, viol_dd, viol_dl = _simulate_batch(
+        (
+            codes,
+            equities,
+            n_trades_exec,
+            rule_dds,
+            historical_dds,
+            viol_dd,
+            viol_dl,
+        ) = _simulate_batch(
             rules=rules,
             batch_n=batch_n,
             start_index=start_index,
@@ -793,13 +821,14 @@ def run_monte_carlo(
             r_values=r_values,
             dates=dates,
             resample_rng=resample_rng,
-            master_seed=config.seed,
+            master_seed=effective_seed,
         )
 
         code_chunks.append(codes)
         equity_chunks.append(equities)
         trades_chunks.append(n_trades_exec)
-        dd_chunks.append(dds)
+        rule_dd_chunks.append(rule_dds)
+        historical_dd_chunks.append(historical_dds)
         viol_dd_chunks.append(viol_dd)
         viol_dl_chunks.append(viol_dl)
 
@@ -829,7 +858,8 @@ def run_monte_carlo(
     terminal_codes = np.concatenate(code_chunks)
     final_equities = np.concatenate(equity_chunks)
     trades_executed = np.concatenate(trades_chunks)
-    max_drawdowns = np.concatenate(dd_chunks)
+    max_drawdowns_rule = np.concatenate(rule_dd_chunks)
+    max_drawdowns_historical = np.concatenate(historical_dd_chunks)
     violated_max_drawdown = np.concatenate(viol_dd_chunks)
     violated_daily_loss = np.concatenate(viol_dl_chunks)
 
@@ -852,7 +882,8 @@ def run_monte_carlo(
     # Drawdown quantiles — historical peak-to-trough, all simulations.
     # numpy default linear interpolation.
     median_dd, p95_dd, p99_dd = (
-        float(q) for q in np.percentile(max_drawdowns, [50.0, 95.0, 99.0])
+        float(q)
+        for q in np.percentile(max_drawdowns_historical, [50.0, 95.0, 99.0])
     )
 
     # Bootstrap CIs for drawdown quantiles (deterministic stream derived
@@ -860,14 +891,14 @@ def run_monte_carlo(
     # the seed+i simulation stream). Computed simultaneously in batches.
     median_dd_ci = p95_dd_ci = p99_dd_ci = None
     if config.n_bootstrap > 0:
-        if config.seed is None:
+        if effective_seed is None:
             boot_rng = np.random.default_rng(None)
         else:
             boot_rng = np.random.Generator(
-                np.random.PCG64(np.random.SeedSequence(config.seed).spawn(1)[0])
+                np.random.PCG64(np.random.SeedSequence(effective_seed).spawn(1)[0])
             )
         cis = bootstrap_quantiles_ci(
-            max_drawdowns,
+            max_drawdowns_historical,
             [50.0, 95.0, 99.0],
             config.n_bootstrap,
             config.confidence_level,
@@ -891,7 +922,7 @@ def run_monte_carlo(
 
     return MonteCarloResult(
         n_simulations=n,
-        seed=config.seed,
+        seed=effective_seed,
         source=source,
         risk_per_trade=rules.risk_per_trade,
         convergence_mode=convergence_mode,
@@ -919,7 +950,8 @@ def run_monte_carlo(
         terminal_codes=terminal_codes,
         final_equities=final_equities,
         trades_executed=trades_executed,
-        max_drawdowns_historical=max_drawdowns,
+        max_drawdowns_rule=max_drawdowns_rule,
+        max_drawdowns_historical=max_drawdowns_historical,
         violated_max_drawdown=violated_max_drawdown,
         violated_daily_loss=violated_daily_loss,
         terminal_counts=terminal_counts,
@@ -930,7 +962,7 @@ def _simulate_path_fast(
     r_results: Sequence[float] | np.ndarray,
     is_new_day: Sequence[bool] | np.ndarray,
     rules: FundedAccountRules,
-) -> tuple[int, float, int, float, bool, bool]:
+) -> tuple[int, float, int, float, float, bool, bool]:
     """
     Fast simulation kernel for a single funded-account trajectory.
 
@@ -938,8 +970,8 @@ def _simulate_path_fast(
     performing exact dollar comparisons with bit-for-bit equivalence to run_simulation.
 
     Returns:
-      (terminal_code, final_equity, trades_executed, max_drawdown_historical,
-       violated_max_drawdown, violated_daily_loss)
+      (terminal_code, final_equity, trades_executed, max_drawdown_rule,
+       max_drawdown_historical, violated_max_drawdown, violated_daily_loss)
     """
     initial_balance = rules.initial_balance
     dollar_risk = rules.risk_per_trade * initial_balance
@@ -956,6 +988,7 @@ def _simulate_path_fast(
     equity = initial_balance
     peak_equity = initial_balance
     start_of_day_equity = initial_balance
+    max_rule_dd = 0.0
     max_hist_dd = 0.0
     trades_applied = 0
 
@@ -1001,9 +1034,27 @@ def _simulate_path_fast(
         if hist_dd > max_hist_dd:
             max_hist_dd = hist_dd
 
+        # Rule-defined drawdown uses the same denominator as the funded-account
+        # failure threshold. It is distinct from historical peak-to-trough DD in
+        # static mode and is the only commensurate quantity for FRES budget use.
+        if drawdown_mode == "static":
+            rule_dd = max(0.0, (initial_balance - equity) / initial_balance)
+        else:
+            rule_dd = hist_dd
+        if rule_dd > max_rule_dd:
+            max_rule_dd = rule_dd
+
         # Priority 1: Profit target (PASS)
         if equity >= target_equity:
-            return CODE_PROFIT_TARGET, equity, trades_applied, max_hist_dd, False, False
+            return (
+                CODE_PROFIT_TARGET,
+                equity,
+                trades_applied,
+                max_rule_dd,
+                max_hist_dd,
+                False,
+                False,
+            )
 
         # Priority 2/3/4: Check violations
         if drawdown_mode == "static":
@@ -1029,9 +1080,25 @@ def _simulate_path_fast(
                 primary = CODE_DAILY_LOSS
             else:
                 primary = CODE_MAX_TRADES
-            return primary, equity, trades_applied, max_hist_dd, viol_dd, viol_dl
+            return (
+                primary,
+                equity,
+                trades_applied,
+                max_rule_dd,
+                max_hist_dd,
+                viol_dd,
+                viol_dl,
+            )
 
-    return CODE_COMPLETED, equity, trades_applied, max_hist_dd, False, False
+    return (
+        CODE_COMPLETED,
+        equity,
+        trades_applied,
+        max_rule_dd,
+        max_hist_dd,
+        False,
+        False,
+    )
 
 
 def _simulate_batch(
@@ -1044,12 +1111,21 @@ def _simulate_batch(
     dates: list[str] | None,
     resample_rng: np.random.Generator | None,
     master_seed: int | None = None,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+]:
     """
     Simulate batch_n funded-account runs and record per-run summaries.
 
     Returns (terminal_codes, final_equities, trades_executed,
-    max_drawdowns_historical, violated_max_drawdown, violated_daily_loss).
+    max_drawdowns_rule, max_drawdowns_historical, violated_max_drawdown,
+    violated_daily_loss).
 
     Exactly one source must be active: synthetic_config (parametric) or
     r_values/dates/resample_rng (resampled).
@@ -1057,34 +1133,36 @@ def _simulate_batch(
     codes = np.empty(batch_n, dtype=np.int8)
     equities = np.empty(batch_n, dtype=np.float64)
     n_trades_exec = np.empty(batch_n, dtype=np.int64)
-    dds = np.empty(batch_n, dtype=np.float64)
+    rule_dds = np.empty(batch_n, dtype=np.float64)
+    historical_dds = np.empty(batch_n, dtype=np.float64)
     viol_dd = np.zeros(batch_n, dtype=bool)
     viol_dl = np.zeros(batch_n, dtype=bool)
 
     if synthetic_config is not None:
-        batch_config = synthetic_config
         effective_seed = (
             master_seed if master_seed is not None else synthetic_config.seed
         )
-        if effective_seed is not None:
-            # Derived-seed convention (seed + i) keeps the prefix
-            # property across batches: sequence i of the whole run is
-            # generated from seed + i regardless of batch boundaries.
-            batch_config = replace(
-                synthetic_config, seed=effective_seed + start_index
+        is_new_day = (
+            np.arange(synthetic_config.n_trades)
+            % synthetic_config.trades_per_day
+            == 0
+        )
+        for k in range(batch_n):
+            path_seed = (
+                None
+                if effective_seed is None
+                else effective_seed + start_index + k
             )
-        sequences = generate_trade_sequences(batch_config, batch_n)
-        for k, sequence in enumerate(sequences):
-            r_seq = [t.r_result for t in sequence]
-            is_new_day = [
-                i == 0 or sequence[i].date != sequence[i - 1].date
-                for i in range(len(sequence))
-            ]
-            c, eq, n_tr, dd, v_dd, v_dl = _simulate_path_fast(r_seq, is_new_day, rules)
+            path_config = replace(synthetic_config, seed=path_seed)
+            r_seq = _generate_r_results(path_config)
+            c, eq, n_tr, rule_dd, historical_dd, v_dd, v_dl = _simulate_path_fast(
+                r_seq, is_new_day, rules
+            )
             codes[k] = c
             equities[k] = eq
             n_trades_exec[k] = n_tr
-            dds[k] = dd
+            rule_dds[k] = rule_dd
+            historical_dds[k] = historical_dd
             viol_dd[k] = v_dd
             viol_dl[k] = v_dl
     else:
@@ -1099,12 +1177,23 @@ def _simulate_batch(
 
         for k in range(batch_n):
             r_seq = r_values[all_indices[k]]
-            c, eq, n_tr, dd, v_dd, v_dl = _simulate_path_fast(r_seq, is_new_day, rules)
+            c, eq, n_tr, rule_dd, historical_dd, v_dd, v_dl = _simulate_path_fast(
+                r_seq, is_new_day, rules
+            )
             codes[k] = c
             equities[k] = eq
             n_trades_exec[k] = n_tr
-            dds[k] = dd
+            rule_dds[k] = rule_dd
+            historical_dds[k] = historical_dd
             viol_dd[k] = v_dd
             viol_dl[k] = v_dl
 
-    return codes, equities, n_trades_exec, dds, viol_dd, viol_dl
+    return (
+        codes,
+        equities,
+        n_trades_exec,
+        rule_dds,
+        historical_dds,
+        viol_dd,
+        viol_dl,
+    )

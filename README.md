@@ -14,18 +14,90 @@ r* = argmax_r P(PASS | r)
 FARS v0.1 is NOT a BUY/SELL prediction bot. It is a Monte Carlo
 simulation engine for statistical risk analysis.
 
+The current version is an experimental research prototype. Reported confidence
+intervals quantify Monte Carlo error conditional on the configured input model;
+they do not include strategy-estimation or model uncertainty.
+
 ## Development
 
 ```bash
-pip install -r requirements.txt
-python -m pytest tests/ -v
+pip install -e ".[dev]"
+python -m pytest -p no:debugging tests/ -v
 python main.py
 ```
+
+The `-p no:debugging` option works around a known crash in the debugging plugin
+of some Anaconda/Python 3.13 environments; it is not required in a clean virtual
+environment when normal pytest startup works.
+
+## Command-line interface (Phase 9A)
+
+Installing with `pip install -e .` provides the `fars` entry point:
+
+```bash
+# Audit a trade CSV: row counts, issues, capabilities, provenance
+fars audit trades.csv --outcomes-finalized
+
+# Core descriptive metrics (only if the audit leaves core_metrics available)
+fars metrics trades.csv --outcomes-finalized --format json
+
+# Map external column names to canonical fields
+fars metrics trades.csv --outcomes-finalized \
+    --map ResultR=r_result --map ClosedAt=timestamp \
+    --timezone America/New_York --delimiter "," --encoding utf-8-sig
+```
+
+Exit codes: 0 success, 1 unexpected internal error, 2 invalid CLI arguments,
+3 structurally invalid file/encoding/mapping/CSV, 4 audit completed but the
+data block the requested analysis. Without installation, the same commands are
+available as `python -m src.cli ...` from the project root.
+
+## Historical CSV ingestion (Phase 8A)
+
+```python
+from src import load_trade_csv
+
+dataset = load_trade_csv(
+    "trades.csv",
+    outcomes_finalized=True,
+    column_mapping={"ResultR": "r_result", "ClosedAt": "timestamp"},
+    analysis_timezone="America/New_York",
+)
+dataset.require_capability("core_metrics")
+trades = dataset.trades
+```
+
+Column mappings run from source names to canonical names. FARS preserves
+unmapped columns as per-trade metadata, never silently sorts the file, and
+reports separate capability statuses for basic metrics, temporal analysis, and
+daily-rule simulation. `outcomes_finalized=True` is an explicit attestation that
+all supplied R outcomes represent closed, final trades; FARS does not infer this
+from strategy-specific status columns.
+
+## Current modeling assumptions
+
+- Synthetic outcomes are IID and use a Bernoulli/lognormal mixture.
+- `risk_per_trade` is fixed-dollar sizing based on the initial balance.
+- Historical peak-to-trough drawdown and rule-defined drawdown are stored
+  separately. FRES penalizes historical peak-to-trough tail risk; rule-defined
+  drawdown separately reports funded-rule budget consumption.
+- Wilson and bootstrap intervals are conditional on the selected model.
+- Phase 8A accepts strategy-agnostic historical-trade CSV files through an
+  explicit canonical mapping and reports which analyses the available fields
+  can safely support.
+- Phase 10A uses rank-based dependence diagnostics to select conditional IID
+  bootstrap intervals or exploratory circular-block intervals. It does not
+  certify IID or stationarity and does not estimate future extremes.
 
 ## Phases
 
 See `FARS_SPEC.md` for the full specification and development phases.
 
-Phase 7 (current): interpretable Matplotlib diagnostics for pass probability,
-drawdown tail risk, final equity, losing streaks, and terminal outcomes across
-candidate risk levels.
+Phases 1–7, the Phase 8A ingestion/audit contract, the Phase 9A CLI
+(`fars audit` / `fars metrics`), and the independently confirmed Phase 10A
+bootstrap framework are implemented: synthetic
+generation, descriptive metrics, account simulation, Monte Carlo, risk
+optimization/FRES, visual diagnostics, audited CSV adaptation, dependence
+screening, and uncertainty intervals for expectancy, win rate, and standard
+deviation. Phase 10A bootstrap is not yet exposed through the CLI; probabilistic
+drawdown/extreme analysis and advanced temporal validation remain future work.

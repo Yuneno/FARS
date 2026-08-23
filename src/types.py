@@ -68,8 +68,9 @@ class SyntheticConfig:
 
     Key properties:
       - win_rate directly equals P(r_result > 0).
-      - avg_win_R and avg_loss_R are the true empirical means of their
-        respective branches (no truncation distortion).
+      - avg_win_R and avg_loss_R are the theoretical conditional means of
+        their respective branches (no truncation distortion). Finite samples
+        fluctuate around those configured expectations.
 
     ASSUMPTION: Trade outcomes are IID draws from a mixture of two
         lognormal distributions (or degenerate at mean when std=0).
@@ -101,6 +102,31 @@ class SyntheticConfig:
     start_date: str = "2024-01-01"
 
     def __post_init__(self):
+        if self.seed is not None and (
+            not isinstance(self.seed, int)
+            or isinstance(self.seed, bool)
+            or self.seed < 0
+        ):
+            raise ValueError(
+                f"seed must be a non-negative integer or None, got {self.seed!r}"
+            )
+        if not isinstance(self.start_date, str):
+            raise ValueError(
+                f"start_date must use YYYY-MM-DD format, got {self.start_date!r}"
+            )
+        try:
+            normalized_start_date = datetime.strptime(
+                self.start_date, "%Y-%m-%d"
+            ).strftime("%Y-%m-%d")
+        except ValueError as exc:
+            raise ValueError(
+                f"start_date must use YYYY-MM-DD format, got {self.start_date!r}"
+            ) from exc
+        if normalized_start_date != self.start_date:
+            raise ValueError(
+                f"start_date must use zero-padded YYYY-MM-DD format, "
+                f"got {self.start_date!r}"
+            )
         if not isfinite(self.win_rate) or not 0 < self.win_rate < 1:
             raise ValueError(f"win_rate must be finite and in (0, 1), got {self.win_rate}")
         if not isfinite(self.avg_win_r) or self.avg_win_r <= 0:

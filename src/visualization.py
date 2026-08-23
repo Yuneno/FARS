@@ -117,7 +117,7 @@ def plot_risk_pass_probability(
         color=_BLUE,
         alpha=0.14,
         linewidth=0.0,
-        label=f"Pointwise Wilson CI ({confidence_pct:g}%)",
+        label=f"Conditional pointwise Wilson CI ({confidence_pct:g}%)",
     )
     ax.plot(
         levels,
@@ -215,7 +215,7 @@ def plot_risk_drawdown(
         color=_INK,
         linestyle=":",
         linewidth=1.4,
-        label=f"FRES optimum ({result.optimal_risk_fres:.2%})",
+        label=f"FRES optimum, historical-DD score ({result.optimal_risk_fres:.2%})",
     )
 
     n_paths = result.evaluations[0].mc_result.n_simulations
@@ -247,7 +247,8 @@ def plot_final_equity_distribution(
     figure, ax = _axes(ax, (8.0, 4.8))
     values = evaluation.mc_result.final_equities
     rules = result.rules_template
-    target = rules.initial_balance * (1.0 + rules.profit_target_pct)
+    # Match the engine's operation order exactly at floating-point boundaries.
+    target = rules.initial_balance + rules.initial_balance * rules.profit_target_pct
 
     ax.hist(
         values,
@@ -367,7 +368,12 @@ def plot_losing_streak_distribution(
     *,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
-    """Plot the distribution of maximum consecutive losses per trade sequence."""
+    """Plot maximum losing streaks in the supplied complete trade sequences.
+
+    This is a strategy-sequence diagnostic. Unless callers explicitly truncate
+    sequences at account terminal conditions, it does not describe executed
+    funded-account paths.
+    """
     if isinstance(trade_sequences, (str, bytes)):
         raise ValueError("trade_sequences must be a non-empty sequence")
     try:

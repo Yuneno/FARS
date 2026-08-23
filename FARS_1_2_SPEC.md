@@ -2,39 +2,13 @@
 
 ## 0. Status
 
-**Specification status:** REVIEW DRAFT  
-**Intended next action:** Independent Codex review before implementation.
-
-This document defines the requirements and open design decisions for FARS 1.2.
+This document defines the requirements for FARS 1.2.
 
 FARS 1.2 extends the existing FARS Core. It does not replace or rewrite the Core unless a change is explicitly justified and approved.
 
-This specification is a living design document while FARS 1.2 is under development. Requirements must not be invented, silently expanded, or inferred from quirks in the validation datasets.
+Unless explicitly overridden by this specification, the requirements, invariants, statistical safeguards, and principles defined in `FARS_SPEC.md` remain applicable.
 
-Sections marked **DESIGN PENDING** are intentionally unresolved and MUST NOT be implemented by guessing their final behavior.
-
-### 0.1 Normative Language
-
-The following terms are used intentionally:
-
-- **MUST / MUST NOT**: mandatory requirement.
-- **SHOULD / SHOULD NOT**: preferred behavior unless a justified reason exists.
-- **MAY**: optional behavior.
-- **DESIGN PENDING**: unresolved; implementation must wait for approval.
-- **DEFERRED**: intentionally outside the current implementation scope.
-
-### 0.2 Specification Precedence
-
-For FARS 1.2 work, use the following precedence:
-
-1. `FARS_1_2_SPEC.md` for approved FARS 1.2 requirements.
-2. `FARS_SPEC.md` for inherited Core requirements and invariants.
-3. `AGENTS.md` for agent behavior and review workflow.
-4. Current code and tests as evidence of the existing implementation.
-
-If these sources appear to conflict, the conflict MUST be reported before changing behavior.
-
-Historical references to early FARS version numbers in the original Core documents describe the development lineage of the current Core and do not redefine the FARS 1.2 version identifier.
+This specification is a living design document while FARS 1.2 is under development. Requirements must not be invented or silently expanded by implementation agents. Ambiguous or new requirements must be discussed before implementation.
 
 ---
 
@@ -56,399 +30,377 @@ Historical results must be treated as observations from the past, not as guarant
 
 ---
 
-## 2. Core Compatibility and Integration Boundary
+## 2. Core Compatibility
 
-FARS 1.2 SHOULD extend the existing Core rather than rewrite it unnecessarily.
+FARS 1.2 should extend the existing Core rather than rewrite it unnecessarily.
 
-The existing Core remains authoritative for functionality already defined and validated unless a concrete defect, incompatibility, or approved architectural requirement requires modification.
+The existing Core remains the authoritative implementation for functionality already defined and validated unless a concrete defect, incompatibility, or approved architectural requirement requires modification.
 
-New FARS 1.2 components SHOULD interact with the Core through small, well-defined interfaces.
+New FARS 1.2 components should interact with the Core through small, well-defined interfaces whenever reasonably possible.
 
-### 2.1 Data Boundaries
+Backward compatibility should be preserved when it does not compromise statistical correctness or create unnecessary architectural complexity.
 
-FARS 1.2 MUST distinguish between:
-
-```text
-External Record
-      ↓
-Canonical Record
-      ↓
-Core Trade
-```
-
-These are not automatically the same object.
-
-- **External Record**: data exactly as provided by the source.
-- **Canonical Record**: normalized and validated representation used by the FARS 1.2 data layer.
-- **Core Trade**: the existing compact representation consumed by the validated FARS Core.
-
-The canonical schema MUST NOT replace or expand the existing Core `Trade` merely for convenience.
-
-A dedicated adapter SHOULD convert canonical records into Core `Trade` objects only when the fields required by the requested Core analysis are available.
-
-Any change that materially alters an existing Core invariant, statistical calculation, account rule, simulation behavior, or public interface MUST be explicitly identified and justified before implementation.
+Any change that materially alters an existing Core invariant, statistical calculation, account rule, simulation behavior, or public interface must be explicitly identified and justified before implementation.
 
 ---
 
 ## 3. Initial Objectives
 
-FARS 1.2 will initially focus on:
+FARS 1.2 will initially focus on the following capabilities:
 
-1. A standard external trade-data input interface.
-2. Validation and normalization of external historical trade data.
-3. A canonical, strategy-agnostic representation.
-4. Capability-aware analysis when some fields are unavailable.
-5. A simple CLI for executing analyses.
-6. Formal use of statistical resampling methods.
-7. Evaluation of temporal dependence before choosing a resampling approach.
-8. Probabilistic analysis of drawdowns, streaks, uncertainty, and other risk quantities where statistically justified.
-9. Validation using real external historical datasets.
-10. Chronological OOS, walk-forward, and stress-testing methods where appropriate.
-11. Explicit protection against leakage, look-ahead bias, overfitting, and final-test contamination.
-12. Reproducible analysis with auditable configuration and provenance.
+1. Define a standard external trade-data input interface.
+2. Allow external users to provide historical trades from their own strategies.
+3. Validate and adapt external trade data into a canonical representation usable by FARS.
+4. Provide a simple command-line interface (CLI) for executing analyses.
+5. Incorporate statistical Bootstrap methods as a formal part of FARS.
+6. Evaluate whether IID Bootstrap, Block Bootstrap, or another justified resampling method is appropriate based on observed temporal dependence.
+7. Use resampling methods to estimate distributions, uncertainty, confidence intervals, drawdowns, streaks, extremes, and probabilistic trade-related limits where statistically justified.
+8. Validate FARS using real external historical datasets.
+9. Support temporal validation methods such as out-of-sample evaluation, walk-forward validation, and stress testing where appropriate.
+10. Explicitly protect against data leakage, look-ahead bias, overfitting, and final-test contamination.
 
-Detailed requirements must be approved before implementation.
+These objectives define the intended scope. Detailed requirements for each capability will be added only after the corresponding design decisions are reviewed.
 
 ---
 
 ## 4. Initial Validation Data
 
-The first available validation datasets contain historical trades from:
+The first external validation datasets currently available contain historical trades from:
 
 - SMC-FVG (Fair Value Gap)
 - SMC-OB (Order Block)
 
-They include instruments such as:
+The datasets include trades across instruments including approximately:
 
 - MNQ
 - YM
 - ES
 - GC
 
-and cover periods approximately between 2010 and 2026.
+and cover historical periods approximately between 2010 and 2026.
 
 These datasets are validation cases only.
 
-FARS 1.2 MUST remain strategy-agnostic and MUST NOT encode assumptions or business logic solely because they fit these datasets.
+FARS 1.2 MUST remain strategy-agnostic and MUST NOT encode assumptions, required fields, transformations, statistical choices, or business logic solely because they fit SMC-FVG or SMC-OB.
 
-Unknown, incomplete, or undocumented columns MUST NOT automatically cause otherwise usable records to be discarded.
+The datasets may contain fields that are incomplete, unknown, undocumented, or not required by FARS. Unknown columns must not automatically cause otherwise usable trade records to be discarded.
 
-The available backtests may not include all real execution costs, including commissions and slippage. FARS MUST NOT silently assume that historical results are net of all execution costs.
-
-FARS also MUST NOT claim that imported backtests are free from upstream look-ahead bias, survivorship bias, overfitting, or other methodological problems unless sufficient information exists to support that conclusion.
+The available backtests may not include all real execution costs, including commissions and slippage. FARS must not silently assume that reported historical results are net of all execution costs.
 
 ---
 
-## 5. Conceptual Architecture
+## 5. Proposed FARS 1.2 Architecture
+
+The initial conceptual pipeline is:
 
 ```text
-External Data
-     ↓
-Ingestion
-     ↓
-Schema Mapping
-     ↓
-Validation / Audit
-     ↓
-Canonical Dataset
-     ├── Capability Assessment
-     ├── Statistical Diagnostics
-     ├── Resampling / Bootstrap
-     │       ↓
-     │   Resampled Sequences
-     │       ↓
-     ├── Core Adapter ───────→ Existing FARS Core
-     ├── Temporal Validation
-     └── Stress Testing
-             ↓
-       Analysis Results
-             ↓
-       Run Manifest / Reports
-
-CLI ─────────→ Analysis Orchestrator
+External Trade Data
+        |
+        v
+Input Layer
+        |
+        v
+Schema Mapping / Adapter
+        |
+        v
+Validation Layer
+        |
+        v
+Canonical Trade Dataset
+        |
+        v
+Existing FARS Core
+        |
+        +--> Core Metrics / Simulation / Risk Analysis
+        |
+        +--> Bootstrap / Statistical Extensions
+        |
+        +--> Temporal Validation / OOS / Stress Testing
+        |
+        v
+CLI / Analysis Output
 ```
 
-This is conceptual and does not require specific Python module or class names.
+This diagram is conceptual, not a requirement for specific Python modules or class names.
 
-The CLI is an interface to the system, not the final stage of the statistical pipeline.
+The architecture should favor small interfaces and separation of concerns over unnecessary abstractions.
 
 ---
 
 ## 6. External Data Interface
 
-### 6.1 Strategy-Agnostic Input
+### 6.1 Design Principle
 
-External column names may differ from FARS canonical names.
+The external data interface must be strategy-agnostic.
 
-A mapping/adaptation mechanism SHOULD translate supported external schemas into the canonical representation.
+FARS should accept historical trade records without requiring users to organize their data around SMC-FVG, SMC-OB, or any other specific strategy methodology.
 
-### 6.2 Capability-Aware Analysis
+External column names may differ from FARS canonical field names. A mapping/adaptation mechanism should translate supported external schemas into the canonical representation.
 
-FARS SHOULD require only the information necessary for the requested analysis.
+### 6.2 Minimum Required Information
 
-A dataset MAY support some analyses while being insufficient for others.
+The Phase 8A canonical trade contract is defined in section 7. Later analyses
+may add field requirements only through an approved specification update.
 
-Example:
+FARS 1.2 should require only the information statistically necessary for a requested analysis. It should not reject an entire dataset merely because optional information is missing.
 
-```text
-Available:
-- descriptive PnL analysis
-- chronological streak analysis
+A dataset may therefore support some analyses while being insufficient for others.
 
-Unavailable:
-- R-based Core simulation
-
-Reason:
-- R_result cannot be derived from available fields
-```
-
-FARS MUST NOT fabricate missing information to unlock an analysis.
+FARS should eventually report which analysis capabilities are available or unavailable based on the fields present in the dataset.
 
 ### 6.3 Unknown and Optional Fields
 
-Unknown external fields SHOULD be preserved or ignored safely where possible.
+Unknown external fields should be preserved or ignored safely where possible rather than treated as fatal errors.
 
-Missing optional fields MUST NOT invalidate otherwise usable records.
+Missing optional fields must not invalidate otherwise usable trade records.
 
-Rows MUST NOT be deleted solely because unrelated or unknown columns contain missing values.
+Rows must not be deleted solely because unrelated or unknown columns contain missing values.
 
-### 6.4 Provenance
-
-Material transformations SHOULD be traceable.
-
-When FARS derives a value such as `r_result`, normalized time, or net PnL, the system SHOULD preserve enough provenance to identify the source fields and transformation used.
+Phase 8A preserves unknown values per accepted record as defined in section 7.4.
+Serialization or long-term storage of that metadata remains outside this phase.
 
 ---
 
 ## 7. Canonical Trade Schema
 
-**STATUS: DESIGN PENDING**
+**STATUS: PHASE 8A CONTRACT APPROVED**
 
-The canonical schema will define:
+### 7.1 Scope
 
-- canonical field names;
-- required versus optional fields;
-- data types;
-- identifiers;
-- outcome representation;
-- R-multiples;
-- gross and net PnL;
-- commissions and slippage;
-- instrument and strategy metadata;
-- timestamps and timezone information;
-- trading/session date;
-- missing values;
-- duplicates;
-- open or incomplete positions;
-- chronological ordering;
-- preservation of external metadata;
-- provenance of derived fields.
+Phase 8A defines the minimum canonical contract needed to ingest closed-trade
+CSV files safely. It does not yet define gross/net PnL or execution-cost
+semantics. Columns related to those unresolved concepts may be preserved as
+external metadata, but FARS must not interpret them until their contract is
+approved.
 
-### 7.1 Meaning of One Record
+### 7.2 Canonical Fields
 
-Before implementation, FARS MUST define what one canonical record represents.
+`r_result` is the only field required for basic descriptive trade metrics. It
+must be a finite real number expressed in R-multiples. Zero is valid. FARS must
+not derive R from price or PnL fields in Phase 8A.
 
-External data may describe:
+The following fields are optional for basic metrics:
 
-- an individual execution/fill;
-- an order;
-- a partial close;
-- a complete closed trade / round-trip;
-- another source-specific structure.
+- `trade_id`: non-empty string when supplied;
+- `timestamp`: ISO-8601 timestamp;
+- `asset`: string;
+- `direction`: `long` or `short` after case normalization;
+- `entry_price`, `stop_price`, and `exit_price`: finite real numbers;
+- `strategy`: string.
 
-FARS MUST NOT silently treat these concepts as equivalent.
+`date` is derived from `timestamp` in an explicitly configured analysis
+timezone. It is not an independent Phase 8A external input field.
 
-If fill-level data is supported, the rules for consolidating fills into an analyzable trade MUST be defined before implementation.
+Missing optional values do not invalidate a row for basic metrics. A malformed
+optional value is omitted from its canonical field, preserved in audit
+metadata, and reported as a warning.
 
-### 7.2 PnL Is Not Automatically R
+### 7.3 Timestamps and Ordering
 
-FARS MUST NOT interpret monetary PnL, points, ticks, or a WIN/LOSS label as `r_result` unless a valid and documented transformation exists.
+Basic metrics do not require timestamps. Temporal analysis requires every
+accepted row to have a valid timezone-aware ISO-8601 timestamp. Naive
+timestamps must not be assigned an implicit timezone.
 
-If the initial risk required to calculate R cannot be established, R-based analyses MUST be marked unavailable rather than using an invented value.
+Daily-rule simulation additionally requires an explicit IANA analysis timezone.
+FARS derives each trade's `date` only after converting the timestamp into that
+timezone.
 
-### 7.3 Time and Timezone Policy
+Input order is authoritative. FARS must validate non-decreasing chronological
+order and must not silently sort rows. Equal timestamps are allowed and retain
+input order.
 
-Canonical timestamps SHOULD use timezone-aware ISO-8601 values and SHOULD be normalized internally to UTC.
+### 7.4 Identifiers, Duplicates, and Unknown Fields
 
-FARS MUST preserve enough source timezone information to reconstruct the original timing when available.
+`trade_id` is optional. Repeated non-empty IDs are ambiguous duplicates and
+must be reported as errors that block automatic analysis. When IDs are absent,
+FARS must not infer duplicate trades solely from equal outcomes or timestamps.
 
-UTC normalization MUST NOT be used as a substitute for defining the relevant trading/session day.
+Unknown columns and their raw values must be preserved per accepted record.
+Missing values in unknown columns must not cause row rejection.
 
-Daily-loss logic, chronological validation, OOS partitioning, and session boundaries MUST use an explicitly defined time policy.
+Rows representing open or incomplete trades are usable only when they already
+contain a valid, finalized `r_result`. Phase 8A does not infer an outcome from
+open positions, prices, gross/net PnL, commissions, or slippage.
 
-Equal timestamps, overlapping trades, and concurrent positions MUST NOT be ordered arbitrarily when ordering could change an analysis result.
-
-### 7.4 Optional Intra-Trade Information
-
-Fields such as the following MAY be supported:
-
-- holding duration;
-- Maximum Adverse Excursion (MAE);
-- Maximum Favorable Excursion (MFE).
-
-These fields MUST NOT be mandatory for basic ingestion.
-
-Analyses that require intra-trade path information MUST be marked unavailable when the required information is absent.
+Because Phase 8A has no canonical position-status field, callers must explicitly
+attest that all supplied outcomes are closed and final. The CSV loader must
+require `outcomes_finalized=True`; omission or any other value is an error.
 
 ---
 
 ## 8. Data Validation and Audit
 
-**STATUS: DESIGN PENDING**
+**STATUS: PHASE 8A CONTRACT APPROVED**
 
-The validation layer will determine whether external data is structurally and statistically usable.
+Phase 8A provides a CSV loader with an explicit source-column to canonical-field
+mapping. Unmapped canonical names use exact identity matching. Mapping must be
+one-to-one; missing mapped source columns, duplicate headers, unsupported
+canonical targets, and target collisions are structural errors.
 
-It will define:
+Validation produces a durable audit result containing:
 
-- errors;
-- warnings;
-- accepted records;
-- rejected records;
-- suspicious records;
-- capability limitations;
-- audit summaries.
+- total, accepted, and rejected row counts;
+- issues with severity, stable code, message, optional source row, and field;
+- explicit availability and unavailability reasons for `core_metrics`,
+  `temporal_analysis`, and `daily_rule_simulation`.
 
-### 8.1 Outliers
+The canonical dataset must also retain reproducible ingestion provenance:
 
-Extreme or suspicious observations MUST NOT be removed, winsorized, clipped, or corrected automatically merely because they are unusual.
+- canonical schema version;
+- absolute source path, source byte size, and SHA-256 digest;
+- effective source-to-canonical column mapping;
+- final-outcome attestation;
+- analysis timezone, delimiter, and encoding.
 
-They SHOULD be flagged for review.
+FARS must fail the load if the source fingerprint changes during ingestion.
 
-Removal or correction requires evidence that the observation is erroneous or an explicitly approved analysis transformation.
+Severity meanings are:
 
-### 8.2 Sample Adequacy
+- `ERROR`: required data is unusable or duplicate identity makes automatic
+  analysis unsafe;
+- `WARNING`: optional or capability-specific data is unusable, while a narrower
+  analysis may remain valid;
+- `INFO`: non-failing audit context.
 
-FARS SHOULD evaluate whether the available sample is adequate for the requested statistical analysis.
+A row with missing, malformed, Boolean, NaN, or infinite `r_result` is rejected
+and audited. Other usable rows remain available for inspection, but
+`core_metrics` must be marked unavailable until the rejected-row decision is
+reviewed; FARS must not silently analyze a selectively reduced sample.
 
-The specification MUST NOT assume a universal cutoff such as `N < 50`.
-
-Different analyses may require different amounts and structures of data.
-
-FARS MAY warn or block a specific analysis when the available evidence is insufficient, but the rule and justification must be documented.
-
----
-
-## 9. Analysis Units and Concurrent Exposure
-
-**STATUS: DESIGN PENDING**
-
-FARS MUST NOT automatically assume that every trade in one file belongs to one homogeneous statistical population.
-
-Potential analysis units include:
-
-- strategy;
-- instrument;
-- strategy × instrument;
-- portfolio;
-- user-defined groups.
-
-Pooling across strategies or instruments MUST be an explicit analysis decision.
-
-When positions can overlap across instruments or strategies, FARS must consider whether individual-trade resampling would destroy important cross-position dependence.
-
-Before portfolio-level dependent resampling is implemented, FARS must define whether the analysis operates primarily in:
-
-- **trade-space**, using ordered trade events; or
-- **time-space**, using returns/exposure aggregated by defined time intervals.
-
-This decision is **DESIGN PENDING**.
+Rows must not be rejected because unrelated optional or unknown fields are
+missing. The loader must not mutate source files, reorder rows, fill missing
+outcomes, assume a timezone, or deduplicate automatically.
 
 ---
 
-## 10. Bootstrap and Resampling Framework
+## 9. Command-Line Interface
 
-**STATUS: DESIGN PENDING**
+**STATUS: PHASE 9A CONTRACT APPROVED**
 
-FARS MUST NOT assume historical trades are IID merely because a dependence test fails to reject independence.
+Phase 9A provides a minimal CLI that safely exposes only capabilities already
+validated by FARS. It introduces no new statistical methods. The CLI must reuse
+`load_trade_csv()` and `compute_metrics()` without duplicating their
+validation logic, and must never modify the source CSV.
 
-The design must determine whether IID/exchangeable resampling is sufficiently defensible for the intended analysis.
+### 9.1 Commands
 
-No single statistical test may authorize IID Bootstrap by itself.
+```text
+fars audit   trades.csv --outcomes-finalized [options]
+fars metrics trades.csv --outcomes-finalized [options]
+```
 
-### 10.1 Distinct Bootstrap Uses
+Shared options:
 
-FARS 1.2 MUST distinguish between at least these purposes:
+- `--map Source=canonical` (repeatable), e.g. `--map ResultR=r_result`;
+- `--timezone IANA_NAME` (analysis timezone);
+- `--delimiter CHAR` (default `,`);
+- `--encoding NAME` (default `utf-8-sig`);
+- `--format text|json` (default `text`).
 
-1. **Trade-sequence resampling**  
-   Generate plausible sequences from historical observations for path-dependent risk analysis.
+`--outcomes-finalized` is the strict attestation required by section 7.4.
 
-2. **Bootstrap inference**  
-   Estimate sampling uncertainty or confidence intervals for a statistic calculated from observed data.
+### 9.2 `fars audit`
 
-3. **Bootstrap of simulation outputs**  
-   Estimate uncertainty in statistics derived from Monte Carlo or simulated paths when appropriate.
+Loads the CSV and reports: total/accepted/rejected row counts; issues with
+severity; capability availability with reasons; ingestion provenance
+(SHA-256, size, path, schema version, mapping, timezone, delimiter, encoding).
+It computes no statistics.
 
-Existing Core behavior MUST be inspected and reused where appropriate rather than duplicated under new names.
+### 9.3 `fars metrics`
 
-### 10.2 Candidate Resampling Methods
+Runs the same audit first. Only if `core_metrics` is available it computes:
+trade count, win rate, mean win/loss in R, expectancy, standard deviation,
+skewness, kurtosis, historical max drawdown in R, and max losing streak.
+
+It must not run Bootstrap, Monte Carlo on historical data, or optimization.
+Phase 10A now defines a reviewed Bootstrap method, but exposing it requires a
+separate CLI contract; Phase 9A remains intentionally limited to audit and
+descriptive metrics.
+
+### 9.4 Output
+
+- `text`: human-readable; `json`: stable machine-readable schema.
+- Statistically undefined values (e.g. standard deviation of one trade) are
+  `null` in JSON, never NaN.
+- Normal results go to stdout; errors go to stderr.
+
+### 9.5 Exit Codes
+
+- `0`: operation completed successfully.
+- `1`: unexpected internal error.
+- `2`: invalid CLI arguments.
+- `3`: file, encoding, mapping, or CSV structurally invalid.
+- `4`: audit completed, but the data block the requested analysis.
+
+Optional warnings do not fail the command while the requested capability
+remains available.
+
+### 9.6 Phase 9A Limits
+
+Not implemented in this phase: configuration files, IID or block Bootstrap,
+optimization on historical trades, OOS or walk-forward validation, stress
+testing, commission/slippage modeling, and deriving `r_result` from prices or
+PnL.
+
+---
+
+## 10. Bootstrap Framework
+
+**STATUS: PHASE 10A v4 IMPLEMENTED; v5 INDEPENDENTLY REJECTED; v6
+INDEPENDENTLY REVIEWED, CONFIRMED, AND IMPLEMENTED** (see
+`FARS_1_2_PHASE_10_BOOTSTRAP_DRAFT.md`, section 0). V4 acceptance exposed two
+infeasible criteria. V5 corrected them but failed independent IID-size
+validation for a skewed LogNormal marginal. V6 replaces raw-score portmanteau
+inputs with marginal-normal rank scores and passed all 10 criteria on its newly
+predeclared independent confirmation root; generators, sample sizes,
+thresholds, and simulation counts remained unchanged.
+
+Bootstrap will become a formal statistical component of FARS 1.2.
+
+FARS MUST NOT assume historical trades are IID without testing or justification.
+
+The Bootstrap design must distinguish between the statistical question being estimated and the resampling method used to estimate it.
 
 Candidate methods may include:
 
 - IID Bootstrap;
 - Block Bootstrap variants;
-- other methods justified by the observed dependence structure and research question.
+- other resampling approaches when justified by the observed dependence structure.
 
-The selected method, assumptions, limitations, and important parameters MUST be recorded.
+Method selection must be driven by statistical evidence and documented assumptions rather than convenience.
 
-Block length or equivalent dependence parameters MUST NOT be chosen arbitrarily.
+Detailed requirements for diagnostics, method selection, confidence intervals, reproducibility, block-length selection, uncertainty estimation, and failure modes will be specified before implementation.
 
 ---
 
-## 11. Probabilistic Risk Bounds and Extremes
+## 11. Probabilistic Risk and Trade Limits
 
 **STATUS: DESIGN PENDING**
 
-FARS may estimate distributions or probabilistic bounds for:
+FARS may use Bootstrap and related statistical methods to estimate probabilistic distributions and bounds for quantities such as:
 
 - drawdowns;
-- losing/winning streaks;
-- finite-horizon worst observed/resampled outcomes;
+- losing and winning streaks;
+- extreme outcomes;
 - trade-count requirements;
-- uncertainty around metrics;
-- other justified risk quantities.
+- uncertainty around statistical metrics;
+- other risk limits supported by the available data.
 
-Ordinary empirical Bootstrap MUST NOT be presented as estimating the absolute worst possible future trade.
+These limits must be probabilistic and assumption-aware. They must not be presented as guaranteed maximum or minimum future outcomes.
 
-Because empirical resampling draws from observed values, its conclusions about extremes are conditional on the observed sample and selected resampling model.
-
-Any reported risk bound MUST define:
-
-- the quantity being estimated;
-- the horizon, if applicable;
-- the resampling/model assumptions;
-- the probability or confidence level;
-- important limitations.
-
-Methods intended to extrapolate beyond observed extremes are **DEFERRED** unless separately researched and approved.
+The exact meaning of any "trade limit" must be formally defined before implementation.
 
 ---
 
-## 12. Statistical Interpretation of Uncertainty
-
-FARS SHOULD distinguish between:
-
-1. **Process/path variability**  
-   Different sequences that could arise under the selected model.
-
-2. **Estimation uncertainty**  
-   Uncertainty because only a finite historical sample is available.
-
-3. **Model uncertainty**  
-   Uncertainty about whether the chosen statistical model or resampling method adequately represents the data.
-
-A percentile of simulated outcomes MUST NOT be described as though it were automatically a confidence interval.
-
----
-
-## 13. Temporal Validation and OOS
+## 12. Temporal Validation and Out-of-Sample Evaluation
 
 **STATUS: DESIGN PENDING**
 
-FARS will preserve chronological structure for temporal validation.
+FARS 1.2 will preserve chronological structure when performing temporal validation.
 
-Random train/test splitting MUST NOT be used for time-dependent trade data merely for convenience.
+Random train/test splitting must not be used for time-dependent trade data merely for convenience.
 
-Candidate methods include:
+Candidate validation methods include:
 
 - chronological holdout;
 - out-of-sample evaluation;
@@ -456,229 +408,148 @@ Candidate methods include:
 - rolling windows;
 - expanding windows.
 
-The methodology MUST prevent leakage from validation or final-test periods into calibration decisions.
-
-The final OOS period SHOULD remain untouched until methodology and tunable parameters are fixed.
+The methodology must prevent leakage from validation or final-test periods into calibration decisions.
 
 ---
 
-## 14. Stress Testing
+## 13. Stress Testing
 
 **STATUS: DESIGN PENDING**
 
 Stress testing may be added when it answers a clearly defined risk question.
 
-Stress scenarios MUST NOT be chosen solely to improve apparent strategy performance.
+Stress scenarios must not be chosen solely to improve apparent strategy performance.
 
-The relationship between:
-
-- historical resampling;
-- synthetic perturbations;
-- execution-cost assumptions;
-- dependence assumptions;
-- stress scenarios
-
-must be explicitly defined before implementation.
+The relationship between historical resampling, synthetic perturbations, execution-cost assumptions, and stress scenarios will be specified before implementation.
 
 ---
 
-## 15. Reproducibility and Run Manifest
+## 14. Reproducibility
 
-All stochastic FARS 1.2 methods MUST support reproducible execution through explicit random seeds where applicable.
+All stochastic FARS 1.2 methods must support reproducible execution through explicit random seeds where technically applicable.
 
-A fixed seed provides reproducibility, not statistical validity.
+Seed behavior must be testable and documented.
 
-Each completed analysis SHOULD be capable of producing a run manifest containing, when applicable:
-
-- FARS version;
-- specification revision;
-- input dataset identifier or hash;
-- mapping configuration;
-- accepted/rejected record counts;
-- selected analysis subset;
-- random seed;
-- resampling method;
-- resampling parameters;
-- number of resamples/simulations;
-- confidence level;
-- analysis horizon;
-- execution-cost assumptions;
-- relevant diagnostic decisions;
-- warnings and limitations.
-
-The exact manifest format remains **DESIGN PENDING**.
+A fixed seed provides reproducibility, not statistical validity. Statistical conclusions must not depend materially on selecting a favorable seed.
 
 ---
 
-## 16. Statistical Safeguards
+## 15. Statistical Safeguards
 
-FARS 1.2 inherits the statistical safeguards in `FARS_SPEC.md` and `AGENTS.md`.
+FARS 1.2 inherits all statistical safeguards defined in `FARS_SPEC.md` and `AGENTS.md`.
 
 In particular:
 
-- do not assume IID without justification;
-- do not assume normality;
+- do not assume trades are IID without testing;
+- do not assume normally distributed outcomes;
 - do not equate historical maximum drawdown with the worst possible future drawdown;
-- do not randomly split time-dependent data without justification;
-- prevent FARS-created look-ahead bias;
-- prevent FARS-created data leakage;
+- do not use random time-series splits without justification;
+- prevent look-ahead bias;
+- prevent data leakage;
+- prevent survivorship bias where relevant;
 - prevent overfitting;
 - prevent final-test contamination;
-- separate calibration, validation, and final OOS evaluation;
-- document assumptions and limitations.
+- distinguish calibration, validation, and final OOS evaluation;
+- document statistical assumptions and known limitations.
 
-FARS cannot automatically guarantee that imported strategy histories were generated without upstream bias.
-
-Statistical correctness takes priority over favorable-looking results.
+Statistical correctness takes priority over producing favorable results.
 
 ---
 
-## 17. Testing Requirements
+## 16. Testing Requirements
 
-FARS 1.2 additions MUST include tests appropriate to their software and statistical behavior.
+FARS 1.2 additions must include tests appropriate to their statistical and software behavior.
 
 Passing unit tests alone is not sufficient evidence that a statistical implementation is valid.
 
-Tests SHOULD include, where applicable:
+Tests should include, where applicable:
 
-- deterministic correctness;
+- deterministic correctness tests;
 - malformed input and schema edge cases;
 - missing-data behavior;
-- reproducibility;
-- chronological ordering;
-- timezone/session behavior;
-- leakage prevention;
+- reproducibility tests;
+- temporal-ordering tests;
+- leakage-prevention tests;
 - statistical sanity checks;
 - resampling invariants;
-- capability gating;
-- provenance;
-- concurrent-position edge cases;
-- discovered bugs and ambiguous behavior.
+- tests for discovered bugs and ambiguous cases.
 
-Specific acceptance tests will be defined with each finalized requirement.
+Specific acceptance tests will be defined alongside each finalized requirement.
 
 ---
 
-## 18. Non-Goals
+## 17. Non-Goals
 
-Unless explicitly approved later, FARS 1.2 is not intended to:
+Unless explicitly added through a future approved specification change, FARS 1.2 is not intended to:
 
 - predict future market direction;
 - generate discretionary BUY/SELL signals;
 - guarantee profitability;
 - prove that a strategy has a persistent future edge;
-- certify that an imported backtest is free of upstream methodological bias;
 - optimize specifically for SMC-FVG or SMC-OB;
-- invent missing trade risk or execution costs;
 - hide uncertainty behind a single deterministic risk number;
-- treat backtest results as equivalent to live execution;
-- extrapolate absolute future extremes from ordinary empirical Bootstrap;
-- add complex methods when simpler justified methods are adequate.
+- treat backtest results as equivalent to live execution results;
+- add complex statistical methods when simpler justified methods are adequate.
 
 ---
 
-## 19. Agent and Development Workflow
+## 18. Agent and Development Workflow
 
-Agents working on FARS 1.2 MUST read:
+Agents working on FARS 1.2 must read, at minimum:
 
 1. `AGENTS.md`
 2. `FARS_SPEC.md`
 3. `FARS_1_2_SPEC.md`
-4. relevant current implementation and tests
+4. the relevant current implementation and tests
 
-Normal workflow:
+The normal development workflow remains:
 
 ```text
 Implementation
-    → tests
-    → independent Codex review
-    → verify valid findings
-    → corrections
-    → tests
-    → new review
-    → REVIEW PASSED
-    → commit / merge / push only when explicitly requested
+    -> tests
+    -> independent Codex review
+    -> verify valid findings
+    -> corrections
+    -> tests
+    -> new review
+    -> REVIEW PASSED
+    -> commit / merge / push only when explicitly requested
 ```
 
-When the same model family implements and reviews, separate sessions SHOULD be used where practical.
+When the same model family acts as both implementer and reviewer, separate sessions should be used where practical to reduce review bias.
 
-Implementation agents MUST NOT turn design notes, dataset quirks, or speculative future ideas into requirements.
-
-For the current REVIEW DRAFT, Codex SHOULD review the specification for contradictions, missing requirements, statistical weaknesses, Core incompatibilities, and unnecessary complexity before implementation begins.
+Implementation agents must not silently convert design notes, dataset quirks, or speculative future ideas into requirements.
 
 ---
 
-## 20. Future Extensions
+## 19. Future Extensions
 
-Possible future extensions may include contextual information such as economic events or news classifications when a statistically defensible research question is defined.
+Possible future extensions may include external contextual metadata such as market events or economic-news classifications when a statistically defensible research question is defined.
 
-Such metadata must remain optional unless explicitly approved.
+Such metadata must remain optional and must not become a requirement of the canonical trade interface unless explicitly approved in a future specification revision.
 
-No item in this section is an implementation requirement.
-
----
-
-## 21. Open Design Decisions and Resolution Order
-
-Open decisions are grouped by dependency so that advanced statistical work does not block basic data architecture.
-
-### Phase A — Ingestion and Data Contract
-
-Resolve first:
-
-1. Canonical trade schema.
-2. Meaning of one canonical record.
-3. Fill/order/round-trip consolidation policy.
-4. Minimum data required for each analysis capability.
-5. External column mapping configuration.
-6. Missing-value and duplicate policies.
-7. Gross versus net PnL.
-8. Commission and slippage handling.
-9. Timestamp, timezone, and trading-session policy.
-10. Provenance requirements.
-11. Dataset audit output.
-12. Analysis-unit rules.
-
-### Phase B — Statistical Engine Extensions
-
-Resolve after Phase A:
-
-1. Temporal-dependence diagnostics.
-2. Criteria for defensible IID resampling.
-3. Trade-space versus time-space treatment where concurrency matters.
-4. Block Bootstrap variant when required.
-5. Block-length methodology.
-6. Bootstrap interval methodology.
-7. Sample-adequacy/gating rules by analysis.
-8. Formal definitions of probabilistic risk bounds.
-9. Treatment of process, estimation, and model uncertainty.
-
-### Phase C — Validation and Interface
-
-Resolve after the required parts of A and B:
-
-1. OOS protocol.
-2. Walk-forward protocol.
-3. Stress-testing methodology.
-4. CLI commands and configuration.
-5. Run manifest format.
-6. Reporting behavior.
-7. Optional external contextual metadata.
-
-These items are intentionally unresolved until discussed and approved.
+No future extension listed here is an implementation requirement.
 
 ---
 
-## 22. Review Gate Before Implementation
+## 20. Open Design Decisions
 
-FARS 1.2 implementation SHOULD NOT begin until the review of this specification determines that:
+The following items must be resolved before their respective components are implemented:
 
-1. Core compatibility boundaries are clear.
-2. Phase A contains enough detail to implement the first scoped component.
-3. No unresolved statistical assumption is being silently treated as fact.
-4. Acceptance criteria exist for the component being implemented.
-5. Any remaining `DESIGN PENDING` section outside that component can remain unresolved without affecting correctness.
+The Phase 8A versions of the canonical trade schema, capability requirements,
+column mapping, missing/duplicate policy, timestamp policy, and audit format are
+resolved in sections 7 and 8. The following decisions remain open:
 
-Codex should return concrete findings classified according to `AGENTS.md`.
+1. Gross versus net PnL representation.
+2. Commission and slippage handling.
+3. CLI configuration files (Phase 9A commands and options are resolved in section 9).
+4. Temporal-dependence diagnostics.
+5. Criteria for IID versus dependent Bootstrap methods.
+6. Block Bootstrap variant and block-length methodology when required.
+7. Bootstrap interval methodology.
+8. Formal definition of probabilistic trade limits.
+9. OOS and walk-forward protocols.
+10. Stress-testing methodology.
+11. Treatment of optional external contextual metadata.
 
-A passing specification review does not approve every future section for implementation. Each unresolved component still requires its own finalized requirements.
+These are intentionally unresolved. They must not be guessed by implementation agents.

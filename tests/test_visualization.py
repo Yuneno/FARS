@@ -71,6 +71,10 @@ def test_risk_pass_probability_plots_estimates_uncertainty_and_optimum(
         ax.lines[1].get_ydata(), result.probabilities_pass_smoothed
     )
     assert len(ax.collections) >= 3  # Wilson band, plausible set, optimum star
+    assert any(
+        "Conditional pointwise Wilson CI" in label
+        for label in ax.get_legend_handles_labels()[1]
+    )
     np.testing.assert_array_equal(result.probabilities_pass, raw_before)
     plt.close(figure)
 
@@ -83,6 +87,10 @@ def test_risk_drawdown_plots_p95_cvar_and_fres_reference(optimization_result):
     np.testing.assert_array_equal(ax.lines[1].get_ydata(), result.cvar_95_values)
     assert np.all(
         np.asarray(ax.lines[2].get_xdata()) == result.optimal_risk_fres
+    )
+    assert any(
+        "historical-DD score" in label
+        for label in ax.get_legend_handles_labels()[1]
     )
     assert ax.get_ylim()[0] == 0.0
     assert "Historical peak-to-trough" in ax.get_title(loc="left")
@@ -100,8 +108,10 @@ def test_final_equity_distribution_uses_selected_candidate_and_rule_references(
     assert len(ax.patches) == 12
     assert len(ax.lines) == 2
     assert float(ax.lines[0].get_xdata()[0]) == result.rules_template.initial_balance
-    expected_target = result.rules_template.initial_balance * (
-        1.0 + result.rules_template.profit_target_pct
+    expected_target = (
+        result.rules_template.initial_balance
+        + result.rules_template.initial_balance
+        * result.rules_template.profit_target_pct
     )
     assert float(ax.lines[1].get_xdata()[0]) == expected_target
     assert "Risk 1.00%" in ax.get_title(loc="left")

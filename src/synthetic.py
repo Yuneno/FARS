@@ -30,9 +30,10 @@ For each of n_trades:
 
 Key design property:
   - win_rate directly controls P(r_result > 0) — it IS the fraction
-    of positive trades, matching the parameter name exactly.
-  - avg_win_R is the actual empirical mean of positive trades.
-  - avg_loss_R is the actual empirical mean of |negative trades|.
+    of positive trades in expectation, matching the parameter name exactly.
+  - avg_win_R is the theoretical conditional mean of positive trades.
+  - avg_loss_R is the theoretical conditional mean of |negative trades|.
+    Finite generated samples generally do not match these means exactly.
 
 Lognormal calibration:
   Given desired mean m > 0 and std s > 0:
@@ -91,20 +92,8 @@ def _lognormal_params(mean: float, std: float) -> tuple[float, float]:
     return mu, sigma
 
 
-def generate_trades(config: SyntheticConfig) -> list[Trade]:
-    """
-    Generate a sequence of synthetic trades.
-
-    Returns a list of Trade objects with r_result, date, and trade_id
-    populated. The sequence length equals config.n_trades.
-
-    Reproducibility: setting config.seed fixes the numpy RNG state
-    before generation. Same seed + same config → identical sequence.
-
-    The configured win_rate directly equals P(r_result > 0).
-    avg_win_R and avg_loss_R are the true means of their respective
-    branches (no truncation distortion).
-    """
+def _generate_r_results(config: SyntheticConfig) -> np.ndarray:
+    """Generate only R outcomes, preserving the public generator's RNG stream."""
     # Warn about unimplemented features
     if config.streak_factor != 0.0:
         warnings.warn(
@@ -137,6 +126,25 @@ def generate_trades(config: SyntheticConfig) -> list[Trade]:
         else:
             loss_draws = -rng.lognormal(mean=mu_loss, sigma=sigma_loss, size=n_losses)
         r_results[~is_win] = loss_draws
+
+    return r_results
+
+
+def generate_trades(config: SyntheticConfig) -> list[Trade]:
+    """
+    Generate a sequence of synthetic trades.
+
+    Returns a list of Trade objects with r_result, date, and trade_id
+    populated. The sequence length equals config.n_trades.
+
+    Reproducibility: setting config.seed fixes the numpy RNG state
+    before generation. Same seed + same config → identical sequence.
+
+    The configured win_rate directly equals P(r_result > 0).
+    avg_win_R and avg_loss_R are the theoretical conditional means of
+    their respective branches (no truncation distortion).
+    """
+    r_results = _generate_r_results(config)
 
     # --- 3. Assign dates ---
     start = datetime.strptime(config.start_date, "%Y-%m-%d")
