@@ -28,7 +28,7 @@ dev = [
 fars = "src.cli:main"
 
 [tool.setuptools]
-packages = ["src"]
+packages = ["src", "src.realtime"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
