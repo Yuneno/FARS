@@ -302,13 +302,15 @@ def test_cli_module_invocation_missing_flag_exits_2(tmp_path):
 def test_installed_fars_binary_runs_outside_checkout(tmp_path):
     """Regression: the installed `fars` entry point must import cleanly.
 
-    Installs the project into a throwaway venv (no deps, no build isolation to
-    stay offline) and runs the generated binary from a directory that is not
-    the repository, so `src` cannot be picked up from the checkout.
+    Installs the project into a throwaway prefix (no deps, no build isolation
+    to stay offline) and runs the generated binary from a directory that is
+    not the repository, so `src` cannot be picked up from the checkout.
     """
+    import os
     import shutil
     import subprocess
     import sys
+    import sysconfig
 
     project_root = Path(__file__).resolve().parent.parent
     # Install from a copy so build artifacts never pollute the checkout.
@@ -321,26 +323,28 @@ def test_installed_fars_binary_runs_outside_checkout(tmp_path):
     )
     shutil.copy2(project_root / "pyproject.toml", staging)
     shutil.copy2(project_root / "README.md", staging)
-    venv_dir = tmp_path / "venv"
-    subprocess.run(
-        [sys.executable, "-m", "venv", "--system-site-packages", str(venv_dir)],
-        check=True,
-        capture_output=True,
-    )
-    pip = venv_dir / "bin" / "pip"
+    install_prefix = tmp_path / "install"
     subprocess.run(
         [
-            str(pip),
+            sys.executable,
+            "-m",
+            "pip",
             "install",
             "--quiet",
             "--no-deps",
             "--no-build-isolation",
+            "--prefix",
+            str(install_prefix),
             str(staging),
         ],
         check=True,
         capture_output=True,
     )
-    fars = venv_dir / "bin" / "fars"
+
+    prefix_vars = {"base": str(install_prefix), "platbase": str(install_prefix)}
+    scripts_dir = Path(sysconfig.get_path("scripts", vars=prefix_vars))
+    site_packages = Path(sysconfig.get_path("purelib", vars=prefix_vars))
+    fars = scripts_dir / ("fars.exe" if os.name == "nt" else "fars")
     assert fars.exists()
 
     csv_path = tmp_path / "trades.csv"
@@ -350,6 +354,7 @@ def test_installed_fars_binary_runs_outside_checkout(tmp_path):
         cwd=tmp_path,
         capture_output=True,
         text=True,
+        env={**os.environ, "PYTHONPATH": str(site_packages)},
     )
     assert result.returncode == EXIT_OK, result.stderr
     payload = json.loads(result.stdout)

@@ -302,7 +302,7 @@ def test_invalid_encoding_raises_domain_error(tmp_path):
         load_trade_csv(path)
 
 
-@pytest.mark.parametrize("delimiter", ['"', "\n", "", "::", None])
+@pytest.mark.parametrize("delimiter", ['"', "\n", "\r", "", "::", None])
 def test_invalid_delimiter_raises_domain_error(tmp_path, delimiter):
     path = _write_csv(tmp_path, "r_result\n1\n")
 

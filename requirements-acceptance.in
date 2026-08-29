@@ -1,0 +1,13 @@
+# Phase 10A acceptance environment reviewed on Python 3.12.13.
+#
+# Compile this file for Python 3.12 to refresh requirements-acceptance.lock.
+# Scientific versions match the independently reviewed stack. pip and
+# setuptools are additionally fixed so package/CLI smoke tests are reproducible.
+arch==8.0.0
+matplotlib==3.11.1
+numpy==2.5.2
+pandas==3.0.5
+pip==25.0.1
+pytest==9.1.1
+scipy==1.18.1
+setuptools==72.1.0

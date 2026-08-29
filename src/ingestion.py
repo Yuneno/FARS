@@ -46,6 +46,32 @@ class TradeDataError(ValueError):
     """Raised when a CSV or mapping is structurally impossible to interpret."""
 
 
+def validate_csv_delimiter(value: object) -> str:
+    """Return a delimiter that is safe for FARS' fixed CSV dialect.
+
+    ``csv.reader`` changed its constructor validation across supported Python
+    versions: Python 3.11/3.12 accept quote, carriage-return, and newline as
+    delimiters, while Python 3.13 rejects them.  FARS therefore enforces the
+    dialect contract explicitly instead of inheriting version-specific
+    behavior from the standard library.
+    """
+    if not isinstance(value, str) or len(value) != 1:
+        raise TradeDataError("delimiter must be exactly one character")
+    if value in {'"', "\r", "\n"}:
+        raise TradeDataError(
+            "delimiter must not conflict with the CSV quote character or line endings"
+        )
+
+    # Retain the standard-library check for any additional dialect constraint
+    # introduced by the active interpreter, while keeping the explicit checks
+    # above authoritative across every supported version.
+    try:
+        csv.reader([], delimiter=value)
+    except (TypeError, ValueError) as exc:
+        raise TradeDataError(f"invalid CSV delimiter {value!r}: {exc}") from exc
+    return value
+
+
 @dataclass(frozen=True)
 class AuditIssue:
     """One stable, machine-readable ingestion finding."""
@@ -322,12 +348,7 @@ def load_trade_csv(
             "outcomes_finalized=True is required to attest that every r_result "
             "is a closed, final outcome"
         )
-    if not isinstance(delimiter, str) or len(delimiter) != 1:
-        raise TradeDataError("delimiter must be exactly one character")
-    try:
-        csv.reader([], delimiter=delimiter)
-    except (TypeError, ValueError) as exc:
-        raise TradeDataError(f"invalid CSV delimiter {delimiter!r}: {exc}") from exc
+    delimiter = validate_csv_delimiter(delimiter)
 
     timezone: ZoneInfo | None = None
     if analysis_timezone is not None:

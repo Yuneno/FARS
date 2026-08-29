@@ -30,6 +30,25 @@ The `-p no:debugging` option works around a known crash in the debugging plugin
 of some Anaconda/Python 3.13 environments; it is not required in a clean virtual
 environment when normal pytest startup works.
 
+The independently reviewed Phase 10A acceptance stack is reproducible with
+Python 3.12.13 and the hash-locked dependency file:
+
+```bash
+python3.12 -m venv .venv-acceptance
+.venv-acceptance/bin/python -m pip install --require-hashes \
+    -r requirements-acceptance.lock
+.venv-acceptance/bin/python -m pip install --no-deps --no-build-isolation -e .
+.venv-acceptance/bin/python -m pytest -m "not statistical"
+.venv-acceptance/bin/python -m pytest -m statistical
+```
+
+`requirements-acceptance.in` records the reviewed scientific versions and the
+packaging toolchain; `requirements-acceptance.lock` fixes their complete
+transitive resolution and distribution hashes. The deterministic CI runs on
+every push and pull request. The much slower statistical acceptance suite has a
+separate manually triggered workflow, so a green fast job is not presented as
+statistical acceptance.
+
 ## Command-line interface (Phase 9A)
 
 Installing with `pip install -e .` provides the `fars` entry point:

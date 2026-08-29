@@ -15,7 +15,6 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import math
 import sys
@@ -25,6 +24,7 @@ from .ingestion import (
     CanonicalTradeDataset,
     TradeDataError,
     load_trade_csv,
+    validate_csv_delimiter,
 )
 from .metrics import Metrics, compute_metrics
 
@@ -49,12 +49,11 @@ _METRIC_FIELDS = (
 
 
 def _delimiter(value: str) -> str:
-    """Validate against the real rules of csv.reader (rejects '"', '\\n', ...)."""
+    """Adapt the shared ingestion validator to argparse's type contract."""
     try:
-        csv.reader([], delimiter=value)
-    except (TypeError, ValueError) as exc:
-        raise argparse.ArgumentTypeError(f"invalid CSV delimiter {value!r}: {exc}")
-    return value
+        return validate_csv_delimiter(value)
+    except TradeDataError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
 def _build_parser() -> argparse.ArgumentParser:
