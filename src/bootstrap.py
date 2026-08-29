@@ -38,6 +38,7 @@ from scipy import stats as sp_stats
 from src.ingestion import CanonicalTradeDataset
 
 ALGORITHM_VERSION = "fars-1.2-phase10a-v6"
+RESULT_SCHEMA_VERSION = "fars-1.2-bootstrap-result-v1"
 
 STATE_IID = "iid_eligible"
 STATE_DEPENDENT = "dependent_resampling_candidate"
@@ -270,7 +271,7 @@ def analyze_bootstrap(
 
     def unsupported(reasons: list[str], rejecting: list[str] | None = None) -> dict[str, Any]:
         return {
-            "schema_version": ALGORITHM_VERSION,
+            "schema_version": RESULT_SCHEMA_VERSION,
             "eligibility": {
                 "state": STATE_UNSUPPORTED,
                 "reasons": reasons,
@@ -559,7 +560,7 @@ def analyze_bootstrap(
                 )
                 entry["block_length"] = {
                     "influence_series": f"u_{name}",
-                    "raw": None,
+                    "selector_value_reported": None,
                     "final": None,
                     "k": None,
                     "error": str(exc),
@@ -575,7 +576,7 @@ def analyze_bootstrap(
             )
             entry["block_length"] = {
                 "influence_series": f"u_{name}",
-                "raw": l_hat_reported,
+                "selector_value_reported": l_hat_reported,
                 "final": block,
                 "k": math.ceil(n / block),
             }
@@ -665,7 +666,7 @@ def analyze_bootstrap(
                 _add_bca(entry, theta_star, theta_hat, r, B, validity)
 
     return {
-        "schema_version": ALGORITHM_VERSION,
+        "schema_version": RESULT_SCHEMA_VERSION,
         "eligibility": {
             "state": state,
             "reasons": state_reasons,

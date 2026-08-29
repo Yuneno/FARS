@@ -484,12 +484,15 @@ k_j              = ceil(n / l_j)
 The canonicalization removes non-semantic final-ULP variation observed in the
 selector's vector reductions on an otherwise locked platform. The unrounded
 selector value remains authoritative for `ceil`; only the recorded diagnostic
-is canonicalized. The result records
+is canonicalized. The per-estimand result names that diagnostic
+`selector_value_reported` so it cannot be mistaken for the unrounded selector
+value. The result records
 `block_length_report_significant_digits = 12`. This does not replace or tune
 the `arch` selector.
 
-The exact arch version is locked before implementation and recorded. Raw and
-final lengths are recorded per estimand. A selector exception, non-finite
+The exact arch version is locked before implementation and recorded. The
+canonicalized selector diagnostic and final length are recorded per estimand.
+A selector exception, non-finite
 length, or invalid influence series makes only that estimand
 `not_estimable:block_length_selection_failed`; it does not silently fall back
 to l=1 or invalidate otherwise supported estimands.
@@ -581,15 +584,23 @@ This warning describes bootstrap bias sensitivity; it is not a validity test.
   implementation, and locked NumPy/SciPy/arch versions. Cross-version identity
   is not promised.
 
-The result copies `source_sha256`, `schema_version`, `resolved_mapping`, and
+The top-level result `schema_version` is
+`fars-1.2-bootstrap-result-v1`. It versions the public result structure and is
+independent of `ALGORITHM_VERSION = fars-1.2-phase10a-v6`, which identifies the
+reviewed statistical method.
+
+The result copies `source_sha256`, the ingestion `schema_version`,
+`resolved_mapping`, and
 capability statuses/reasons from Phase 8A. It additionally records:
 
-- dependency versions and algorithm/schema version;
+- dependency versions, the Phase 10A algorithm version, and a distinct result
+  schema version;
 - alpha_family, m, alpha_b, lags, every statistic/p-value and omission reason;
 - ACF values/bound;
 - eligibility state/reasons;
 - validity status per interval;
-- influence-series name, raw/final block length and k per estimand;
+- influence-series name, reported selector value, final block length, and k per
+  estimand;
 - B, confidence level, quantile method, RNG metadata;
 - distinct asset/strategy labels and all limitation notes.
 

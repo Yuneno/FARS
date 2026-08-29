@@ -12,6 +12,7 @@ from scipy import stats as sp_stats
 from src.bootstrap import (
     ALGORITHM_VERSION,
     BLOCK_LENGTH_REPORT_SIGNIFICANT_DIGITS,
+    RESULT_SCHEMA_VERSION,
     STATE_DEPENDENT,
     STATE_IID,
     STATE_UNSUPPORTED,
@@ -283,7 +284,7 @@ def test_ar1_dependent_uses_cbb_without_bca(tmp_path):
         assert bl is not None
         assert 1 <= bl["final"] <= 300
         assert bl["k"] == math.ceil(300 / bl["final"])
-        assert math.isfinite(bl["raw"])
+        assert math.isfinite(bl["selector_value_reported"])
     assert_no_nan_or_inf(result)
 
 
@@ -301,7 +302,7 @@ def test_block_selector_exception_is_isolated_per_estimand(tmp_path, monkeypatch
         assert entry["value"] is None
         assert entry["reason"] == "block_length_selection_failed"
         assert entry["intervals"] == []
-        assert entry["block_length"]["raw"] is None
+        assert entry["block_length"]["selector_value_reported"] is None
         assert entry["block_length"]["error"] == "selector failed for test"
     assert_no_nan_or_inf(result)
 
@@ -427,7 +428,8 @@ def test_provenance_labels_and_schema(tmp_path):
     assert set(prov["versions"]) == {"numpy", "scipy", "arch"}
     assert result["labels"]["assets"] == []
     assert result["labels"]["strategies"] == []
-    assert result["schema_version"] == ALGORITHM_VERSION
+    assert result["schema_version"] == RESULT_SCHEMA_VERSION
+    assert result["schema_version"] != prov["algorithm_version"]
 
 
 def test_equal_timestamps_recorded_as_limitation(tmp_path):
@@ -439,6 +441,8 @@ def test_equal_timestamps_recorded_as_limitation(tmp_path):
 def test_not_estimable_contract_shape(tmp_path):
     dataset = _write_dataset(tmp_path, _iid_values(n=30))
     result = analyze_bootstrap(dataset, master_seed=1)
+    assert result["schema_version"] == RESULT_SCHEMA_VERSION
+    assert result["provenance"]["algorithm_version"] == ALGORITHM_VERSION
     for entry in result["estimands"].values():
         assert set(entry) >= {"status", "value", "reason"}
         assert entry["status"] == "not_estimable"

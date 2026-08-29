@@ -315,6 +315,8 @@ def test_bootstrap_json_is_reproducible_and_preserves_source(tmp_path):
     assert b"NaN" not in first.stdout
     payload = json.loads(first.stdout)
     result = payload["bootstrap"]
+    assert result["schema_version"] == "fars-1.2-bootstrap-result-v1"
+    assert result["provenance"]["algorithm_version"] == "fars-1.2-phase10a-v6"
     assert result["rng"]["master_entropy"] == 42
     assert result["parameters"]["B"] == 2001
     assert result["provenance"]["source_sha256"] == payload["provenance"]["source_sha256"]
@@ -334,6 +336,8 @@ def test_bootstrap_text_discloses_validity_and_parameters(tmp_path, capsys):
     assert code == EXIT_OK
     assert err == ""
     assert "Bootstrap:" in out
+    assert "result_schema_version: fars-1.2-bootstrap-result-v1" in out
+    assert "algorithm_version: fars-1.2-phase10a-v6" in out
     assert "eligibility:" in out
     assert "seed: 7" in out
     assert "replicates: 2000" in out

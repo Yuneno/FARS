@@ -307,7 +307,8 @@ def _print_bootstrap_text(result: dict[str, Any]) -> None:
     print(f"  eligibility: {eligibility['state']}")
     print(f"  reasons: {eligibility['reasons'] or []}")
     print(f"  rejecting_tests: {eligibility['rejecting_tests'] or []}")
-    print(f"  algorithm_version: {result['schema_version']}")
+    print(f"  result_schema_version: {result['schema_version']}")
+    print(f"  algorithm_version: {result['provenance']['algorithm_version']}")
     print(f"  seed: {result['rng']['master_entropy']}")
     print(f"  replicates: {parameters['B']}")
     print(f"  confidence_level: {parameters['confidence_level']}")
@@ -333,7 +334,9 @@ def _print_bootstrap_text(result: dict[str, Any]) -> None:
         if entry["block_length"] is not None:
             block = entry["block_length"]
             print(
-                f"      block_length: raw={block['raw']} final={block['final']} "
+                "      block_length: "
+                f"selector_value_reported={block['selector_value_reported']} "
+                f"final={block['final']} "
                 f"blocks_per_replicate={block['k']}"
             )
         if entry["warnings"]:

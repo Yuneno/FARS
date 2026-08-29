@@ -86,7 +86,10 @@ explicitly exploratory and assume plausible stationary short-memory
 dependence. A fixed seed provides reproducibility, not statistical validity.
 Bootstrap JSON reports finite floating-point values to 15 significant decimal
 digits. This removes non-semantic final-bit noise from the numerical stack so
-repeated runs under the locked acceptance environment are byte-identical.
+repeated runs under the locked acceptance environment are byte-identical. The
+top-level bootstrap `schema_version` (`fars-1.2-bootstrap-result-v1`) versions
+the output structure independently from the statistical `algorithm_version`
+(`fars-1.2-phase10a-v6`).
 
 ## Historical CSV ingestion (Phase 8A)
 
