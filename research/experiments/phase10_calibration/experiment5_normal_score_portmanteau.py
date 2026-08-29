@@ -1,7 +1,8 @@
-"""Candidate v6 calibration: rank-portmanteau size and power.
+"""Candidate v6 calibration: normal-score rank portmanteau size and power.
 
-Both roots used here have already been consumed (v4 calibration and failed v5
-confirmation). Results may guide a v6 design but cannot confirm it.
+Maps empirical ranks to finite Gaussian scores, then applies Ljung-Box to the
+scores and their squares. Both roots are already consumed and are calibration
+only; a selected revision still requires a new confirmation root.
 """
 
 from __future__ import annotations
@@ -14,7 +15,14 @@ import numpy as np
 from scipy import stats as sp_stats
 
 sys.path.insert(0, ".")
-from scratch_phase10_diag.experiment1_classification import pvalues  # noqa: E402
+from research.experiments.phase10_calibration.experiment1_classification import (  # noqa: E402
+    pvalues,
+)
+from research.experiments.phase10_calibration.experiment4_rank_portmanteau import (  # noqa: E402
+    ALPHA_FAMILY,
+    CALIBRATION_ROOTS,
+    classify,
+)
 from src.bootstrap import _is_constant, _ljung_box  # noqa: E402
 from tests.test_bootstrap_statistical import (  # noqa: E402
     FP_GENERATORS,
@@ -27,12 +35,15 @@ from tests.test_bootstrap_statistical import (  # noqa: E402
     _suite_children,
 )
 
-ALPHA_FAMILY = 0.05
-CALIBRATION_ROOTS = (20260821, 14070111912601187797)
+
+def _normal_scores(values: np.ndarray) -> np.ndarray:
+    ranks = sp_stats.rankdata(values, method="average")
+    probabilities = (ranks - 0.5) / values.shape[0]
+    return sp_stats.norm.ppf(probabilities)
 
 
 def candidate_pvalues(r: np.ndarray) -> dict[str, float]:
-    """V5 family with raw/r-squared Ljung-Box replaced by rank scores."""
+    """V5 family with raw diagnostics replaced by Gaussian rank scores."""
     out = {
         name: value
         for name, value in pvalues(r).items()
@@ -41,29 +52,13 @@ def candidate_pvalues(r: np.ndarray) -> dict[str, float]:
     n = r.shape[0]
     lags_max = min(math.ceil(10 * math.log10(n)), n - 1)
     lags = sorted({min(10, lags_max), lags_max})
-    for name, values in (
-        ("rank_r", sp_stats.rankdata(r, method="average")),
-        ("rank_abs_r", sp_stats.rankdata(np.abs(r), method="average")),
-    ):
+    z = _normal_scores(r)
+    for name, values in (("normal_score", z), ("normal_score_squared", z * z)):
         if _is_constant(values):
             continue
         for lag, (_q, p) in _ljung_box(values, n, lags).items():
             out[f"lb_{name}_h{lag}"] = p
     return out
-
-
-def classify(pv: dict[str, float]) -> str:
-    alpha_b = ALPHA_FAMILY / len(pv)
-    rejecting = {name for name, p in pv.items() if p < alpha_b}
-    dependence = {
-        name for name in rejecting if name.startswith(("lb_", "runs"))
-    }
-    regime = rejecting - dependence
-    if dependence:
-        return "dependent"
-    if regime:
-        return "unsupported"
-    return "iid"
 
 
 def evaluate_root(root_entropy: int) -> None:
@@ -96,6 +91,7 @@ def evaluate_root(root_entropy: int) -> None:
 
 
 def main() -> None:
+    assert ALPHA_FAMILY == 0.05
     for root_entropy in CALIBRATION_ROOTS:
         evaluate_root(root_entropy)
 

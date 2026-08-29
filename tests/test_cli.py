@@ -1,8 +1,9 @@
-"""Tests for the Phase 9A CLI (src/cli.py)."""
+"""Tests for the Phase 9A/10B CLI (src/cli.py)."""
 
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -25,6 +26,24 @@ def _write(tmp_path, content: str, name: str = "trades.csv"):
     path = tmp_path / name
     path.write_text(content, encoding="utf-8")
     return path
+
+
+def _bootstrap_csv(n: int = 80, *, timestamps: bool = True) -> str:
+    """Deterministic, nonconstant historical sample for Phase 10B CLI tests."""
+    state = 9173
+    values: list[float] = []
+    for _ in range(n):
+        state = (48271 * state) % 2147483647
+        values.append(2.0 * (state / 2147483647.0 - 0.45))
+    if not timestamps:
+        return "r_result\n" + "\n".join(repr(float(value)) for value in values) + "\n"
+    t0 = datetime(2024, 1, 2, tzinfo=timezone.utc)
+    rows = ["timestamp,r_result"]
+    rows.extend(
+        f"{(t0 + timedelta(hours=i)).isoformat()},{float(value)!r}"
+        for i, value in enumerate(values)
+    )
+    return "\n".join(rows) + "\n"
 
 
 def test_audit_text_ok(tmp_path, capsys):
@@ -257,6 +276,182 @@ def test_delimiter_and_encoding_options(tmp_path, capsys):
     assert payload["provenance"]["delimiter"] == ";"
 
 
+def test_bootstrap_json_is_reproducible_and_preserves_source(tmp_path):
+    import os
+    import subprocess
+    import sys
+
+    path = _write(tmp_path, _bootstrap_csv())
+    source_before = path.read_bytes()
+    command = [
+        sys.executable,
+        "-m",
+        "src.cli",
+        "bootstrap",
+        str(path),
+        "--outcomes-finalized",
+        "--seed",
+        "42",
+        "--replicates",
+        "2001",
+        "--format",
+        "json",
+    ]
+    project_root = Path(__file__).resolve().parent.parent
+    mpl_cache = tmp_path / "mpl-cache"
+    mpl_cache.mkdir()
+    env = {**os.environ, "MPLCONFIGDIR": str(mpl_cache)}
+
+    first = subprocess.run(
+        command, cwd=project_root, capture_output=True, env=env, check=False
+    )
+    second = subprocess.run(
+        command, cwd=project_root, capture_output=True, env=env, check=False
+    )
+
+    assert first.returncode == second.returncode == EXIT_OK
+    assert first.stdout == second.stdout
+    assert path.read_bytes() == source_before
+    assert b"NaN" not in first.stdout
+    payload = json.loads(first.stdout)
+    result = payload["bootstrap"]
+    assert result["rng"]["master_entropy"] == 42
+    assert result["parameters"]["B"] == 2001
+    assert result["provenance"]["source_sha256"] == payload["provenance"]["source_sha256"]
+    assert result["eligibility"]["state"] in {
+        "iid_eligible",
+        "dependent_resampling_candidate",
+    }
+
+
+def test_bootstrap_text_discloses_validity_and_parameters(tmp_path, capsys):
+    path = _write(tmp_path, _bootstrap_csv())
+    code = main(
+        ["bootstrap", str(path), "--outcomes-finalized", "--seed", "7"]
+    )
+    out, err = capsys.readouterr()
+
+    assert code == EXIT_OK
+    assert err == ""
+    assert "Bootstrap:" in out
+    assert "eligibility:" in out
+    assert "seed: 7" in out
+    assert "replicates: 2000" in out
+    assert "validity=" in out
+
+
+def test_bootstrap_refuses_missing_temporal_capability_with_structured_result(
+    tmp_path, capsys
+):
+    path = _write(tmp_path, _bootstrap_csv(timestamps=False))
+    code = main(
+        [
+            "bootstrap",
+            str(path),
+            "--outcomes-finalized",
+            "--seed",
+            "1",
+            "--format",
+            "json",
+        ]
+    )
+    out, err = capsys.readouterr()
+
+    assert code == EXIT_BLOCKED
+    result = json.loads(out)["bootstrap"]
+    assert result["eligibility"]["reasons"] == [
+        "capability_unavailable:temporal_analysis"
+    ]
+    assert "capability_unavailable:temporal_analysis" in err
+
+
+def test_bootstrap_refuses_missing_core_capability_with_structured_result(
+    tmp_path, capsys
+):
+    rows = _bootstrap_csv().splitlines()
+    timestamp, _value = rows[10].split(",", 1)
+    rows[10] = f"{timestamp},not-a-number"
+    path = _write(tmp_path, "\n".join(rows) + "\n")
+
+    code = main(
+        [
+            "bootstrap",
+            str(path),
+            "--outcomes-finalized",
+            "--seed",
+            "1",
+            "--format",
+            "json",
+        ]
+    )
+    out, err = capsys.readouterr()
+
+    assert code == EXIT_BLOCKED
+    payload = json.loads(out)
+    assert "capability_unavailable:core_metrics" in payload["bootstrap"][
+        "eligibility"
+    ]["reasons"]
+    assert "capability_unavailable:core_metrics" in err
+    assert payload["rows"]["rejected"] == 1
+
+
+def test_bootstrap_unsupported_diagnostics_return_blocked_with_result(tmp_path, capsys):
+    path = _write(tmp_path, _bootstrap_csv(n=49))
+    code = main(
+        [
+            "bootstrap",
+            str(path),
+            "--outcomes-finalized",
+            "--seed",
+            "1",
+            "--format",
+            "json",
+        ]
+    )
+    out, err = capsys.readouterr()
+
+    assert code == EXIT_BLOCKED
+    result = json.loads(out)["bootstrap"]
+    assert result["eligibility"]["reasons"] == [
+        "insufficient_sample_for_diagnostics"
+    ]
+    assert "unsupported or inconclusive" in err
+
+
+@pytest.mark.parametrize(
+    "option,value",
+    [
+        ("--seed", "-1"),
+        ("--seed", "not-an-integer"),
+        ("--replicates", "1999"),
+        ("--replicates", "2.5"),
+    ],
+)
+def test_bootstrap_invalid_seed_or_replicates_is_usage_error(
+    tmp_path, option, value
+):
+    path = _write(tmp_path, _bootstrap_csv())
+    args = [
+        "bootstrap",
+        str(path),
+        "--outcomes-finalized",
+        "--seed",
+        "1",
+        option,
+        value,
+    ]
+    with pytest.raises(SystemExit) as excinfo:
+        main(args)
+    assert excinfo.value.code == EXIT_USAGE
+
+
+def test_bootstrap_requires_seed(tmp_path):
+    path = _write(tmp_path, _bootstrap_csv())
+    with pytest.raises(SystemExit) as excinfo:
+        main(["bootstrap", str(path), "--outcomes-finalized"])
+    assert excinfo.value.code == EXIT_USAGE
+
+
 def test_cli_module_invocation_subprocess(tmp_path):
     import subprocess
     import sys
@@ -333,6 +528,7 @@ def test_installed_fars_binary_runs_outside_checkout(tmp_path):
             "--quiet",
             "--no-deps",
             "--no-build-isolation",
+            "--ignore-installed",
             "--prefix",
             str(install_prefix),
             str(staging),

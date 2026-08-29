@@ -33,7 +33,9 @@ from tests.test_bootstrap_statistical import (  # noqa: E402
     _replicate_leaves,
     _suite_children,
 )
-from scratch_phase10_diag.experiment1_classification import pvalues  # noqa: E402
+from research.experiments.phase10_calibration.experiment1_classification import (  # noqa: E402
+    pvalues,
+)
 
 ALPHA_FAMILY = 0.05
 Q_LO, Q_HI = 0.025, 0.975

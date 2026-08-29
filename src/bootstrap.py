@@ -1,13 +1,14 @@
 """FARS 1.2 Phase 10A bootstrap framework.
 
-Implements ``FARS_1_2_PHASE_10_BOOTSTRAP_DRAFT.md`` v6 exactly:
+Implements ``FARS_1_2_PHASE_10_BOOTSTRAP.md`` v6 exactly:
 
 - IID Bootstrap and Circular Block Bootstrap (CBB) resampling engines.
-- Temporal-dependence diagnostics (Ljung-Box on r and r^2, runs test, heuristic
-  regime screens, descriptive ACF) with a Bonferroni-controlled family and a
-  three-state eligibility classifier. Per v5 section 0.2, dependence tests
-  (valid under the IID null) take classification precedence over regime
-  screens, whose p-values assume within-group independence.
+- Temporal-dependence diagnostics (rank-portmanteau Ljung-Box, runs test,
+  heuristic regime screens, descriptive raw-R ACF) with a
+  Bonferroni-controlled family and a three-state eligibility classifier. Per
+  v5 section 0.2, dependence tests (valid under the IID null) take
+  classification precedence over regime screens, whose p-values assume
+  within-group independence.
 - V6 replaces raw-return Ljung-Box inputs with Gaussian rank scores and their
   squares. This rank-portmanteau construction preserves temporal order while
   avoiding the severe finite-sample size distortion of raw squared returns
@@ -53,6 +54,7 @@ QUANTILE_METHOD = "linear"
 QUANTILE_LO = 0.025
 QUANTILE_HI = 0.975
 DISCREPANCY_CENTER_FRACTION = 0.25
+BLOCK_LENGTH_REPORT_SIGNIFICANT_DIGITS = 12
 
 _ESTIMAND_ORDER = ("expectancy", "win_rate", "std")
 _REQUIRED_CAPABILITIES = ("core_metrics", "temporal_analysis")
@@ -295,6 +297,9 @@ def analyze_bootstrap(
                 "quantile_method": QUANTILE_METHOD,
                 "alpha_family": ALPHA_FAMILY,
                 "min_n_diagnostics": MIN_N_DIAGNOSTICS,
+                "block_length_report_significant_digits": (
+                    BLOCK_LENGTH_REPORT_SIGNIFICANT_DIGITS
+                ),
             },
             "provenance": provenance,
             "labels": labels,
@@ -561,9 +566,16 @@ def analyze_bootstrap(
                 }
                 continue
             block = min(n, max(1, int(math.ceil(l_hat))))
+            # Vector dot products inside arch can vary by a final binary ULP
+            # across repeated calls on the same locked platform. Preserve the
+            # unrounded value for the method's ceil() decision, but canonicalize
+            # the reported diagnostic so the public result is bit-reproducible.
+            l_hat_reported = float(
+                format(l_hat, f".{BLOCK_LENGTH_REPORT_SIGNIFICANT_DIGITS}g")
+            )
             entry["block_length"] = {
                 "influence_series": f"u_{name}",
-                "raw": l_hat,
+                "raw": l_hat_reported,
                 "final": block,
                 "k": math.ceil(n / block),
             }
@@ -668,6 +680,9 @@ def analyze_bootstrap(
             "quantile_method": QUANTILE_METHOD,
             "alpha_family": ALPHA_FAMILY,
             "min_n_diagnostics": MIN_N_DIAGNOSTICS,
+            "block_length_report_significant_digits": (
+                BLOCK_LENGTH_REPORT_SIGNIFICANT_DIGITS
+            ),
         },
         "provenance": provenance,
         "labels": labels,

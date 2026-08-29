@@ -346,16 +346,17 @@ PnL.
 
 ## 10. Bootstrap Framework
 
-**STATUS: PHASE 10A v4 IMPLEMENTED; v5 INDEPENDENTLY REJECTED; v6
-INDEPENDENTLY REVIEWED, CONFIRMED, AND IMPLEMENTED** (see
-`FARS_1_2_PHASE_10_BOOTSTRAP_DRAFT.md`, section 0). V4 acceptance exposed two
-infeasible criteria. V5 corrected them but failed independent IID-size
-validation for a skewed LogNormal marginal. V6 replaces raw-score portmanteau
-inputs with marginal-normal rank scores and passed all 10 criteria on its newly
-predeclared independent confirmation root; generators, sample sizes,
-thresholds, and simulation counts remained unchanged.
+**STATUS: PHASE 10A v6 INDEPENDENTLY REVIEWED, CONFIRMED, AND IMPLEMENTED;
+PHASE 10B CLI IMPLEMENTED, INDEPENDENT REVIEW PENDING** (see
+`FARS_1_2_PHASE_10_BOOTSTRAP.md`, section 0, and
+`FARS_1_2_PHASES_10B_14_SPEC.md`). V4 acceptance exposed two infeasible
+criteria. V5 corrected them but failed independent IID-size validation for a
+skewed LogNormal marginal. V6 replaces raw-score portmanteau inputs with
+marginal-normal rank scores and passed all 10 criteria on its newly predeclared
+independent confirmation root; generators, sample sizes, thresholds, and
+simulation counts remained unchanged.
 
-Bootstrap will become a formal statistical component of FARS 1.2.
+Bootstrap is a formal statistical component of FARS 1.2.
 
 FARS MUST NOT assume historical trades are IID without testing or justification.
 
@@ -369,13 +370,19 @@ Candidate methods may include:
 
 Method selection must be driven by statistical evidence and documented assumptions rather than convenience.
 
-Detailed requirements for diagnostics, method selection, confidence intervals, reproducibility, block-length selection, uncertainty estimation, and failure modes will be specified before implementation.
+The approved Phase 10A design defines diagnostics, method selection, confidence
+intervals, reproducibility, block-length selection, uncertainty estimation, and
+failure modes. Phase 10B exposes that implementation without adding estimands
+or statistical methods.
 
 ---
 
 ## 11. Probabilistic Risk and Trade Limits
 
-**STATUS: DESIGN PENDING**
+**STATUS: PHASES 11A–11D CONTRACT APPROVED; IMPLEMENTATION PENDING**
+
+The detailed monetary-data, funded-rule, probabilistic-path, and Tradovate
+adapter contracts are defined in `FARS_1_2_PHASES_10B_14_SPEC.md`.
 
 FARS may use Bootstrap and related statistical methods to estimate probabilistic distributions and bounds for quantities such as:
 
@@ -394,7 +401,7 @@ The exact meaning of any "trade limit" must be formally defined before implement
 
 ## 12. Temporal Validation and Out-of-Sample Evaluation
 
-**STATUS: DESIGN PENDING**
+**STATUS: CONTRACT APPROVED; WINDOW PARAMETERS DEFERRED**
 
 FARS 1.2 will preserve chronological structure when performing temporal validation.
 
@@ -414,7 +421,7 @@ The methodology must prevent leakage from validation or final-test periods into 
 
 ## 13. Stress Testing
 
-**STATUS: DESIGN PENDING**
+**STATUS: CONTRACT APPROVED; SCENARIO MAGNITUDES DEFERRED**
 
 Stress testing may be added when it answers a clearly defined risk question.
 
@@ -536,20 +543,14 @@ No future extension listed here is an implementation requirement.
 
 The following items must be resolved before their respective components are implemented:
 
-The Phase 8A versions of the canonical trade schema, capability requirements,
-column mapping, missing/duplicate policy, timestamp policy, and audit format are
-resolved in sections 7 and 8. The following decisions remain open:
+Phase 8A resolved the canonical R-trade and audit contract. Phase 10A resolved
+the temporal diagnostics, IID/CBB selection, block-length method, and interval
+methodology. The approved phases 10B–14 specification resolves the generic
+monetary representation and records the remaining provider- or phase-dependent
+questions explicitly.
 
-1. Gross versus net PnL representation.
-2. Commission and slippage handling.
-3. CLI configuration files (Phase 9A commands and options are resolved in section 9).
-4. Temporal-dependence diagnostics.
-5. Criteria for IID versus dependent Bootstrap methods.
-6. Block Bootstrap variant and block-length methodology when required.
-7. Bootstrap interval methodology.
-8. Formal definition of probabilistic trade limits.
-9. OOS and walk-forward protocols.
-10. Stress-testing methodology.
-11. Treatment of optional external contextual metadata.
-
-These are intentionally unresolved. They must not be guessed by implementation agents.
+The remaining decisions are maintained in section 16 of
+`FARS_1_2_PHASES_10B_14_SPEC.md`. In particular, implementation must not guess
+the Tradovate export schema, exact Rapid 25K replay semantics, slippage model,
+walk-forward windows, stress magnitudes, provider API behavior, or external
+metadata contract.

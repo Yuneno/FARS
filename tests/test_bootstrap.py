@@ -11,6 +11,7 @@ from scipy import stats as sp_stats
 
 from src.bootstrap import (
     ALGORITHM_VERSION,
+    BLOCK_LENGTH_REPORT_SIGNIFICANT_DIGITS,
     STATE_DEPENDENT,
     STATE_IID,
     STATE_UNSUPPORTED,
@@ -184,6 +185,24 @@ def test_different_seed_changes_output(tmp_path):
     a = analyze_bootstrap(dataset, master_seed=42)
     b = analyze_bootstrap(dataset, master_seed=43)
     assert a["estimands"]["expectancy"]["intervals"] != b["estimands"]["expectancy"]["intervals"]
+
+
+def test_same_seed_dependent_result_is_bit_identical(tmp_path):
+    state = 9173
+    values = []
+    for _ in range(80):
+        state = (48271 * state) % 2147483647
+        values.append(2.0 * (state / 2147483647.0 - 0.45))
+    dataset = _write_dataset(tmp_path, values)
+
+    first = analyze_bootstrap(dataset, master_seed=42, B=2001)
+    second = analyze_bootstrap(dataset, master_seed=42, B=2001)
+
+    assert first["eligibility"]["state"] == STATE_DEPENDENT
+    assert first == second
+    assert first["parameters"]["block_length_report_significant_digits"] == (
+        BLOCK_LENGTH_REPORT_SIGNIFICANT_DIGITS
+    )
 
 
 def test_rng_metadata_fixed_tree(tmp_path):

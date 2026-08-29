@@ -13,7 +13,7 @@ from collections import Counter
 import numpy as np
 
 sys.path.insert(0, ".")
-from scratch_phase10_diag.experiment1_classification import pvalues
+from research.experiments.phase10_calibration.experiment1_classification import pvalues
 from tests.test_bootstrap_statistical import (
     FP_GENERATORS,
     FP_M,

@@ -475,10 +475,18 @@ classes, and `u_std` requires m2 > 0.
 For estimand j:
 
 ```text
-l_hat_j = arch.bootstrap.optimal_block_length(u_j).loc[0, "circular"]
-l_j     = min(n, max(1, int(ceil(l_hat_j))))
-k_j     = ceil(n / l_j)
+l_hat_raw_j      = arch.bootstrap.optimal_block_length(u_j).loc[0, "circular"]
+l_j              = min(n, max(1, int(ceil(l_hat_raw_j))))
+l_hat_reported_j = canonicalize(l_hat_raw_j, 12 significant decimal digits)
+k_j              = ceil(n / l_j)
 ```
+
+The canonicalization removes non-semantic final-ULP variation observed in the
+selector's vector reductions on an otherwise locked platform. The unrounded
+selector value remains authoritative for `ceil`; only the recorded diagnostic
+is canonicalized. The result records
+`block_length_report_significant_digits = 12`. This does not replace or tune
+the `arch` selector.
 
 The exact arch version is locked before implementation and recorded. Raw and
 final lengths are recorded per estimand. A selector exception, non-finite
@@ -700,6 +708,7 @@ exploratory. Deterministic tests still enforce their exact construction.
 - No skewness/kurtosis intervals, parametric bootstrap, binomial win-rate method,
   optimization, OOS/walk-forward, or stress testing.
 - No stationarity or IID certification.
-- No CLI exposure until a separate CLI contract is approved.
+- CLI exposure is outside Phase 10A and is defined by the approved Phase 10B
+  contract in `FARS_1_2_PHASES_10B_14_SPEC.md`.
 - Phase 10B may add estimands only with an approved estimand/method/block-length
   support matrix.

@@ -1,8 +1,8 @@
-"""Phase 9A command-line interface for FARS.
+"""Phase 10B command-line interface for FARS.
 
-Exposes the capabilities approved by the Phase 9A CLI contract: CSV audit
-(Phase 8A) and core descriptive metrics. Bootstrap, Monte Carlo, and
-optimization are not exposed here; Phase 10A requires a separate CLI contract.
+Exposes CSV audit (Phase 8A), core descriptive metrics (Phase 9A), and the
+reviewed Phase 10A bootstrap analysis. Monte Carlo and optimization are not
+exposed for historical CSV data.
 
 Exit codes:
     0  operation completed successfully
@@ -46,6 +46,7 @@ _METRIC_FIELDS = (
     "max_drawdown_r",
     "max_losing_streak",
 )
+_BOOTSTRAP_JSON_SIGNIFICANT_DIGITS = 15
 
 
 def _delimiter(value: str) -> str:
@@ -56,12 +57,34 @@ def _delimiter(value: str) -> str:
         raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
+def _seed(value: str) -> int:
+    """Parse the explicit non-negative Bootstrap master seed."""
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("seed must be an integer") from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("seed must be non-negative")
+    return parsed
+
+
+def _replicates(value: str) -> int:
+    """Parse the Phase 10A bootstrap replicate count."""
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("replicates must be an integer") from exc
+    if parsed < 2000:
+        raise argparse.ArgumentTypeError("replicates must be at least 2000")
+    return parsed
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="fars",
         description=(
-            "FARS Phase 9A CLI: audit external trade CSVs and compute core "
-            "descriptive metrics. No resampling or optimization is performed."
+            "FARS 1.2 CLI: audit external trade CSVs, compute descriptive "
+            "metrics, and run the reviewed Phase 10A bootstrap analysis."
         ),
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -69,6 +92,10 @@ def _build_parser() -> argparse.ArgumentParser:
     for name, help_text in (
         ("audit", "load a trade CSV and report validation, capabilities, provenance"),
         ("metrics", "audit the CSV and compute core metrics if core_metrics is available"),
+        (
+            "bootstrap",
+            "audit the CSV and estimate uncertainty with the eligible Phase 10A method",
+        ),
     ):
         sub = subparsers.add_parser(name, help=help_text)
         sub.add_argument("csv", help="path to the external trade CSV file")
@@ -107,6 +134,21 @@ def _build_parser() -> argparse.ArgumentParser:
             default="text",
             help="output format (default text)",
         )
+        if name == "bootstrap":
+            sub.add_argument(
+                "--seed",
+                required=True,
+                type=_seed,
+                metavar="INTEGER",
+                help="explicit non-negative master seed (required)",
+            )
+            sub.add_argument(
+                "--replicates",
+                default=2000,
+                type=_replicates,
+                metavar="INTEGER",
+                help="bootstrap replicates, at least 2000 (default 2000)",
+            )
     return parser
 
 
@@ -185,6 +227,26 @@ def _print_json(payload: dict[str, Any]) -> None:
     sys.stdout.write("\n")
 
 
+def _canonicalize_bootstrap_json(value: Any) -> Any:
+    """Suppress non-semantic floating-point noise in the stable CLI schema.
+
+    The locked macOS numerical stack can return block-length diagnostics that
+    differ by one final binary ULP across repeated calls. Fifteen significant
+    decimal digits preserve materially relevant numerical precision while
+    making that non-semantic noise byte-stable. The statistical computation
+    and Python API result are not changed.
+    """
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError("bootstrap result contains a non-finite float")
+        return float(format(value, f".{_BOOTSTRAP_JSON_SIGNIFICANT_DIGITS}g"))
+    if isinstance(value, dict):
+        return {key: _canonicalize_bootstrap_json(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_canonicalize_bootstrap_json(item) for item in value]
+    return value
+
+
 def _print_audit_text(dataset: CanonicalTradeDataset) -> None:
     report = dataset.audit
     provenance = dataset.provenance
@@ -238,11 +300,65 @@ def _print_metrics_text(metrics: Metrics) -> None:
         print(f"{labels[name]}: {rendered}")
 
 
+def _print_bootstrap_text(result: dict[str, Any]) -> None:
+    eligibility = result["eligibility"]
+    parameters = result["parameters"]
+    print("Bootstrap:")
+    print(f"  eligibility: {eligibility['state']}")
+    print(f"  reasons: {eligibility['reasons'] or []}")
+    print(f"  rejecting_tests: {eligibility['rejecting_tests'] or []}")
+    print(f"  algorithm_version: {result['schema_version']}")
+    print(f"  seed: {result['rng']['master_entropy']}")
+    print(f"  replicates: {parameters['B']}")
+    print(f"  confidence_level: {parameters['confidence_level']}")
+    print("  estimands:")
+    for name in ("expectancy", "win_rate", "std"):
+        entry = result["estimands"][name]
+        print(
+            f"    {name}: status={entry['status']} value={entry['value']} "
+            f"validity={entry['validity']}"
+        )
+        if entry["reason"] is not None:
+            print(f"      reason: {entry['reason']}")
+        for interval in entry["intervals"]:
+            print(
+                f"      {interval['method']} 95% CI: "
+                f"[{interval['lower']}, {interval['upper']}] "
+                f"({interval['validity']})"
+            )
+        for omission in entry["interval_omissions"]:
+            print(
+                f"      omitted {omission['method']}: {omission['reason']}"
+            )
+        if entry["block_length"] is not None:
+            block = entry["block_length"]
+            print(
+                f"      block_length: raw={block['raw']} final={block['final']} "
+                f"blocks_per_replicate={block['k']}"
+            )
+        if entry["warnings"]:
+            print(f"      warnings: {entry['warnings']}")
+    if result["limitations"]:
+        print(f"  limitations: {result['limitations']}")
+
+
 def _emit(dataset: CanonicalTradeDataset, fmt: str) -> None:
     if fmt == "json":
         _print_json(_audit_payload(dataset))
     else:
         _print_audit_text(dataset)
+
+
+def _emit_bootstrap(
+    dataset: CanonicalTradeDataset, result: dict[str, Any], fmt: str
+) -> None:
+    if fmt == "json":
+        payload = _audit_payload(dataset)
+        payload["bootstrap"] = _canonicalize_bootstrap_json(result)
+        _print_json(payload)
+    else:
+        _print_audit_text(dataset)
+        _print_bootstrap_text(result)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -268,6 +384,30 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "audit":
         _emit(dataset, args.format)
+        return EXIT_OK
+
+    if args.command == "bootstrap":
+        try:
+            # Keep audit/metrics startup independent of the heavier statistical
+            # imports while still delegating all Phase 10A decisions here.
+            from .bootstrap import STATE_UNSUPPORTED, analyze_bootstrap
+
+            result = analyze_bootstrap(
+                dataset,
+                master_seed=args.seed,
+                B=args.replicates,
+            )
+        except Exception as exc:  # noqa: BLE001 - unexpected analysis failure
+            print(f"internal error: {type(exc).__name__}: {exc}", file=sys.stderr)
+            return EXIT_INTERNAL
+        _emit_bootstrap(dataset, result, args.format)
+        if result["eligibility"]["state"] == STATE_UNSUPPORTED:
+            print(
+                "error: bootstrap analysis is unsupported or inconclusive: "
+                + "; ".join(result["eligibility"]["reasons"]),
+                file=sys.stderr,
+            )
+            return EXIT_BLOCKED
         return EXIT_OK
 
     capability = dataset.capabilities["core_metrics"]

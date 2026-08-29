@@ -2,7 +2,7 @@
 
 ## 0. Status and authority
 
-**Status:** Proposed formal specification for approval.
+**Status:** Approved formal specification (2026-08-28).
 
 **Baseline reviewed:** `main` at commit
 `0be1fc635125823ef3c50016f727a381d3ff8a5f` (2026-08-23).
@@ -128,6 +128,8 @@ constraints file must record the dependency versions used for acceptance.
 ---
 
 # Phase 10B — Stabilization and Bootstrap CLI
+
+**Implementation status:** implemented; independent review pending.
 
 ## 10B.1 Objective
 
