@@ -11,7 +11,7 @@ Strategy MUST NOT talk to execution. Live execution stays locked.
 from __future__ import annotations
 
 from abc import ABC, ABCMeta, abstractmethod
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Protocol, runtime_checkable
 
 from src.realtime.clock import Clock
@@ -88,6 +88,17 @@ class EventBus(Protocol):
 
 
 @runtime_checkable
+class AsyncEventBus(Protocol):
+    def subscribe(self, callback: Callable[[CanonicalEvent], Awaitable[None] | None]) -> None: ...
+
+    async def publish(self, event: CanonicalEvent) -> None: ...
+
+    async def start(self) -> None: ...
+
+    async def shutdown(self) -> None: ...
+
+
+@runtime_checkable
 class EventRecorder(Protocol):
     def record(self, event: CanonicalEvent) -> None: ...
 
@@ -129,6 +140,7 @@ class ExecutionAdapter(ABC, metaclass=_SealedSubmitMeta):
 __all__ = [
     "LIVE_EXECUTION_ENABLED",
     "Clock",
+    "AsyncEventBus",
     "EventBus",
     "EventRecorder",
     "ExecutionAdapter",

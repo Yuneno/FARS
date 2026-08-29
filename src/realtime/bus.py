@@ -96,7 +96,7 @@ class AsyncIOEventBus:
         if not self._accepting or self._task is None or self._task.done():
             raise BusError("bus is not running")
         self.received += 1
-        kind = self._tracker.classify(event)
+        kind = self._tracker.classify(event, commit=False)
         if kind is OrderingClass.DUPLICATE:
             self.duplicates += 1
             return
@@ -106,10 +106,13 @@ class AsyncIOEventBus:
             self.gaps += 1
         elif kind is OrderingClass.CONFLICT:
             self.conflicts += 1
+            self._accepting = False
+            raise BusError("critical identity conflict; bus halted")
         if self._overflow == "error" and self._queue.full():
             self.backpressure_rejects += 1
             raise BusError("bounded queue is full")
         await self._queue.put(event)
+        self._tracker.classify(event, commit=True)
 
     async def shutdown(self, *, drain: bool = True) -> None:
         self._accepting = False

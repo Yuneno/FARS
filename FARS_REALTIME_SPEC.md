@@ -920,7 +920,7 @@ commit, merge, or push automatically
 
 # 25. RT-1 — Market Data Connector
 
-**Future phase. Do not implement during RT-0.**
+**Implementation status:** implemented on FARS-Hermes (authorized after RT-0). Replay/historical adapter only.
 
 Goal:
 
@@ -944,7 +944,7 @@ The selected first provider MUST be confirmed from actual available API/data acc
 
 # 26. RT-2 — Event Bus + Normalization
 
-**Future phase.**
+**Implementation status:** implemented on FARS-Hermes (authorized after RT-0).
 
 Goal:
 
@@ -973,7 +973,7 @@ Do not assume unbounded queues are acceptable.
 
 # 27. RT-3 — Recorder + Storage
 
-**Future phase.**
+**Implementation status:** implemented on FARS-Hermes (authorized after RT-0). JSONL journal; Parquet/DuckDB deferred.
 
 Goal:
 

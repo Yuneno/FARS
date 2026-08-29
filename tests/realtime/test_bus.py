@@ -9,6 +9,7 @@ import pytest
 
 from src.realtime.bus import AsyncIOEventBus, BusError
 from src.realtime.events import MarketTick
+from src.realtime.interfaces import AsyncEventBus
 
 TS = datetime(2024, 6, 1, 12, 0, tzinfo=timezone.utc)
 
@@ -30,6 +31,7 @@ def test_rejects_non_canonical_and_unbounded_config():
         AsyncIOEventBus(maxsize=0)
     async def _run():
         bus = AsyncIOEventBus(maxsize=2)
+        assert isinstance(bus, AsyncEventBus)
         await bus.start()
         with pytest.raises(BusError, match="canonical"):
             await bus.publish({"type": "tick"})
@@ -74,8 +76,14 @@ def test_backpressure_error_does_not_drop_silently():
             await bus.publish(_tick("e3", 3))
         assert bus.backpressure_rejects == 1
         hold.set()
+        for _ in range(50):
+            if bus.delivered >= 2:
+                break
+            await asyncio.sleep(0.01)
+        await bus.publish(_tick("e3", 3))
         await bus.shutdown()
-        assert bus.delivered == 2
+        assert bus.delivered == 3
+        assert bus.duplicates == 0
     asyncio.run(_run())
 
 

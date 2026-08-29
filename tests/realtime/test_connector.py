@@ -80,6 +80,7 @@ def test_stale_payload_emits_system_event_not_tick():
     event = connector.next_event()
     assert isinstance(event, SystemEvent)
     assert event.kind == "stale_market_data"
+    assert "e1" in event.detail
 
 
 def test_invalid_payload_does_not_emit_market_event():

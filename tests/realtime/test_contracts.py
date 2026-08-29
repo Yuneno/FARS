@@ -178,8 +178,8 @@ def test_gap_does_not_silently_accept_the_missing_sequence_as_ordered():
     assert is_out_of_order(late) is True
     assert is_out_of_order(OrderingClass.ORDERED) is False
     assert is_out_of_order(OrderingClass.DUPLICATE) is False
-    assert requires_halt(gap) is True
-    assert requires_halt(late) is True
+    assert requires_halt(gap) is False
+    assert requires_halt(late) is False
     assert requires_halt(OrderingClass.CONFLICT) is True
     assert requires_halt(OrderingClass.DUPLICATE) is False
     assert requires_halt(OrderingClass.ORDERED) is False
@@ -189,6 +189,16 @@ def test_gap_does_not_silently_accept_the_missing_sequence_as_ordered():
     reused = tracker.classify(_tick("e101", 105))
     assert reused is OrderingClass.CONFLICT
     assert requires_halt(reused) is True
+    mutated = MarketTick(
+        event_id="e104",
+        source="feed",
+        timestamp=TS,
+        sequence=104,
+        symbol="MNQ",
+        price=9.0,
+        volume=1.0,
+    )
+    assert tracker.classify(mutated) is OrderingClass.CONFLICT
 
 
 def test_bool_and_float_numerics_are_rejected():

@@ -6,6 +6,7 @@ after a gap is classified late rather than silently inserted.
 
 from __future__ import annotations
 
+from dataclasses import astuple
 from enum import Enum
 
 from src.realtime.events import CanonicalEvent, identity_key, stream_key
@@ -25,12 +26,8 @@ def is_out_of_order(kind: OrderingClass) -> bool:
 
 
 def requires_halt(kind: OrderingClass) -> bool:
-    """Critical ordering/identity ambiguity. Identical retries do not halt."""
-    return kind in {
-        OrderingClass.LATE,
-        OrderingClass.SEQUENCE_GAP,
-        OrderingClass.CONFLICT,
-    }
+    """Identity conflicts are halt-class. Late/gap are diagnostics, not halt."""
+    return kind is OrderingClass.CONFLICT
 
 
 class SequenceTracker:
@@ -41,15 +38,19 @@ class SequenceTracker:
         self._ids: dict[str, set[str]] = {}
         self._seq_ids: dict[tuple[str, int], str] = {}
         self._id_seq: dict[tuple[str, str], int] = {}
+        self._id_fp: dict[tuple[str, str], tuple] = {}
 
-    def classify(self, event: CanonicalEvent) -> OrderingClass:
+    def classify(self, event: CanonicalEvent, *, commit: bool = True) -> OrderingClass:
         source, event_id = identity_key(event)
         _, sequence = stream_key(event)
+        fingerprint = astuple(event)
         seen_ids = self._ids.setdefault(source, set())
+        id_key = (source, event_id)
 
         if event_id in seen_ids:
-            previous_seq = self._id_seq.get((source, event_id))
-            if previous_seq is not None and previous_seq != sequence:
+            previous_seq = self._id_seq.get(id_key)
+            previous_fp = self._id_fp.get(id_key)
+            if previous_seq != sequence or previous_fp != fingerprint:
                 return OrderingClass.CONFLICT
             return OrderingClass.DUPLICATE
 
@@ -60,27 +61,39 @@ class SequenceTracker:
 
         last = self._last_seq.get(source)
         if last is None:
-            self._remember(source, sequence, event_id)
-            return OrderingClass.ORDERED
+            kind = OrderingClass.ORDERED
+        elif sequence == last + 1:
+            kind = OrderingClass.ORDERED
+        elif sequence > last + 1:
+            kind = OrderingClass.SEQUENCE_GAP
+        else:
+            kind = OrderingClass.LATE
 
-        if sequence == last + 1:
-            self._remember(source, sequence, event_id)
-            return OrderingClass.ORDERED
+        if commit:
+            if kind is OrderingClass.LATE:
+                self._remember_identity(
+                    source, sequence, event_id, fingerprint, update_high_water=False
+                )
+            else:
+                self._remember_identity(
+                    source, sequence, event_id, fingerprint, update_high_water=True
+                )
+        return kind
 
-        if sequence > last + 1:
-            self._remember(source, sequence, event_id)
-            return OrderingClass.SEQUENCE_GAP
-
-        # Late: keep high-water sequence, but record identity so retries
-        # are duplicates instead of repeated late classifications.
+    def _remember_identity(
+        self,
+        source: str,
+        sequence: int,
+        event_id: str,
+        fingerprint: tuple,
+        *,
+        update_high_water: bool,
+    ) -> None:
+        if update_high_water:
+            self._last_seq[source] = sequence
         self._ids.setdefault(source, set()).add(event_id)
+        seq_key = (source, sequence)
         if seq_key not in self._seq_ids:
             self._seq_ids[seq_key] = event_id
         self._id_seq[(source, event_id)] = sequence
-        return OrderingClass.LATE
-
-    def _remember(self, source: str, sequence: int, event_id: str) -> None:
-        self._last_seq[source] = sequence
-        self._ids.setdefault(source, set()).add(event_id)
-        self._seq_ids[(source, sequence)] = event_id
-        self._id_seq[(source, event_id)] = sequence
+        self._id_fp[(source, event_id)] = fingerprint

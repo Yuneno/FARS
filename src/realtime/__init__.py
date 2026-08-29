@@ -21,6 +21,7 @@ from src.realtime.events import (
 )
 from src.realtime.interfaces import (
     LIVE_EXECUTION_ENABLED,
+    AsyncEventBus,
     EventBus,
     EventRecorder,
     ExecutionAdapter,
@@ -38,6 +39,7 @@ from src.realtime.recorder import FileEventRecorder, RecorderError, reconstruct_
 __all__ = [
     "LIVE_EXECUTION_ENABLED",
     "AccountSnapshot",
+    "AsyncEventBus",
     "AsyncIOEventBus",
     "Bar",
     "BusError",

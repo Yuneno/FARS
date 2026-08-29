@@ -152,7 +152,11 @@ class ReplayMarketConnector:
             return None
         event = normalize_market_payload(payload, source=self._source, origin=ORIGIN_REPLAY)
         if self._is_stale(event):
-            return self._system(SYSTEM_STALE_MARKET_DATA, symbol=getattr(event, "symbol", None))
+            return self._system(
+                SYSTEM_STALE_MARKET_DATA,
+                symbol=getattr(event, "symbol", None),
+                detail=f"stale event_id={event.event_id} sequence={event.sequence}",
+            )
         return event
 
     def _is_stale(self, event: CanonicalEvent) -> bool:
@@ -161,7 +165,9 @@ class ReplayMarketConnector:
         age = self._clock.now() - event.timestamp
         return age > self._stale_after
 
-    def _system(self, kind: str, symbol: str | None = None) -> SystemEvent:
+    def _system(
+        self, kind: str, symbol: str | None = None, detail: str = ""
+    ) -> SystemEvent:
         self._sys_seq += 1
         return SystemEvent(
             event_id=f"{self._source}-sys-{self._sys_seq}",
@@ -170,5 +176,6 @@ class ReplayMarketConnector:
             sequence=self._sys_seq,
             kind=kind,
             origin=ORIGIN_REPLAY,
+            detail=detail,
             symbol=symbol,
         )
