@@ -17,6 +17,13 @@ def test_numerical_submodule_import_does_not_initialize_matplotlib():
         "assert load_trade_csv.__name__ == 'load_trade_csv'; "
         "from src import IngestionProvenance; "
         "assert IngestionProvenance.__name__ == 'IngestionProvenance'; "
+        "from src import load_account_trade_csv; "
+        "assert load_account_trade_csv.__name__ == 'load_account_trade_csv'; "
+        "from src import FundedAccountStateV2, rapid_25k_profile; "
+        "assert FundedAccountStateV2.__name__ == 'FundedAccountStateV2'; "
+        "assert rapid_25k_profile.__name__ == 'rapid_25k_profile'; "
+        "from src import CAP_CLOSED_TRADE_EVENTS; "
+        "assert CAP_CLOSED_TRADE_EVENTS == 'closed_trade_events'; "
         "assert 'matplotlib' not in sys.modules"
     )
 

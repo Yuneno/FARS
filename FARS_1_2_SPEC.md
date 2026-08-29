@@ -347,7 +347,7 @@ PnL.
 ## 10. Bootstrap Framework
 
 **STATUS: PHASE 10A v6 INDEPENDENTLY REVIEWED, CONFIRMED, AND IMPLEMENTED;
-PHASE 10B CLI IMPLEMENTED, INDEPENDENT REVIEW PENDING** (see
+PHASE 10B CLI IMPLEMENTED AND INDEPENDENTLY REVIEWED** (see
 `FARS_1_2_PHASE_10_BOOTSTRAP.md`, section 0, and
 `FARS_1_2_PHASES_10B_14_SPEC.md`). V4 acceptance exposed two infeasible
 criteria. V5 corrected them but failed independent IID-size validation for a
@@ -379,7 +379,9 @@ or statistical methods.
 
 ## 11. Probabilistic Risk and Trade Limits
 
-**STATUS: PHASES 11A–11D CONTRACT APPROVED; IMPLEMENTATION PENDING**
+**STATUS: PHASES 11A–11D CONTRACT APPROVED; PHASE 11A IMPLEMENTED AND
+REVIEWED; PHASE 11B IMPLEMENTED, INDEPENDENT REVIEW PENDING; PHASES 11C–11D
+IMPLEMENTATION PENDING**
 
 The detailed monetary-data, funded-rule, probabilistic-path, and Tradovate
 adapter contracts are defined in `FARS_1_2_PHASES_10B_14_SPEC.md`.

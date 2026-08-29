@@ -129,7 +129,7 @@ constraints file must record the dependency versions used for acceptance.
 
 # Phase 10B — Stabilization and Bootstrap CLI
 
-**Implementation status:** implemented; independent review pending.
+**Implementation status:** implemented; independent review passed (2026-08-29).
 
 ## 10B.1 Objective
 
@@ -180,6 +180,8 @@ duplicate diagnostics, capability checks, or resampling logic.
 ---
 
 # Phase 11A — Canonical Monetary Trade and Account-Event Contract
+
+**Implementation status:** implemented; review passed.
 
 ## 11A.1 Objective
 
@@ -266,6 +268,8 @@ return `unsupported`, not an approximation presented as exact.
 ---
 
 # Phase 11B — Generic Funded-Account Rule Engine v2
+
+**Implementation status:** implemented; independent review pending.
 
 ## 11B.1 Objective
 
