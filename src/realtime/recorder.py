@@ -8,6 +8,7 @@ not wired here because those packages are not in FARS dependencies.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
@@ -112,6 +113,8 @@ class FileEventRecorder:
         with self._path.open("a", encoding="utf-8") as handle:
             handle.write(line)
             handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
 
 
 def reconstruct_events(path: str | Path) -> tuple:

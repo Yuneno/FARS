@@ -8,7 +8,8 @@ Overflow never drops events silently.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
 from dataclasses import astuple, dataclass
 from typing import Literal
 
@@ -80,6 +81,7 @@ class AsyncIOEventBus:
         self._pending: dict[tuple[str, str], _Inflight] = {}
         self._pending_seq: dict[tuple[str, int], str] = {}
         self._task: asyncio.Task | None = None
+        self._replay_task: asyncio.Task | None = None
         self._accepting = False
         self._error: BaseException | None = None
         self.received = 0
@@ -101,11 +103,36 @@ class AsyncIOEventBus:
         self._accepting = True
         self._task = asyncio.create_task(self._run(), name="fars-event-bus")
 
+    def _reject_foreign_publish(self) -> None:
+        owner = self._replay_task
+        if owner is None:
+            return
+        current = asyncio.current_task()
+        if current is owner or current is self._task:
+            return
+        raise BusError("replay owns the bus")
+
+    @asynccontextmanager
+    async def replay_session(self) -> AsyncIterator[None]:
+        current = asyncio.current_task()
+        async with self._lock:
+            if self._replay_task is not None:
+                raise BusError("replay already running")
+            self._replay_task = current
+        try:
+            await self.wait_idle()
+            yield
+        finally:
+            async with self._lock:
+                if self._replay_task is current:
+                    self._replay_task = None
+
     async def publish(self, event: object) -> None:
         if not isinstance(event, _CANONICAL):
             raise BusError(
                 f"bus accepts canonical events only, got {type(event).__name__}"
             )
+        self._reject_foreign_publish()
         self.received += 1
         id_key = identity_key(event)
         seq_key = stream_key(event)

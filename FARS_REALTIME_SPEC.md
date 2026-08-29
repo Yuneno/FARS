@@ -991,7 +991,7 @@ Must preserve provenance and allow later reconstruction.
 
 # 28. RT-4 — Replay Engine
 
-**Future phase.**
+**Implementation status:** implemented on FARS-Hermes (authorized after RT-0).
 
 Goal:
 
@@ -1005,7 +1005,7 @@ Replay MUST NOT require Strategy/Risk code changes.
 
 # 29. RT-5 — Realtime FARS Adapter
 
-**Future phase.**
+**Implementation status:** implemented on FARS-Hermes (authorized after RT-4).
 
 Goal:
 

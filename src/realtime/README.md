@@ -32,3 +32,5 @@ Live execution stays locked (`LIVE_EXECUTION_ENABLED = False`).
 RT-1 replay connector: `connector.py` (see `RT1_SUMMARY.md`).
 RT-2 bus: `bus.py` (see `RT2_SUMMARY.md`).
 RT-3 recorder: `recorder.py` (see `RT3_SUMMARY.md`).
+RT-4 replay: `replay.py` (see `RT4_SUMMARY.md`).
+RT-5 adapter: `adapter.py` (see `RT5_SUMMARY.md`). Core metrics run only on completed `Trade` values.

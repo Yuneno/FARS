@@ -34,11 +34,14 @@ from src.realtime.interfaces import (
     require_signal,
 )
 from src.realtime.ordering import OrderingClass, SequenceTracker, is_out_of_order, requires_halt
+from src.realtime.adapter import AdapterError, require_core_trades, run_core_metrics
 from src.realtime.recorder import FileEventRecorder, RecorderError, reconstruct_events
+from src.realtime.replay import ReplayEngine, ReplayError
 
 __all__ = [
     "LIVE_EXECUTION_ENABLED",
     "AccountSnapshot",
+    "AdapterError",
     "AsyncEventBus",
     "AsyncIOEventBus",
     "Bar",
@@ -59,6 +62,8 @@ __all__ = [
     "OrderingClass",
     "Quote",
     "RecorderError",
+    "ReplayEngine",
+    "ReplayError",
     "ReplayMarketConnector",
     "RiskDecision",
     "RiskEngine",
@@ -72,10 +77,12 @@ __all__ = [
     "normalize_market_payload",
     "is_out_of_order",
     "require_authorized_intent",
+    "require_core_trades",
     "require_order_intent",
     "require_risk_decision",
     "require_signal",
     "requires_halt",
     "reconstruct_events",
+    "run_core_metrics",
     "stream_key",
 ]

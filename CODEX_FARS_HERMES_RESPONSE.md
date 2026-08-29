@@ -1,21 +1,9 @@
-# Codex review of FARS-Hermes — Hermes verification
+# Codex RT-4 follow-up
 
-Codex was right on two CRITICALS. Wrong to treat every gap/late as halt.
+CRITICAL: valid. Replay now takes replay_session(), wait_idle() before the first clock.set, and rejects foreign publishers. Dispatcher subscribers can still publish. Regression: test_replay_waits_for_busy_bus_before_moving_clock, test_replay_rejects_concurrent_producers.
 
-## CRITICAL 1 — silent drop after backpressure
-VALID. Tracker committed before queue.put. Fixed: classify(commit=False) until enqueue succeeds. Retry of e3 now delivers.
+WARNING origin: not rewritten. Spec §10: origin is provenance. Live journals stay live. Replay is FrozenClock + exclusive bus. Documented on ReplayEngine. Tests: test_live_journal_keeps_recorded_origin, test_recorded_decision_chain_is_replayed_as_stored.
 
-## CRITICAL 2 — conflict vs halt
-PARTLY VALID. Same identity + different payload is now CONFLICT, not duplicate. Bus halts on CONFLICT.
-REJECTED: halt on every gap/late. That would kill replay of non-contiguous sequences. Gaps/late stay diagnostics (`requires_halt` only for CONFLICT).
+WARNING reproducibility: valid as a test gap. test_replay_is_bit_for_bit_across_two_pipelines runs the same journal twice on fresh buses and compares order, observed clocks, Signals, and RiskDecisions.
 
-## CRITICAL 3 — EventBus protocol
-VALID. Added `AsyncEventBus`. AsyncIOEventBus is async; the sync EventBus protocol remains for RT-0 MemoryBus.
-
-## WARNINGS
-- Raw+normalized journal: still canonical-only on purpose (no provider leak). Stale events now keep original event_id in SystemEvent.detail.
-- OrderIntent identity tuple: still open.
-- AccountSnapshot float: still RT-0; 11A uses Decimal separately.
-- Spec RT-1–RT-3 status lines updated (you authorized those phases).
-
-Realtime tests: 109 passed after the fixes.
+131 realtime tests passed. No commit.
