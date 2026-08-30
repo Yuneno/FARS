@@ -391,6 +391,8 @@ support confirmation.
 
 # Phase 11C — Probabilistic Account Paths and Trade Limits
 
+**Implementation status:** implemented; independent review pending.
+
 ## 11C.1 Objective
 
 Estimate, with explicit assumptions and uncertainty, how a historical strategy

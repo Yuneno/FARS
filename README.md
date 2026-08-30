@@ -175,6 +175,49 @@ inactivity. The Rapid 25K reference profile preserves the known 2026-08-27
 values but remains provisional and disabled until its five blocking rule
 questions are resolved.
 
+## Probabilistic funded-account paths (Phase 11C)
+
+Phase 11C combines an audited R-multiple dataset, its matching Phase 10A
+eligibility result, an enabled Phase 11B rule profile, and explicit monetary
+risk and cost assumptions. It refuses unsupported or structurally unstable
+data instead of falling back to IID:
+
+```python
+from datetime import datetime, timezone
+from decimal import Decimal
+from src import (
+    CostAssumptions,
+    PathSimulationConfig,
+    RiskSizingPolicy,
+    run_probabilistic_paths,
+)
+
+result = run_probabilistic_paths(
+    dataset,
+    bootstrap_result,
+    verified_profile,
+    RiskSizingPolicy("fixed_amount", Decimal("100"), "USD"),
+    CostAssumptions("USD", commission_per_trade=Decimal("4.50")),
+    PathSimulationConfig(
+        n_simulations=10_000,
+        max_trades=100,
+        seed=20260830,
+        start_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
+        trades_per_day=3,
+    ),
+)
+```
+
+IID paths require `iid_eligible`. Dependence routes use the Phase 10A
+expectancy-influence block length and are labeled exploratory CBB. The result
+reports pass, breach, and censoring probabilities with Monte Carlo intervals;
+conditional trades/days to pass; drawdown, loss-budget, streak, and best-day
+distributions; assumptions; limitations; and complete dataset/profile/RNG
+provenance. R-only paths support exact closed-trade rules and refuse profiles
+that require intraday, EOD, position-size, news, or open-position event streams.
+Risk sensitivity always returns the full predeclared curve and disallows a
+multi-level tuning grid on validation or final OOS data.
+
 ## Current modeling assumptions
 
 - Synthetic outcomes are IID and use a Bernoulli/lognormal mixture.
@@ -195,6 +238,9 @@ questions are resolved.
 - Phase 11B rule replay requires explicit event-coverage capabilities. A
   missing intraday, end-of-day, position, news, or opening-time stream cannot
   produce an exact pass result.
+- Phase 11C probabilities are conditional model estimates, not promises.
+  Empirical IID/CBB resampling cannot generate unseen tail outcomes; stress
+  testing remains a separate Phase 13 responsibility.
 
 ## Phases
 
@@ -206,7 +252,7 @@ bootstrap framework, and its Phase 10B CLI exposure are implemented: synthetic
 generation, descriptive metrics, account simulation, Monte Carlo, risk
 optimization/FRES, visual diagnostics, audited CSV adaptation, dependence
 screening, and uncertainty intervals for expectancy, win rate, and standard
-deviation. The Phase 11A monetary account-record contract and Phase 11B generic
-funded-rule engine are implemented and pending independent review.
-Probabilistic account paths, drawdown/extreme stress analysis, and advanced
-temporal validation remain future work.
+deviation. Phase 11A monetary account records, the Phase 11B generic funded-rule
+engine, and Phase 11C probabilistic account paths are implemented and pending
+independent review. Provider-specific prospective validation, drawdown/extreme
+stress analysis, and advanced temporal validation remain future work.

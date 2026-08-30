@@ -24,6 +24,9 @@ def test_numerical_submodule_import_does_not_initialize_matplotlib():
         "assert rapid_25k_profile.__name__ == 'rapid_25k_profile'; "
         "from src import CAP_CLOSED_TRADE_EVENTS; "
         "assert CAP_CLOSED_TRADE_EVENTS == 'closed_trade_events'; "
+        "from src import RiskSizingPolicy, run_probabilistic_paths; "
+        "assert RiskSizingPolicy.__name__ == 'RiskSizingPolicy'; "
+        "assert run_probabilistic_paths.__name__ == 'run_probabilistic_paths'; "
         "assert 'matplotlib' not in sys.modules"
     )
 
