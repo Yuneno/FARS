@@ -35,11 +35,13 @@ from src.realtime.interfaces import (
 )
 from src.realtime.ordering import OrderingClass, SequenceTracker, is_out_of_order, requires_halt
 from src.realtime.adapter import AdapterError, require_core_trades, run_core_metrics
+from src.realtime.risk import AccountAwareRiskEngine
 from src.realtime.recorder import FileEventRecorder, RecorderError, reconstruct_events
 from src.realtime.replay import ReplayEngine, ReplayError
 
 __all__ = [
     "LIVE_EXECUTION_ENABLED",
+    "AccountAwareRiskEngine",
     "AccountSnapshot",
     "AdapterError",
     "AsyncEventBus",
