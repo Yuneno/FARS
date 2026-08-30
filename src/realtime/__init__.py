@@ -36,6 +36,7 @@ from src.realtime.interfaces import (
 from src.realtime.ordering import OrderingClass, SequenceTracker, is_out_of_order, requires_halt
 from src.realtime.adapter import AdapterError, require_core_trades, run_core_metrics
 from src.realtime.risk import AccountAwareRiskEngine
+from src.realtime.paper import PaperAssumptions, PaperExecutionAdapter, default_paper_assumptions
 from src.realtime.recorder import FileEventRecorder, RecorderError, reconstruct_events
 from src.realtime.replay import ReplayEngine, ReplayError
 
@@ -62,6 +63,8 @@ __all__ = [
     "MarketTrade",
     "OrderIntent",
     "OrderingClass",
+    "PaperAssumptions",
+    "PaperExecutionAdapter",
     "Quote",
     "RecorderError",
     "ReplayEngine",
@@ -74,6 +77,7 @@ __all__ = [
     "Strategy",
     "SystemClock",
     "SystemEvent",
+    "default_paper_assumptions",
     "identity_key",
     "is_authorized",
     "normalize_market_payload",
