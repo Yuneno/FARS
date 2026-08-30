@@ -755,6 +755,22 @@ class FundedAccountStateV2:
         if self._last_timestamp is not None and source.timestamp < self._last_timestamp:
             raise FundedRuleError("account-rule inputs must be chronological")
 
+        if not self.profile.enabled:
+            report = RuleEvaluationReport(
+                source.timestamp,
+                (
+                    self._event(
+                        "not_evaluable",
+                        "profile",
+                        source,
+                        "profile is provisional or disabled",
+                        reasons=self.profile.readiness_reasons(),
+                    ),
+                ),
+            )
+            self._history.append(report)
+            return report
+
         expected_balance = self.balance
         if source.event_type == "closed_trade":
             assert source.realized_pnl is not None
@@ -785,17 +801,6 @@ class FundedAccountStateV2:
             daily_profit[session] = daily_profit.get(session, Decimal(0)) + source.realized_pnl
 
         events: list[RuleEvaluationEvent] = []
-        if not profile.enabled:
-            events.append(
-                self._event(
-                    "not_evaluable",
-                    "profile",
-                    source,
-                    "profile is provisional or disabled",
-                    reasons=profile.readiness_reasons(),
-                )
-            )
-
         missing_capabilities = profile.required_capabilities() - self.data_capabilities
         for capability in sorted(missing_capabilities):
             events.append(

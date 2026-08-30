@@ -206,7 +206,7 @@ bootstrap framework, and its Phase 10B CLI exposure are implemented: synthetic
 generation, descriptive metrics, account simulation, Monte Carlo, risk
 optimization/FRES, visual diagnostics, audited CSV adaptation, dependence
 screening, and uncertainty intervals for expectancy, win rate, and standard
-deviation. The Phase 11A monetary account-record contract is implemented and
-reviewed. The Phase 11B generic funded-rule engine is implemented and pending
-independent review. Probabilistic account paths, drawdown/extreme stress
-analysis, and advanced temporal validation remain future work.
+deviation. The Phase 11A monetary account-record contract and Phase 11B generic
+funded-rule engine are implemented and pending independent review.
+Probabilistic account paths, drawdown/extreme stress analysis, and advanced
+temporal validation remain future work.

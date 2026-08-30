@@ -604,8 +604,15 @@ def test_rapid_25k_reference_profile_is_provisional_and_fail_closed():
     state = _state(profile)
     report = state.apply(_closed("26500", "1500"))
     assert not report.pass_eligible
-    assert report.primary_event.kind == "pass_blocked"
-    assert ("not_evaluable", "profile") in _event_kinds(report)
+    assert _event_kinds(report) == [("not_evaluable", "profile")]
+    assert state.balance == state.equity == Decimal("25000")
+    assert state.high_watermark == Decimal("25000")
+    assert state.maximum_loss_threshold == Decimal("24000")
+    assert state.current_session is None
+    assert state.trading_days == ()
+    assert dict(state.daily_profit) == {}
+    assert not state.terminal_breach
+    assert state.history == (report,)
 
 
 def test_enabled_profile_rejects_unresolved_semantics():
