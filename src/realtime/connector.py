@@ -64,6 +64,12 @@ def _parse_timestamp(value: object) -> datetime:
     return ts
 
 
+def _parse_optional_timestamp(value: object) -> datetime | None:
+    if value is None:
+        return None
+    return _parse_timestamp(value)
+
+
 def normalize_market_payload(
     payload: object,
     *,
@@ -84,6 +90,10 @@ def normalize_market_payload(
     data["source"] = source
     data["origin"] = origin
     data["timestamp"] = _parse_timestamp(data.get("timestamp"))
+    if kind == "snapshot":
+        for field in ("broker_timestamp", "last_sync"):
+            if field in data:
+                data[field] = _parse_optional_timestamp(data[field])
     try:
         if kind == "tick":
             return MarketTick(**data)

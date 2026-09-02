@@ -27,3 +27,9 @@ REVIEW PASSED
 ## SUGGESTION
 
 Start-of-day equity is inferred from snapshot UTC dates because the snapshot contract has no SOD field. First snapshot of a session treats equity as SOD (daily loss 0 that instant). Documented in RT6_SUMMARY.md.
+
+## RT-8 resolution
+
+The `max_trades` warning is resolved without fill inference:
+`AccountSnapshot.trades_applied` is an explicit completed-trade count. Missing,
+regressing, or limit-reaching state denies authorization.

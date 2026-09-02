@@ -340,6 +340,7 @@ class AccountSnapshot:
     peak_equity: float | None = None
     broker_timestamp: datetime | None = None  # provider account time, not timestamp
     last_sync: datetime | None = None  # last successful sync, not timestamp
+    trades_applied: int | None = None  # explicit completed-trade count; never inferred
 
     def __post_init__(self) -> None:
         _validate_envelope(
@@ -356,6 +357,12 @@ class AccountSnapshot:
         _optional_finite("peak_equity", self.peak_equity)
         _optional_aware_datetime("broker_timestamp", self.broker_timestamp)
         _optional_aware_datetime("last_sync", self.last_sync)
+        if self.trades_applied is not None and (
+            not isinstance(self.trades_applied, int)
+            or isinstance(self.trades_applied, bool)
+            or self.trades_applied < 0
+        ):
+            raise ValueError("trades_applied must be a non-negative integer or None")
         object.__setattr__(
             self, "positions", _freeze_canonical("positions", self.positions)
         )

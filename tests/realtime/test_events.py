@@ -178,6 +178,15 @@ def test_account_snapshot_freezes_positions_and_optional_money():
             sequence=5,
             last_sync=datetime(2024, 1, 2),
         )
+    for invalid in (-1, 1.5, True):
+        with pytest.raises(ValueError, match="trades_applied"):
+            AccountSnapshot(
+                event_id=f"invalid-{invalid}",
+                source="broker",
+                timestamp=TS,
+                sequence=6,
+                trades_applied=invalid,  # type: ignore[arg-type]
+            )
 
 
 def test_signal_is_not_an_order_and_rejects_invalid_action():

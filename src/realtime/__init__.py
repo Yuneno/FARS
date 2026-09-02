@@ -2,7 +2,11 @@
 
 from src.realtime.bus import AsyncIOEventBus, BusError
 from src.realtime.clock import Clock, FrozenClock, SystemClock
-from src.realtime.connector import ConnectorError, ReplayMarketConnector, normalize_market_payload
+from src.realtime.connector import (
+    ConnectorError,
+    ReplayMarketConnector,
+    normalize_market_payload,
+)
 from src.realtime.events import (
     AccountSnapshot,
     Bar,
@@ -33,12 +37,37 @@ from src.realtime.interfaces import (
     require_risk_decision,
     require_signal,
 )
-from src.realtime.ordering import OrderingClass, SequenceTracker, is_out_of_order, requires_halt
 from src.realtime.adapter import AdapterError, require_core_trades, run_core_metrics
+from src.realtime.acceptance import (
+    REQUIRED_CHECKS,
+    RT8AcceptanceResult,
+    RT8CheckResult,
+    RT8_FAIL,
+    RT8_PASS,
+    run_rt8_acceptance,
+    write_rt8_acceptance_report,
+)
+from src.realtime.ordering import (
+    OrderingClass,
+    SequenceTracker,
+    is_out_of_order,
+    requires_halt,
+)
 from src.realtime.risk import AccountAwareRiskEngine
-from src.realtime.paper import PaperAssumptions, PaperExecutionAdapter, default_paper_assumptions
+from src.realtime.paper import (
+    PaperAssumptions,
+    PaperExecutionAdapter,
+    default_paper_assumptions,
+)
 from src.realtime.recorder import FileEventRecorder, RecorderError, reconstruct_events
 from src.realtime.replay import ReplayEngine, ReplayError
+from src.realtime.session import (
+    PaperRealtimeSession,
+    RealtimeSessionError,
+    RealtimeSessionMetrics,
+    RealtimeSessionResult,
+    default_intent_factory,
+)
 
 __all__ = [
     "LIVE_EXECUTION_ENABLED",
@@ -65,11 +94,20 @@ __all__ = [
     "OrderingClass",
     "PaperAssumptions",
     "PaperExecutionAdapter",
+    "PaperRealtimeSession",
     "Quote",
+    "REQUIRED_CHECKS",
+    "RT8AcceptanceResult",
+    "RT8CheckResult",
+    "RT8_FAIL",
+    "RT8_PASS",
     "RecorderError",
     "ReplayEngine",
     "ReplayError",
     "ReplayMarketConnector",
+    "RealtimeSessionError",
+    "RealtimeSessionMetrics",
+    "RealtimeSessionResult",
     "RiskDecision",
     "RiskEngine",
     "SequenceTracker",
@@ -77,6 +115,7 @@ __all__ = [
     "Strategy",
     "SystemClock",
     "SystemEvent",
+    "default_intent_factory",
     "default_paper_assumptions",
     "identity_key",
     "is_authorized",
@@ -90,5 +129,7 @@ __all__ = [
     "requires_halt",
     "reconstruct_events",
     "run_core_metrics",
+    "run_rt8_acceptance",
     "stream_key",
+    "write_rt8_acceptance_report",
 ]

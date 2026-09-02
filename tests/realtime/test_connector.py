@@ -6,7 +6,7 @@ import pytest
 
 from src.realtime.clock import FrozenClock
 from src.realtime.connector import ConnectorError, ReplayMarketConnector, normalize_market_payload
-from src.realtime.events import MarketTick, Quote, SystemEvent
+from src.realtime.events import AccountSnapshot, MarketTick, Quote, SystemEvent
 from src.realtime.interfaces import MarketDataConnector
 
 TS = datetime(2024, 1, 15, 9, 30, tzinfo=timezone.utc)
@@ -132,3 +132,37 @@ def test_quote_normalizes():
         source="replay",
     )
     assert isinstance(event, Quote)
+
+
+def test_snapshot_normalizes_optional_provider_timestamps():
+    event = normalize_market_payload(
+        {
+            "type": "snapshot",
+            "event_id": "account-1",
+            "timestamp": TS.isoformat(),
+            "sequence": 1,
+            "equity": 100_000,
+            "broker_timestamp": TS.isoformat(),
+            "last_sync": TS.isoformat(),
+        },
+        source="replay",
+    )
+
+    assert isinstance(event, AccountSnapshot)
+    assert event.timestamp == TS
+    assert event.broker_timestamp == TS
+    assert event.last_sync == TS
+
+
+def test_snapshot_rejects_naive_optional_provider_timestamp():
+    with pytest.raises(ConnectorError, match="timezone-aware"):
+        normalize_market_payload(
+            {
+                "type": "snapshot",
+                "event_id": "account-1",
+                "timestamp": TS,
+                "sequence": 1,
+                "last_sync": "2024-01-15T09:30:00",
+            },
+            source="replay",
+        )

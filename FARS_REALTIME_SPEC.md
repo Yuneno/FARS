@@ -1058,7 +1058,8 @@ It MUST NOT present idealized fills as equivalent to live execution.
 
 # 32. RT-8 — Validation / Acceptance
 
-**Future phase.**
+**Implementation status:** implemented on FARS-Hermes; deterministic acceptance
+PASS (2026-08-30), independent review pending. Live execution remains disabled.
 
 Goal:
 
@@ -1087,6 +1088,9 @@ RT-8 must end in an explicit acceptance result.
 # 33. RT-9 — Live Execution
 
 **LOCKED.**
+
+RT-8 deterministic acceptance passes, but RT-9 remains unimplemented because
+no confirmed broker contract or explicit live configuration is present.
 
 RT-9 may begin only after:
 

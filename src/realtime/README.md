@@ -1,6 +1,7 @@
-# FARS Realtime — RT-0
+# FARS Realtime — RT-0 through RT-8
 
-Contracts only. Not a live engine. Does not rewrite FARS Core.
+Validated replay/risk/paper pipeline. Not a live engine. Does not rewrite FARS
+Core.
 
 ## What landed
 
@@ -22,11 +23,12 @@ Contracts only. Not a live engine. Does not rewrite FARS Core.
 
 ## Tests
 
-`tests/realtime/` — contracts, events, RT-0 acceptance including a deny/approve pipeline.
+`tests/realtime/` — contracts, component tests, complete paper sessions, and
+the explicit RT-8 acceptance harness.
 
 ## Out of scope (later phases)
 
-Live broker APIs. RT-0 through RT-7 are on this branch.
+Live broker APIs. RT-0 through RT-8 are on this branch.
 Live execution stays locked (`LIVE_EXECUTION_ENABLED = False`).
 
 RT-1 replay connector: `connector.py` (see `RT1_SUMMARY.md`).
@@ -36,3 +38,6 @@ RT-4 replay: `replay.py` (see `RT4_SUMMARY.md`).
 RT-5 adapter: `adapter.py` (see `RT5_SUMMARY.md`). Core metrics run only on completed `Trade` values.
 RT-6 risk: `risk.py` — `AccountAwareRiskEngine` (see `RT6_SUMMARY.md`). Account-aware veto; unknown state denies.
 RT-7 paper: `paper.py` — `PaperExecutionAdapter` (see `RT7_SUMMARY.md`). Simulated fills, not live-equivalent.
+RT-8 validation: `session.py` + `acceptance.py` (see `RT8_SUMMARY.md` and
+`RT8_ACCEPTANCE.json`). The deterministic acceptance result is `PASS`; live
+execution remains disabled and no broker behavior was inferred from paper.

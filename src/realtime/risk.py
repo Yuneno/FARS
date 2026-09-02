@@ -36,6 +36,7 @@ REASON_RECONCILE = "RECONCILIATION_MISMATCH"
 REASON_CIRCUIT = "CIRCUIT_BREAKER"
 REASON_DRAWDOWN = "DRAWDOWN_BUFFER_TOO_LOW"
 REASON_DAILY_LOSS = "DAILY_LOSS_LIMIT"
+REASON_MAX_TRADES = "MAX_TRADES_REACHED"
 REASON_APPROVED = "APPROVED"
 
 
@@ -127,6 +128,13 @@ class AccountAwareRiskEngine:
         previous = self._snapshot
         if previous is not None and snap.timestamp < previous.timestamp:
             self._clock_inconsistent = True
+        if (
+            previous is not None
+            and previous.trades_applied is not None
+            and snap.trades_applied is not None
+            and snap.trades_applied < previous.trades_applied
+        ):
+            self._clock_inconsistent = True
         day = _utc_day(snap.timestamp)
         if snap.equity is not None:
             if self._start_of_day_date is None:
@@ -165,6 +173,11 @@ class AccountAwareRiskEngine:
             return False, REASON_UNKNOWN
         if self._start_of_day_equity is None:
             return False, REASON_UNKNOWN
+        if self._rules.max_trades is not None:
+            if snap.trades_applied is None:
+                return False, REASON_UNKNOWN
+            if snap.trades_applied >= self._rules.max_trades:
+                return False, REASON_MAX_TRADES
 
         if self._rules.drawdown_mode == "trailing":
             peak = snap.peak_equity

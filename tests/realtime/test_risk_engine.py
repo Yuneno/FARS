@@ -29,6 +29,7 @@ from src.realtime.risk import (
     REASON_DISCONNECTED,
     REASON_DRAWDOWN,
     REASON_HALTED,
+    REASON_MAX_TRADES,
     REASON_RECONCILE,
     REASON_STALE,
     REASON_UNKNOWN,
@@ -68,6 +69,34 @@ def _snapshot(**overrides) -> AccountSnapshot:
     }
     values.update(overrides)
     return AccountSnapshot(**values)
+
+
+def test_max_trades_requires_explicit_snapshot_count_and_denies_at_limit():
+    risk = _engine(_rules(max_trades=2))
+    risk.observe(_snapshot())
+    missing = risk.evaluate(_signal())
+    assert missing.approved is False
+    assert missing.reason == REASON_UNKNOWN
+
+    below = _engine(_rules(max_trades=2))
+    below.observe(_snapshot(trades_applied=1))
+    assert below.evaluate(_signal()).approved is True
+
+    reached = _engine(_rules(max_trades=2))
+    reached.observe(_snapshot(trades_applied=2))
+    denied = reached.evaluate(_signal())
+    assert denied.approved is False
+    assert denied.reason == REASON_MAX_TRADES
+
+
+def test_trade_count_regression_latches_unknown_state():
+    risk = _engine(_rules(max_trades=10))
+    risk.observe(_snapshot(event_id="first", sequence=1, trades_applied=3))
+    risk.observe(_snapshot(event_id="second", sequence=2, trades_applied=2))
+
+    decision = risk.evaluate(_signal())
+    assert decision.approved is False
+    assert decision.reason == REASON_UNKNOWN
 
 
 def _signal(**overrides) -> Signal:

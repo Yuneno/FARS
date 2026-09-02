@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "detail": "10 canonical event types round-trip exactly",
+      "name": "event_correctness",
+      "passed": true
+    },
+    {
+      "detail": "duplicate identity delivered once and counted once",
+      "name": "duplicate_safety",
+      "passed": true
+    },
+    {
+      "detail": "gap and late events disclosed; identity conflict halted the bus",
+      "name": "ordering_behavior",
+      "passed": true
+    },
+    {
+      "detail": "two replay runs produced identical events and FrozenClock states",
+      "name": "replay_reproducibility",
+      "passed": true
+    },
+    {
+      "detail": "unknown and max-trades states denied; only complete safe state approved",
+      "name": "risk_enforcement",
+      "passed": true
+    },
+    {
+      "detail": "reconciliation mismatch denied and remained latched after a snapshot",
+      "name": "account_state_consistency",
+      "passed": true
+    },
+    {
+      "detail": "circuit breaker latched and denied authorization",
+      "name": "circuit_breakers",
+      "passed": true
+    },
+    {
+      "detail": "disconnect denied; reconnect stayed stale until a fresh snapshot",
+      "name": "reconnect_resync",
+      "passed": true
+    },
+    {
+      "detail": "stale payload became a system event and independently denied risk",
+      "name": "stale_data_behavior",
+      "passed": true
+    },
+    {
+      "detail": "20 duplicate submits returned one explicitly non-live paper report",
+      "name": "paper_trading_stability",
+      "passed": true
+    },
+    {
+      "detail": "modeled latency/rejection were exact; subscriber error halted the bus",
+      "name": "latency_error_behavior",
+      "passed": true
+    },
+    {
+      "detail": "connector-to-paper session recorded all six canonical boundaries in order",
+      "name": "complete_pipeline",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "RT-8 uses replay and deterministic paper execution, not a live broker",
+    "paper fills do not establish live fill, slippage, commission, or latency behavior",
+    "acceptance validates operational contracts, not strategy profitability",
+    "RT-9 still requires a confirmed broker contract and explicit live configuration"
+  ],
+  "live_execution_enabled": false,
+  "schema_version": "fars-rt8-acceptance-v1",
+  "status": "PASS"
+}

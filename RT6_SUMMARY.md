@@ -27,6 +27,8 @@ tests/realtime/test_risk_engine.py
 
 ## Out of scope (later)
 
-- max_trades (snapshot has no trade count)
+- max_trades was deferred here, then resolved in RT-8 with an explicit,
+  monotonic `AccountSnapshot.trades_applied` field. It is never inferred from
+  order or fill events; missing count fails closed when the rule is configured.
 - position / working-order limits
 - paper execution (RT-7)
