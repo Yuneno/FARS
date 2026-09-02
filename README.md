@@ -113,6 +113,111 @@ daily-rule simulation. `outcomes_finalized=True` is an explicit attestation that
 all supplied R outcomes represent closed, final trades; FARS does not infer this
 from strategy-specific status columns.
 
+## Monetary account-trade ingestion (Phase 11A)
+
+Phase 11A keeps monetary account history separate from the Core R-based
+`Trade`. Monetary amounts use `Decimal`, currency is mandatory, and callers
+must explicitly attest that each row is an already completed round trip:
+
+```python
+from decimal import Decimal
+from src import load_account_trade_csv
+
+dataset = load_account_trade_csv(
+    "account_trades.csv",
+    row_semantics="completed_round_trip",
+    currency_tolerance=Decimal("0.01"),
+)
+dataset.require_capability("account_pnl")
+```
+
+The adapter preserves unknown provider fields and records both raw-row and
+normalized-record SHA-256 fingerprints. It reports separate capabilities for
+account P&L, cost reconciliation, R analysis, closed-trade replay, and intraday
+rule replay. Headers matching password, token, secret, credential, authorization,
+cookie, OAuth, or private/API/access-key families are refused rather than copied
+into metadata. Missing optional values remain missing. R is derived only from a
+cost-reconciled `net_pnl` and a strictly positive `initial_risk_amount`, with
+formula, source fields, and method version recorded. Fill aggregation, partial
+fills, position reversals, provider-specific semantics, and intraday replay
+from closed trades remain unsupported.
+
+## Generic funded-account rules (Phase 11B)
+
+Phase 11B adds an immutable monetary rule profile and a separate mutable replay
+state without changing the legacy percentage engine. Exact rule boundaries use
+`Decimal`, simultaneous violations are fully disclosed in deterministic order,
+and missing event coverage blocks passing instead of being approximated:
+
+```python
+from datetime import datetime, timezone
+from src import (
+    CAP_CLOSED_TRADE_EVENTS,
+    FundedAccountStateV2,
+    rapid_25k_profile,
+)
+
+profile = rapid_25k_profile()
+assert not profile.enabled
+
+state = FundedAccountStateV2(
+    profile,
+    opened_at=datetime(2026, 8, 29, tzinfo=timezone.utc),
+    data_capabilities=frozenset({CAP_CLOSED_TRADE_EVENTS}),
+)
+```
+
+The generic engine represents absolute or percentage targets and loss limits,
+static or trailing drawdown, independent update and monitoring cadences,
+threshold ceilings, optional daily limits, soft pauses, consistency blocks,
+minimum days, position size, sessions, forced close, news metadata, and
+inactivity. The Rapid 25K reference profile preserves the known 2026-08-27
+values but remains provisional and disabled until its five blocking rule
+questions are resolved.
+
+## Probabilistic funded-account paths (Phase 11C)
+
+Phase 11C combines an audited R-multiple dataset, its matching Phase 10A
+eligibility result, an enabled Phase 11B rule profile, and explicit monetary
+risk and cost assumptions. It refuses unsupported or structurally unstable
+data instead of falling back to IID:
+
+```python
+from datetime import datetime, timezone
+from decimal import Decimal
+from src import (
+    CostAssumptions,
+    PathSimulationConfig,
+    RiskSizingPolicy,
+    run_probabilistic_paths,
+)
+
+result = run_probabilistic_paths(
+    dataset,
+    bootstrap_result,
+    verified_profile,
+    RiskSizingPolicy("fixed_amount", Decimal("100"), "USD"),
+    CostAssumptions("USD", commission_per_trade=Decimal("4.50")),
+    PathSimulationConfig(
+        n_simulations=10_000,
+        max_trades=100,
+        seed=20260830,
+        start_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
+        trades_per_day=3,
+    ),
+)
+```
+
+IID paths require `iid_eligible`. Dependence routes use the Phase 10A
+expectancy-influence block length and are labeled exploratory CBB. The result
+reports pass, breach, and censoring probabilities with Monte Carlo intervals;
+conditional trades/days to pass; drawdown, loss-budget, streak, and best-day
+distributions; assumptions; limitations; and complete dataset/profile/RNG
+provenance. R-only paths support exact closed-trade rules and refuse profiles
+that require intraday, EOD, position-size, news, or open-position event streams.
+Risk sensitivity always returns the full predeclared curve and disallows a
+multi-level tuning grid on validation or final OOS data.
+
 ## Current modeling assumptions
 
 - Synthetic outcomes are IID and use a Bernoulli/lognormal mixture.
@@ -127,6 +232,15 @@ from strategy-specific status columns.
 - Phase 10A uses rank-based dependence diagnostics to select conditional IID
   bootstrap intervals or exploratory circular-block intervals. It does not
   certify IID or stationarity and does not estimate future extremes.
+- Phase 11A accepts only explicitly completed monetary round trips. Supplied and
+  derived R values are not mixed automatically, and multiple currencies are not
+  aggregated without an approved conversion contract.
+- Phase 11B rule replay requires explicit event-coverage capabilities. A
+  missing intraday, end-of-day, position, news, or opening-time stream cannot
+  produce an exact pass result.
+- Phase 11C probabilities are conditional model estimates, not promises.
+  Empirical IID/CBB resampling cannot generate unseen tail outcomes; stress
+  testing remains a separate Phase 13 responsibility.
 
 ## Phases
 
@@ -138,6 +252,7 @@ bootstrap framework, and its Phase 10B CLI exposure are implemented: synthetic
 generation, descriptive metrics, account simulation, Monte Carlo, risk
 optimization/FRES, visual diagnostics, audited CSV adaptation, dependence
 screening, and uncertainty intervals for expectancy, win rate, and standard
-deviation. Monetary account records, funded-rule v2 replay, probabilistic
-account paths, drawdown/extreme stress analysis, and advanced temporal
-validation remain future work.
+deviation. Phase 11A monetary account records, the Phase 11B generic funded-rule
+engine, and Phase 11C probabilistic account paths are implemented and pending
+independent review. Provider-specific prospective validation, drawdown/extreme
+stress analysis, and advanced temporal validation remain future work.

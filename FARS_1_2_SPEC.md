@@ -379,7 +379,8 @@ or statistical methods.
 
 ## 11. Probabilistic Risk and Trade Limits
 
-**STATUS: PHASES 11A–11D CONTRACT APPROVED; IMPLEMENTATION PENDING**
+**STATUS: PHASES 11A–11D CONTRACT APPROVED; PHASES 11A–11C IMPLEMENTED,
+INDEPENDENT REVIEW PENDING; PHASE 11D IMPLEMENTATION PENDING**
 
 The detailed monetary-data, funded-rule, probabilistic-path, and Tradovate
 adapter contracts are defined in `FARS_1_2_PHASES_10B_14_SPEC.md`.
