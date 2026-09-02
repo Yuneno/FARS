@@ -79,13 +79,23 @@ def _payloads(*, include_snapshot=True):
     return payloads
 
 
-def _session(tmp_path, *, include_snapshot=True, strategy=None, risk=None):
+def _session(
+    tmp_path,
+    *,
+    include_snapshot=True,
+    strategy=None,
+    risk=None,
+    payloads=None,
+):
     clock = FrozenClock(TS)
     journal = tmp_path / "paper-session.jsonl"
+    connector_payloads = (
+        _payloads(include_snapshot=include_snapshot) if payloads is None else payloads
+    )
     return (
         PaperRealtimeSession(
             connector=ReplayMarketConnector(
-                _payloads(include_snapshot=include_snapshot),
+                connector_payloads,
                 source="replay-feed",
                 clock=clock,
             ),
@@ -140,6 +150,56 @@ def test_unknown_account_state_denies_without_creating_an_order(tmp_path):
         "MarketTick",
         "Signal",
         "RiskDecision",
+    ]
+
+
+def test_duplicate_signal_identity_is_not_evaluated_or_executed_twice(tmp_path):
+    class _DuplicateSignalStrategy:
+        def on_event(self, event):
+            if not isinstance(event, MarketTick):
+                return None
+            return Signal(
+                event_id="same-signal",
+                source="test-strategy",
+                timestamp=event.timestamp,
+                sequence=1,
+                symbol=event.symbol,
+                action="LONG",
+                origin=event.origin,
+            )
+
+    payloads = _payloads()
+    payloads.append(
+        {
+            "type": "tick",
+            "event_id": "tick-2",
+            "timestamp": TS.isoformat(),
+            "sequence": 3,
+            "symbol": "MNQ",
+            "price": 20_001,
+            "volume": 1,
+        }
+    )
+    session, journal = _session(
+        tmp_path,
+        strategy=_DuplicateSignalStrategy(),
+        payloads=payloads,
+    )
+
+    result = asyncio.run(session.run())
+
+    assert result.metrics.signals_generated == 2
+    assert result.metrics.risk_approvals == 1
+    assert result.metrics.orders_submitted == 1
+    assert result.metrics.execution_reports == 1
+    assert [type(event).__name__ for event in reconstruct_events(journal)] == [
+        "AccountSnapshot",
+        "MarketTick",
+        "Signal",
+        "RiskDecision",
+        "OrderIntent",
+        "ExecutionReport",
+        "MarketTick",
     ]
 
 

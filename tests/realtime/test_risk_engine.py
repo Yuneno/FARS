@@ -99,6 +99,21 @@ def test_trade_count_regression_latches_unknown_state():
     assert decision.reason == REASON_UNKNOWN
 
 
+def test_missing_trade_count_cannot_hide_regression_or_reopen_limit():
+    risk = _engine(_rules(max_trades=3))
+    risk.observe(_snapshot(event_id="at-limit", sequence=1, trades_applied=3))
+    assert risk.evaluate(_signal(event_id="at-limit-signal")).reason == REASON_MAX_TRADES
+
+    risk.observe(_snapshot(event_id="missing", sequence=2, trades_applied=None))
+    assert risk.evaluate(_signal(event_id="missing-signal", sequence=2)).reason == REASON_UNKNOWN
+
+    risk.observe(_snapshot(event_id="regressed", sequence=3, trades_applied=2))
+    decision = risk.evaluate(_signal(event_id="regressed-signal", sequence=3))
+
+    assert decision.approved is False
+    assert decision.reason == REASON_UNKNOWN
+
+
 def _signal(**overrides) -> Signal:
     values = {
         "event_id": "sig-1",

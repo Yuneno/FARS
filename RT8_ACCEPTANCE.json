@@ -6,7 +6,7 @@
       "passed": true
     },
     {
-      "detail": "duplicate identity delivered once and counted once",
+      "detail": "duplicate event and generated signal each produced one downstream effect",
       "name": "duplicate_safety",
       "passed": true
     },
@@ -21,7 +21,7 @@
       "passed": true
     },
     {
-      "detail": "unknown and max-trades states denied; only complete safe state approved",
+      "detail": "unknown, max-trades, and count-regression states denied; safe state approved",
       "name": "risk_enforcement",
       "passed": true
     },

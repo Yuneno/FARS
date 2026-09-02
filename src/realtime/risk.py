@@ -68,6 +68,7 @@ class AccountAwareRiskEngine:
         self._source = source
         self._seq = 0
         self._snapshot: AccountSnapshot | None = None
+        self._max_trades_applied_seen: int | None = None
         self._start_of_day_equity: float | None = None
         self._start_of_day_date: date | None = None
         self._halted = False
@@ -128,13 +129,14 @@ class AccountAwareRiskEngine:
         previous = self._snapshot
         if previous is not None and snap.timestamp < previous.timestamp:
             self._clock_inconsistent = True
-        if (
-            previous is not None
-            and previous.trades_applied is not None
-            and snap.trades_applied is not None
-            and snap.trades_applied < previous.trades_applied
-        ):
-            self._clock_inconsistent = True
+        if snap.trades_applied is not None:
+            if (
+                self._max_trades_applied_seen is not None
+                and snap.trades_applied < self._max_trades_applied_seen
+            ):
+                self._clock_inconsistent = True
+            else:
+                self._max_trades_applied_seen = snap.trades_applied
         day = _utc_day(snap.timestamp)
         if snap.equity is not None:
             if self._start_of_day_date is None:

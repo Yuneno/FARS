@@ -134,6 +134,7 @@ class PaperRealtimeSession:
         self._intent_factory = intent_factory
         self._max_generated_signals = max_generated_signals
         self._pending_signals: deque[Signal] = deque()
+        self._processed_signal_ids: set[tuple[str, str]] = set()
         self._decisions: list[RiskDecision] = []
         self._intents: list[OrderIntent] = []
         self._reports: list[ExecutionReport] = []
@@ -218,7 +219,12 @@ class PaperRealtimeSession:
     async def _drain_signals(self) -> None:
         while self._pending_signals:
             signal = self._pending_signals.popleft()
+            signal_id = identity_key(signal)
+            already_processed = signal_id in self._processed_signal_ids
             await self._publish(signal)
+            if already_processed:
+                continue
+            self._processed_signal_ids.add(signal_id)
             decision = require_risk_decision(self._risk.evaluate(signal))
             if (decision.signal_source, decision.signal_id) != identity_key(signal):
                 raise RealtimeSessionError(

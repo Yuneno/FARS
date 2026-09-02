@@ -298,7 +298,7 @@ def _event_correctness(_root: Path) -> str:
     return f"{len(events)} canonical event types round-trip exactly"
 
 
-async def _duplicate_scenario() -> str:
+async def _duplicate_scenario(root: Path) -> str:
     bus = AsyncIOEventBus(maxsize=4)
     seen: list[MarketTick] = []
     bus.subscribe(lambda event: seen.append(event))
@@ -309,11 +309,75 @@ async def _duplicate_scenario() -> str:
     await bus.shutdown()
     if seen != [tick] or bus.duplicates != 1:
         raise AssertionError("duplicate event was delivered or not counted")
-    return "duplicate identity delivered once and counted once"
+
+    class DuplicateSignalStrategy:
+        def on_event(self, event):
+            if not isinstance(event, MarketTick):
+                return None
+            return Signal(
+                event_id="same-signal",
+                source="duplicate-strategy",
+                timestamp=event.timestamp,
+                sequence=1,
+                symbol=event.symbol,
+                action=SIGNAL_LONG,
+                origin=event.origin,
+            )
+
+    clock = FrozenClock(_TS)
+    session_bus = AsyncIOEventBus(maxsize=16)
+    journal = root / "duplicate-pipeline.jsonl"
+    payloads = (
+        {
+            "type": "snapshot",
+            "event_id": "account-duplicate-check",
+            "timestamp": _TS,
+            "sequence": 1,
+            "equity": 100_000,
+            "peak_equity": 100_000,
+            "last_sync": _TS,
+        },
+        {
+            "type": "tick",
+            "event_id": "duplicate-check-tick-1",
+            "timestamp": _TS,
+            "sequence": 2,
+            "symbol": "MNQ",
+            "price": 20_000,
+            "volume": 1,
+        },
+        {
+            "type": "tick",
+            "event_id": "duplicate-check-tick-2",
+            "timestamp": _TS,
+            "sequence": 3,
+            "symbol": "MNQ",
+            "price": 20_001,
+            "volume": 1,
+        },
+    )
+    session = PaperRealtimeSession(
+        connector=ReplayMarketConnector(payloads, source="duplicate-feed", clock=clock),
+        bus=session_bus,
+        strategy=DuplicateSignalStrategy(),
+        risk=AccountAwareRiskEngine(_rules(), clock),
+        execution=PaperExecutionAdapter(clock, default_paper_assumptions()),
+        recorder=FileEventRecorder(journal),
+        clock=clock,
+    )
+    result = await session.run()
+    recorded = reconstruct_events(journal)
+    if session_bus.duplicates != 1:
+        raise AssertionError("duplicate generated signal was not counted by the bus")
+    if result.metrics.orders_submitted != 1 or result.metrics.execution_reports != 1:
+        raise AssertionError("duplicate generated signal created duplicate execution")
+    if sum(isinstance(event, Signal) for event in recorded) != 1:
+        raise AssertionError("duplicate generated signal was recorded more than once")
+    return "duplicate event and generated signal each produced one downstream effect"
 
 
-def _duplicate_safety(_root: Path) -> str:
-    return asyncio.run(_duplicate_scenario())
+def _duplicate_safety(root: Path) -> str:
+    return asyncio.run(_duplicate_scenario(root))
 
 
 async def _ordering_scenario() -> str:
@@ -396,7 +460,17 @@ def _risk_enforcement(_root: Path) -> str:
     maxed = limited.evaluate(_signal(event_id="signal-limited"))
     if maxed.approved or maxed.reason != REASON_MAX_TRADES:
         raise AssertionError("explicit max-trades state did not deny")
-    return "unknown and max-trades states denied; only complete safe state approved"
+    limited.observe(
+        _snapshot(event_id="limited-missing", sequence=2, trades_applied=None)
+    )
+    missing = limited.evaluate(_signal(event_id="signal-missing", sequence=2))
+    limited.observe(
+        _snapshot(event_id="limited-regressed", sequence=3, trades_applied=1)
+    )
+    regressed = limited.evaluate(_signal(event_id="signal-regressed", sequence=3))
+    if missing.reason != REASON_UNKNOWN or regressed.reason != REASON_UNKNOWN:
+        raise AssertionError("missing count hid a later max-trades regression")
+    return "unknown, max-trades, and count-regression states denied; safe state approved"
 
 
 def _account_state_consistency(_root: Path) -> str:
