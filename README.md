@@ -80,6 +80,48 @@ Exit codes: 0 success, 1 unexpected internal error, 2 invalid CLI arguments,
 data block the requested analysis. Without installation, the same commands are
 available as `python -m src.cli ...` from the project root.
 
+## ProjectX / TopstepX connection (RT-1, read-only)
+
+FARS includes a read-only ProjectX Gateway client for validating credentials,
+discovering the active account, searching contracts, retrieving OHLCV bars,
+and reading open positions or raw trade records. It exposes no order-placement,
+position-closing, or cancellation method. Automated execution remains blocked
+until the strategy, risk gate, paper-trading, and validation phases are complete.
+
+Copy the credential template and fill it locally:
+
+```bash
+cp .env.example .env
+```
+
+Never paste the API key into source code or commit `.env`. Verify the connection:
+
+```bash
+python -m src.realtime.cli doctor
+# or, after pip install -e .
+fars-projectx doctor
+```
+
+Search the simulated-data catalog for the active MNQ contract:
+
+```bash
+fars-projectx contracts MNQ
+```
+
+Then use the returned contract ID to retrieve one-minute bars. ISO timestamps
+must include a timezone:
+
+```bash
+fars-projectx bars CON.F.US.MNQ.Z26 \
+  --start 2026-09-02T13:00:00Z \
+  --end 2026-09-02T14:00:00Z \
+  --unit 2 --unit-number 1 --limit 60
+```
+
+The default data route is simulated (`live=false`), appropriate for a Challenge.
+`doctor` prints neither the API key nor the 24-hour session token. See
+`PROJECTX_QUICKSTART.md` for the exact setup and current safety boundary.
+
 `fars bootstrap` requires both `core_metrics` and `temporal_analysis`. Its IID
 intervals remain conditional on approximate IID; circular-block intervals are
 explicitly exploratory and assume plausible stationary short-memory
