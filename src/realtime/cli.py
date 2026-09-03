@@ -11,12 +11,29 @@ from decimal import Decimal
 from typing import Any
 
 from src.realtime.config import ProjectXConfigurationError, load_projectx_credentials
-from src.realtime.connectors.projectx import ProjectXClient, ProjectXError
+from src.realtime.connectors.projectx import MAX_BAR_LIMIT, ProjectXClient, ProjectXError
 
 EXIT_OK = 0
 EXIT_INTERNAL = 1
 EXIT_CONFIGURATION = 2
 EXIT_PROVIDER = 3
+
+
+def _positive_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be an integer") from exc
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
+
+
+def _bar_limit(value: str) -> int:
+    parsed = _positive_int(value)
+    if parsed > MAX_BAR_LIMIT:
+        raise argparse.ArgumentTypeError(f"must be <= {MAX_BAR_LIMIT}")
+    return parsed
 
 
 def _aware_datetime(value: str) -> datetime:
@@ -58,8 +75,8 @@ def _build_parser() -> argparse.ArgumentParser:
     bars.add_argument("--start", required=True, type=_aware_datetime)
     bars.add_argument("--end", required=True, type=_aware_datetime)
     bars.add_argument("--unit", type=int, choices=range(1, 7), default=2)
-    bars.add_argument("--unit-number", type=int, default=1)
-    bars.add_argument("--limit", type=int, default=1000)
+    bars.add_argument("--unit-number", type=_positive_int, default=1)
+    bars.add_argument("--limit", type=_bar_limit, default=1000)
     bars.add_argument("--include-partial-bar", action="store_true")
     bars.add_argument(
         "--live", action="store_true", help="use a live market-data subscription (not orders)"

@@ -29,6 +29,7 @@ PROJECTX_SOURCE = "projectx"
 MAX_BAR_LIMIT = 20_000
 BAR_UNITS = frozenset({1, 2, 3, 4, 5, 6})
 _BAR_UNIT_SUFFIX = {1: "s", 2: "m", 3: "h", 4: "d", 5: "w", 6: "mo"}
+_UNIT_SECONDS = {1: 1, 2: 60, 3: 3600, 4: 86400, 5: 604800}
 _FORBIDDEN_METHODS = (
     "place_order",
     "submit_order",
@@ -264,12 +265,21 @@ def projectx_stream_source(
     return f"{source}/{contract_id.strip()}/{interval}"
 
 
-def _bar_sequence(timestamp: datetime) -> int:
-    """Stable sequence from UTC time. Not the index inside one HTTP response."""
+def _bar_sequence(timestamp: datetime, *, unit: int, unit_number: int) -> int:
+    """Stable per-interval index. Consecutive 1m bars differ by 1, not 60_000_000."""
     if timestamp.tzinfo is None or timestamp.utcoffset() is None:
         raise ValueError("timestamp must be timezone-aware")
-    delta = timestamp.astimezone(UTC) - datetime(1970, 1, 1, tzinfo=UTC)
-    return delta.days * 86_400_000_000 + delta.seconds * 1_000_000 + delta.microseconds
+    utc = timestamp.astimezone(UTC)
+    if unit == 6:
+        month_index = utc.year * 12 + (utc.month - 1)
+        return month_index // unit_number
+    step = _UNIT_SECONDS[unit] * unit_number
+    delta = utc - datetime(1970, 1, 1, tzinfo=UTC)
+    seconds = delta.days * 86_400 + delta.seconds
+    sequence = seconds // step
+    if sequence < 0:
+        raise ValueError("bar sequence must be non-negative")
+    return sequence
 
 
 def bar_interval(unit: int, unit_number: int) -> str:
@@ -324,7 +334,7 @@ def canonical_bars(
                 event_id=f"{contract_id}:{interval}:{timestamp.isoformat()}",
                 source=stream_source,
                 timestamp=timestamp,
-                sequence=_bar_sequence(timestamp),
+                sequence=_bar_sequence(timestamp, unit=unit, unit_number=unit_number),
                 symbol=contract_id,
                 interval=interval,
                 open=float(bar.open),

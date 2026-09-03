@@ -6,6 +6,8 @@ import json
 from datetime import UTC, datetime
 from decimal import Decimal
 
+import pytest
+
 from src.realtime import cli
 from src.realtime.connectors.projectx import ProjectXAccount, ProjectXBar, ProjectXContract
 from src.realtime.interfaces import LIVE_EXECUTION_ENABLED
@@ -133,3 +135,26 @@ def test_bars_command(monkeypatch, capsys):
     assert exit_code == cli.EXIT_OK
     assert payload[0]["timestamp"] == "2026-09-02T13:00:00+00:00"
     assert payload[0]["close"] == "23000.50"
+
+
+def test_cli_bars_rejects_invalid_unit_number_and_limit(monkeypatch, capsys):
+    _configure(monkeypatch)
+    base = [
+        "bars",
+        "CON.TEST.MNQ.Z99",
+        "--start",
+        "2026-09-02T13:00:00Z",
+        "--end",
+        "2026-09-02T14:00:00Z",
+    ]
+    with pytest.raises(SystemExit) as unit_number:
+        cli.main([*base, "--unit-number", "-1"])
+    with pytest.raises(SystemExit) as zero_limit:
+        cli.main([*base, "--limit", "0"])
+    with pytest.raises(SystemExit) as huge_limit:
+        cli.main([*base, "--limit", "20001"])
+    assert unit_number.value.code == 2
+    assert zero_limit.value.code == 2
+    assert huge_limit.value.code == 2
+    err = capsys.readouterr().err
+    assert "never-print-this-secret" not in err

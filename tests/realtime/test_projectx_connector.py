@@ -566,9 +566,9 @@ def test_commissions_are_kept_when_provider_sends_them():
     assert fills[0].commissions == Decimal("1.25")
 
 
-def _px_bar(hour: int) -> ProjectXBar:
+def _px_bar(hour: int, minute: int = 0) -> ProjectXBar:
     return ProjectXBar(
-        datetime(2026, 9, 2, hour, tzinfo=UTC),
+        datetime(2026, 9, 2, hour, minute, tzinfo=UTC),
         Decimal(2),
         Decimal(3),
         Decimal(1),
@@ -595,6 +595,38 @@ def test_canonical_bars_do_not_conflict_across_contracts_or_windows():
     assert mnq[0].source != nq[0].source
     assert mnq[1].event_id == overlap[1].event_id
     assert mnq[1].sequence == overlap[1].sequence
+
+
+def test_consecutive_one_minute_bars_are_ordered_without_bus_gaps():
+    import asyncio
+
+    from src.realtime.bus import AsyncIOEventBus
+    from src.realtime.ordering import OrderingClass, SequenceTracker
+
+    bars = canonical_bars(
+        (_px_bar(13, 0), _px_bar(13, 1)),
+        contract_id="CON.TEST",
+        unit=2,
+        unit_number=1,
+    )
+    assert bars[1].sequence == bars[0].sequence + 1
+    tracker = SequenceTracker()
+    assert tracker.classify(bars[0]) is OrderingClass.ORDERED
+    assert tracker.classify(bars[1]) is OrderingClass.ORDERED
+
+    async def _run() -> None:
+        bus = AsyncIOEventBus(maxsize=8)
+        seen: list[str] = []
+        bus.subscribe(lambda event: seen.append(event.event_id))
+        await bus.start()
+        await bus.publish(bars[0])
+        await bus.publish(bars[1])
+        await bus.shutdown()
+        assert seen == [bars[0].event_id, bars[1].event_id]
+        assert bus.gaps == 0
+        assert bus.conflicts == 0
+
+    asyncio.run(_run())
 
 
 def test_equivalent_offsets_share_identity_and_do_not_halt_the_bus():
