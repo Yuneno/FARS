@@ -26,9 +26,16 @@ Core.
 `tests/realtime/` — contracts, component tests, complete paper sessions, and
 the explicit RT-8 acceptance harness.
 
+## ProjectX / TopstepX (read-only RT-1)
+
+`src/realtime/connectors/projectx.py` authenticates, searches contracts, pulls
+historical bars, and reads positions/fills. It does **not** replace
+`ReplayMarketConnector`. Fills are not Core `Trade`. This is not RT-8 PASS for
+ProjectX and not RT-9. See `PROJECTX_CONNECTOR.md`.
+
 ## Out of scope (later phases)
 
-Live broker APIs. RT-0 through RT-8 are on this branch.
+SignalR, strategy, RT-9, and live orders.
 Live execution stays locked (`LIVE_EXECUTION_ENABLED = False`).
 
 RT-1 replay connector: `connector.py` (see `RT1_SUMMARY.md`).
