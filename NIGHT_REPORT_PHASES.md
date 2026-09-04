@@ -1,6 +1,6 @@
 # NIGHT_REPORT_PHASES.md
 
-Fases estadísticas 11A / 11B / 11C — revisión nocturna + ciclo de corrección.
+Fases estadísticas 11A / 11B / 11C — revisión nocturna + 2 ciclos de corrección.
 
 **Fecha:** 2026-09-03
 **Agente:** Hermes (implementación).
@@ -11,130 +11,146 @@ Fases estadísticas 11A / 11B / 11C — revisión nocturna + ciclo de correcció
 
 ## 1. Commit base
 
-- **Commit base del diff de revisión (para Codex):** `c201aed` —
-  `Separate bootstrap result schema version`. Padre de `9bdc999`
-  (`Implement Phase 11A account data and Phase 11B rules`): el último commit
-  **anterior** a la implementación de 11A/11B/11C. El diff `c201aed..HEAD`
-  (restringido a archivos de fase) es lo que Codex revisa.
-- **Avance de la rama durante la noche:** HEAD partió de `27c8972` y llegó a
-  `86d8ea2` (reporte) → `5851198` (fix HIGH) → `82567a9` (fix MEDIUM).
-- Ningún cambio se hizo en el repositorio original (`Documents/FARS`).
+- **Commit base de revisión (para Codex):** `c201aed` — `Separate bootstrap result
+  schema version`, padre de `9bdc999` (anterior a la implementación 11A/11B/11C). El
+  diff `c201aed..HEAD` restringido a archivos de fase es lo que Codex revisó.
+- HEAD actual: `e0cf2d9` (ver commits abajo). Partió de `27c8972`.
+- Repositorio original (`Documents/FARS`) sin modificar.
 
 ## 2. Estado encontrado de cada fase
 
-Todos los subphases declaran **"implemented; independent review pending"** en el SPEC
-vivo (`FARS_1_2_PHASES_10B_14_SPEC.md` L184/L272/L394; 10B L132). No hay stamps falsos.
-
-| Fase | Estado | Implementación | Tests | Resultado |
+| Fase | Estado (SPEC) | Implementación | Tests | Resultado |
 |---|---|---|---|---|
-| 11A — Canonical monetary/account-event | implemented, review pending | `src/account_data.py` | `tests/test_account_data.py` | 46 passed |
-| 11B — Generic rules engine v2 | implemented, review pending | `src/funded_rules_v2.py`, `src/funded_profiles.py` | `tests/test_funded_rules_v2.py` | 31 passed |
-| 11C — Probabilistic paths & trade limits | implemented, review pending | `src/probabilistic_paths.py` | `tests/test_probabilistic_paths.py` | 19 passed |
+| 11A | implemented; independent review pending | `src/account_data.py` | `tests/test_account_data.py` | 47 passed |
+| 11B | implemented; independent review pending | `src/funded_rules_v2.py`, `src/funded_profiles.py` | `tests/test_funded_rules_v2.py` | 31 passed |
+| 11C | implemented; independent review pending | `src/probabilistic_paths.py` | `tests/test_probabilistic_paths.py` | 20 passed |
 
-## 3. Bugs confirmados y sospechas descartadas
+Los tres subphases declaran **"implemented; independent review pending"** en el SPEC
+vivo. No se estampó "review passed" indebidamente.
 
-### Sospechas previas DESCARTADAS (ya corregidas en `7905705`)
+## 3. Bugs y sospechas
 
-- **CRITICAL (stamps de review)**: el SPEC vivo ahora dice "independent review pending".
-- **WARNING #1 (`not_evaluable` prioridad)**: en `apply()`, perfil deshabilitado
-  retorna temprano un único evento `not_evaluable`; `primary_event` ya no se ve
-  como "casi pasó".
-- **WARNING #2 (mutación de estado)**: el camino deshabilitado no muta
-  balance/equity/high-watermark/trading-days.
+### Sospechas previas DESCARTADAS (sin modificaciones de la noche)
 
-Verificado con reproducción directa (perfil `rapid_25k_profile()` deshabilitado +
-trade que alcanza el target 26500): `primary_event=not_evaluable`, `pass_eligible=False`,
-estado en `25000/25000/25000`, `trading_days=()`. Y con test
-`test_rapid_25k_reference_profile_is_provisional_and_fail_closed` (pasa).
+El CRITICAL (stamps de review) y los WARNINGs de `not_evaluable` (prioridad + mutación
+de estado en perfiles deshabilitados) **ya estaban corregidos** en el commit base
+(`7905705`). Verificado con reproducción directa del perfil `rapid_25k_profile()`
+deshabilitado: `primary_event=not_evaluable`, `pass_eligible=False`, estado sin mutar.
 
-### Bugs CONFIRMADOS y corregidos (ronda 1 de Codex → CHANGES_REQUESTED)
+### Bugs CONFIRMADOS y corregidos — Ciclo 1 (ronda 1 de Codex → CHANGES_REQUESTED)
 
-**HIGH — Rechazar schedules que cruzan el boundary de día** (`src/probabilistic_paths.py`)
-- `_simulate_one()` generaba `timestamp = start_at + timedelta(days, minutes=minute_index)`.
-  Con `trades_per_day=2` y `start_at=23:59`, el segundo trade cae al día siguiente,
-  **inflando `trading_days`** (2 en vez de 1) y haciendo que un path dé **PASS falso**
-  cuando `minimum_trading_days=2`.
-- Reproducido: `terminal=pass` con `trading_days=2` sobre un solo bloque de día.
-- **Fix:** `PathSimulationConfig.__post_init__` rechaza cualquier schedule donde el
-  bloque de un día cruce el día calendario de `start_at`.
+**HIGH — Rechazar schedules que cruzan la frontera** (`src/probabilistic_paths.py`)
+- `timestamp = start_at + timedelta(days, minutes)` con `trades_per_day=2, start_at=23:59`
+  inflaba `trading_days` (2 en vez de 1) → PASS falso con `minimum_trading_days=2`.
+- Fix inicial: chequeo de día **calendario** en `PathSimulationConfig`.
 - Commit: `5851198`.
 
-**MEDIUM — Frozen result mutaba a través de `provenance` anidado** (`src/probabilistic_paths.py`)
-- `ProbabilisticPathResult.__post_init__` usaba `_immutable_mapping` (solo el mapping
-  exterior). Los dicts anidados (`provenance["rng"]`, `["risk_sizing"]`, `["dataset"]`)
-  seguían siendo dicts mutables: un resultado congelado podía reescribirse silenciosamente
-  (p.ej. `max_trades` que `estimate_trades_for_pass_probability()` lee).
-- Reproducido: `result.provenance["rng"]["master_entropy"] = 999999` mutaba sin error.
-- **Fix:** helper recursivo `_deep_immutable()` que congela mappings/sequences anidados
-  (en `MappingProxyType`/`tuple`, y copia para romper aliasing) y se usa para `provenance`.
+**MEDIUM — Frozen result mutaba vía provenance anidado** (`src/probabilistic_paths.py`)
+- `_immutable_mapping` solo protegía el mapping exterior; `provenance["rng"]["master_entropy"]`
+  mutaba libremente.
+- Fix: `_deep_immutable()` recursivo aplicado al `provenance` de 11C.
 - Commit: `82567a9`.
 
-### Veredictos de Codex
+### Bugs CONFIRMADOS y corregidos — Ciclo 2 (ronda 2 de Codex → CHANGES_REQUESTED)
 
-- **Ronda 1:** `CHANGES_REQUESTED` — 1 HIGH + 1 MEDIUM + 1 WARNING (documentación/entorno).
-- **Ronda 2:** a ejecutar tras las correcciones (ver §9).
+**CRITICAL — El guard de día calendario NO cubre la frontera de sesión del perfil**
+(`src/probabilistic_paths.py`)
+- El engine define el día de trading por `profile.session_timezone` +
+  `profile.session_boundary`, no por el día calendario. Reproducción de Codex:
+  sesión `17:00`, `start_at=16:59`, `trades_per_day=2` → `trading_days=2`, PASS falso.
+- **Fix correcto:** validación en `_validate_inputs` (donde el perfil está disponible)
+  usando la propia `_session_date` del engine; rechaza cualquier bloque de un día que
+  cruce dos sesiones del perfil, sobre todo el horizonte. Se eliminó el chequeo
+  calendario equivocado de `PathSimulationConfig` (sobre-rechazaba sesiones nocturnas).
+- Tests nuevos: rechazo en medianoche UTC + rechazo en frontera no-medianoche (17:00).
+- Commit: `e2a37fd`.
 
-## 4. Commits realizados
+**WARNING/MEDIUM — Inmutabilidad del `metadata` de 11A superficial**
+(`src/account_data.py`)
+- `CanonicalAccountTrade` y `AccountEquityEvent` usaban `_immutable_mapping` superficial:
+  `metadata["provider"]["sequence"]=999` mutaba un evento congelado.
+- **Fix:** `_deep_immutable()` recursivo aplicado al `metadata` de ambos records.
+- Test nuevo: mutación anidada lanza `TypeError` y el valor queda intacto.
+- Commit: `e0cf2d9`.
+
+### No corregido (fuera de alcance / opcional)
+
+- **SUGGESTION (ronda 2):** no existe contrato público de serialización
+  (`dataclasses.asdict` falla sobre `mappingproxy`). Es opcional y la spec no exige JSON
+  directo para estas fases → **no implementada** (per instrucción "no implementar
+  sugerencias opcionales"). Queda documentada como deuda.
+
+## 4. Commits realizados (código + docs)
 
 | Commit | Contenido |
 |---|---|
-| `5851198` | fix(11C): rechaza schedule que cruza el boundary de día (HIGH) |
-| `82567a9` | fix(11C): deep-freeze `provenance` en resultados congelados (MEDIUM) |
-| `86d8ea2` | docs: reporte nocturno de fases 11A/11B/11C |
+| `e0cf2d9` | fix(11A): deep-freeze `metadata` en records congelados (ciclo 2) |
+| `e2a37fd` | fix(11C): validar schedule contra la frontera de sesión del perfil (ciclo 2) |
+| `922c3b1` | docs: reporte tras ronda 1 |
+| `82567a9` | fix(11C): deep-freeze `provenance` (ciclo 1) |
+| `5851198` | fix(11C): rechazar schedule que cruza la frontera (ciclo 1) |
+| `86d8ea2` | docs: reporte inicial |
 
-## 5. Archivos modificados (código desde el base de revisión `c201aed`)
+## 5. Archivos modificados (código desde el base `c201aed`)
 
-- `src/probabilistic_paths.py` — validación de boundary + `_deep_immutable` (+ fix HIGH/MEDIUM).
-- `tests/test_probabilistic_paths.py` — 3 tests nuevos (2 RED→GREEN + 1 guarda).
+- `src/probabilistic_paths.py` — validación de sesión (`_validate_inputs`) + `_deep_immutable`
+  + imports (`_session_date`, `time`).
+- `tests/test_probabilistic_paths.py` — tests de sesión + provenance.
+- `src/account_data.py` — `_deep_immutable` + deep-freeze de `metadata`.
+- `tests/test_account_data.py` — test de metadata anidada.
 - `NIGHT_REPORT_PHASES.md` — este reporte.
-- 11A (`account_data.py`) y 11B (`funded_rules_v2.py`) **sin cambios de código** en esta noche.
+- 11B (`funded_rules_v2.py`) **sin cambios de código** en la noche (ya correcto).
 
 ## 6. Tests ejecutados y resultados exactos
 
-Intérprete: conda base `python3` (Python 3.13.5, numpy 2.1.3, arch 8.0.0, pytest 8.3.4);
-**sin tocar la red**.
+Entorno: conda base (Python 3.13.5, numpy 2.1.3, arch 8.0.0, pytest 8.3.4); sin red.
 
 ```
-/opt/anaconda3/bin/python -m pytest -p no:debugging tests/test_account_data.py -q        # 11A
-/opt/anaconda3/bin/python -m pytest -p no:debugging tests/test_funded_rules_v2.py -q     # 11B
-/opt/anaconda3/bin/python -m pytest -p no:debugging tests/test_probabilistic_paths.py -q # 11C
-/opt/anaconda3/bin/python -m pytest -p no:debugging -m "not statistical" -q              # suite determinista
+/opt/anaconda3/bin/python -m pytest -p no:debugging tests/test_account_data.py -q
+/opt/anaconda3/bin/python -m pytest -p no:debugging tests/test_funded_rules_v2.py -q
+/opt/anaconda3/bin/python -m pytest -p no:debugging tests/test_probabilistic_paths.py -q
+/opt/anaconda3/bin/python -m pytest -p no:debugging -m "not statistical" -q
 ```
 
 | Comando | Resultado |
 |---|---|
-| `tests/test_account_data.py` (11A) | 46 passed |
-| `tests/test_funded_rules_v2.py` (11B) | 31 passed |
-| `tests/test_probabilistic_paths.py` (11C) | **19 passed** (16 base + 3 nuevos) |
-| `-m "not statistical"` (completa, incluye realtime) | **912 passed, 10 deselected** |
+| `tests/test_account_data.py` (11A) | **47 passed** |
+| `tests/test_funded_rules_v2.py` (11B) | **31 passed** |
+| `tests/test_probabilistic_paths.py` (11C) | **20 passed** |
+| `-m "not statistical"` (completa, incluye realtime) | **914 passed, 10 deselected** |
 
-Ronda 1: los 2 tests RED fallaron (²DID NOT RAISE²) antes del fix y pasaron después.
+Todos los tests nuevos fueron RED (fallaron por la causa correcta) antes del fix y
+GREEN después.
 
 ## 7. Confirmaciones de alcance
 
 - **Phase 11D permaneció completamente intacta.** No existe módulo de código 11D; su
-  sección del SPEC no cambió (mismo contenido); `git status` no muestra cambios ahí.
+  sección del SPEC no cambió; `git status` no muestra cambios ahí.
 - **No se modificaron RT, ProjectX, SMC-FVG ni Phases 12-14.** Los únicos archivos
-  tocados son de `probabilistic_paths.py` (11C) y su test.
+  tocados son `probabilistic_paths.py` (11C), `account_data.py` (11A) y sus tests.
 - **No hubo push ni merge** (ni rebase, reset ni clean). Repositorio original intacto.
 
-## 8. Pendientes, riesgos y decisiones que requieren revisión humana
+## 8. Estado de la revisión independiente
 
-1. **Suite estadística NO ejecutada** (marcador `statistical`, ~30+ min, requiere el
-   entorno de acceptance exacto Python 3.12.13 + `requirements-acceptance.lock`). El
-   verde determinista (912) no constituye acceptance estadística.
-2. **Revisión independiente pendiente** — se invoca a Codex en modo read-only (§9). No
-   estampar "review passed" sin artefacto real.
-3. **Entorno divergente**: dev (3.13.5) != acceptance (3.12.13).
-4. **`CODEX_REVIEW_PHASES.md`** es el artefacto de la revisión de Codex (venía de la
-   ronda 1; se regenerará en la ronda 2).
+- **Ronda 1 (Codex):** `CHANGES_REQUESTED` → 1 HIGH + 1 MEDIUM + 1 WARNING. HIGH/MEDIUM
+  corregidos (ciclo 1).
+- **Ronda 2 (Codex):** `CHANGES_REQUESTED` → 1 CRITICAL (frontera de sesión) + 1 WARNING
+  (metadata 11A) + 1 SUGGESTION (serialización, no implementada). CRITICAL y WARNING
+  corregidos (ciclo 2).
+- **Se alcanzó el límite de dos ciclos de corrección.** No se invocó una tercera revisión.
+  Los dos ciclos cubrieron todos los hallazgos BLOCKER/HIGH/MEDIUM claramente
+  demostrados. Queda pendiente la **revisión humana / una re-revisión de Codex** para
+  sellar el estado (no estampar "review passed" automáticamente).
 
-## 9. Review independiente (Codex)
+## 9. Pendientes, riesgos y decisiones para revisión humana
 
-- **Ronda 1:** `CHANGES_REQUESTED` (HIGH + MEDIUM + WARNING). Hallazgos HIGH/MEDIUM
-  reproducidos, corregidos y commiteados por separado.
-- **Ronda 2:** se invoca a Codex de nuevo en modo read-only sobre el diff
-  `c201aed..HEAD` restringido a archivos de fase, con los fixes aplicados.
+1. **Suite estadística NO ejecutada** (marcador `statistical`, ~30+ min, requiere Python
+   3.12.13 + `requirements-acceptance.lock`). El verde determinista (914) no constituye
+   acceptance estadística.
+2. **Revisión humana / re-revisión de Codex** para confirmar los fixes del ciclo 2 (por
+   el tope de 2 ciclos no se invocó una 3ª vez).
+3. **SUGGESTION de serialización** queda como deuda documentada (no implementada).
+4. Entorno divergente: dev (3.13.5) != acceptance (3.12.13).
 
 ---
 
