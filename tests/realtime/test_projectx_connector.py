@@ -308,8 +308,57 @@ def test_canonical_snapshot_does_not_infer_equity_or_round_trips():
     assert isinstance(snapshot, AccountSnapshot)
     assert snapshot.balance == 150000.0
     assert snapshot.equity is None
+    assert snapshot.realized_pnl is None
+    assert snapshot.unrealized_pnl is None
+    assert snapshot.peak_equity is None
     assert snapshot.trades_applied is None
     assert snapshot.positions == (("CON.TEST.MNQ.Z99", 1, 2, "23000.25"),)
+
+
+def test_empty_positions_do_not_copy_balance_into_equity():
+    account = ProjectXAccount(
+        1001, "TEST-ACCOUNT", Decimal("150000.00"), True, True, True
+    )
+    clock = FrozenClock(datetime(2026, 9, 2, 15, tzinfo=UTC))
+    snapshot = canonical_account_snapshot(
+        account, (), event_id="px-snap-flat", sequence=1, clock=clock
+    )
+    assert snapshot.balance == 150000.0
+    assert snapshot.equity is None
+    assert snapshot.unrealized_pnl is None
+    assert snapshot.positions == ()
+
+
+def test_undocumented_account_mark_fields_are_not_mapped_to_equity():
+    client, _ = _authenticated_client(
+        {
+            "success": True,
+            "errorCode": 0,
+            "accounts": [
+                {
+                    "id": 1001,
+                    "name": "TEST-ACCOUNT",
+                    "balance": "150000.00",
+                    "canTrade": True,
+                    "isVisible": True,
+                    "simulated": True,
+                    "equity": "151000.00",
+                    "unrealizedPnl": "1000.00",
+                    "peakEquity": "160000.00",
+                }
+            ],
+        }
+    )
+    account = client.select_account(client.list_accounts())
+    clock = FrozenClock(datetime(2026, 9, 2, 15, tzinfo=UTC))
+    snapshot = canonical_account_snapshot(
+        account, (), event_id="px-snap-extra", sequence=1, clock=clock
+    )
+    assert account.balance == Decimal("150000.00")
+    assert snapshot.balance == 150000.0
+    assert snapshot.equity is None
+    assert snapshot.unrealized_pnl is None
+    assert snapshot.peak_equity is None
 
 
 def test_historical_connector_implements_market_data_protocol():

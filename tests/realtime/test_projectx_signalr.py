@@ -1,0 +1,305 @@
+"""Deterministic tests for the read-only ProjectX Market Hub mapper."""
+
+from __future__ import annotations
+
+import json
+from datetime import UTC, datetime
+from decimal import Decimal
+from io import StringIO
+from pathlib import Path
+
+import pytest
+
+from src.realtime.clock import FrozenClock
+from src.realtime.connectors.projectx import (
+    ProjectXAuthenticationError,
+    ProjectXContract,
+    ProjectXResponseError,
+)
+from src.realtime.connectors.projectx_signalr import (
+    RECORD_SEPARATOR,
+    StreamSequencer,
+    encode_signalr,
+    handshake_frames,
+    map_hub_message,
+    parse_signalr_frame,
+    select_mnq_contract,
+    split_signalr_frames,
+    subscribe_frames,
+)
+from src.realtime.events import MarketTick, MarketTrade, Quote
+from src.realtime.interfaces import LIVE_EXECUTION_ENABLED
+from src.realtime.listen import capture_until, run_listen
+from src.realtime.recorder import reconstruct_events
+
+
+def _contract(contract_id: str, name: str, *, active: bool = True) -> ProjectXContract:
+    return ProjectXContract(
+        contract_id,
+        name,
+        "Micro E-mini Nasdaq-100",
+        Decimal("0.25"),
+        Decimal("0.50"),
+        active,
+        "F.US.MNQ",
+    )
+
+
+def test_live_execution_stays_locked():
+    assert LIVE_EXECUTION_ENABLED is False
+
+
+def test_signalr_frames_round_trip():
+    encoded = encode_signalr({"protocol": "json", "version": 1})
+    frames, rest = split_signalr_frames(encoded + "{\"type\":6}")
+    assert frames == ('{"protocol":"json","version":1}',)
+    assert rest == '{"type":6}'
+    assert parse_signalr_frame(frames[0])["protocol"] == "json"
+
+
+def test_select_mnq_rejects_ambiguous_and_inactive():
+    with pytest.raises(ProjectXResponseError, match="no active MNQ"):
+        select_mnq_contract((_contract("CON.TEST.MNQ.Z99", "MNQ", active=False),))
+    with pytest.raises(ProjectXResponseError, match="ambiguous"):
+        select_mnq_contract(
+            (
+                _contract("CON.TEST.MNQ.U99", "MNQU9"),
+                _contract("CON.TEST.MNQ.Z99", "MNQZ9"),
+            )
+        )
+    chosen = select_mnq_contract(
+        (
+            _contract("CON.TEST.NQ.Z99", "NQZ9"),
+            _contract("CON.TEST.MNQ.Z99", "MNQ"),
+        )
+    )
+    assert chosen.contract_id == "CON.TEST.MNQ.Z99"
+
+
+def test_quote_and_trade_map_to_canonical_events():
+    sequencer = StreamSequencer("CON.TEST.MNQ.Z99")
+    quotes = map_hub_message(
+        {
+            "type": 1,
+            "target": "GatewayQuote",
+            "arguments": [
+                {
+                    "timestamp": "2026-09-03T21:00:00Z",
+                    "bestBid": "23000.25",
+                    "bestAsk": "23000.50",
+                    "bestBidSize": "3",
+                    "bestAskSize": "4",
+                }
+            ],
+        },
+        contract_id="CON.TEST.MNQ.Z99",
+        sequencer=sequencer,
+    )
+    trades = map_hub_message(
+        {
+            "type": 1,
+            "target": "GatewayTrade",
+            "arguments": [
+                {
+                    "id": 88,
+                    "timestamp": "2026-09-03T21:00:01Z",
+                    "price": "23000.50",
+                    "size": "2",
+                }
+            ],
+        },
+        contract_id="CON.TEST.MNQ.Z99",
+        sequencer=sequencer,
+    )
+    assert len(quotes) == 1 and isinstance(quotes[0], Quote)
+    assert quotes[0].sequence == 1
+    assert quotes[0].source == "projectx/CON.TEST.MNQ.Z99/quote"
+    assert quotes[0].bid_price == 23000.25
+    assert quotes[0].origin == "live"
+    assert len(trades) == 1 and isinstance(trades[0], MarketTrade)
+    assert trades[0].sequence == 1
+    assert trades[0].source == "projectx/CON.TEST.MNQ.Z99/trade"
+    assert trades[0].size == 2.0
+
+
+def test_incomplete_quote_is_skipped_not_filled():
+    sequencer = StreamSequencer("CON.TEST.MNQ.Z99")
+    events = map_hub_message(
+        {
+            "type": 1,
+            "target": "GatewayQuote",
+            "arguments": [{"timestamp": "2026-09-03T21:00:00Z", "bestBid": "1", "bestAsk": "2"}],
+        },
+        contract_id="CON.TEST.MNQ.Z99",
+        sequencer=sequencer,
+    )
+    assert events == ()
+
+
+def test_last_price_without_quote_becomes_tick_not_core_trade():
+    sequencer = StreamSequencer("CON.TEST.MNQ.Z99")
+    events = map_hub_message(
+        {
+            "type": 1,
+            "target": "GatewayLast",
+            "arguments": [
+                {
+                    "timestamp": "2026-09-03T21:00:00Z",
+                    "lastPrice": "23000.25",
+                    "volume": "10",
+                }
+            ],
+        },
+        contract_id="CON.TEST.MNQ.Z99",
+        sequencer=sequencer,
+    )
+    assert len(events) == 1
+    assert isinstance(events[0], MarketTick)
+    assert events[0].volume == 10.0
+
+
+def test_session_token_requires_auth():
+    from src.realtime.config import ProjectXCredentials
+    from src.realtime.connectors.projectx import ProjectXClient
+    from tests.realtime.test_projectx_connector import FakeTransport
+
+    client = ProjectXClient(
+        ProjectXCredentials("test-user", "super-secret"),
+        transport=FakeTransport([]),
+    )
+    with pytest.raises(ProjectXAuthenticationError):
+        client.session_token()
+
+
+class _FakeHub:
+    def __init__(self, chunks: list[str]) -> None:
+        self.chunks = list(chunks)
+        self.sent: list[str] = []
+        self.closed = False
+
+    def send(self, data: str) -> None:
+        self.sent.append(data)
+
+    def recv(self) -> str:
+        if not self.chunks:
+            raise TimeoutError()
+        return self.chunks.pop(0)
+
+    def close(self) -> None:
+        self.closed = True
+
+
+def test_capture_records_quote_and_skips_duplicates(tmp_path: Path, monkeypatch):
+    from src.realtime import listen as listen_mod
+    from src.realtime.recorder import FileEventRecorder
+
+    quote = {
+        "type": 1,
+        "target": "GatewayQuote",
+        "arguments": [
+            {
+                "timestamp": "2026-09-03T21:00:00Z",
+                "bestBid": "23000.25",
+                "bestAsk": "23000.50",
+                "bestBidSize": "1",
+                "bestAskSize": "1",
+            }
+        ],
+    }
+    frame = json.dumps(quote, separators=(",", ":")) + RECORD_SEPARATOR
+    handshake = handshake_frames()
+    hub = _FakeHub(["{}" + RECORD_SEPARATOR, frame, frame])
+
+    monkeypatch.setattr(
+        listen_mod,
+        "negotiate_market_hub",
+        lambda token, hub_url, timeout: {"connectionToken": "conn-token"},
+    )
+    monkeypatch.setattr(
+        listen_mod,
+        "market_hub_socket_url",
+        lambda hub_url, negotiate, token: "wss://example.test/hubs/market",
+    )
+
+    journal = tmp_path / "journal.jsonl"
+    stats = capture_until(
+        token="session-token",
+        contract_id="CON.TEST.MNQ.Z99",
+        recorder=FileEventRecorder(journal),
+        deadline_monotonic=__import__("time").monotonic() + 0.4,
+        hub_url="https://example.test/hubs/market",
+        timeout=1.0,
+        log=StringIO(),
+        socket_factory=lambda url, headers, timeout: hub,
+        clock=FrozenClock(datetime(2026, 9, 3, 21, tzinfo=UTC)),
+    )
+    events = reconstruct_events(journal)
+    quotes = [event for event in events if isinstance(event, Quote)]
+    assert len(quotes) == 1
+    assert stats.duplicates == 1
+    assert stats.conflicts == 0
+    assert handshake in "".join(hub.sent)
+    assert any(SUBSCRIBE in item for item in hub.sent for SUBSCRIBE in subscribe_frames("CON.TEST.MNQ.Z99"))
+    assert "session-token" not in journal.read_text(encoding="utf-8")
+
+
+class _StubClient:
+    execution_allowed = False
+
+    def __init__(self, credentials):
+        self.credentials = credentials
+        self._token = None
+
+    def authenticate(self):
+        self._token = "session-token"
+
+    def validate_session(self):
+        return None
+
+    def session_token(self):
+        return self._token
+
+    def search_contracts(self, search_text, *, live=False):
+        assert search_text == "MNQ"
+        assert live is False
+        return (_contract("CON.TEST.MNQ.Z99", "MNQ"),)
+
+
+def test_run_listen_writes_meta_without_secrets(tmp_path: Path, monkeypatch):
+    from src.realtime import listen as listen_mod
+    from src.realtime.listen import _build_parser
+
+    monkeypatch.setenv("FARS_PROJECTX_USERNAME", "test-user")
+    monkeypatch.setenv("FARS_PROJECTX_API_KEY", "never-print-this-secret")
+    monkeypatch.setattr(
+        listen_mod,
+        "capture_until",
+        lambda **kwargs: listen_mod._CaptureState(),
+    )
+    args = _build_parser().parse_args(
+        [
+            "--seconds",
+            "1",
+            "--journal",
+            str(tmp_path / "journal.jsonl"),
+            "--meta",
+            str(tmp_path / "meta.json"),
+            "--report",
+            str(tmp_path / "report.json"),
+            "--env-file",
+            str(tmp_path / "missing.env"),
+        ]
+    )
+    log = StringIO()
+    code = run_listen(args, client_factory=_StubClient, log=log)
+    meta = json.loads((tmp_path / "meta.json").read_text(encoding="utf-8"))
+    report = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
+    combined = log.getvalue() + json.dumps(meta) + json.dumps(report)
+    assert code == 0
+    assert meta["live_execution_enabled"] is False
+    assert meta["user_hub"] is False
+    assert meta["contract_id"] == "CON.TEST.MNQ.Z99"
+    assert meta["equity"] is None
+    assert report["replay"]["ok"] is True
+    assert "never-print-this-secret" not in combined
+    assert "session-token" not in combined

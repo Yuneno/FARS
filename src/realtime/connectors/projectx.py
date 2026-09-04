@@ -82,7 +82,11 @@ class JsonTransport(Protocol):
 
 @dataclass(frozen=True)
 class ProjectXAccount:
-    """Provider account row. Not RT AccountSnapshot and not Core AccountState."""
+    """Provider account row from /api/Account/search.
+
+    Official fields: id, name, balance, canTrade, isVisible, optional simulated.
+    Not RT AccountSnapshot and not Core AccountState. ``balance`` is not equity.
+    """
 
     account_id: int
     name: str
@@ -117,6 +121,12 @@ class ProjectXBar:
 
 @dataclass(frozen=True)
 class ProjectXPosition:
+    """Open position from /api/Position/searchOpen.
+
+    Official fields: id, accountId, contractId, creationTimestamp, type, size,
+    averagePrice. No mark, no unrealized PnL, no tick conversion.
+    """
+
     position_id: int
     account_id: int
     contract_id: str
@@ -357,7 +367,16 @@ def canonical_account_snapshot(
     clock: Clock,
     source: str = PROJECTX_SOURCE,
 ) -> AccountSnapshot:
-    """Map provider account+positions. equity/trades_applied stay unknown."""
+    """Map provider account+positions. Unknown mark-to-market stays unknown.
+
+    /api/Account/search does not document equity, unrealized PnL, or peak equity.
+    /api/Position/searchOpen has averagePrice/size/type but no mark.
+    /api/History/retrieveBars is a market print, not broker equity.
+    /api/Trade/search profitAndLoss may be null (half-turn) and is not a round trip.
+
+    Do not copy balance into equity, even with no open positions. RT-6 denies
+    when equity is None. trades_applied stays unknown; fills are not Core trades.
+    """
     _require_same_account(
         account.account_id,
         (position.account_id for position in positions),
@@ -419,6 +438,12 @@ class ProjectXClient:
     @property
     def authenticated(self) -> bool:
         return self._token is not None
+
+    def session_token(self) -> str:
+        """Bearer token for the official Market Hub. Never log this value."""
+        if self._token is None:
+            raise ProjectXAuthenticationError("authenticate before calling ProjectX")
+        return self._token
 
     def authenticate(self) -> None:
         response = self._post(
