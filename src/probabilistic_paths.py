@@ -198,6 +198,19 @@ class PathSimulationConfig:
             raise ValueError("seed must be a non-negative integer")
         if not isinstance(self.start_at, datetime) or not _aware(self.start_at):
             raise ValueError("start_at must be timezone-aware")
+        # A trades_per_day block lays trades one minute apart starting at
+        # start_at. If that block crosses the calendar day, the simulated
+        # trading day is silently inflated (trades meant for one day land on
+        # two), which can make a path falsely pass when minimum_trading_days is
+        # satisfied by the inflated count. Reject such schedules up front.
+        if (
+            self.start_at + timedelta(minutes=self.trades_per_day - 1)
+        ).date() != self.start_at.date():
+            raise ValueError(
+                "trades_per_day schedule crosses the day boundary; adjust "
+                "start_at (or trades_per_day) so one simulated day fits within "
+                "a single calendar day"
+            )
         if (
             isinstance(self.confidence_level, bool)
             or not isinstance(self.confidence_level, (int, float))

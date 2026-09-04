@@ -497,3 +497,33 @@ def test_currency_mismatch_is_refused(tmp_path):
 def test_currency_quantum_must_be_a_power_of_ten():
     with pytest.raises(ValueError, match="power of ten"):
         _config(currency_quantum=Decimal("0.03"))
+
+
+def test_config_rejects_schedule_that_crosses_the_day_boundary():
+    # A trades_per_day block places consecutive minutes from start_at. If that
+    # block crosses the calendar day, the simulated trading day is silently
+    # inflated (e.g. trades meant for one day land on two), which can make a
+    # path falsely pass when minimum_trading_days is satisfied by the inflated
+    # count. Such a schedule is invalid and must be rejected at construction.
+    with pytest.raises(ValueError, match="day boundary"):
+        PathSimulationConfig(
+            n_simulations=1,
+            max_trades=2,
+            seed=0,
+            start_at=datetime(2026, 9, 1, 23, 59, tzinfo=UTC),
+            trades_per_day=2,
+        )
+
+
+def test_config_accepts_near_boundary_schedule_that_stays_within_the_day():
+    # Single trade at 23:59 must not be rejected (no boundary crossing).
+    config = PathSimulationConfig(
+        n_simulations=1,
+        max_trades=2,
+        seed=0,
+        start_at=datetime(2026, 9, 1, 23, 59, tzinfo=UTC),
+        trades_per_day=1,
+    )
+    assert config.trades_per_day == 1
+    # A multi-trade block well inside the day is valid.
+    _config(trades_per_day=5)
