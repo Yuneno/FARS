@@ -137,18 +137,25 @@ GREEN después.
 - **Ronda 2 (Codex):** `CHANGES_REQUESTED` → 1 CRITICAL (frontera de sesión) + 1 WARNING
   (metadata 11A) + 1 SUGGESTION (serialización, no implementada). CRITICAL y WARNING
   corregidos (ciclo 2).
-- **Se alcanzó el límite de dos ciclos de corrección.** No se invocó una tercera revisión.
-  Los dos ciclos cubrieron todos los hallazgos BLOCKER/HIGH/MEDIUM claramente
-  demostrados. Queda pendiente la **revisión humana / una re-revisión de Codex** para
-  sellar el estado (no estampar "review passed" automáticamente).
+- **Ronda 3 (Codex, auditoría de verificación):** `OBJECTIVE_DEFECT_REMAINS`. Los 4
+  commits de corrección (`5851198`, `82567a9`, `e2a37fd`, `e0cf2d9`) fueron **verificados**
+  (tests no tautológicos, RED→GREEN, soluciones correctas). Queda **un defecto objetivo
+  nuevo de severidad WARNING** (ver §9), pendiente para decisión humana. Detalle completo
+  en `CODEX_REVIEW_PHASES.md`.
 
 ## 9. Pendientes, riesgos y decisiones para revisión humana
 
-1. **Suite estadística NO ejecutada** (marcador `statistical`, ~30+ min, requiere Python
-   3.12.13 + `requirements-acceptance.lock`). El verde determinista (914) no constituye
-   acceptance estadística.
-2. **Revisión humana / re-revisión de Codex** para confirmar los fixes del ciclo 2 (por
-   el tope de 2 ciclos no se invocó una 3ª vez).
+1. **Defecto objetivo pendiente (WARNING)** — `src/probabilistic_paths.py:460`
+   (`_validate_inputs`): la validación de frontera de sesión calcula el último timestamp
+   de cada bloque con `trades_per_day - 1` minutos aunque el horizonte tenga menos trades.
+   Reproducción: `max_trades=1, trades_per_day=2, start_at=23:59 UTC, boundary=00:00` →
+   rechazo incorrecto (`PathAnalysisError`) de una ejecución válida de 1 solo trade a las
+   23:59. No abre tercer ciclo de corrección; queda para decisión humana.
+2. **Suite estadística NO ejecutada** — bloqueo exacto: requiere
+   `pip install --require-hashes -r requirements-acceptance.lock` (descarga de red de
+   numpy 2.5.2 / pandas 3.0.5 / scipy 1.18.1 / pytest 9.1.1). No hay `.venv-acceptance`
+   ni caché pip local; `python3.12` está sin deps. Sin autorización de Ricardo no se
+   instala (acción de red). El verde determinista (914) NO constituye acceptance estadística.
 3. **SUGGESTION de serialización** queda como deuda documentada (no implementada).
 4. Entorno divergente: dev (3.13.5) != acceptance (3.12.13).
 
