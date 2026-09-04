@@ -571,3 +571,17 @@ def test_path_result_provenance_nested_mapping_is_read_only(tmp_path):
     with pytest.raises(TypeError):
         result.provenance["rng"]["master_entropy"] = 999
     assert result.provenance["rng"]["master_entropy"] == 17
+
+
+def test_path_result_rejects_non_mapping_provenance(tmp_path):
+    dataset = _dataset(tmp_path, [1, 2, 1, 2])
+    result = run_probabilistic_paths(
+        dataset,
+        _bootstrap(dataset),
+        _profile(),
+        _sizing(),
+        _costs(),
+        _config(n_simulations=2, max_trades=2),
+    )
+    with pytest.raises(TypeError):
+        replace(result, provenance=42)

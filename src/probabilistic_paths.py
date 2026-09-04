@@ -296,7 +296,9 @@ class ProbabilisticPathResult:
         object.__setattr__(self, "terminal_counts", _immutable_mapping(self.terminal_counts))
         object.__setattr__(self, "assumptions", tuple(self.assumptions))
         object.__setattr__(self, "limitations", tuple(self.limitations))
-        object.__setattr__(self, "provenance", _deep_immutable(self.provenance))
+        object.__setattr__(
+            self, "provenance", _deep_immutable(_immutable_mapping(self.provenance))
+        )
 
 
 @dataclass(frozen=True)

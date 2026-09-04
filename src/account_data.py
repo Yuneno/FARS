@@ -333,7 +333,9 @@ class CanonicalAccountTrade:
         )
         if self.fingerprint.normalized_record_sha256 != expected_fingerprint:
             raise ValueError("normalized record fingerprint does not match trade content")
-        object.__setattr__(self, "metadata", _deep_immutable(self.metadata))
+        object.__setattr__(
+            self, "metadata", _deep_immutable(_immutable_mapping(self.metadata))
+        )
 
 
 @dataclass(frozen=True)
@@ -365,7 +367,9 @@ class AccountEquityEvent:
         if not isinstance(self.equity, Decimal):
             raise ValueError("equity must be a finite Decimal")
         _validate_decimal(self.balance, "balance")
-        object.__setattr__(self, "metadata", _deep_immutable(self.metadata))
+        object.__setattr__(
+            self, "metadata", _deep_immutable(_immutable_mapping(self.metadata))
+        )
 
 
 @dataclass(frozen=True)

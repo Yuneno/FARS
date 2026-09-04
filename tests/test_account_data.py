@@ -510,3 +510,15 @@ def test_account_equity_event_nested_metadata_is_read_only():
     with pytest.raises(TypeError):
         event.metadata["provider"]["sequence"] = 999
     assert event.metadata["provider"]["sequence"] == 17
+
+
+def test_account_equity_event_rejects_non_mapping_metadata():
+    with pytest.raises(TypeError):
+        AccountEquityEvent(
+            event_id="snapshot-scalar-metadata",
+            source="manual_fixture",
+            timestamp=datetime(2026, 8, 1, 14, 30, tzinfo=timezone.utc),
+            currency="USD",
+            equity=Decimal("25123.45"),
+            metadata=42,  # type: ignore[arg-type]
+        )
