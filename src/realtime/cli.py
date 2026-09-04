@@ -117,8 +117,13 @@ def _account_payload(account: Any) -> dict[str, Any]:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    argv_list = list(sys.argv[1:] if argv is None else argv)
+    if argv_list and argv_list[0] == "listen":
+        from src.realtime.listen import main as listen_main
+
+        return listen_main(argv_list[1:])
     parser = _build_parser()
-    args = parser.parse_args(argv)
+    args = parser.parse_args(argv_list)
     try:
         credentials = load_projectx_credentials(args.env_file)
         client = ProjectXClient(credentials)

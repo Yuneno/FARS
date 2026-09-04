@@ -158,3 +158,16 @@ def test_cli_bars_rejects_invalid_unit_number_and_limit(monkeypatch, capsys):
     assert huge_limit.value.code == 2
     err = capsys.readouterr().err
     assert "never-print-this-secret" not in err
+
+
+def test_cli_listen_delegates_without_doctor_auth(monkeypatch):
+    captured: dict[str, object] = {}
+
+    def fake_listen(argv):
+        captured["argv"] = list(argv)
+        return 0
+
+    monkeypatch.setattr("src.realtime.listen.main", fake_listen)
+    code = cli.main(["listen", "--seconds", "1", "--journal", "j", "--meta", "m", "--report", "r"])
+    assert code == 0
+    assert captured["argv"] == ["--seconds", "1", "--journal", "j", "--meta", "m", "--report", "r"]
