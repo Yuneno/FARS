@@ -77,15 +77,17 @@ ProjectX/Topstep sigue read-only. User Hub no se implementó. `LIVE_EXECUTION_EN
 
 ## Commits creados
 
-En `agent/rt-night-2` (no en `agent/rt-night`, ya ocupada):
+En `agent/rt-night-2` (no en `agent/rt-night`, ya ocupada en
+`/Users/ricardomedina/Documents/FARS-rt` @ `27c8972`):
 
 ```text
 0421a14 fix(realtime): count Market Hub reconnects after a drop
 49d6b16 feat(realtime): register fars-projectx-listen and cover listen contracts
 5f093e4 docs(realtime): document read-only Market Hub listen
+2eb57ff docs(realtime): add NIGHT_REPORT_RT for the listen landing
 ```
 
-Más el commit de este reporte, si se incluye.
+Diff autorizado: `git diff a09433a..HEAD` sobre esos cuatro commits. Worktree limpio.
 
 ## Comandos de tests ejecutados
 
@@ -121,11 +123,16 @@ No se ejecutó el grupo `@statistical`.
 
 ## Confirmación explícita
 
-- No hubo ejecución real ni llamadas live.
-- No se enviaron órdenes.
-- No se usaron credenciales reales.
-- No se modificó `.env`.
+- RT-9 continúa bloqueado. No hay LiveExecutionAdapter ni enable de live.
+- ProjectX/Topstep permanece read-only (`execution_allowed = False`,
+  `_READ_ONLY_PATHS`, sin User Hub, sin métodos de orden).
+- No se enviaron órdenes reales. No hubo ejecución live ni llamadas de red
+  en esta sesión de cierre.
+- No se modificaron fases estadísticas, Phase 11D ni SMC-FVG.
+- No se usaron credenciales reales. No se modificó `.env`.
 - No se imprimieron secretos.
 - No hubo push, merge ni rebase.
-- El repositorio original no se modificó (`main` @ `a09433a`, mismos dirty files de entrada: `M .env.example`, `?? tmp/`).
-- El worktree queda limpio salvo este reporte hasta su commit.
+- El repositorio original no se modificó (`main` @ `a09433a`, mismos dirty
+  files de entrada: `M .env.example`, `?? tmp/`).
+- Worktree `FARS-rt-night` limpio en `agent/rt-night-2` @ `2eb57ff` antes del
+  commit de cierre de este reporte.
