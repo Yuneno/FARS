@@ -571,3 +571,23 @@ def test_path_result_provenance_nested_mapping_is_read_only(tmp_path):
     with pytest.raises(TypeError):
         result.provenance["rng"]["master_entropy"] = 999
     assert result.provenance["rng"]["master_entropy"] == 17
+
+
+def test_run_accepts_partial_last_block_that_stays_within_one_session(tmp_path):
+    # A single-trade horizon must not be rejected because the session-schedule
+    # validation assumes a full trades_per_day block and checks a second trade
+    # (at minute trades_per_day - 1) that never actually runs.
+    dataset = _dataset(tmp_path, [1, 2, 1, 2])
+    result = run_probabilistic_paths(
+        dataset,
+        _bootstrap(dataset),
+        _profile(),
+        _sizing(),
+        _costs(),
+        _config(
+            start_at=datetime(2026, 9, 1, 23, 59, tzinfo=UTC),
+            trades_per_day=2,
+            max_trades=1,
+        ),
+    )
+    assert sum(result.terminal_counts.values()) == 32

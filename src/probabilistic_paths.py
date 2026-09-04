@@ -460,7 +460,14 @@ def _validate_inputs(
     n_blocks = (config.max_trades + config.trades_per_day - 1) // config.trades_per_day
     for block in range(n_blocks):
         first = config.start_at + timedelta(days=block)
-        last = config.start_at + timedelta(days=block, minutes=config.trades_per_day - 1)
+        if block == n_blocks - 1:
+            # The final block may be partial (max_trades % trades_per_day != 0):
+            # its last executed trade is at minute (max_trades - 1) % trades_per_day,
+            # not at trades_per_day - 1.
+            last_minute = (config.max_trades - 1) % config.trades_per_day
+        else:
+            last_minute = config.trades_per_day - 1
+        last = config.start_at + timedelta(days=block, minutes=last_minute)
         if _session_date(first, timezone_name, session_boundary) != _session_date(
             last, timezone_name, session_boundary
         ):
