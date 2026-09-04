@@ -369,7 +369,16 @@ def capture_until(
             try:
                 emit_system(SYSTEM_HALTED, "sequence conflict")
             except _Stop:
-                pass
+                recorder.record(
+                    system_event(
+                        sequencer,
+                        kind=SYSTEM_HALTED,
+                        clock_now=clock.now(),
+                        detail="sequence conflict",
+                        symbol=contract_id,
+                    )
+                )
+                stats.recorded += 1
             break
         except Exception as exc:  # noqa: BLE001  # reconnect any hub/transport failure
             _log(log, f"hub disconnect: {type(exc).__name__}", *secrets)
