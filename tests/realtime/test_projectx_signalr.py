@@ -28,6 +28,7 @@ from src.realtime.connectors.projectx_signalr import (
     handshake_frames,
     map_hub_message,
     parse_signalr_frame,
+    select_active_contract,
     select_mnq_contract,
     split_signalr_frames,
     subscribe_frames,
@@ -268,9 +269,9 @@ class _StubClient:
         return self._token
 
     def search_contracts(self, search_text, *, live=False):
-        assert search_text == "MNQ"
         assert live is False
-        return (_contract("CON.TEST.MNQ.Z99", "MNQ"),)
+        token = search_text.strip().upper()
+        return (_contract(f"CON.TEST.{token}.Z99", token),)
 
 
 def test_run_listen_writes_meta_without_secrets(tmp_path: Path, monkeypatch):
@@ -375,9 +376,23 @@ def test_duration_requires_hours_or_seconds():
         _duration_seconds(args)
 
 
-def test_run_listen_rejects_non_mnq(tmp_path: Path, monkeypatch):
+def test_select_active_contract_picks_unique_symbol_and_rejects_empty():
+    nq = select_active_contract((_contract("CON.TEST.NQ.Z99", "NQ"),), "NQ")
+    assert nq.contract_id == "CON.TEST.NQ.Z99"
+    with pytest.raises(ProjectXResponseError, match="non-empty"):
+        select_active_contract((_contract("CON.TEST.MNQ.Z99", "MNQ"),), "  ")
+
+
+def test_run_listen_accepts_unique_nq(tmp_path: Path, monkeypatch):
+    from src.realtime import listen as listen_mod
+
     monkeypatch.setenv("FARS_PROJECTX_USERNAME", "test-user")
     monkeypatch.setenv("FARS_PROJECTX_API_KEY", "never-print-this-secret")
+    monkeypatch.setattr(
+        listen_mod,
+        "capture_until",
+        lambda **kwargs: listen_mod._CaptureState(),
+    )
     args = _build_parser().parse_args(
         [
             "--seconds",
@@ -394,8 +409,13 @@ def test_run_listen_rejects_non_mnq(tmp_path: Path, monkeypatch):
             str(tmp_path / "missing.env"),
         ]
     )
-    with pytest.raises(ProjectXConfigurationError, match="MNQ"):
-        run_listen(args, client_factory=_StubClient, log=StringIO())
+    code = run_listen(args, client_factory=_StubClient, log=StringIO())
+    meta = json.loads((tmp_path / "meta.json").read_text(encoding="utf-8"))
+    assert code == 0
+    assert meta["symbol"] == "NQ"
+    assert meta["contract_id"] == "CON.TEST.NQ.Z99"
+    assert meta["user_hub"] is False
+    assert meta["live_execution_enabled"] is False
 
 
 class _ExecutableStub(_StubClient):

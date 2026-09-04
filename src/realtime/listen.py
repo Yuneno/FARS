@@ -35,7 +35,7 @@ from src.realtime.connectors.projectx_signalr import (
     parse_signalr_frame,
     ping_frame,
     redact_secrets,
-    select_mnq_contract,
+    select_active_contract,
     split_signalr_frames,
     subscribe_frames,
     system_event,
@@ -454,10 +454,11 @@ def run_listen(
     client.authenticate()
     client.validate_session()
     token = client.session_token()
-    if args.symbol.strip().upper() != "MNQ":
-        raise ProjectXConfigurationError("this capture is pinned to MNQ")
-    contracts = client.search_contracts(args.symbol.strip(), live=False)
-    contract = select_mnq_contract(contracts)
+    symbol = args.symbol.strip()
+    if not symbol:
+        raise ProjectXConfigurationError("symbol must be non-empty")
+    contracts = client.search_contracts(symbol, live=False)
+    contract = select_active_contract(contracts, symbol)
     meta = {
         "pid": os.getpid(),
         "mode": "READ_ONLY",
@@ -465,7 +466,7 @@ def run_listen(
         "rt9": False,
         "user_hub": False,
         "market_hub": args.hub_url,
-        "symbol": "MNQ",
+        "symbol": symbol.upper(),
         "contract_id": contract.contract_id,
         "contract_name": contract.name,
         "started_utc": start.isoformat(),

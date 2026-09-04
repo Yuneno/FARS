@@ -179,27 +179,38 @@ def redact_secrets(text: str, *secrets: str) -> str:
     return redacted
 
 
-def select_mnq_contract(contracts: tuple[ProjectXContract, ...]) -> ProjectXContract:
+def select_active_contract(
+    contracts: tuple[ProjectXContract, ...],
+    symbol: str,
+) -> ProjectXContract:
+    """Pick one active contract by symbol token. Fail closed if empty or ambiguous."""
+    needle = symbol.strip().upper()
+    if not needle:
+        raise ProjectXResponseError("symbol must be non-empty")
     matches = tuple(
         contract
         for contract in contracts
         if contract.active
         and (
-            "MNQ" in contract.contract_id.upper()
-            or "MNQ" in contract.name.upper()
-            or "MNQ" in contract.symbol_id.upper()
+            needle in contract.contract_id.upper()
+            or needle in contract.name.upper()
+            or needle in contract.symbol_id.upper()
         )
     )
     if len(matches) == 1:
         return matches[0]
-    exact = tuple(contract for contract in matches if contract.name.upper() == "MNQ")
+    exact = tuple(contract for contract in matches if contract.name.upper() == needle)
     if len(exact) == 1:
         return exact[0]
     if not matches:
-        raise ProjectXResponseError("no active MNQ contract from Contract/search")
+        raise ProjectXResponseError(f"no active {needle} contract from Contract/search")
     raise ProjectXResponseError(
-        "ambiguous MNQ contracts: " + ", ".join(item.contract_id for item in matches)
+        f"ambiguous {needle} contracts: " + ", ".join(item.contract_id for item in matches)
     )
+
+
+def select_mnq_contract(contracts: tuple[ProjectXContract, ...]) -> ProjectXContract:
+    return select_active_contract(contracts, "MNQ")
 
 
 def _decimal(value: Any, field_name: str) -> Decimal:
