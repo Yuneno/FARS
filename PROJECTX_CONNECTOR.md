@@ -14,7 +14,8 @@ cancel, or close orders. User Hub is not implemented.
 4. Select the intended account by exact name.
 5. Search contracts (MNQ/NQ) and retrieve historical OHLCV bars.
 6. Read open positions and raw ProjectX fills.
-7. Capture Market Hub quotes/prints into the RT JSONL journal (MNQ only).
+7. Capture Market Hub quotes/prints into the RT JSONL journal (default MNQ;
+   unique active token only).
 
 Provider fills are `ProjectXFill`. They are not Core `Trade` and not
 `MarketTrade`. A null P&L is a half turn. A reviewed round-trip aggregator is
@@ -66,8 +67,10 @@ Bar units: 1 second, 2 minute, 3 hour, 4 day, 5 week, 6 month. Max 20,000 bars
 per request. `--live` selects the provider live market-data catalog, not order
 routing.
 
-`fars-projectx-listen` is pinned to MNQ, stays `READ_ONLY`, does not open User
-Hub, and does not claim ProjectX passed RT-8. Pass `--hours` or `--seconds`,
+`fars-projectx-listen` stays `READ_ONLY`, does not open User Hub, and does not
+claim ProjectX passed RT-8. Default `--symbol` is MNQ. Other roots are accepted
+only when Contract/search returns exactly one active token match (dotted
+components, not substrings: NQ cannot bind MNQ). Pass `--hours` or `--seconds`,
 not both.
 
 ## Out of scope here
