@@ -499,24 +499,49 @@ def test_currency_quantum_must_be_a_power_of_ten():
         _config(currency_quantum=Decimal("0.03"))
 
 
-def test_config_rejects_schedule_that_crosses_the_day_boundary():
-    # A trades_per_day block places consecutive minutes from start_at. If that
-    # block crosses the calendar day, the simulated trading day is silently
-    # inflated (e.g. trades meant for one day land on two), which can make a
-    # path falsely pass when minimum_trading_days is satisfied by the inflated
-    # count. Such a schedule is invalid and must be rejected at construction.
-    with pytest.raises(ValueError, match="day boundary"):
-        PathSimulationConfig(
-            n_simulations=1,
-            max_trades=2,
-            seed=0,
-            start_at=datetime(2026, 9, 1, 23, 59, tzinfo=UTC),
-            trades_per_day=2,
+def test_run_rejects_schedule_that_crosses_the_day_boundary(tmp_path):
+    # UTC session with a midnight boundary: two trades from 23:59 cross into the
+    # next session, silently inflating trading_days and enabling a false pass
+    # when minimum_trading_days is satisfied by the inflated count.
+    dataset = _dataset(tmp_path, [1, 1])
+    with pytest.raises(PathAnalysisError, match="session boundary"):
+        run_probabilistic_paths(
+            dataset,
+            _bootstrap(dataset),
+            _profile(),
+            _sizing(),
+            _costs(),
+            _config(
+                start_at=datetime(2026, 9, 1, 23, 59, tzinfo=UTC),
+                trades_per_day=2,
+                max_trades=2,
+            ),
+        )
+
+
+def test_run_rejects_schedule_that_straddles_a_nonmidnight_session(tmp_path):
+    # A funding-account session boundary at 17:00 is not a calendar-day check:
+    # a two-trade block starting at 16:59 falls on both sides of the session and
+    # must be rejected (the simpler calendar-day guard would miss this).
+    dataset = _dataset(tmp_path, [1, 1])
+    profile = _profile(session_boundary=time(17))
+    with pytest.raises(PathAnalysisError, match="session boundary"):
+        run_probabilistic_paths(
+            dataset,
+            _bootstrap(dataset),
+            profile,
+            _sizing(),
+            _costs(),
+            _config(
+                start_at=datetime(2026, 9, 1, 16, 59, tzinfo=UTC),
+                trades_per_day=2,
+                max_trades=2,
+            ),
         )
 
 
 def test_config_accepts_near_boundary_schedule_that_stays_within_the_day():
-    # Single trade at 23:59 must not be rejected (no boundary crossing).
+    # Single trade at 23:59 is a valid schedule (no crossing).
     config = PathSimulationConfig(
         n_simulations=1,
         max_trades=2,

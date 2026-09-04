@@ -15,7 +15,7 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from decimal import Decimal
 from statistics import NormalDist
 from types import MappingProxyType
@@ -28,6 +28,7 @@ from src.funded_rules_v2 import (
     AccountRuleInput,
     FundedAccountProfileV2,
     FundedAccountStateV2,
+    _session_date,
 )
 from src.ingestion import CanonicalTradeDataset
 
@@ -217,19 +218,6 @@ class PathSimulationConfig:
             raise ValueError("seed must be a non-negative integer")
         if not isinstance(self.start_at, datetime) or not _aware(self.start_at):
             raise ValueError("start_at must be timezone-aware")
-        # A trades_per_day block lays trades one minute apart starting at
-        # start_at. If that block crosses the calendar day, the simulated
-        # trading day is silently inflated (trades meant for one day land on
-        # two), which can make a path falsely pass when minimum_trading_days is
-        # satisfied by the inflated count. Reject such schedules up front.
-        if (
-            self.start_at + timedelta(minutes=self.trades_per_day - 1)
-        ).date() != self.start_at.date():
-            raise ValueError(
-                "trades_per_day schedule crosses the day boundary; adjust "
-                "start_at (or trades_per_day) so one simulated day fits within "
-                "a single calendar day"
-            )
         if (
             isinstance(self.confidence_level, bool)
             or not isinstance(self.confidence_level, (int, float))
@@ -460,6 +448,27 @@ def _validate_inputs(
             "R-only paths cannot exactly generate required event capabilities: "
             + ", ".join(sorted(unsupported))
         )
+    # Validate the profile-aware session schedule. The engine defines the
+    # trading day by the PROFILE session boundary (timezone + session_boundary),
+    # not by the calendar day. A trades_per_day block lays trades one minute
+    # apart from start_at; if that block straddles the session boundary, the
+    # simulated trading day is silently inflated (trades meant for one day land
+    # on two), which can make a path falsely pass when minimum_trading_days is
+    # satisfied by the inflated count. Reject any block that spans two sessions.
+    timezone_name = profile.session_timezone or "UTC"
+    session_boundary = profile.session_boundary or time(0)
+    n_blocks = (config.max_trades + config.trades_per_day - 1) // config.trades_per_day
+    for block in range(n_blocks):
+        first = config.start_at + timedelta(days=block)
+        last = config.start_at + timedelta(days=block, minutes=config.trades_per_day - 1)
+        if _session_date(first, timezone_name, session_boundary) != _session_date(
+            last, timezone_name, session_boundary
+        ):
+            raise PathAnalysisError(
+                "trades_per_day schedule crosses the funding-account session "
+                "boundary; adjust start_at or trades_per_day so each simulated "
+                "day stays within one profile session"
+            )
 
 
 def _draw_indices(
