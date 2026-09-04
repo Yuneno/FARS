@@ -527,3 +527,22 @@ def test_config_accepts_near_boundary_schedule_that_stays_within_the_day():
     assert config.trades_per_day == 1
     # A multi-trade block well inside the day is valid.
     _config(trades_per_day=5)
+
+
+def test_path_result_provenance_nested_mapping_is_read_only(tmp_path):
+    dataset = _dataset(tmp_path, [1, 2, 1, 2])
+    result = run_probabilistic_paths(
+        dataset,
+        _bootstrap(dataset),
+        _profile(),
+        _sizing(),
+        _costs(),
+        _config(n_simulations=2, max_trades=2),
+    )
+    # The top-level provenance is already a read-only mapping, but the nested
+    # dicts ("rng", "risk_sizing", ...) must be read-only too: a frozen result
+    # must not be mutable through its provenance, and estimate_* must never
+    # observe a mutated provenance.
+    with pytest.raises(TypeError):
+        result.provenance["rng"]["master_entropy"] = 999
+    assert result.provenance["rng"]["master_entropy"] == 17

@@ -81,6 +81,25 @@ def _immutable_mapping(value: Mapping[str, Any]) -> Mapping[str, Any]:
     return MappingProxyType(dict(value))
 
 
+def _deep_immutable(value: Any) -> Any:
+    """Recursively freeze nested mappings/sequences so a frozen result cannot
+    be mutated through its provenance.
+
+    ``_immutable_mapping`` wraps only the outer mapping; nested dicts (the
+    ``provenance`` ``rng``/``risk_sizing``/``dataset`` objects) remain plain
+    mutable dicts, so a frozen :class:`ProbabilisticPathResult` could be
+    silently rewritten (e.g. altering ``max_trades`` that ``estimate_*``
+    reads). Deep-freeze so no caller can mutate history after the fact.
+    """
+    if isinstance(value, Mapping):
+        return MappingProxyType(
+            {key: _deep_immutable(item) for key, item in value.items()}
+        )
+    if isinstance(value, (list, tuple)):
+        return tuple(_deep_immutable(item) for item in value)
+    return value
+
+
 @dataclass(frozen=True)
 class RiskSizingPolicy:
     """Explicit conversion from one historical R outcome to money at risk."""
@@ -289,7 +308,7 @@ class ProbabilisticPathResult:
         object.__setattr__(self, "terminal_counts", _immutable_mapping(self.terminal_counts))
         object.__setattr__(self, "assumptions", tuple(self.assumptions))
         object.__setattr__(self, "limitations", tuple(self.limitations))
-        object.__setattr__(self, "provenance", _immutable_mapping(self.provenance))
+        object.__setattr__(self, "provenance", _deep_immutable(self.provenance))
 
 
 @dataclass(frozen=True)
