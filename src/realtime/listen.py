@@ -366,7 +366,10 @@ def capture_until(
                         *secrets,
                     )
         except _Stop:
-            emit_system(SYSTEM_HALTED, "sequence conflict")
+            try:
+                emit_system(SYSTEM_HALTED, "sequence conflict")
+            except _Stop:
+                pass
             break
         except Exception as exc:  # noqa: BLE001  # reconnect any hub/transport failure
             _log(log, f"hub disconnect: {type(exc).__name__}", *secrets)

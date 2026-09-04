@@ -544,3 +544,59 @@ def test_capture_reconnect_records_system_events(tmp_path: Path, monkeypatch):
     assert SYSTEM_CONNECTOR_RECONNECTED in kinds
     assert any(isinstance(event, Quote) for event in events)
     assert "session-token" not in journal.read_text(encoding="utf-8")
+
+
+def test_capture_identity_conflict_halts_and_journals_system_event(tmp_path: Path, monkeypatch):
+    from src.realtime import listen as listen_mod
+    from src.realtime.events import ORIGIN_LIVE, SYSTEM_HALTED
+    from src.realtime.recorder import FileEventRecorder
+
+    stamp = datetime(2026, 9, 3, 21, tzinfo=UTC)
+    shared = {
+        "source": "projectx/CON.TEST.MNQ.Z99/quote",
+        "timestamp": stamp,
+        "sequence": 1,
+        "symbol": "CON.TEST.MNQ.Z99",
+        "bid_size": 1.0,
+        "ask_size": 1.0,
+        "origin": ORIGIN_LIVE,
+    }
+    first = Quote(event_id="quote-a", bid_price=1.0, ask_price=2.0, **shared)
+    second = Quote(event_id="quote-b", bid_price=1.25, ask_price=2.25, **shared)
+
+    monkeypatch.setattr(
+        listen_mod,
+        "map_hub_message",
+        lambda message, **kwargs: (first, second) if message.get("type") in {1, 2} else (),
+    )
+    monkeypatch.setattr(
+        listen_mod,
+        "negotiate_market_hub",
+        lambda token, hub_url, timeout: {"connectionToken": "conn-token"},
+    )
+    monkeypatch.setattr(
+        listen_mod,
+        "market_hub_socket_url",
+        lambda hub_url, negotiate, token: "wss://example.test/hubs/market",
+    )
+
+    frame = json.dumps({"type": 1, "target": "GatewayQuote", "arguments": [{}]}) + RECORD_SEPARATOR
+    hub = _FakeHub(["{}" + RECORD_SEPARATOR, frame])
+    journal = tmp_path / "journal.jsonl"
+    stats = capture_until(
+        token="session-token",
+        contract_id="CON.TEST.MNQ.Z99",
+        recorder=FileEventRecorder(journal),
+        deadline_monotonic=__import__("time").monotonic() + 2.0,
+        hub_url="https://example.test/hubs/market",
+        timeout=1.0,
+        log=StringIO(),
+        socket_factory=lambda url, headers, timeout: hub,
+        clock=FrozenClock(stamp),
+    )
+    events = reconstruct_events(journal)
+    kinds = [event.kind for event in events if hasattr(event, "kind")]
+    assert stats.halted is True
+    assert stats.conflicts == 1
+    assert SYSTEM_HALTED in kinds
+    assert "session-token" not in journal.read_text(encoding="utf-8")
