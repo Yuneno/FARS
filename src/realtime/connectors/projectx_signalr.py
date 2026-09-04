@@ -179,11 +179,19 @@ def redact_secrets(text: str, *secrets: str) -> str:
     return redacted
 
 
+def _symbol_tokens(value: str) -> frozenset[str]:
+    text = value.strip().upper().replace("-", ".")
+    return frozenset(part for part in text.split(".") if part)
+
+
 def select_active_contract(
     contracts: tuple[ProjectXContract, ...],
     symbol: str,
 ) -> ProjectXContract:
-    """Pick one active contract by symbol token. Fail closed if empty or ambiguous."""
+    """Pick one active contract by exact product token. Fail closed otherwise.
+
+    Substring matches are rejected so NQ cannot bind MNQ and ES cannot bind MES.
+    """
     needle = symbol.strip().upper()
     if not needle:
         raise ProjectXResponseError("symbol must be non-empty")
@@ -191,10 +199,12 @@ def select_active_contract(
         contract
         for contract in contracts
         if contract.active
-        and (
-            needle in contract.contract_id.upper()
-            or needle in contract.name.upper()
-            or needle in contract.symbol_id.upper()
+        and needle
+        in (
+            {contract.contract_id.upper(), contract.name.upper(), contract.symbol_id.upper()}
+            | _symbol_tokens(contract.contract_id)
+            | _symbol_tokens(contract.name)
+            | _symbol_tokens(contract.symbol_id)
         )
     )
     if len(matches) == 1:

@@ -383,6 +383,31 @@ def test_select_active_contract_picks_unique_symbol_and_rejects_empty():
         select_active_contract((_contract("CON.TEST.MNQ.Z99", "MNQ"),), "  ")
 
 
+def test_select_active_contract_rejects_nq_substring_of_mnq():
+    mnq = ProjectXContract(
+        "CON.F.US.MNQ.Z26",
+        "MNQZ6",
+        "Micro E-mini Nasdaq-100",
+        Decimal("0.25"),
+        Decimal("0.50"),
+        True,
+        "F.US.MNQ",
+    )
+    with pytest.raises(ProjectXResponseError, match="no active NQ"):
+        select_active_contract((mnq,), "NQ")
+    mes = ProjectXContract(
+        "CON.F.US.MES.Z26",
+        "MESZ6",
+        "Micro E-mini S&P",
+        Decimal("0.25"),
+        Decimal("0.50"),
+        True,
+        "F.US.MES",
+    )
+    with pytest.raises(ProjectXResponseError, match="no active ES"):
+        select_active_contract((mes,), "ES")
+
+
 def test_run_listen_accepts_unique_nq(tmp_path: Path, monkeypatch):
     from src.realtime import listen as listen_mod
 
@@ -573,5 +598,67 @@ def test_capture_identity_conflict_halts_and_journals_system_event(tmp_path: Pat
     kinds = [event.kind for event in events if hasattr(event, "kind")]
     assert stats.halted is True
     assert stats.conflicts == 1
+    assert SYSTEM_HALTED in kinds
+    assert "session-token" not in journal.read_text(encoding="utf-8")
+
+
+def test_nested_stop_still_journals_system_halted(tmp_path: Path, monkeypatch):
+    from src.realtime import listen as listen_mod
+    from src.realtime.events import ORIGIN_LIVE, SYSTEM_HALTED
+    from src.realtime.recorder import FileEventRecorder
+
+    stamp = datetime(2026, 9, 3, 21, tzinfo=UTC)
+    shared = {
+        "source": "projectx/CON.TEST.MNQ.Z99/quote",
+        "timestamp": stamp,
+        "sequence": 1,
+        "symbol": "CON.TEST.MNQ.Z99",
+        "bid_size": 1.0,
+        "ask_size": 1.0,
+        "origin": ORIGIN_LIVE,
+    }
+    first = Quote(event_id="quote-a", bid_price=1.0, ask_price=2.0, **shared)
+    second = Quote(event_id="quote-b", bid_price=1.25, ask_price=2.25, **shared)
+    original = listen_mod._record_event
+
+    def wrapped(event, **kwargs):
+        if getattr(event, "kind", None) == SYSTEM_HALTED:
+            kwargs["stats"].conflicts += 1
+            raise listen_mod._Stop()
+        return original(event, **kwargs)
+
+    monkeypatch.setattr(listen_mod, "_record_event", wrapped)
+    monkeypatch.setattr(
+        listen_mod,
+        "map_hub_message",
+        lambda message, **kwargs: (first, second) if message.get("type") in {1, 2} else (),
+    )
+    monkeypatch.setattr(
+        listen_mod,
+        "negotiate_market_hub",
+        lambda token, hub_url, timeout: {"connectionToken": "conn-token"},
+    )
+    monkeypatch.setattr(
+        listen_mod,
+        "market_hub_socket_url",
+        lambda hub_url, negotiate, token: "wss://example.test/hubs/market",
+    )
+    frame = json.dumps({"type": 1, "target": "GatewayQuote", "arguments": [{}]}) + RECORD_SEPARATOR
+    hub = _FakeHub(["{}" + RECORD_SEPARATOR, frame])
+    journal = tmp_path / "journal.jsonl"
+    stats = capture_until(
+        token="session-token",
+        contract_id="CON.TEST.MNQ.Z99",
+        recorder=FileEventRecorder(journal),
+        deadline_monotonic=__import__("time").monotonic() + 2.0,
+        hub_url="https://example.test/hubs/market",
+        timeout=1.0,
+        log=StringIO(),
+        socket_factory=lambda url, headers, timeout: hub,
+        clock=FrozenClock(stamp),
+    )
+    events = reconstruct_events(journal)
+    kinds = [event.kind for event in events if hasattr(event, "kind")]
+    assert stats.halted is True
     assert SYSTEM_HALTED in kinds
     assert "session-token" not in journal.read_text(encoding="utf-8")
