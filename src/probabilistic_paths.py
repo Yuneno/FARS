@@ -15,7 +15,7 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from decimal import Decimal
 from statistics import NormalDist
 from types import MappingProxyType
@@ -28,6 +28,7 @@ from src.funded_rules_v2 import (
     AccountRuleInput,
     FundedAccountProfileV2,
     FundedAccountStateV2,
+    _session_date,
 )
 from src.ingestion import CanonicalTradeDataset
 
@@ -79,6 +80,25 @@ def _aware(value: datetime) -> bool:
 
 def _immutable_mapping(value: Mapping[str, Any]) -> Mapping[str, Any]:
     return MappingProxyType(dict(value))
+
+
+def _deep_immutable(value: Any) -> Any:
+    """Recursively freeze nested mappings/sequences so a frozen result cannot
+    be mutated through its provenance.
+
+    ``_immutable_mapping`` wraps only the outer mapping; nested dicts (the
+    ``provenance`` ``rng``/``risk_sizing``/``dataset`` objects) remain plain
+    mutable dicts, so a frozen :class:`ProbabilisticPathResult` could be
+    silently rewritten (e.g. altering ``max_trades`` that ``estimate_*``
+    reads). Deep-freeze so no caller can mutate history after the fact.
+    """
+    if isinstance(value, Mapping):
+        return MappingProxyType(
+            {key: _deep_immutable(item) for key, item in value.items()}
+        )
+    if isinstance(value, (list, tuple)):
+        return tuple(_deep_immutable(item) for item in value)
+    return value
 
 
 @dataclass(frozen=True)
@@ -276,7 +296,7 @@ class ProbabilisticPathResult:
         object.__setattr__(self, "terminal_counts", _immutable_mapping(self.terminal_counts))
         object.__setattr__(self, "assumptions", tuple(self.assumptions))
         object.__setattr__(self, "limitations", tuple(self.limitations))
-        object.__setattr__(self, "provenance", _immutable_mapping(self.provenance))
+        object.__setattr__(self, "provenance", _deep_immutable(self.provenance))
 
 
 @dataclass(frozen=True)
@@ -428,6 +448,27 @@ def _validate_inputs(
             "R-only paths cannot exactly generate required event capabilities: "
             + ", ".join(sorted(unsupported))
         )
+    # Validate the profile-aware session schedule. The engine defines the
+    # trading day by the PROFILE session boundary (timezone + session_boundary),
+    # not by the calendar day. A trades_per_day block lays trades one minute
+    # apart from start_at; if that block straddles the session boundary, the
+    # simulated trading day is silently inflated (trades meant for one day land
+    # on two), which can make a path falsely pass when minimum_trading_days is
+    # satisfied by the inflated count. Reject any block that spans two sessions.
+    timezone_name = profile.session_timezone or "UTC"
+    session_boundary = profile.session_boundary or time(0)
+    n_blocks = (config.max_trades + config.trades_per_day - 1) // config.trades_per_day
+    for block in range(n_blocks):
+        first = config.start_at + timedelta(days=block)
+        last = config.start_at + timedelta(days=block, minutes=config.trades_per_day - 1)
+        if _session_date(first, timezone_name, session_boundary) != _session_date(
+            last, timezone_name, session_boundary
+        ):
+            raise PathAnalysisError(
+                "trades_per_day schedule crosses the funding-account session "
+                "boundary; adjust start_at or trades_per_day so each simulated "
+                "day stays within one profile session"
+            )
 
 
 def _draw_indices(

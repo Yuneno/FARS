@@ -493,3 +493,20 @@ def test_currency_tolerance_rejects_binary_or_invalid_values(tmp_path, tolerance
     path = _write(tmp_path, _complete_row())
     with pytest.raises(AccountTradeDataError, match="currency_tolerance"):
         _load(path, currency_tolerance=tolerance)
+
+
+def test_account_equity_event_nested_metadata_is_read_only():
+    # The top-level metadata mapping is read-only, but the nested dicts must be
+    # too: a frozen event must not be mutable through its metadata (the
+    # shallow _immutable_mapping left nested provider metadata writable).
+    event = AccountEquityEvent(
+        event_id="snapshot-nested",
+        source="manual_fixture",
+        timestamp=datetime(2026, 8, 1, 14, 30, tzinfo=timezone.utc),
+        currency="USD",
+        equity=Decimal("25123.45"),
+        metadata={"provider": {"sequence": 17}},
+    )
+    with pytest.raises(TypeError):
+        event.metadata["provider"]["sequence"] = 999
+    assert event.metadata["provider"]["sequence"] == 17
