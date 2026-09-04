@@ -30,12 +30,14 @@ the explicit RT-8 acceptance harness.
 
 `src/realtime/connectors/projectx.py` authenticates, searches contracts, pulls
 historical bars, and reads positions/fills. It does **not** replace
-`ReplayMarketConnector`. Fills are not Core `Trade`. This is not RT-8 PASS for
-ProjectX and not RT-9. See `PROJECTX_CONNECTOR.md`.
+`ReplayMarketConnector`. Fills are not Core `Trade`. Market Hub listen
+(`src/realtime/listen.py`, `fars-projectx-listen`) journals MNQ quotes/prints
+only. User Hub is not implemented. This is not RT-8 PASS for ProjectX and not
+RT-9. See `PROJECTX_CONNECTOR.md`.
 
 ## Out of scope (later phases)
 
-SignalR, strategy, RT-9, and live orders.
+User Hub, strategy, RT-9, and live orders.
 Live execution stays locked (`LIVE_EXECUTION_ENABLED = False`).
 
 RT-1 replay connector: `connector.py` (see `RT1_SUMMARY.md`).

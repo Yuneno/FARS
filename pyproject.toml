@@ -27,6 +27,7 @@ dev = [
 [project.scripts]
 fars = "src.cli:main"
 fars-projectx = "src.realtime.cli:main"
+fars-projectx-listen = "src.realtime.listen:main"
 
 [tool.setuptools]
 packages = ["src", "src.realtime", "src.realtime.connectors"]

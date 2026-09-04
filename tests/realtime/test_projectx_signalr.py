@@ -11,13 +11,18 @@ from pathlib import Path
 import pytest
 
 from src.realtime.clock import FrozenClock
+from src.realtime.config import ProjectXConfigurationError
 from src.realtime.connectors.projectx import (
     ProjectXAuthenticationError,
     ProjectXContract,
+    ProjectXError,
     ProjectXResponseError,
 )
 from src.realtime.connectors.projectx_signalr import (
+    DEFAULT_MARKET_HUB,
     RECORD_SEPARATOR,
+    SUBSCRIBE_QUOTES,
+    SUBSCRIBE_TRADES,
     StreamSequencer,
     encode_signalr,
     handshake_frames,
@@ -29,7 +34,7 @@ from src.realtime.connectors.projectx_signalr import (
 )
 from src.realtime.events import MarketTick, MarketTrade, Quote
 from src.realtime.interfaces import LIVE_EXECUTION_ENABLED
-from src.realtime.listen import capture_until, run_listen
+from src.realtime.listen import _build_parser, _duration_seconds, capture_until, run_listen
 from src.realtime.recorder import reconstruct_events
 
 
@@ -172,16 +177,19 @@ def test_session_token_requires_auth():
 
 
 class _FakeHub:
-    def __init__(self, chunks: list[str]) -> None:
+    def __init__(self, chunks: list[str], *, empty_error: BaseException | None = None) -> None:
         self.chunks = list(chunks)
         self.sent: list[str] = []
         self.closed = False
+        self.empty_error = empty_error
 
     def send(self, data: str) -> None:
         self.sent.append(data)
 
     def recv(self) -> str:
         if not self.chunks:
+            if self.empty_error is not None:
+                raise self.empty_error
             raise TimeoutError()
         return self.chunks.pop(0)
 
@@ -303,3 +311,191 @@ def test_run_listen_writes_meta_without_secrets(tmp_path: Path, monkeypatch):
     assert report["replay"]["ok"] is True
     assert "never-print-this-secret" not in combined
     assert "session-token" not in combined
+
+
+def test_console_script_is_registered():
+    import tomllib
+
+    data = tomllib.loads(
+        Path(__file__).resolve().parents[2].joinpath("pyproject.toml").read_text(encoding="utf-8")
+    )
+    assert data["project"]["scripts"]["fars-projectx-listen"] == "src.realtime.listen:main"
+    assert data["project"]["scripts"]["fars-projectx"] == "src.realtime.cli:main"
+
+
+def test_listen_parser_rejects_non_positive_duration():
+    parser = _build_parser()
+    with pytest.raises(SystemExit) as exc:
+        parser.parse_args(
+            [
+                "--hours",
+                "0",
+                "--journal",
+                "journal.jsonl",
+                "--meta",
+                "meta.json",
+                "--report",
+                "report.json",
+            ]
+        )
+    assert exc.value.code == 2
+
+
+def test_duration_rejects_hours_and_seconds_together():
+    args = _build_parser().parse_args(
+        [
+            "--hours",
+            "1",
+            "--seconds",
+            "1",
+            "--journal",
+            "journal.jsonl",
+            "--meta",
+            "meta.json",
+            "--report",
+            "report.json",
+        ]
+    )
+    with pytest.raises(ProjectXConfigurationError, match="not both"):
+        _duration_seconds(args)
+
+
+def test_duration_requires_hours_or_seconds():
+    args = _build_parser().parse_args(
+        [
+            "--journal",
+            "journal.jsonl",
+            "--meta",
+            "meta.json",
+            "--report",
+            "report.json",
+        ]
+    )
+    with pytest.raises(ProjectXConfigurationError, match="--hours or --seconds"):
+        _duration_seconds(args)
+
+
+def test_run_listen_rejects_non_mnq(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("FARS_PROJECTX_USERNAME", "test-user")
+    monkeypatch.setenv("FARS_PROJECTX_API_KEY", "never-print-this-secret")
+    args = _build_parser().parse_args(
+        [
+            "--seconds",
+            "1",
+            "--symbol",
+            "NQ",
+            "--journal",
+            str(tmp_path / "journal.jsonl"),
+            "--meta",
+            str(tmp_path / "meta.json"),
+            "--report",
+            str(tmp_path / "report.json"),
+            "--env-file",
+            str(tmp_path / "missing.env"),
+        ]
+    )
+    with pytest.raises(ProjectXConfigurationError, match="MNQ"):
+        run_listen(args, client_factory=_StubClient, log=StringIO())
+
+
+class _ExecutableStub(_StubClient):
+    execution_allowed = True
+
+
+def test_run_listen_refuses_execution_allowed_client(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("FARS_PROJECTX_USERNAME", "test-user")
+    monkeypatch.setenv("FARS_PROJECTX_API_KEY", "never-print-this-secret")
+    args = _build_parser().parse_args(
+        [
+            "--seconds",
+            "1",
+            "--journal",
+            str(tmp_path / "journal.jsonl"),
+            "--meta",
+            str(tmp_path / "meta.json"),
+            "--report",
+            str(tmp_path / "report.json"),
+            "--env-file",
+            str(tmp_path / "missing.env"),
+        ]
+    )
+    with pytest.raises(ProjectXError, match="allows execution"):
+        run_listen(args, client_factory=_ExecutableStub, log=StringIO())
+
+
+def test_subscribe_frames_are_market_hub_only():
+    quotes, trades = subscribe_frames("CON.TEST.MNQ.Z99")
+    combined = quotes + trades
+    assert SUBSCRIBE_QUOTES in combined
+    assert SUBSCRIBE_TRADES in combined
+    assert "User" not in combined
+    assert "Order" not in combined
+    assert DEFAULT_MARKET_HUB.endswith("/hubs/market")
+    assert "user" not in DEFAULT_MARKET_HUB.lower()
+
+
+def test_capture_reconnect_records_system_events(tmp_path: Path, monkeypatch):
+    from src.realtime import listen as listen_mod
+    from src.realtime.events import SYSTEM_CONNECTOR_DISCONNECTED, SYSTEM_CONNECTOR_RECONNECTED
+    from src.realtime.recorder import FileEventRecorder
+
+    quote = {
+        "type": 1,
+        "target": "GatewayQuote",
+        "arguments": [
+            {
+                "timestamp": "2026-09-03T21:00:00Z",
+                "bestBid": "23000.25",
+                "bestAsk": "23000.50",
+                "bestBidSize": "1",
+                "bestAskSize": "1",
+            }
+        ],
+    }
+    frame = json.dumps(quote, separators=(",", ":")) + RECORD_SEPARATOR
+    stats = listen_mod._CaptureState()
+
+    class _StopAfterEmpty(_FakeHub):
+        def recv(self) -> str:
+            if not self.chunks:
+                stats.stop = True
+                raise TimeoutError()
+            return super().recv()
+
+    first = _FakeHub(["{}" + RECORD_SEPARATOR], empty_error=ConnectionError("hub dropped"))
+    second = _StopAfterEmpty(["{}" + RECORD_SEPARATOR, frame])
+    sockets = [first, second]
+
+    monkeypatch.setattr(
+        listen_mod,
+        "negotiate_market_hub",
+        lambda token, hub_url, timeout: {"connectionToken": "conn-token"},
+    )
+    monkeypatch.setattr(
+        listen_mod,
+        "market_hub_socket_url",
+        lambda hub_url, negotiate, token: "wss://example.test/hubs/market",
+    )
+    monkeypatch.setattr("time.sleep", lambda _seconds: None)
+
+    journal = tmp_path / "journal.jsonl"
+    capture_until(
+        token="session-token",
+        contract_id="CON.TEST.MNQ.Z99",
+        recorder=FileEventRecorder(journal),
+        deadline_monotonic=__import__("time").monotonic() + 5.0,
+        hub_url="https://example.test/hubs/market",
+        timeout=1.0,
+        log=StringIO(),
+        socket_factory=lambda url, headers, timeout: sockets.pop(0),
+        clock=FrozenClock(datetime(2026, 9, 3, 21, tzinfo=UTC)),
+        stats=stats,
+    )
+    events = reconstruct_events(journal)
+    kinds = [event.kind for event in events if hasattr(event, "kind")]
+    assert stats.disconnects == 1
+    assert stats.reconnects == 1
+    assert SYSTEM_CONNECTOR_DISCONNECTED in kinds
+    assert SYSTEM_CONNECTOR_RECONNECTED in kinds
+    assert any(isinstance(event, Quote) for event in events)
+    assert "session-token" not in journal.read_text(encoding="utf-8")

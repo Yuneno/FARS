@@ -304,6 +304,7 @@ def capture_until(
     secrets = (token,)
     backoff = 1.0
     connected = False
+    had_connection = False
 
     def emit_system(kind: str, detail: str) -> None:
         event = system_event(
@@ -326,9 +327,10 @@ def capture_until(
             )
             _log(log, f"hub socket {_safe_url(socket_url)}", *secrets)
             leftover = _handshake_and_subscribe(socket, contract_id)
-            if connected:
+            if had_connection:
                 stats.reconnects += 1
                 emit_system(SYSTEM_CONNECTOR_RECONNECTED, "market hub reconnected")
+            had_connection = True
             connected = True
             backoff = 1.0
             buffer = leftover
