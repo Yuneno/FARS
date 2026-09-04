@@ -104,6 +104,24 @@ def _immutable_mapping(value: Mapping[str, Any]) -> Mapping[str, Any]:
     return MappingProxyType(dict(value))
 
 
+def _deep_immutable(value: Any) -> Any:
+    """Recursively freeze nested mappings/sequences so a frozen record cannot
+    be mutated through its metadata.
+
+    ``_immutable_mapping`` wraps only the outer mapping; nested dicts remain
+    plain mutable dicts, so a frozen :class:`CanonicalAccountTrade` or
+    :class:`AccountEquityEvent` could be silently rewritten through its
+    ``metadata``. Deep-freeze so no caller can mutate history after the fact.
+    """
+    if isinstance(value, Mapping):
+        return MappingProxyType(
+            {key: _deep_immutable(item) for key, item in value.items()}
+        )
+    if isinstance(value, (list, tuple)):
+        return tuple(_deep_immutable(item) for item in value)
+    return value
+
+
 def _validate_decimal(value: Decimal | None, name: str) -> None:
     if value is not None and (
         not isinstance(value, Decimal) or not value.is_finite()
@@ -315,7 +333,7 @@ class CanonicalAccountTrade:
         )
         if self.fingerprint.normalized_record_sha256 != expected_fingerprint:
             raise ValueError("normalized record fingerprint does not match trade content")
-        object.__setattr__(self, "metadata", _immutable_mapping(self.metadata))
+        object.__setattr__(self, "metadata", _deep_immutable(self.metadata))
 
 
 @dataclass(frozen=True)
@@ -347,7 +365,7 @@ class AccountEquityEvent:
         if not isinstance(self.equity, Decimal):
             raise ValueError("equity must be a finite Decimal")
         _validate_decimal(self.balance, "balance")
-        object.__setattr__(self, "metadata", _immutable_mapping(self.metadata))
+        object.__setattr__(self, "metadata", _deep_immutable(self.metadata))
 
 
 @dataclass(frozen=True)
