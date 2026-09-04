@@ -383,6 +383,31 @@ def test_select_active_contract_picks_unique_symbol_and_rejects_empty():
         select_active_contract((_contract("CON.TEST.MNQ.Z99", "MNQ"),), "  ")
 
 
+def test_select_active_contract_rejects_nq_substring_of_mnq():
+    mnq = ProjectXContract(
+        "CON.F.US.MNQ.Z26",
+        "MNQZ6",
+        "Micro E-mini Nasdaq-100",
+        Decimal("0.25"),
+        Decimal("0.50"),
+        True,
+        "F.US.MNQ",
+    )
+    with pytest.raises(ProjectXResponseError, match="no active NQ"):
+        select_active_contract((mnq,), "NQ")
+    mes = ProjectXContract(
+        "CON.F.US.MES.Z26",
+        "MESZ6",
+        "Micro E-mini S&P",
+        Decimal("0.25"),
+        Decimal("0.50"),
+        True,
+        "F.US.MES",
+    )
+    with pytest.raises(ProjectXResponseError, match="no active ES"):
+        select_active_contract((mes,), "ES")
+
+
 def test_run_listen_accepts_unique_nq(tmp_path: Path, monkeypatch):
     from src.realtime import listen as listen_mod
 
