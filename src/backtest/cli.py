@@ -15,9 +15,10 @@ import argparse
 import json
 import sys
 from collections.abc import Sequence
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
 
+from src.backtest.amd_crt import AmdCrtStrategy, amd_crt_config
 from src.backtest.batch import run_batch
 from src.backtest.executor import BacktestConfig, run_backtest
 from src.backtest.history import (
@@ -26,6 +27,7 @@ from src.backtest.history import (
     persist_bars,
     synthetic_bars,
 )
+from src.backtest.mnq_csv import load_mnq_csv
 from src.backtest.pipeline import run_pipeline, write_report, write_trades_csv
 from src.backtest.strategy import BreakoutStrategy
 from src.realtime.config import ProjectXConfigurationError, load_projectx_credentials
@@ -98,6 +100,18 @@ def _parser() -> argparse.ArgumentParser:
     bt.add_argument("--out-dir", default="data/processed")
     bt.add_argument("--seeds", type=_seeds, default=[1, 2, 3])
     bt.add_argument("--mc-simulations", type=int, default=1000)
+
+    ac = sub.add_parser("amd-crt", help="run the causal AMD+CRT candidate end-to-end")
+    ac.add_argument("--mnq-csv", default=None, help="MNQ OHLCV CSV (time/open/high/low/close)")
+    ac.add_argument("--bars-csv", default=None, help="MVP bars CSV (timestamp column)")
+    ac.add_argument("--synthetic", action="store_true")
+    ac.add_argument("--n-bars", type=int, default=5000)
+    ac.add_argument("--out-dir", default="data/processed")
+    ac.add_argument("--initial-balance", type=_float_arg, default=50_000.0)
+    ac.add_argument("--risk-per-trade", type=_float_arg, default=0.01)
+    ac.add_argument("--friction-pts", type=_float_arg, default=2.0,
+                    help="MNQ round-trip friction (points); costs not double-counted")
+    ac.add_argument("--train-fraction", type=_float_arg, default=0.7)
 
     return parser
 
@@ -208,6 +222,37 @@ def _batch(args) -> int:
     return EXIT_OK
 
 
+def _amd_crt(args) -> int:
+    if args.mnq_csv:
+        bars = load_mnq_csv(args.mnq_csv, target_interval_minutes=5)
+    elif args.bars_csv:
+        bars = load_mnq_csv(args.bars_csv, target_interval_minutes=5)
+    elif args.synthetic:
+        bars = synthetic_bars(args.n_bars, seed=0, interval_seconds=300)
+    else:
+        print("no bars; pass --mnq-csv, --bars-csv, or --synthetic", file=sys.stderr)
+        return EXIT_USAGE
+    if not bars:
+        print("no bars loaded", file=sys.stderr)
+        return EXIT_USAGE
+    config = amd_crt_config(
+        initial_balance=args.initial_balance,
+        risk_per_trade=args.risk_per_trade,
+        friction_pts=args.friction_pts,
+    )
+    strategy = AmdCrtStrategy()
+    report = run_pipeline(bars, strategy, config, train_fraction=args.train_fraction)
+    report["_source"] = (
+        "mnq_csv" if args.mnq_csv else ("synthetic" if args.synthetic else (args.bars_csv or "unknown"))
+    )
+    out = Path(args.out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    paths = write_report(report, out)
+    print(json.dumps(report, indent=2, sort_keys=True, default=str))
+    print(f"report written to {paths['summary']}", file=sys.stderr)
+    return EXIT_OK
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
@@ -217,6 +262,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _smoke(args)
         if args.command == "batch":
             return _batch(args)
+        if args.command == "amd-crt":
+            return _amd_crt(args)
         return EXIT_USAGE
     except Exception as exc:  # noqa: BLE001 - CLI safety boundary
         print(f"internal error: {type(exc).__name__}: {exc}", file=sys.stderr)

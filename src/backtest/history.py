@@ -20,8 +20,9 @@ import hashlib
 import json
 import math
 import time as _time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from itertools import pairwise
 from pathlib import Path
 from typing import Protocol
 
@@ -141,7 +142,7 @@ def _detect_gaps(bars: list[Bar], step_seconds: int) -> int:
     if step_seconds <= 0 or len(bars) < 2:
         return 0
     gaps = 0
-    for prev, curr in zip(bars, bars[1:]):
+    for prev, curr in pairwise(bars):
         delta = (curr.timestamp - prev.timestamp).total_seconds()
         if delta > step_seconds * 1.5:  # allow one half-step tolerance
             gaps += 1
@@ -266,7 +267,7 @@ def bars_sha256(bars: tuple[Bar, ...]) -> str:
     for bar in bars:
         digest.update(
             f"{bar.timestamp.isoformat()},{bar.open},{bar.high},{bar.low},"
-            f"{bar.close},{bar.volume}\n".encode("utf-8")
+            f"{bar.close},{bar.volume}\n".encode()
         )
     return digest.hexdigest()
 
@@ -393,10 +394,10 @@ __all__ = [
     "Bar",
     "DownloadResult",
     "Manifest",
+    "bars_sha256",
     "download_bars",
-    "persist_bars",
     "load_bars_csv",
+    "persist_bars",
     "synthetic_bars",
     "to_float_bar",
-    "bars_sha256",
 ]

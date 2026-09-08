@@ -66,6 +66,45 @@ def test_entry_and_stop_slippage_against_position():
     assert _stop_fill(config, "short", 105.0) == 105.25
 
 
+@pytest.mark.parametrize(
+    "field",
+    [
+        "initial_balance",
+        "risk_per_trade",
+        "dollar_per_point",
+        "tick_size",
+        "commission_per_side",
+        "slippage_points",
+        "profit_target_pct",
+        "max_drawdown_pct",
+        "daily_loss_limit_pct",
+    ],
+)
+def test_backtest_config_rejects_negative_economic_magnitudes(field):
+    with pytest.raises(ValueError, match=field):
+        BacktestConfig(**{field: -1.0})
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("risk_per_trade", 0.0),
+        ("risk_per_trade", 1.0),
+        ("profit_target_pct", 0.0),
+        ("profit_target_pct", 1.0),
+        ("max_drawdown_pct", 0.0),
+        ("max_drawdown_pct", 1.0),
+        ("daily_loss_limit_pct", 0.0),
+        ("daily_loss_limit_pct", 1.0),
+    ],
+)
+def test_backtest_config_requires_rule_percentages_strictly_between_zero_and_one(
+    field, value
+):
+    with pytest.raises(ValueError, match=field):
+        BacktestConfig(**{field: value})
+
+
 def test_entry_is_next_bar_open_not_signal_close():
     bars = [
         _bar(_min(0), 90, 91, 89, 100),   # signal bar closes at 100
@@ -111,7 +150,7 @@ def test_commission_reduces_net_pnl():
     bars = [
         _bar(_min(0), 90, 91, 89, 100),
         _bar(_min(1), 100, 101, 99, 100),
-        _bar(_min(2), 100, 101, 99, 110),
+        _bar(_min(2), 100, 111, 99, 110),  # high reaches target 110
     ]
     config = BacktestConfig(slippage_points=0.0, commission_per_side=0.62)
     result = run_backtest(bars, _OneLong(), config)
@@ -163,6 +202,24 @@ def test_strategy_with_no_signals_produces_zero_trades():
     assert result.net_pnl == 0.0
 
 
+def test_legacy_absolute_price_signal_closes_at_last_close():
+    bars = [
+        _bar(_min(0), 90, 91, 89, 100),
+        _bar(_min(1), 100, 101, 99, 100),
+        _bar(_min(2), 103, 104, 102, 103),
+    ]
+    result = run_backtest(
+        bars,
+        _OneLong(),
+        BacktestConfig(slippage_points=0.0, commission_per_side=0.0),
+    )
+
+    assert result.unresolved_positions == 0
+    assert result.n_trades == 1
+    assert result.trades[0].exit_reason == "end_of_data"
+    assert result.trades[0].exit_price == 103.0
+
+
 def test_reproducible_with_seed():
     cfg = BacktestConfig()
     strat_a = BreakoutStrategy()
@@ -173,7 +230,7 @@ def test_reproducible_with_seed():
 
 
 def test_chronological_split_is_order_preserving_and_reproducible():
-    bars = synthetic_bars(1000, seed=5)
+    bars = synthetic_bars(2000, seed=5)
     split = chronological_split(bars, train_fraction=0.7)
     assert split.in_sample + split.out_of_sample == bars
     assert split.in_sample[-1].timestamp < split.out_of_sample[0].timestamp
@@ -182,11 +239,21 @@ def test_chronological_split_is_order_preserving_and_reproducible():
     assert split.out_of_sample == split2.out_of_sample
 
 
+def test_chronological_split_rejects_single_session():
+    bars = [
+        _bar(_min(index * 5), 100, 101, 99, 100)
+        for index in range(8)
+    ]
+
+    with pytest.raises(ValueError, match="session boundary"):
+        chronological_split(bars, train_fraction=0.5)
+
+
 def test_pipeline_and_report_persistence(tmp_path):
     bars = synthetic_bars(2000, seed=3)
     report = run_pipeline(bars, BreakoutStrategy(), BacktestConfig(), train_fraction=0.7)
     assert "in_sample" in report and "out_of_sample" in report
-    paths = write_report(report, tmp_path)
+    write_report(report, tmp_path)
     assert (tmp_path / "backtest_summary.json").exists()
     result = run_backtest(bars, BreakoutStrategy(), BacktestConfig())
     write_trades_csv(result.trades, tmp_path / "trades.csv")

@@ -9,8 +9,6 @@ build/
 .env
 
 # Backtest MVP: historical datasets and generated outputs are not versioned
-data/raw/*.csv
-data/raw/*.json
-data/processed/*.csv
-data/processed/*.json
-data/processed/*.jsonl
+data/raw/
+data/processed/
+data/synthetic/

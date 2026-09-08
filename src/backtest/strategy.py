@@ -13,20 +13,28 @@ entry/TP/SL/commission/slippage and risk-rule machinery.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal, Protocol, Sequence
+from typing import Literal, Protocol
 
 from src.backtest.history import Bar
 
 
 @dataclass(frozen=True)
 class Signal:
-    """A proposed entry. Prices are floats; entry fills on the NEXT bar open."""
+    """A proposed entry. Prices are floats; entry fills on the NEXT bar open.
+
+    ``stop``/``target`` are absolute prices by default. When
+    ``stop_target_as_points`` is True they are POSITIVE distances in points
+    from the entry fill — the executor resolves them against the actual fill,
+    so a distance signal can never be silently interpreted as an absolute price.
+    """
 
     direction: Literal["long", "short"]
     entry: float
     stop: float
     target: float
+    stop_target_as_points: bool = False
 
 
 class Strategy(Protocol):
@@ -95,4 +103,4 @@ class BreakoutStrategy:
         return None
 
 
-__all__ = ["Signal", "Strategy", "BreakoutStrategy", "average_true_range"]
+__all__ = ["BreakoutStrategy", "Signal", "Strategy", "_average_true_range"]
