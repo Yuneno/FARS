@@ -27,9 +27,10 @@ dev = [
 [project.scripts]
 fars = "src.cli:main"
 fars-projectx = "src.realtime.cli:main"
+fars-backtest = "src.backtest.cli:main"
 
 [tool.setuptools]
-packages = ["src", "src.realtime", "src.realtime.connectors"]
+packages = ["src", "src.realtime", "src.realtime.connectors", "src.backtest"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
