@@ -19,8 +19,11 @@ from src.backtest.amd_crt import (
     ET,
     AmdCrtStrategy,
     _atr14,
+    _bootstrap_ci_lower,
     _detect_amd,
     _detect_crt,
+    _ema_bucket_start,
+    _ema_regime_direction,
     _is_complete_rth_session,
     _median,
     _session_date,
@@ -384,6 +387,141 @@ def test_strategy_atr_uses_only_reference_ten_day_rth_window():
     history.append(_bar(_et(today.year, today.month, today.day, 8, 0), 50, 51, 49, 50))
 
     assert AmdCrtStrategy()._sl_tp(history) == pytest.approx((4.0, 8.0))
+
+
+# ---------------------------------------------------------------------------
+# EMA confluence filter
+# ---------------------------------------------------------------------------
+
+def test_ema_bucket_start_aligns_to_et_midnight():
+    # 4h buckets anchored at ET midnight: 00:00, 04:00, 08:00, 12:00, ...
+    assert _ema_bucket_start(_et(2026, 9, 7, 9, 35), 240) == _et(2026, 9, 7, 8, 0)
+    assert _ema_bucket_start(_et(2026, 9, 7, 11, 59), 240) == _et(2026, 9, 7, 8, 0)
+    assert _ema_bucket_start(_et(2026, 9, 7, 12, 0), 240) == _et(2026, 9, 7, 12, 0)
+    assert _ema_bucket_start(_et(2026, 9, 7, 0, 30), 240) == _et(2026, 9, 7, 0, 0)
+
+
+def test_ema_regime_direction_uses_last_closed_bar():
+    # Build 4h bars: rising closes -> regime "long".
+    bars = []
+    for k in range(30):  # 30 closed 4h buckets, closes rising
+        ts = _et(2026, 8, 1, 0, 0) + timedelta(hours=4 * k)
+        bars.append(_bar(ts, float(k), float(k) + 1, float(k), float(k) + 0.5))
+    # add an in-progress bar in the NEXT bucket (should be excluded)
+    bars.append(_bar(_et(2026, 8, 6, 2, 0), 100.0, 200.0, 0.0, 1.0))
+    assert _ema_regime_direction(bars, period=10, min_bars=10) == "long"
+
+
+def test_ema_regime_direction_declining_is_short():
+    bars = []
+    for k in range(30):
+        ts = _et(2026, 8, 1, 0, 0) + timedelta(hours=4 * k)
+        bars.append(_bar(ts, float(30 - k), float(31 - k), float(30 - k), float(30 - k) - 0.5))
+    assert _ema_regime_direction(bars, period=10, min_bars=10) == "short"
+
+
+def test_ema_regime_direction_requires_min_bars():
+    bars = [_bar(_et(2026, 8, 1, 0, 0) + timedelta(hours=4 * k), 1.0, 1.0, 1.0, 1.0) for k in range(5)]
+    assert _ema_regime_direction(bars, period=10, min_bars=20) is None
+
+
+def test_ema_filter_gates_signal_on_regime_mismatch(monkeypatch):
+    # A full confluence (AMD + CRT) but EMA regime opposes the fade -> no signal.
+    bars, day = _confluence_history()  # AMD direction "short" (pre-NY high sweep)
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._ema_regime_direction", lambda *a, **k: "long"
+    )
+    strat = AmdCrtStrategy(use_ema_filter=True, median_lookback_days=5, min_weekday_samples=3)
+    assert strat.evaluate(bars) is None  # EMA "long" != AMD "short"
+
+
+def test_ema_filter_allows_signal_on_regime_match(monkeypatch):
+    bars, day = _confluence_history()
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._ema_regime_direction", lambda *a, **k: "short"
+    )
+    strat = AmdCrtStrategy(use_ema_filter=True, median_lookback_days=5, min_weekday_samples=3)
+    assert strat.evaluate(bars) is not None  # EMA "short" == AMD "short"
+
+
+def test_ema_filter_off_preserves_no_ema_behavior():
+    bars, day = _confluence_history()
+    strat = AmdCrtStrategy(use_ema_filter=False, median_lookback_days=5, min_weekday_samples=3)
+    assert strat.evaluate(bars) is not None  # no-EMA path still fires
+
+
+# ---------------------------------------------------------------------------
+# Edge gate (bootstrap CI on own closed trades)
+# ---------------------------------------------------------------------------
+
+def test_bootstrap_ci_lower_positive_mean():
+    est = _bootstrap_ci_lower([1.0, 2.0, 1.5, 2.5, 1.8, 2.2, 1.9, 2.1])
+    assert est is not None
+    mean, ci_lower = est
+    assert mean == pytest.approx(1.875)
+    assert ci_lower > 0.0
+
+
+def test_bootstrap_ci_lower_negative_mean():
+    est = _bootstrap_ci_lower([-1.0, -2.0, -1.5, -2.5, -1.8])
+    assert est is not None
+    mean, ci_lower = est
+    assert mean < 0.0
+    assert ci_lower < 0.0
+
+
+def test_bootstrap_ci_lower_requires_two_observations():
+    assert _bootstrap_ci_lower([1.0]) is None
+    assert _bootstrap_ci_lower([]) is None
+
+
+def test_edge_gate_suppresses_when_edge_cold():
+    strat = AmdCrtStrategy(
+        use_edge_gate=True, edge_min_trades=3, median_lookback_days=5,
+        min_weekday_samples=3,
+    )
+    # Seed several LOSING closed trades on PRIOR days.
+    strat.note_trade(_et(2026, 9, 1, 10, 0), -1.0)
+    strat.note_trade(_et(2026, 9, 2, 10, 0), -1.0)
+    strat.note_trade(_et(2026, 9, 3, 10, 0), -1.0)
+    strat.note_trade(_et(2026, 9, 4, 10, 0), -1.0)
+    bars, day = _confluence_history()
+    assert strat.evaluate(bars) is None  # cold edge -> suppressed
+
+
+def test_edge_gate_permits_when_edge_hot():
+    strat = AmdCrtStrategy(
+        use_edge_gate=True, edge_min_trades=3, median_lookback_days=5,
+        min_weekday_samples=3,
+    )
+    # Seed several WINNING closed trades on PRIOR days.
+    strat.note_trade(_et(2026, 9, 1, 10, 0), 1.0)
+    strat.note_trade(_et(2026, 9, 2, 10, 0), 1.2)
+    strat.note_trade(_et(2026, 9, 3, 10, 0), 0.8)
+    strat.note_trade(_et(2026, 9, 4, 10, 0), 1.1)
+    bars, day = _confluence_history()
+    assert strat.evaluate(bars) is not None  # hot edge -> allowed
+
+
+def test_edge_gate_ignores_same_day_trades():
+    strat = AmdCrtStrategy(
+        use_edge_gate=True, edge_min_trades=3, median_lookback_days=5,
+        min_weekday_samples=3,
+    )
+    # Same-day exit must NOT count toward the edge (causal): seed losers today.
+    strat.note_trade(_et(2026, 9, 7, 10, 0), -5.0)
+    strat.note_trade(_et(2026, 9, 7, 11, 0), -5.0)
+    # With no PRIOR-day trades, edge_min_trades not met -> permissive (True).
+    bars, day = _confluence_history()
+    assert strat.evaluate(bars) is not None
+
+
+def test_edge_gate_off_preserves_behavior():
+    strat = AmdCrtStrategy(
+        use_edge_gate=False, median_lookback_days=5, min_weekday_samples=3
+    )
+    bars, day = _confluence_history()
+    assert strat.evaluate(bars) is not None
 
 
 # ---------------------------------------------------------------------------

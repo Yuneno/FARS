@@ -393,26 +393,30 @@ def run_backtest(
             slippage_cost = (
                 entry_slip_pts + exit_slip_pts
             ) * config.dollar_per_point * position["qty"]
-            trades.append(
-                ExecutedTrade(
-                    trade_id=f"bt-{len(trades) + 1}",
-                    direction=direction,
-                    entry_time=position["entry_time"],
-                    exit_time=bar.timestamp,
-                    entry_price=entry,
-                    exit_price=exit_price,
-                    stop_price=stop,
-                    target_price=target,
-                    quantity=position["qty"],
-                    gross_pnl=gross_pnl,
-                    commission=commission,
-                    net_pnl=net_pnl,
-                    r_result=r_result,
-                    exit_reason=reason,
-                    stop_risk_dollars=stop_risk_dollars,
-                    slippage_cost=slippage_cost,
-                )
+            executed = ExecutedTrade(
+                trade_id=f"bt-{len(trades) + 1}",
+                direction=direction,
+                entry_time=position["entry_time"],
+                exit_time=bar.timestamp,
+                entry_price=entry,
+                exit_price=exit_price,
+                stop_price=stop,
+                target_price=target,
+                quantity=position["qty"],
+                gross_pnl=gross_pnl,
+                commission=commission,
+                net_pnl=net_pnl,
+                r_result=r_result,
+                exit_reason=reason,
+                stop_risk_dollars=stop_risk_dollars,
+                slippage_cost=slippage_cost,
             )
+            trades.append(executed)
+            # Optional strategy hook: notify a closed trade (e.g. causal edge
+            # gate). Duck-typed so strategies without note_trade are unaffected.
+            note = getattr(strategy, "note_trade", None)
+            if callable(note):
+                note(executed.exit_time, executed.r_result)
             position = None
 
         history.append(bar)
@@ -457,6 +461,9 @@ def run_backtest(
                 ),
             )
         )
+        note = getattr(strategy, "note_trade", None)
+        if callable(note):
+            note(last.timestamp, net_pnl / dollar_risk if dollar_risk > 0 else 0.0)
         position = None
 
     unresolved = 1 if position is not None else 0

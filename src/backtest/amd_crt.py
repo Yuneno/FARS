@@ -60,6 +60,8 @@ from itertools import pairwise
 from typing import Literal
 from zoneinfo import ZoneInfo
 
+import numpy as np
+
 from src.backtest.executor import BacktestConfig
 from src.backtest.history import Bar
 from src.backtest.strategy import Signal
@@ -84,6 +86,26 @@ MIN_RTH_M5_BARS = len(RTH_M5_MINUTES) // 2
 DEFAULT_CONTRACT_SESSION_BLOCK = 65  # approx D1 bars per MNQ contract (varies; explicit approximation)
 EXPECTED_M5_INTERVAL = timedelta(minutes=5)
 
+# EMA confluence filter (from amd_crt_ema_confluence_trader.py, config activa
+# EMA10/4h). The close of the last CLOSED 4h bar vs its EMA(span=period,
+# adjust=False): close > ema -> "long" regime, else "short". A trade only fires
+# when the regime matches the AMD fade direction (100% causal).
+DEFAULT_EMA_PERIOD = 10
+DEFAULT_EMA_TIMEFRAME_MINUTES = 240  # 4h
+DEFAULT_EMA_MIN_BARS = DEFAULT_EMA_PERIOD + 10  # margen para media estable
+
+# Edge gate (PROVISIONAL, experimental): use the strategy's own CLOSED trades'
+# R-multiples to estimate the current edge via a bootstrap confidence interval.
+# Only trades CLOSED on days strictly BEFORE today are used (100% causal). If the
+# CI lower bound is not convincingly positive, the setup is treated as "cold"
+# and the signal is suppressed. Marked PROVISIONAL because the threshold/lookback
+# are candidate values, not validated — must be confirmed out-of-sample, never
+# tuned on the graded data.
+DEFAULT_EDGE_LOOKBACK_TRADES = 30
+DEFAULT_EDGE_MIN_TRADES = 20
+DEFAULT_EDGE_CI_LEVEL = 0.84  # ~1 sigma lower bound (one-sided-ish)
+DEFAULT_EDGE_BOOTSTRAP_N = 400
+
 
 def _aware(ts: datetime) -> datetime:
     if ts.tzinfo is None:
@@ -93,6 +115,90 @@ def _aware(ts: datetime) -> datetime:
 
 def _et_time(ts: datetime) -> time:
     return _aware(ts).astimezone(ET).time()
+
+
+def _ema_bucket_start(ts: datetime, timeframe_minutes: int) -> datetime:
+    """Start of the EMA timeframe bucket containing ``ts`` (ET-anchored).
+
+    Buckets align to the top of the day in ET (00:00, then every
+    ``timeframe_minutes``). This mirrors pandas ``resample(rule,
+    label="left", closed="left")`` on a tz-aware ET index.
+    """
+    et = _aware(ts).astimezone(ET)
+    minutes = et.hour * 60 + et.minute
+    bucket_min = (minutes // timeframe_minutes) * timeframe_minutes
+    return et.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(
+        minutes=bucket_min
+    )
+
+
+def _ema_regime_direction(
+    history: Sequence[Bar],
+    *,
+    period: int = DEFAULT_EMA_PERIOD,
+    timeframe_minutes: int = DEFAULT_EMA_TIMEFRAME_MINUTES,
+    min_bars: int = DEFAULT_EMA_MIN_BARS,
+) -> Literal["long", "short"] | None:
+    """Causal EMA(period)/timeframe regime: direction of the LAST CLOSED bar.
+
+    Mirrors ``current_ema_regime``/``regime_at`` in
+    ``amd_crt_ema_confluence_trader.py``: resample M5 -> timeframe bars (last
+    in-progress bar dropped), EMA(span=period, adjust=False) over closes, then
+    ``"long"`` when the last closed bar's close > its EMA, else ``"short"``.
+    Returns None when there is not enough closed-bar history for a stable EMA.
+
+    CAUSAL: only bars up to ``history`` are used, and the in-progress bucket
+    (containing the last bar) is excluded — the regime only sees CLOSED bars.
+    """
+    if period < 1 or timeframe_minutes < 1 or min_bars < 1:
+        raise ValueError("ema period/timeframe/min_bars must be >= 1")
+    buckets: dict[datetime, float] = {}
+    for b in history:
+        key = _ema_bucket_start(b.timestamp, timeframe_minutes)
+        buckets[key] = b.close  # last close in bucket wins (bars are chronological)
+    if len(buckets) < 2:
+        return None
+    # Drop the last bucket (in-progress); use only CLOSED buckets before it.
+    closed_keys = sorted(buckets)[:-1]
+    if len(closed_keys) < min_bars:
+        return None
+    closes = [buckets[k] for k in closed_keys]
+    alpha = 2.0 / (period + 1.0)  # pandas ewm(span=period, adjust=False)
+    ema = closes[0]
+    for c in closes[1:]:
+        ema = ema + alpha * (c - ema)
+    last_close = closes[-1]
+    return "long" if last_close > ema else "short"
+
+
+def _bootstrap_ci_lower(
+    r_results: Sequence[float],
+    *,
+    ci_level: float = DEFAULT_EDGE_CI_LEVEL,
+    n_bootstrap: int = DEFAULT_EDGE_BOOTSTRAP_N,
+    seed: int = 0,
+) -> tuple[float, float] | None:
+    """Bootstrap mean and lower CI bound of a sequence of R-multiples.
+
+    IID resampling of the observed trade outcomes (mean with replacement) to
+    estimate the expectancy and its ``ci_level`` lower bound. Returns
+    ``(mean, ci_lower)`` or None if there are fewer than 2 observations.
+
+    ASSUMPTION: the outcomes are IID-exchangeable. This is a pragmatic
+    PROVISIONAL gate, NOT the Phase 10A dependence-audited bootstrap — for a
+    production decision the trade sequence must first pass ``iid_eligible``
+    (src.bootstrap). If the outcomes are dependent (streaks), plain IID
+    bootstrap understates the CI width.
+    """
+    values = np.asarray([float(r) for r in r_results], dtype=np.float64)
+    if values.size < 2:
+        return None
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, values.size, size=(n_bootstrap, values.size))
+    means = values[idx].mean(axis=1)
+    mean = float(values.mean())
+    ci_lower = float(np.percentile(means, 100.0 * (1.0 - ci_level)))
+    return mean, ci_lower
 
 
 def _session_date(
@@ -386,6 +492,30 @@ class AmdCrtStrategy:
         contract_session_block: int = DEFAULT_CONTRACT_SESSION_BLOCK,
         session_tz: ZoneInfo = ET,
         session_start: time = time(0, 0),
+        # PROVISIONAL pre-trade risk filter: only enter when SL risk (in points)
+        # falls within [min_risk_pts, max_risk_pts]. None = no bound (default =
+        # current/legacy behavior). Marked PROVISIONAL because a filter that is
+        # tuned on the same data it is graded on is data-mining; experiment,
+        # then validate out-of-sample.
+        min_risk_pts: float | None = None,
+        max_risk_pts: float | None = None,
+        # EMA confluence filter (amd_crt_ema_confluence_trader.py, EMA10/4h).
+        # When ``use_ema_filter`` is True, a signal only fires if the EMA regime
+        # direction (last CLOSED bar) matches the AMD fade direction. This is the
+        # "triple confluence" AMD+CRT+EMA candidate — opt-in, off by default to
+        # preserve the AMD+CRT (no-EMA) behavior.
+        use_ema_filter: bool = False,
+        ema_period: int = DEFAULT_EMA_PERIOD,
+        ema_timeframe_minutes: int = DEFAULT_EMA_TIMEFRAME_MINUTES,
+        ema_min_bars: int = DEFAULT_EMA_MIN_BARS,
+        # Edge gate (PROVISIONAL, experimental): use this strategy's own CLOSED
+        # trades (R-multiples from days strictly before today) to estimate edge
+        # via a bootstrap CI lower bound. Suppress the signal when the edge is
+        # not convincingly positive. Opt-in, off by default.
+        use_edge_gate: bool = False,
+        edge_lookback_trades: int = DEFAULT_EDGE_LOOKBACK_TRADES,
+        edge_min_trades: int = DEFAULT_EDGE_MIN_TRADES,
+        edge_ci_level: float = DEFAULT_EDGE_CI_LEVEL,
     ) -> None:
         self.sl_cap_pts = sl_cap_pts
         self.atr_period = atr_period
@@ -396,11 +526,58 @@ class AmdCrtStrategy:
         self.contract_session_block = contract_session_block
         self.session_tz = session_tz
         self.session_start = session_start
+        self.min_risk_pts = min_risk_pts
+        self.max_risk_pts = max_risk_pts
+        self.use_ema_filter = use_ema_filter
+        self.ema_period = ema_period
+        self.ema_timeframe_minutes = ema_timeframe_minutes
+        self.ema_min_bars = ema_min_bars
+        self.use_edge_gate = use_edge_gate
+        self.edge_lookback_trades = edge_lookback_trades
+        self.edge_min_trades = edge_min_trades
+        self.edge_ci_level = edge_ci_level
         self._amd: tuple[Literal["long", "short"], datetime] | None = None
         self._amd_day: date | None = None
         self._signal_day: date | None = None
         self._medians: dict[int, float] | None = None
         self._medians_day: date | None = None
+        self._ema_regime: Literal["long", "short"] | None = None
+        self._ema_bucket: datetime | None = None
+        # closed trades: (exit_date, r_result), populated by the executor via
+        # note_trade(). Only exits on days strictly BEFORE today are eligible
+        # for the edge gate (causal).
+        self._closed: list[tuple[date, float]] = []
+        self._edge_ok: bool | None = None
+        self._edge_day: date | None = None
+
+    def note_trade(self, exit_time: datetime, r_result: float) -> None:
+        """Record a CLOSED trade for the causal edge gate.
+
+        Called by the executor once a trade closes. ``exit_time`` must be
+        tz-aware; its session date is derived with the strategy's own session
+        convention so a same-day exit can never feed a same-day decision.
+        """
+        d = _session_date(exit_time, self.session_tz, self.session_start)
+        self._closed.append((d, float(r_result)))
+
+    def _edge_gate_ok(self, day: date) -> bool:
+        """True when recent CLOSED trades show a convincingly positive edge.
+
+        Considers the last ``edge_lookback_trades`` exits on days STRICTLY
+        before ``day`` (causal). Requires at least ``edge_min_trades``; with
+        fewer, it is permissive (returns True — no evidence yet, so do not
+        suppress). With enough history, requires the bootstrap CI lower bound
+        of expectancy to be > 0.
+        """
+        prior = [r for d, r in self._closed if d < day]
+        if len(prior) < self.edge_min_trades:
+            return True
+        recent = prior[-self.edge_lookback_trades :]
+        est = _bootstrap_ci_lower(recent, ci_level=self.edge_ci_level)
+        if est is None:
+            return True
+        _mean, ci_lower = est
+        return ci_lower > 0.0
 
     def evaluate(self, history: Sequence[Bar]) -> Signal | None:
         if not history:
@@ -450,10 +627,44 @@ class AmdCrtStrategy:
             return None
 
         direction, _confirm_time = self._amd
+        # EMA confluence filter (opt-in). Cache the regime by the current 4h
+        # bucket so we do not rescan history on every bar (O(n^2) otherwise);
+        # the regime only changes when a new 4h bucket closes.
+        if self.use_ema_filter:
+            bucket = _ema_bucket_start(history[-1].timestamp, self.ema_timeframe_minutes)
+            if bucket != self._ema_bucket:
+                self._ema_bucket = bucket
+                self._ema_regime = _ema_regime_direction(
+                    history,
+                    period=self.ema_period,
+                    timeframe_minutes=self.ema_timeframe_minutes,
+                    min_bars=self.ema_min_bars,
+                )
+            if self._ema_regime is None or self._ema_regime != direction:
+                return None
+
+        # Edge gate (opt-in, PROVISIONAL): only enter when the strategy's own
+        # recent closed trades show a convincingly positive edge (bootstrap CI
+        # lower bound > 0). Uses only trades CLOSED on days strictly before
+        # today — 100% causal, no look-ahead. Cached per day.
+        if self.use_edge_gate:
+            if self._edge_day != day:
+                self._edge_day = day
+                self._edge_ok = self._edge_gate_ok(day)
+            if not self._edge_ok:
+                return None
+
         sl_tp = self._sl_tp(history)
         if sl_tp is None:
             return None
         sl_pts, tp_pts = sl_tp
+        # PROVISIONAL pre-trade risk filter (experimental, see __init__).
+        # Reject the signal when the per-trade risk (SL distance in points) is
+        # outside the configured band. Bound both sides; None skips that side.
+        if self.min_risk_pts is not None and sl_pts < self.min_risk_pts:
+            return None
+        if self.max_risk_pts is not None and sl_pts > self.max_risk_pts:
+            return None
         self._signal_day = day
         # stop/target are distances in points (positive); entry is unused.
         return Signal(
@@ -489,6 +700,16 @@ class AmdCrtStrategy:
             "contract_session_block": self.contract_session_block,
             "session_tz": str(self.session_tz),
             "session_start": self.session_start.isoformat(),
+            "min_risk_pts": self.min_risk_pts,
+            "max_risk_pts": self.max_risk_pts,
+            "use_ema_filter": self.use_ema_filter,
+            "ema_period": self.ema_period,
+            "ema_timeframe_minutes": self.ema_timeframe_minutes,
+            "ema_min_bars": self.ema_min_bars,
+            "use_edge_gate": self.use_edge_gate,
+            "edge_lookback_trades": self.edge_lookback_trades,
+            "edge_min_trades": self.edge_min_trades,
+            "edge_ci_level": self.edge_ci_level,
         }
 
     def fresh(self) -> AmdCrtStrategy:
@@ -503,6 +724,16 @@ class AmdCrtStrategy:
             contract_session_block=self.contract_session_block,
             session_tz=self.session_tz,
             session_start=self.session_start,
+            min_risk_pts=self.min_risk_pts,
+            max_risk_pts=self.max_risk_pts,
+            use_ema_filter=self.use_ema_filter,
+            ema_period=self.ema_period,
+            ema_timeframe_minutes=self.ema_timeframe_minutes,
+            ema_min_bars=self.ema_min_bars,
+            use_edge_gate=self.use_edge_gate,
+            edge_lookback_trades=self.edge_lookback_trades,
+            edge_min_trades=self.edge_min_trades,
+            edge_ci_level=self.edge_ci_level,
         )
 
 
@@ -535,12 +766,16 @@ def amd_crt_config(**overrides) -> BacktestConfig:
 
 __all__ = [
     "DEFAULT_ATR_PERIOD",
+    "DEFAULT_EMA_PERIOD",
+    "DEFAULT_EMA_TIMEFRAME_MINUTES",
     "ET",
     "SL_CAP_PTS",
     "AmdCrtStrategy",
     "_atr14",
+    "_bootstrap_ci_lower",
     "_detect_amd",
     "_detect_crt",
+    "_ema_regime_direction",
     "_median",
     "_weekday_median_amplitudes",
     "amd_crt_config",
