@@ -31,7 +31,7 @@ análisis" a "componente de decisión de un sistema autónomo de ejecución".
 | Circuit breakers | `src/realtime/risk.py` (`REASON_CIRCUIT`), `src/realtime/acceptance.py` | DONE | Veto independiente ante breach |
 | Paper trading (ejecución simulada) | `src/realtime/paper.py` (`PaperExecutionAdapter`) | DONE | Fills simulados, no equivalentes a live |
 | Pipeline de replay/validación | `src/realtime/replay.py`, `session.py`, `acceptance.py` | DONE | RT-0 a RT-8 |
-| Backtest histórico AMD+CRT | `src/backtest/amd_crt.py`, `executor.py` | IN PROGRESS | Estrategia candidata; aún sin edge confirmado |
+| Backtest histórico AMD+CRT | `src/backtest/amd_crt.py`, `executor.py` | DESCARTADA | AMD+CRT queda retirada como hipótesis de estrategia: el reporte multi-mercado original obtuvo expectancy negativa y PF < 1 con costes reales en MNQ, MYM y MGC; el [meta-labeling](docs/refactor/metalabel-result.md) obtuvo ROC AUC ≈ 0.523 y ninguna feature causal predijo el resultado; y la [validación MES/MYM](docs/refactor/task-07-cross-market-validation.md) obtuvo expectancy OOS ≤ 0 incluso en el límite superior teórico sin costes, con IC bootstrap Circular Block que incluyen cero en ambos mercados y sin forzar IID. El framework de validación —executor, bootstrap, meta-labeling y manifest reproducible— queda como activo reutilizable para la siguiente estrategia candidata. |
 | Decision log (para meta-labeling) | `src/backtest/amd_crt.py` (`AmdCrtDecision`) | IN PROGRESS | Registra candidaturas + rechazos |
 | Ejecución live | `LIVE_EXECUTION_ENABLED = False` | NOT STARTED (bloqueado) | No hay órdenes live |
 
