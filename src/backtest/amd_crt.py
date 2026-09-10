@@ -32,6 +32,8 @@ moving average (alpha = 1/period) over RTH bars — matching ``compute_current_a
 in the MNQ executor, whose period is ``atr_period`` (default 14).
 
 Calibration and session conventions (documented assumptions):
+* ``mnq_extended_m5.csv`` contains approximately 54% proxy data. It must not be
+  used to declare a definitive baseline or a final AMD+CRT+EMA comparison.
 * The weekday median is computed over full-session amplitudes (high-low) of PRIOR
   days only (the current day is excluded), using the most recent bounded block
   once ``median_lookback_days`` sessions are available (default 260, matching the
@@ -538,6 +540,7 @@ class AmdCrtStrategy:
         self.edge_ci_level = edge_ci_level
         self._amd: tuple[Literal["long", "short"], datetime] | None = None
         self._amd_day: date | None = None
+        self._crt_day: date | None = None
         self._signal_day: date | None = None
         self._medians: dict[int, float] | None = None
         self._medians_day: date | None = None
@@ -621,10 +624,17 @@ class AmdCrtStrategy:
         if self._amd is None:
             return None
 
-        if not _detect_crt(
-            history, day, session_tz=self.session_tz, session_start=self.session_start
-        ):
-            return None
+        # A causal CRT confirmation is monotonic within a session: after a
+        # qualifying sweep appears, it remains in every later history prefix.
+        # Cache only positive confirmation, so a not-yet-confirmed CRT is still
+        # reconsidered on the next bar without using future data.
+        if self._crt_day != day:
+            if not _detect_crt(
+                history, day, session_tz=self.session_tz,
+                session_start=self.session_start,
+            ):
+                return None
+            self._crt_day = day
 
         direction, _confirm_time = self._amd
         # EMA confluence filter (opt-in). Cache the regime by the current 4h
@@ -675,12 +685,16 @@ class AmdCrtStrategy:
     def _sl_tp(self, history: Sequence[Bar]) -> tuple[float, float] | None:
         today = _session_date(history[-1].timestamp, self.session_tz, self.session_start)
         cutoff = datetime.combine(today - timedelta(days=10), time(0, 0), tzinfo=ET)
-        rth = [
-            b
-            for b in history
-            if b.timestamp.astimezone(ET) >= cutoff
-            and RTH_START <= _et_time(b.timestamp) <= RTH_END
-        ]
+        # ``history`` is chronological. Walk backward only through the bounded
+        # window that the legacy forward scan selected, then restore its order
+        # so the ATR floating-point recurrence is bit-for-bit identical.
+        rth_reversed: list[Bar] = []
+        for b in reversed(history):
+            if b.timestamp.astimezone(ET) < cutoff:
+                break
+            if RTH_START <= _et_time(b.timestamp) <= RTH_END:
+                rth_reversed.append(b)
+        rth = list(reversed(rth_reversed))
         atr = _atr14(rth, self.atr_period)
         if atr is None or atr <= 0:
             return None

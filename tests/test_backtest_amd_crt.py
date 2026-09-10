@@ -358,6 +358,37 @@ def test_atr_period_one_is_last_true_range():
     assert _atr14(bars, period=1) == pytest.approx(last_tr)
 
 
+def test_sl_tp_matches_legacy_full_scan_bit_for_bit_on_long_history():
+    """The bounded reverse scan selects the legacy bars in the same order."""
+    start = _et(2026, 1, 1, 0, 0)
+    history = []
+    for index in range(120 * 24 * 12):
+        ts = start + timedelta(minutes=5 * index)
+        offset = float((index * 17) % 29) / 8.0
+        history.append(
+            _bar(ts, 100.0 + offset, 102.25 + offset, 98.75 + offset, 101.0 + offset)
+        )
+
+    strategy = AmdCrtStrategy(atr_period=14)
+    today = _session_date(history[-1].timestamp)
+    cutoff = datetime.combine(today - timedelta(days=10), time(0, 0), tzinfo=ET)
+    legacy_rth = [
+        bar
+        for bar in history
+        if bar.timestamp.astimezone(ET) >= cutoff
+        and time(9, 30) <= bar.timestamp.astimezone(ET).time() <= time(16, 0)
+    ]
+    legacy_atr = _atr14(legacy_rth, strategy.atr_period)
+    assert legacy_atr is not None
+    legacy = (
+        min(legacy_atr * strategy.sl_atr_mult, strategy.sl_cap_pts),
+        min(legacy_atr * strategy.sl_atr_mult, strategy.sl_cap_pts)
+        * strategy.tp_atr_ratio,
+    )
+
+    assert strategy._sl_tp(history) == legacy
+
+
 def test_atr_default_period():
     base = _et(2026, 9, 7, 10, 0)
     bars = [_bar(base + timedelta(minutes=5 * i), 100, 104, 96, 102) for i in range(20)]
@@ -450,6 +481,41 @@ def test_ema_filter_off_preserves_no_ema_behavior():
     assert strat.evaluate(bars) is not None  # no-EMA path still fires
 
 
+def test_ema_filter_rejects_within_bucket_then_accepts_new_bucket_without_redetecting_crt(
+    monkeypatch,
+):
+    crt_calls = 0
+    ema_calls = 0
+
+    def detect_amd(history, day, **kwargs):
+        return "short", history[-1].timestamp
+
+    def detect_crt(history, day, **kwargs):
+        nonlocal crt_calls
+        crt_calls += 1
+        return True
+
+    def ema_regime(history, **kwargs):
+        nonlocal ema_calls
+        ema_calls += 1
+        return "long" if history[-1].timestamp.astimezone(ET).hour < 12 else "short"
+
+    monkeypatch.setattr("src.backtest.amd_crt._detect_amd", detect_amd)
+    monkeypatch.setattr("src.backtest.amd_crt._detect_crt", detect_crt)
+    monkeypatch.setattr("src.backtest.amd_crt._ema_regime_direction", ema_regime)
+    monkeypatch.setattr(AmdCrtStrategy, "_sl_tp", lambda self, history: (5.0, 10.0))
+    strategy = AmdCrtStrategy(use_ema_filter=True)
+    history = [_bar(_et(2026, 9, 7, 11, 0), 100, 101, 99, 100)]
+
+    assert strategy.evaluate(history) is None  # rejected in the 08:00 bucket
+    history.append(_bar(_et(2026, 9, 7, 11, 5), 100, 101, 99, 100))
+    assert strategy.evaluate(history) is None  # same cached EMA rejection
+    history.append(_bar(_et(2026, 9, 7, 12, 0), 100, 101, 99, 100))
+    assert strategy.evaluate(history) is not None  # new bucket now accepts
+    assert crt_calls == 1
+    assert ema_calls == 2
+
+
 # ---------------------------------------------------------------------------
 # Edge gate (bootstrap CI on own closed trades)
 # ---------------------------------------------------------------------------
@@ -522,6 +588,81 @@ def test_edge_gate_off_preserves_behavior():
     )
     bars, day = _confluence_history()
     assert strat.evaluate(bars) is not None
+
+
+def test_edge_filter_rejects_one_day_and_accepts_next_day(monkeypatch):
+    crt_days = []
+    sl_tp_calls = 0
+
+    def detect_amd(history, day, **kwargs):
+        return "long", history[-1].timestamp
+
+    def detect_crt(history, day, **kwargs):
+        crt_days.append(day)
+        return True
+
+    def sl_tp(self, history):
+        nonlocal sl_tp_calls
+        sl_tp_calls += 1
+        return 5.0, 10.0
+
+    monkeypatch.setattr("src.backtest.amd_crt._detect_amd", detect_amd)
+    monkeypatch.setattr("src.backtest.amd_crt._detect_crt", detect_crt)
+    monkeypatch.setattr(AmdCrtStrategy, "_sl_tp", sl_tp)
+    strategy = AmdCrtStrategy(use_edge_gate=True)
+    monkeypatch.setattr(
+        strategy, "_edge_gate_ok", lambda day: day == date(2026, 9, 8)
+    )
+    history = [_bar(_et(2026, 9, 7, 11, 0), 100, 101, 99, 100)]
+
+    assert strategy.evaluate(history) is None
+    history.append(_bar(_et(2026, 9, 7, 11, 5), 100, 101, 99, 100))
+    assert strategy.evaluate(history) is None
+    history.append(_bar(_et(2026, 9, 8, 11, 0), 100, 101, 99, 100))
+    assert strategy.evaluate(history) is not None
+    assert crt_days == [date(2026, 9, 7), date(2026, 9, 8)]
+    assert sl_tp_calls == 1
+
+
+@pytest.mark.parametrize(
+    ("risk_kwargs", "sl_values"),
+    [
+        ({"min_risk_pts": 2.0}, [1.0, 2.0]),
+        ({"max_risk_pts": 2.0}, [3.0, 2.0]),
+    ],
+)
+def test_risk_filter_rechecks_atr_but_not_confirmed_crt(
+    monkeypatch, risk_kwargs, sl_values
+):
+    crt_calls = 0
+    sl_tp_calls = 0
+
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._detect_amd",
+        lambda history, day, **kwargs: ("long", history[-1].timestamp),
+    )
+
+    def detect_crt(history, day, **kwargs):
+        nonlocal crt_calls
+        crt_calls += 1
+        return True
+
+    def sl_tp(self, history):
+        nonlocal sl_tp_calls
+        value = sl_values[sl_tp_calls]
+        sl_tp_calls += 1
+        return value, value * 2.0
+
+    monkeypatch.setattr("src.backtest.amd_crt._detect_crt", detect_crt)
+    monkeypatch.setattr(AmdCrtStrategy, "_sl_tp", sl_tp)
+    strategy = AmdCrtStrategy(**risk_kwargs)
+    history = [_bar(_et(2026, 9, 7, 11, 0), 100, 101, 99, 100)]
+
+    assert strategy.evaluate(history) is None
+    history.append(_bar(_et(2026, 9, 7, 11, 5), 100, 101, 99, 100))
+    assert strategy.evaluate(history) is not None
+    assert crt_calls == 1
+    assert sl_tp_calls == 2
 
 
 # ---------------------------------------------------------------------------
