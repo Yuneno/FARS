@@ -27,6 +27,16 @@ class SplitResult:
     split_fraction: float
 
 
+@dataclass(frozen=True)
+class PipelineRun:
+    """Complete IS/OOS execution retained for optional artifact export."""
+
+    report: dict[str, Any]
+    split: SplitResult
+    in_sample_result: BacktestResult
+    out_of_sample_result: BacktestResult
+
+
 def chronological_split(
     bars: list[Bar],
     train_fraction: float = 0.7,
@@ -110,6 +120,22 @@ def run_pipeline(
     train_fraction: float = 0.7,
 ) -> dict[str, Any]:
     """Run IS + OOS backtests and assemble a full report dict."""
+    return execute_pipeline(
+        bars,
+        strategy,
+        config,
+        train_fraction=train_fraction,
+    ).report
+
+
+def execute_pipeline(
+    bars: list[Bar],
+    strategy: Strategy,
+    config: BacktestConfig,
+    *,
+    train_fraction: float = 0.7,
+) -> PipelineRun:
+    """Run the existing pipeline while retaining both segment results."""
     session_tz = getattr(strategy, "session_tz", None)
     session_start = getattr(strategy, "session_start", time(0, 0))
     split = chronological_split(
@@ -133,7 +159,7 @@ def run_pipeline(
         if callable(parameters)
         else asdict(strategy) if is_dataclass(strategy) else {}  # type: ignore[arg-type]
     )
-    return {
+    report = {
         "config": config_dict(config),
         "split_fraction": split.split_fraction,
         "n_bars_in_sample": len(split.in_sample),
@@ -151,29 +177,95 @@ def run_pipeline(
         ],
         "technical_status": "PASS",
     }
+    return PipelineRun(
+        report=report,
+        split=split,
+        in_sample_result=is_result,
+        out_of_sample_result=oos_result,
+    )
 
 
-def write_trades_csv(trades: tuple[ExecutedTrade, ...], path: str | Path) -> None:
+def detailed_result_summary(result: BacktestResult) -> dict[str, Any]:
+    """Descriptive trade metrics used by the cross-market evidence report."""
+    from src.metrics import compute_metrics
+
+    trades = result.trades
+    r_values = [trade.r_result for trade in trades]
+    metrics = compute_metrics(r_values)
+    wins = [trade.net_pnl for trade in trades if trade.net_pnl > 0]
+    losses = [-trade.net_pnl for trade in trades if trade.net_pnl < 0]
+    avg_win_money = sum(wins) / len(wins) if wins else 0.0
+    avg_loss_money = sum(losses) / len(losses) if losses else 0.0
+    max_drawdown_money = 0.0
+    cumulative = 0.0
+    peak = 0.0
+    directions: dict[str, int] = {}
+    exit_reasons: dict[str, int] = {}
+    for trade in trades:
+        cumulative += trade.net_pnl
+        peak = max(peak, cumulative)
+        max_drawdown_money = max(max_drawdown_money, peak - cumulative)
+        directions[trade.direction] = directions.get(trade.direction, 0) + 1
+        exit_reasons[trade.exit_reason] = exit_reasons.get(trade.exit_reason, 0) + 1
+    return {
+        "n_trades": metrics.n_trades,
+        "win_rate": metrics.win_rate,
+        "expectancy_r": metrics.expectancy_r,
+        "expectancy_money": result.expectancy,
+        "profit_factor": result.profit_factor,
+        "net_pnl": result.net_pnl,
+        "max_drawdown_r": metrics.max_drawdown_r,
+        "max_drawdown_money": max_drawdown_money,
+        "max_drawdown_pct": result.max_drawdown_pct,
+        "average_win_r": metrics.avg_win_r,
+        "average_loss_r": metrics.avg_loss_r,
+        "average_win_money": avg_win_money,
+        "average_loss_money": avg_loss_money,
+        "win_loss_ratio": (
+            avg_win_money / avg_loss_money if avg_loss_money else None
+        ),
+        "direction_counts": dict(sorted(directions.items())),
+        "exit_reason_counts": dict(sorted(exit_reasons.items())),
+        "first_trade": trades[0].entry_time.isoformat() if trades else None,
+        "last_trade": trades[-1].exit_time.isoformat() if trades else None,
+    }
+
+
+def write_trades_csv(
+    trades: tuple[ExecutedTrade, ...],
+    path: str | Path,
+    *,
+    symbol: str | None = None,
+    strategy_name: str | None = None,
+    segment: str | None = None,
+) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(
-            [
-                "trade_id", "direction", "entry_time", "exit_time", "entry_price",
-                "exit_price", "stop_price", "target_price", "quantity", "gross_pnl",
-                "commission", "net_pnl", "r_result", "exit_reason",
-            ]
-        )
-        for t in trades:
-            writer.writerow(
-                [
-                    t.trade_id, t.direction, t.entry_time.isoformat(),
-                    t.exit_time.isoformat(), t.entry_price, t.exit_price,
-                    t.stop_price, t.target_price, t.quantity, t.gross_pnl,
-                    t.commission, t.net_pnl, t.r_result, t.exit_reason,
-                ]
+        fields = [
+            "trade_id", "direction", "entry_time", "exit_time", "entry_price",
+            "exit_price", "stop_price", "target_price", "quantity", "gross_pnl",
+            "commission", "net_pnl", "r_result", "exit_reason",
+        ]
+        detailed = symbol is not None or strategy_name is not None or segment is not None
+        if detailed:
+            fields.extend(
+                ["stop_risk_dollars", "slippage_cost", "asset", "strategy", "segment"]
             )
+        writer.writerow(fields)
+        for t in trades:
+            row = [
+                t.trade_id, t.direction, t.entry_time.isoformat(),
+                t.exit_time.isoformat(), t.entry_price, t.exit_price,
+                t.stop_price, t.target_price, t.quantity, t.gross_pnl,
+                t.commission, t.net_pnl, t.r_result, t.exit_reason,
+            ]
+            if detailed:
+                row.extend(
+                    [t.stop_risk_dollars, t.slippage_cost, symbol, strategy_name, segment]
+                )
+            writer.writerow(row)
 
 
 def write_report(report: dict[str, Any], out_dir: str | Path) -> dict[str, str]:
@@ -186,8 +278,11 @@ def write_report(report: dict[str, Any], out_dir: str | Path) -> dict[str, str]:
 
 
 __all__ = [
+    "PipelineRun",
     "SplitResult",
     "chronological_split",
+    "detailed_result_summary",
+    "execute_pipeline",
     "result_summary",
     "run_pipeline",
     "write_report",

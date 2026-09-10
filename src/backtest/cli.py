@@ -29,7 +29,20 @@ from src.backtest.history import (
 )
 from src.backtest.markets import MARKETS, MNQ, get_market_spec
 from src.backtest.mnq_csv import load_mnq_csv
-from src.backtest.pipeline import run_pipeline, write_report, write_trades_csv
+from src.backtest.pipeline import (
+    detailed_result_summary,
+    execute_pipeline,
+    run_pipeline,
+    write_report,
+    write_trades_csv,
+)
+from src.backtest.run_manifest import (
+    GROSS_ZERO_FRICTION_LABEL,
+    audit_ohlcv_csv,
+    build_run_manifest,
+    validate_ohlcv_audit,
+    write_manifest,
+)
 from src.backtest.strategy import BreakoutStrategy
 from src.realtime.config import ProjectXConfigurationError, load_projectx_credentials
 from src.realtime.connectors.projectx import ProjectXClient, ProjectXError
@@ -114,6 +127,11 @@ def _parser() -> argparse.ArgumentParser:
     ac.add_argument("--friction-pts", type=_float_arg, default=None,
                     help="round-trip friction in points; required for unvalidated market costs")
     ac.add_argument("--train-fraction", type=_float_arg, default=0.7)
+    ac.add_argument(
+        "--write-trades",
+        action="store_true",
+        help="write separate IS/OOS trade CSVs and a reproducibility manifest",
+    )
 
     return parser
 
@@ -232,10 +250,17 @@ def _amd_crt(args) -> int:
         risk_per_trade=args.risk_per_trade,
         **({"friction_pts": args.friction_pts} if args.friction_pts is not None else {}),
     )
-    if args.mnq_csv:
-        bars = load_mnq_csv(args.mnq_csv, target_interval_minutes=5)
-    elif args.bars_csv:
-        bars = load_mnq_csv(args.bars_csv, target_interval_minutes=5)
+    source_path = args.mnq_csv or args.bars_csv
+    dataset_audit = None
+    if args.write_trades:
+        if source_path is None:
+            print("--write-trades requires --mnq-csv or --bars-csv", file=sys.stderr)
+            return EXIT_USAGE
+        dataset_audit = audit_ohlcv_csv(source_path)
+        validate_ohlcv_audit(dataset_audit, expected_symbol=market.symbol)
+
+    if source_path:
+        bars = load_mnq_csv(source_path, target_interval_minutes=5)
     elif args.synthetic:
         bars = synthetic_bars(args.n_bars, seed=0, interval_seconds=300)
     else:
@@ -245,13 +270,59 @@ def _amd_crt(args) -> int:
         print("no bars loaded", file=sys.stderr)
         return EXIT_USAGE
     strategy = AmdCrtStrategy(market=market)
-    report = run_pipeline(bars, strategy, config, train_fraction=args.train_fraction)
+    pipeline_run = None
+    if args.write_trades:
+        pipeline_run = execute_pipeline(
+            bars, strategy, config, train_fraction=args.train_fraction
+        )
+        report = pipeline_run.report
+        if config.commission_per_side == 0.0 and config.slippage_points == 0.0:
+            report["scenario_label"] = GROSS_ZERO_FRICTION_LABEL
+        report["detailed_segments"] = {
+            "in_sample": detailed_result_summary(pipeline_run.in_sample_result),
+            "out_of_sample": detailed_result_summary(pipeline_run.out_of_sample_result),
+        }
+    else:
+        report = run_pipeline(bars, strategy, config, train_fraction=args.train_fraction)
     report["_source"] = (
         "mnq_csv" if args.mnq_csv else ("synthetic" if args.synthetic else (args.bars_csv or "unknown"))
     )
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     paths = write_report(report, out)
+    if args.write_trades:
+        assert pipeline_run is not None and dataset_audit is not None
+        is_path = out / "in_sample_trades.csv"
+        oos_path = out / "out_of_sample_trades.csv"
+        strategy_name = strategy.__class__.__name__
+        write_trades_csv(
+            pipeline_run.in_sample_result.trades,
+            is_path,
+            symbol=market.symbol,
+            strategy_name=strategy_name,
+            segment="in_sample",
+        )
+        write_trades_csv(
+            pipeline_run.out_of_sample_result.trades,
+            oos_path,
+            symbol=market.symbol,
+            strategy_name=strategy_name,
+            segment="out_of_sample",
+        )
+        manifest = build_run_manifest(
+            audit=dataset_audit,
+            market=market,
+            config=config,
+            strategy_parameters=strategy.parameters(),
+            pipeline_run=pipeline_run,
+            train_fraction=args.train_fraction,
+            output_paths={
+                "summary": paths["summary"],
+                "in_sample_trades": is_path,
+                "out_of_sample_trades": oos_path,
+            },
+        )
+        write_manifest(manifest, out / "run_manifest.json")
     print(json.dumps(report, indent=2, sort_keys=True, default=str))
     print(f"report written to {paths['summary']}", file=sys.stderr)
     return EXIT_OK
