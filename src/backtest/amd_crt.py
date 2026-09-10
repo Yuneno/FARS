@@ -7,7 +7,8 @@ look-ahead of its validating backtest (which filtered CRT by whole-day
 for a 09:35 AMD entry).
 
 Here both confirmations are evaluated causally, bar by bar, using only bars up
-to the evaluation bar:
+to the evaluation bar. The times below describe the default MNQ MarketSpec;
+other specifications supply their own pre-session/regular-session windows:
 
 * **AMD** — today's pre-NY range (00:00-09:30 ET) is "compressed" (its amplitude
   is below the weekday median of PRIOR days only) and then swept-and-closed-inside
@@ -67,16 +68,20 @@ import numpy as np
 
 from src.backtest.executor import BacktestConfig
 from src.backtest.history import Bar
+from src.backtest.markets import MNQ, MarketSpec
 from src.backtest.strategy import Signal
 
-ET = ZoneInfo("America/New_York")
+ET = MNQ.session_timezone
 
-PRE_NY_START = time(0, 0)
-PRE_NY_END = time(9, 30)
-CONFIRM_START = time(9, 30)
-CONFIRM_END = time(10, 30)
-RTH_START = time(9, 30)
-RTH_END = time(16, 0)
+# Legacy public aliases; all detection below uses the injected market.
+PRE_NY_START = MNQ.pre_session_start
+PRE_NY_END = MNQ.pre_session_end
+CONFIRM_START = MNQ.regular_session_start
+AMD_CONFIRM_MINUTES = 60
+CONFIRM_END = (datetime.combine(date.min, CONFIRM_START)
+               + timedelta(minutes=AMD_CONFIRM_MINUTES)).time()
+RTH_START = MNQ.regular_session_start
+RTH_END = MNQ.regular_session_end
 
 DEFAULT_ATR_PERIOD = 14
 SL_ATR_MULT = 2.0
@@ -84,7 +89,8 @@ TP_ATR_RATIO = 2.0
 SL_CAP_PTS = 50.0
 DEFAULT_MEDIAN_LOOKBACK_DAYS = 260
 DEFAULT_MIN_WEEKDAY_SAMPLES = 30
-RTH_M5_MINUTES = frozenset(range(9 * 60 + 30, 16 * 60, 5))
+RTH_M5_MINUTES = frozenset(range(RTH_START.hour * 60 + RTH_START.minute,
+                               RTH_END.hour * 60 + RTH_END.minute, 5))
 MIN_RTH_M5_BARS = len(RTH_M5_MINUTES) // 2
 DEFAULT_CONTRACT_SESSION_BLOCK = 65  # approx D1 bars per MNQ contract (varies; explicit approximation)
 EXPECTED_M5_INTERVAL = timedelta(minutes=5)
@@ -145,17 +151,23 @@ def _aware(ts: datetime) -> datetime:
 
 
 def _et_time(ts: datetime) -> time:
-    return _aware(ts).astimezone(ET).time()
+    return _market_time(ts, MNQ)
 
 
-def _ema_bucket_start(ts: datetime, timeframe_minutes: int) -> datetime:
-    """Start of the EMA timeframe bucket containing ``ts`` (ET-anchored).
+def _market_time(ts: datetime, market: MarketSpec) -> time:
+    return _aware(ts).astimezone(market.session_timezone).time()
 
-    Buckets align to the top of the day in ET (00:00, then every
+
+def _ema_bucket_start(
+    ts: datetime, timeframe_minutes: int, market: MarketSpec = MNQ,
+) -> datetime:
+    """Start of the EMA timeframe bucket containing ``ts`` (market-local).
+
+    Buckets align to the top of the market-local day (00:00, then every
     ``timeframe_minutes``). This mirrors pandas ``resample(rule,
-    label="left", closed="left")`` on a tz-aware ET index.
+    label="left", closed="left")`` on a tz-aware local index (ET for MNQ).
     """
-    et = _aware(ts).astimezone(ET)
+    et = _aware(ts).astimezone(market.session_timezone)
     minutes = et.hour * 60 + et.minute
     bucket_min = (minutes // timeframe_minutes) * timeframe_minutes
     return et.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(
@@ -169,6 +181,7 @@ def _ema_regime_direction(
     period: int = DEFAULT_EMA_PERIOD,
     timeframe_minutes: int = DEFAULT_EMA_TIMEFRAME_MINUTES,
     min_bars: int = DEFAULT_EMA_MIN_BARS,
+    market: MarketSpec = MNQ,
 ) -> Literal["long", "short"] | None:
     """Causal EMA(period)/timeframe regime: direction of the LAST CLOSED bar.
 
@@ -185,7 +198,7 @@ def _ema_regime_direction(
         raise ValueError("ema period/timeframe/min_bars must be >= 1")
     buckets: dict[datetime, float] = {}
     for b in history:
-        key = _ema_bucket_start(b.timestamp, timeframe_minutes)
+        key = _ema_bucket_start(b.timestamp, timeframe_minutes, market)
         buckets[key] = b.close  # last close in bucket wins (bars are chronological)
     if len(buckets) < 2:
         return None
@@ -271,25 +284,29 @@ def _median(values: list[float]) -> float:
     return (s[n // 2 - 1] + s[n // 2]) / 2.0
 
 
-def _is_complete_rth_session(day_bars: list[Bar]) -> bool:
+def _is_complete_rth_session(day_bars: list[Bar], market: MarketSpec = MNQ) -> bool:
     """Whether intraday bars can approximately reconstruct one provider D1 bar.
 
     The provider's native D1 bars are not present in the CSVs. The input is M5,
-    so this heuristic requires CONTIGUOUS M5 bars from the RTH open (09:30)
+    so this heuristic requires CONTIGUOUS M5 bars from the configured regular open
     covering at least half of the regular session. An abbreviated session (an
-    early close) is contiguous from 09:30 and is accepted; a scattered outage
+    early close) is contiguous from that open and is accepted; a scattered outage
     (gaps inside the RTH) is not.
     """
     rth = sorted(
-        (b for b in day_bars if RTH_START <= _et_time(b.timestamp) < RTH_END),
+        (b for b in day_bars if market.regular_session_start
+         <= _market_time(b.timestamp, market) < market.regular_session_end),
         key=lambda b: b.timestamp,
     )
-    if not rth or _et_time(rth[0].timestamp) != RTH_START:
+    if not rth or _market_time(rth[0].timestamp, market) != market.regular_session_start:
         return False
     for prev, curr in pairwise(rth):
         if curr.timestamp - prev.timestamp != EXPECTED_M5_INTERVAL:
             return False
-    return len(rth) >= MIN_RTH_M5_BARS
+    start = market.regular_session_start
+    end = market.regular_session_end
+    expected_bars = ((end.hour * 60 + end.minute) - (start.hour * 60 + start.minute)) // 5
+    return len(rth) >= expected_bars // 2
 
 
 def _weekday_median_amplitudes(
@@ -299,8 +316,9 @@ def _weekday_median_amplitudes(
     lookback_days: int = DEFAULT_MEDIAN_LOOKBACK_DAYS,
     min_samples: int = DEFAULT_MIN_WEEKDAY_SAMPLES,
     contract_session_block: int = DEFAULT_CONTRACT_SESSION_BLOCK,
-    session_tz: ZoneInfo = ET,
+    session_tz: ZoneInfo | None = None,
     session_start: time = time(0, 0),
+    market: MarketSpec = MNQ,
 ) -> dict[int, float]:
     """Median D1 amplitude per weekday over complete prior sessions.
 
@@ -315,6 +333,7 @@ def _weekday_median_amplitudes(
     """
     if lookback_days < 1:
         raise ValueError("lookback_days must be >= 1")
+    session_tz = session_tz if session_tz is not None else market.session_timezone
     bounded_count = math.ceil(lookback_days / contract_session_block) * contract_session_block
 
     # Only the most-recent ``bounded_count`` COMPLETE sessions can affect the
@@ -333,13 +352,13 @@ def _weekday_median_amplitudes(
         if d == cur:
             cur_bars.append(b)
             continue
-        if cur is not None and cur < upto and _is_complete_rth_session(cur_bars):
+        if cur is not None and cur < upto and _is_complete_rth_session(cur_bars, market):
             complete_sessions.append((cur, cur_bars))
             if len(complete_sessions) >= bounded_count:
                 break
         cur = d
         cur_bars = [b]
-    if cur is not None and cur < upto and _is_complete_rth_session(cur_bars):
+    if cur is not None and cur < upto and _is_complete_rth_session(cur_bars, market):
         complete_sessions.append((cur, cur_bars))
 
     if len(complete_sessions) < lookback_days:
@@ -363,9 +382,10 @@ def _detect_amd(
     lookback_days: int = DEFAULT_MEDIAN_LOOKBACK_DAYS,
     min_samples: int = DEFAULT_MIN_WEEKDAY_SAMPLES,
     contract_session_block: int = DEFAULT_CONTRACT_SESSION_BLOCK,
-    session_tz: ZoneInfo = ET,
+    session_tz: ZoneInfo | None = None,
     session_start: time = time(0, 0),
     medians: dict[int, float] | None = None,
+    market: MarketSpec = MNQ,
 ) -> tuple[Literal["long", "short"], datetime] | None:
     """Return (direction, confirm_time) if AMD confirms today, else None.
 
@@ -377,15 +397,17 @@ def _detect_amd(
     the current one is in progress). Passing it avoids recomputing the expensive
     median on every intraday bar; when omitted it is computed here.
     """
+    session_tz = session_tz if session_tz is not None else market.session_timezone
     day_bars = _day_bars(history, day, session_tz=session_tz, session_start=session_start)
     if not day_bars:
         return None
 
-    pre_ny = [b for b in day_bars if PRE_NY_START <= _et_time(b.timestamp) < PRE_NY_END]
+    pre_ny = [b for b in day_bars if market.pre_session_start
+              <= _market_time(b.timestamp, market) < market.pre_session_end]
     if not pre_ny:
         return None
-    if _et_time(pre_ny[0].timestamp) != PRE_NY_START:
-        return None  # pre-NY window must START at 00:00 (missing leading bars)
+    if _market_time(pre_ny[0].timestamp, market) != market.pre_session_start:
+        return None  # reject missing leading bars in the configured pre-session
     pre_ny_high = max(b.high for b in pre_ny)
     pre_ny_low = min(b.low for b in pre_ny)
     pre_ny_amplitude = pre_ny_high - pre_ny_low
@@ -395,15 +417,18 @@ def _detect_amd(
             history, day, lookback_days=lookback_days, min_samples=min_samples,
             contract_session_block=contract_session_block,
             session_tz=session_tz, session_start=session_start,
+            market=market,
         )
     if day.weekday() not in medians:
         return None
     if not (pre_ny_amplitude < medians[day.weekday()]):
         return None  # range not compressed
 
+    confirm_end = (datetime.combine(day, market.regular_session_start)
+                   + timedelta(minutes=AMD_CONFIRM_MINUTES)).time()
     confirm = [
         b for b in day_bars
-        if CONFIRM_START <= _et_time(b.timestamp) < CONFIRM_END
+        if market.regular_session_start <= _market_time(b.timestamp, market) < confirm_end
     ]
     if not confirm:
         return None
@@ -435,8 +460,9 @@ def _detect_crt(
     history: Sequence[Bar],
     day: date,
     *,
-    session_tz: ZoneInfo = ET,
+    session_tz: ZoneInfo | None = None,
     session_start: time = time(0, 0),
+    market: MarketSpec = MNQ,
 ) -> bool:
     """True if the prior session's RTH PDH/PDL is swept-and-closed-inside today.
 
@@ -446,11 +472,13 @@ def _detect_crt(
     and stop once the current day plus the nearest complete prior RTH session are
     gathered — instead of scanning the whole history every call.
     """
+    session_tz = session_tz if session_tz is not None else market.session_timezone
     cur: date | None = None
     rth_by_day: list[tuple[date, list[Bar]]] = []
     cur_bars: list[Bar] = []
     for b in reversed(history):
-        if not (RTH_START <= _et_time(b.timestamp) <= RTH_END):
+        if not (market.regular_session_start <= _market_time(b.timestamp, market)
+                <= market.regular_session_end):
             continue
         d = _session_date(b.timestamp, session_tz, session_start)
         if d == cur:
@@ -470,8 +498,8 @@ def _detect_crt(
         return False
     if len(rth_by_day) < 2:
         return False  # no prior RTH session
-    yesterday, yesterday_bars = rth_by_day[1]
-    if not yesterday_bars or not _is_complete_rth_session(yesterday_bars):
+    _yesterday, yesterday_bars = rth_by_day[1]
+    if not yesterday_bars or not _is_complete_rth_session(yesterday_bars, market):
         return False  # prior RTH must be complete enough for a trustworthy PDH/PDL
     pdh = max(b.high for b in yesterday_bars)
     pdl = min(b.low for b in yesterday_bars)
@@ -514,6 +542,7 @@ class AmdCrtStrategy:
     def __init__(
         self,
         *,
+        market: MarketSpec = MNQ,
         sl_cap_pts: float = SL_CAP_PTS,
         atr_period: int = DEFAULT_ATR_PERIOD,
         sl_atr_mult: float = SL_ATR_MULT,
@@ -521,7 +550,7 @@ class AmdCrtStrategy:
         median_lookback_days: int = DEFAULT_MEDIAN_LOOKBACK_DAYS,
         min_weekday_samples: int = DEFAULT_MIN_WEEKDAY_SAMPLES,
         contract_session_block: int = DEFAULT_CONTRACT_SESSION_BLOCK,
-        session_tz: ZoneInfo = ET,
+        session_tz: ZoneInfo | None = None,
         session_start: time = time(0, 0),
         # PROVISIONAL pre-trade risk filter: only enter when SL risk (in points)
         # falls within [min_risk_pts, max_risk_pts]. None = no bound (default =
@@ -549,6 +578,9 @@ class AmdCrtStrategy:
         edge_ci_level: float = DEFAULT_EDGE_CI_LEVEL,
         log_decisions: bool = True,
     ) -> None:
+        if not isinstance(market, MarketSpec):
+            raise TypeError("market must be a MarketSpec")
+        self.market = market
         self.sl_cap_pts = sl_cap_pts
         self.atr_period = atr_period
         self.sl_atr_mult = sl_atr_mult
@@ -556,7 +588,9 @@ class AmdCrtStrategy:
         self.median_lookback_days = median_lookback_days
         self.min_weekday_samples = min_weekday_samples
         self.contract_session_block = contract_session_block
-        self.session_tz = session_tz
+        # Preserve the legacy grouping-only override. Session windows and EMA
+        # always use market.session_timezone; new callers configure it there.
+        self.session_tz = session_tz if session_tz is not None else market.session_timezone
         self.session_start = session_start
         self.min_risk_pts = min_risk_pts
         self.max_risk_pts = max_risk_pts
@@ -609,7 +643,8 @@ class AmdCrtStrategy:
         )
         pre_ny = [
             bar for bar in day_bars
-            if PRE_NY_START <= _et_time(bar.timestamp) < PRE_NY_END
+            if self.market.pre_session_start <= _market_time(bar.timestamp, self.market)
+            < self.market.pre_session_end
         ]
         # Real AMD confirmations imply both values exist. NaN fallbacks keep
         # observation inert for synthetic/custom detectors that do not honor
@@ -684,8 +719,8 @@ class AmdCrtStrategy:
         # per-bar copy of a growing history is O(n^2) and dominates a multi-year
         # run. Only the day/tail is needed.
         day = _session_date(history[-1].timestamp, self.session_tz, self.session_start)
-        current_time = _et_time(history[-1].timestamp)
-        if day.weekday() >= 5 or current_time >= RTH_END:
+        current_time = _market_time(history[-1].timestamp, self.market)
+        if day.weekday() >= 5 or current_time >= self.market.regular_session_end:
             return None
 
         if self._amd_day != day:
@@ -704,6 +739,7 @@ class AmdCrtStrategy:
                     contract_session_block=self.contract_session_block,
                     session_tz=self.session_tz,
                     session_start=self.session_start,
+                    market=self.market,
                 )
                 self._medians_day = day
             self._amd = _detect_amd(
@@ -714,6 +750,7 @@ class AmdCrtStrategy:
                 session_tz=self.session_tz,
                 session_start=self.session_start,
                 medians=self._medians,
+                market=self.market,
             )
         if self._amd is None:
             # Not logged: by definition a candidate starts only once AMD has
@@ -732,6 +769,7 @@ class AmdCrtStrategy:
             if not _detect_crt(
                 history, day, session_tz=self.session_tz,
                 session_start=self.session_start,
+                market=self.market,
             ):
                 self._record_decision(
                     history, day, direction, crt_confirmed=False,
@@ -744,7 +782,9 @@ class AmdCrtStrategy:
         # bucket so we do not rescan history on every bar (O(n^2) otherwise);
         # the regime only changes when a new 4h bucket closes.
         if self.use_ema_filter:
-            bucket = _ema_bucket_start(history[-1].timestamp, self.ema_timeframe_minutes)
+            bucket = _ema_bucket_start(
+                history[-1].timestamp, self.ema_timeframe_minutes, self.market,
+            )
             if bucket != self._ema_bucket:
                 self._ema_bucket = bucket
                 self._ema_regime = _ema_regime_direction(
@@ -752,6 +792,7 @@ class AmdCrtStrategy:
                     period=self.ema_period,
                     timeframe_minutes=self.ema_timeframe_minutes,
                     min_bars=self.ema_min_bars,
+                    market=self.market,
                 )
             if self._ema_regime is None or self._ema_regime != direction:
                 self._record_decision(
@@ -816,15 +857,18 @@ class AmdCrtStrategy:
 
     def _atr_value(self, history: Sequence[Bar]) -> float | None:
         today = _session_date(history[-1].timestamp, self.session_tz, self.session_start)
-        cutoff = datetime.combine(today - timedelta(days=10), time(0, 0), tzinfo=ET)
+        cutoff = datetime.combine(
+            today - timedelta(days=10), time(0, 0), tzinfo=self.market.session_timezone,
+        )
         # ``history`` is chronological. Walk backward only through the bounded
         # window that the legacy forward scan selected, then restore its order
         # so the ATR floating-point recurrence is bit-for-bit identical.
         rth_reversed: list[Bar] = []
         for b in reversed(history):
-            if b.timestamp.astimezone(ET) < cutoff:
+            if b.timestamp.astimezone(self.market.session_timezone) < cutoff:
                 break
-            if RTH_START <= _et_time(b.timestamp) <= RTH_END:
+            if (self.market.regular_session_start <= _market_time(b.timestamp, self.market)
+                    <= self.market.regular_session_end):
                 rth_reversed.append(b)
         rth = list(reversed(rth_reversed))
         return _atr14(rth, self.atr_period)
@@ -840,6 +884,9 @@ class AmdCrtStrategy:
     def parameters(self) -> dict[str, object]:
         """Serializable constructor parameters for reproducible reports."""
         return {
+            # Retain the exact legacy MNQ report; custom specifications must be
+            # recorded in full (symbol alone cannot reproduce a custom window).
+            **({"market": self.market.to_dict()} if self.market != MNQ else {}),
             "sl_cap_pts": self.sl_cap_pts,
             "atr_period": self.atr_period,
             "sl_atr_mult": self.sl_atr_mult,
@@ -865,6 +912,7 @@ class AmdCrtStrategy:
     def fresh(self) -> AmdCrtStrategy:
         """Return a new strategy with identical parameters and empty state."""
         return AmdCrtStrategy(
+            market=self.market,
             sl_cap_pts=self.sl_cap_pts,
             atr_period=self.atr_period,
             sl_atr_mult=self.sl_atr_mult,
@@ -888,21 +936,28 @@ class AmdCrtStrategy:
         )
 
 
-def amd_crt_config(**overrides) -> BacktestConfig:
+def amd_crt_config(*, market: MarketSpec = MNQ, **overrides) -> BacktestConfig:
     """Default executor config for the AMD+CRT candidate run (public entry).
 
-    Fixed 1 MNQ micro, 60-minute timestamp time-exit, 5-minute bar interval
-    (for entry-gap detection), and the MNQ friction scenario (2 points
+    Fixed 1 contract, 60-minute timestamp time-exit, 5-minute bar interval
+    (for entry-gap detection), and the market friction scenario (MNQ: 2 points
     round-trip) as a single aggregated cost assumption: commission carries the
     full round-trip and slippage is zero, so costs are never double-counted.
     Override ``friction_pts`` (points round-trip) or the explicit
     ``commission_per_side``/``slippage_points`` (PROVISIONAL MVP scenario) via
-    keyword arguments.
+    keyword arguments. Unvalidated friction (None) requires explicit
+    ``friction_pts``; it never becomes an implicit zero-cost run.
     """
-    friction_pts = overrides.pop("friction_pts", 2.0)
+    if not isinstance(market, MarketSpec):
+        raise TypeError("market must be a MarketSpec")
+    friction_pts = overrides.pop("friction_pts", market.friction_points)
+    if friction_pts is None:
+        raise ValueError(
+            f"{market.symbol} friction_points is unvalidated; supply explicit friction_pts"
+        )
     if not math.isfinite(friction_pts) or friction_pts < 0:
         raise ValueError("friction_pts must be finite and >= 0")
-    dollar_per_point = overrides.pop("dollar_per_point", 2.0)
+    dollar_per_point = overrides.pop("dollar_per_point", market.dollar_per_point)
     params = {
         "fixed_quantity": 1,
         "max_hold_minutes": 60.0,
@@ -910,6 +965,7 @@ def amd_crt_config(**overrides) -> BacktestConfig:
         "commission_per_side": friction_pts * dollar_per_point / 2.0,
         "slippage_points": 0.0,
         "dollar_per_point": dollar_per_point,
+        "tick_size": market.tick_size,
     }
     params.update(overrides)
     return BacktestConfig(**params)

@@ -41,6 +41,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from src.backtest.history import Bar
+from src.backtest.markets import MNQ
 from src.backtest.strategy import Strategy
 from src.engine import SimulationResult, run_simulation
 from src.types import FundedAccountRules, Trade
@@ -56,8 +57,8 @@ class BacktestConfig:
 
     initial_balance: float = 50_000.0
     risk_per_trade: float = 0.01
-    dollar_per_point: float = 2.0  # MNQ micro
-    tick_size: float = 0.25
+    dollar_per_point: float = MNQ.dollar_per_point
+    tick_size: float = MNQ.tick_size
     max_contracts: int = 10
     commission_per_side: float = 0.62  # per contract per side (PROVISIONAL)
     slippage_points: float = 0.25  # per market fill (PROVISIONAL)
@@ -467,13 +468,16 @@ def run_backtest(
         position = None
 
     unresolved = 1 if position is not None else 0
-    return _build_result(trades, config, strategy_name, gap_rejections, unresolved)
+    symbol = getattr(strategy, "market", MNQ).symbol
+    return _build_result(trades, config, strategy_name, gap_rejections, unresolved, symbol)
 
 
 def executed_to_core_trades(
     trades: tuple[ExecutedTrade, ...],
     config: BacktestConfig | None = None,
     strategy_name: str = "unknown",
+    *,
+    symbol: str = MNQ.symbol,
 ) -> list[Trade]:
     """Map executed backtest trades to Core ``Trade`` (R-multiples) for the engine.
 
@@ -493,7 +497,7 @@ def executed_to_core_trades(
             trade_id=t.trade_id,
             timestamp=t.exit_time,
             date=t.exit_time.strftime("%Y-%m-%d"),
-            asset="MNQ",
+            asset=symbol,
             direction=t.direction,  # type: ignore[arg-type]
             entry_price=t.entry_price,
             stop_price=t.stop_price,
@@ -523,8 +527,9 @@ def _build_result(
     strategy_name: str,
     gap_rejections: int,
     unresolved: int,
+    symbol: str = MNQ.symbol,
 ) -> BacktestResult:
-    core_trades = executed_to_core_trades(tuple(trades), config, strategy_name)
+    core_trades = executed_to_core_trades(tuple(trades), config, strategy_name, symbol=symbol)
     simulation = (
         run_simulation(
             core_trades,

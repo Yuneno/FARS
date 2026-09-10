@@ -27,6 +27,7 @@ from src.backtest.history import (
     persist_bars,
     synthetic_bars,
 )
+from src.backtest.markets import MARKETS, MNQ, get_market_spec
 from src.backtest.mnq_csv import load_mnq_csv
 from src.backtest.pipeline import run_pipeline, write_report, write_trades_csv
 from src.backtest.strategy import BreakoutStrategy
@@ -109,8 +110,9 @@ def _parser() -> argparse.ArgumentParser:
     ac.add_argument("--out-dir", default="data/processed")
     ac.add_argument("--initial-balance", type=_float_arg, default=50_000.0)
     ac.add_argument("--risk-per-trade", type=_float_arg, default=0.01)
-    ac.add_argument("--friction-pts", type=_float_arg, default=2.0,
-                    help="MNQ round-trip friction (points); costs not double-counted")
+    ac.add_argument("--market", choices=tuple(MARKETS), default=MNQ.symbol)
+    ac.add_argument("--friction-pts", type=_float_arg, default=None,
+                    help="round-trip friction in points; required for unvalidated market costs")
     ac.add_argument("--train-fraction", type=_float_arg, default=0.7)
 
     return parser
@@ -223,6 +225,13 @@ def _batch(args) -> int:
 
 
 def _amd_crt(args) -> int:
+    market = get_market_spec(args.market)
+    config = amd_crt_config(
+        market=market,
+        initial_balance=args.initial_balance,
+        risk_per_trade=args.risk_per_trade,
+        **({"friction_pts": args.friction_pts} if args.friction_pts is not None else {}),
+    )
     if args.mnq_csv:
         bars = load_mnq_csv(args.mnq_csv, target_interval_minutes=5)
     elif args.bars_csv:
@@ -235,12 +244,7 @@ def _amd_crt(args) -> int:
     if not bars:
         print("no bars loaded", file=sys.stderr)
         return EXIT_USAGE
-    config = amd_crt_config(
-        initial_balance=args.initial_balance,
-        risk_per_trade=args.risk_per_trade,
-        friction_pts=args.friction_pts,
-    )
-    strategy = AmdCrtStrategy()
+    strategy = AmdCrtStrategy(market=market)
     report = run_pipeline(bars, strategy, config, train_fraction=args.train_fraction)
     report["_source"] = (
         "mnq_csv" if args.mnq_csv else ("synthetic" if args.synthetic else (args.bars_csv or "unknown"))

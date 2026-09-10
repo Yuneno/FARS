@@ -22,6 +22,7 @@ from src.backtest.history import (
     persist_bars,
     synthetic_bars,
 )
+from src.backtest.markets import MARKETS, MES, MGC, MNQ, MYM, MarketSpec, get_market_spec
 from src.backtest.mnq_csv import load_mnq_csv
 from src.backtest.pipeline import (
     chronological_split,
@@ -32,6 +33,11 @@ from src.backtest.pipeline import (
 from src.backtest.strategy import BreakoutStrategy, Signal, Strategy
 
 __all__ = [
+    "MARKETS",
+    "MES",
+    "MGC",
+    "MNQ",
+    "MYM",
     "AmdCrtStrategy",
     "BacktestConfig",
     "BacktestResult",
@@ -40,11 +46,13 @@ __all__ = [
     "DownloadResult",
     "ExecutedTrade",
     "Manifest",
+    "MarketSpec",
     "Signal",
     "Strategy",
     "amd_crt_config",
     "chronological_split",
     "download_bars",
+    "get_market_spec",
     "load_bars_csv",
     "load_mnq_csv",
     "persist_bars",
