@@ -14,7 +14,14 @@ and:
 
 r* = argmax_r P(PASS | r)
 
-FARS is NOT initially a BUY/SELL prediction bot.
+FARS is NOT initially a BUY/SELL prediction bot: it does not predict market
+direction or generate trade signals on its own.
+
+Declared end goal (NOT yet implemented): FARS will eventually feed an autonomous
+execution bot — supplying risk metrics, bootstrap results, funded-account rules,
+and risk-engine decisions so the bot can place trades without a human in the
+loop at execution time. This goal is explicitly not implemented, not tested, and
+not safe to deploy today. See `AUTONOMY_ROADMAP.md`.
 
 The first versions should focus on:
 

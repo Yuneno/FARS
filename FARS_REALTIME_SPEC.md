@@ -1129,7 +1129,15 @@ Do not:
 - convert live observations into completed analytical trades before they truly are complete;
 - use FARS probabilistic outputs as deterministic guarantees.
 
-Realtime FARS remains a risk-analysis and validation system.
+Realtime FARS is a risk-analysis and validation system with a fail-closed
+execution-authorization boundary. It does not place live orders; live execution
+is locked (`LIVE_EXECUTION_ENABLED = False`).
+
+Declared end goal (NOT yet implemented): FARS will eventually feed an autonomous
+execution bot — supplying risk metrics, bootstrap results, funded-account rules,
+and risk-engine decisions so the bot can place trades without a human in the loop
+at execution time. This goal is explicitly not implemented, not tested, and not
+safe to deploy today. See `AUTONOMY_ROADMAP.md`.
 
 ---
 

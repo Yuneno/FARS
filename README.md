@@ -11,8 +11,28 @@ reaching a profit target before violating account risk constraints.
 r* = argmax_r P(PASS | r)
 ```
 
-FARS 1.2 is NOT a BUY/SELL prediction bot. It is a statistical risk-analysis
-system for funded-account research.
+### What FARS is today
+
+FARS 1.2 is a statistical risk-analysis system for funded-account research,
+plus a fail-closed realtime risk engine and paper-trading pipeline (RT-0
+through RT-8). It analyzes historical and simulated trade outcomes, quantifies
+uncertainty (Monte Carlo, bootstrap), models funded-account rules, and — in its
+realtime layer — authorizes or vetoes trade intents against account state with
+unknown-state-deny semantics. Live execution remains disabled
+(`LIVE_EXECUTION_ENABLED = False`).
+
+### Declared end goal (NOT yet implemented)
+
+The medium/long-term goal is for FARS to feed an autonomous execution bot: the
+bot consumes FARS's risk metrics, bootstrap results, funded-account rules, and
+risk-engine decisions to place trades without a human in the loop at execution
+time.
+
+This end goal is **explicitly not implemented, not tested, and not safe to
+deploy today**. It changes the security, testing, and audit requirements from
+"analysis system" to "decision component of an autonomous execution system".
+See `AUTONOMY_ROADMAP.md` for the full gap analysis and the gating items that
+must be satisfied before real execution autonomy is considered.
 
 `FARS 1.2` names the current research specification and development line. The
 Python distribution remains version `0.1.0` while the software is an

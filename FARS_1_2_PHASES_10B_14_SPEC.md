@@ -36,7 +36,7 @@ The first concrete validation profile is the user's MyFundedFutures Rapid 25K
 evaluation on Tradovate/TradingView. This is a validation case, not the system's
 architecture.
 
-FARS remains a risk-analysis system. It MUST NOT:
+FARS is a risk-analysis system. It MUST NOT, on its own:
 
 - predict market direction;
 - generate BUY/SELL signals;
@@ -44,6 +44,12 @@ FARS remains a risk-analysis system. It MUST NOT:
 - guarantee that an evaluation will pass;
 - treat simulated or historical performance as live-market evidence;
 - optimize rules specifically to make Rapid 25K results look favorable.
+
+Declared end goal (NOT yet implemented): FARS will eventually feed an autonomous
+execution bot — supplying risk metrics, bootstrap results, funded-account rules,
+and risk-engine decisions so the bot can place trades without a human in the loop
+at execution time. This goal is explicitly not implemented, not tested, and not
+safe to deploy today. See `AUTONOMY_ROADMAP.md`.
 
 ---
 

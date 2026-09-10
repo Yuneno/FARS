@@ -16,7 +16,11 @@ This specification is a living design document while FARS 1.2 is under developme
 
 FARS 1.2 extends FARS from a Core focused primarily on funded-account risk simulation and Monte Carlo analysis into a system capable of ingesting, validating, adapting, and statistically analyzing historical trade data supplied by external strategies.
 
-FARS remains a quantitative/statistical risk-analysis system.
+FARS is a quantitative/statistical risk-analysis system.
+
+FARS does NOT, on its own, predict market direction or generate BUY/SELL signals.
+
+Declared end goal (NOT yet implemented): FARS will eventually feed an autonomous execution bot — supplying risk metrics, bootstrap results, funded-account rules, and risk-engine decisions so the bot can place trades without a human in the loop at execution time. This goal is explicitly not implemented, not tested, and not safe to deploy today. See `AUTONOMY_ROADMAP.md`.
 
 FARS is NOT:
 
