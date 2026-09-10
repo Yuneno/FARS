@@ -5,11 +5,22 @@ for funded trading account evaluations.
 
 ## Roles
 
-Hermes is the primary implementation agent.
+- **Hermes** is the orchestrator, planner, and reviewer. Hermes decomposes the
+  work into bounded tasks with acceptance criteria, inspects the git diff,
+  verifies evidence, and independently confirms or rejects claimed improvements.
+- **Codex** is the programmer. Codex implements the bounded tasks and runs the
+  tests, but does NOT decide scope or accept its own work as correct.
 
-Codex is the independent reviewer.
+A predictive improvement is never considered proven just because the tests
+pass. Hermes must independently verify the evidence.
 
-Codex should not modify files unless explicitly instructed to do so.
+## Workflow
+
+1. Hermes freezes a starting point (branch + commit + data/result reference).
+2. Hermes writes bounded tasks, each with acceptance criteria.
+3. Codex implements one task and runs its tests.
+4. Hermes reviews the diff and the evidence independently.
+5. Only after review passes are changes committed.
 
 ## Priorities
 
@@ -52,7 +63,7 @@ Pay special attention to:
 
 ## Review workflow
 
-When reviewing Hermes changes:
+When reviewing Codex changes:
 
 1. Inspect the current git diff.
 2. Read relevant project requirements.
@@ -71,3 +82,11 @@ REVIEW PASSED
 
 Do not commit automatically.
 
+## Data contract
+
+The project must support multiple markets (MNQ, MYM, MGC, and others from the
+Databento ZIP), not a single-market architecture. Data ingestion goes through a
+common contract with per-market adapters. Any dataset change must document
+provenance, date range, duplicate handling, timezone, and contract/rollover
+treatment, and must be compared against the previous dataset before being
+declared canonical.
