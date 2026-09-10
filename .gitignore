@@ -13,3 +13,10 @@ tmp/
 data/raw/
 data/processed/
 data/synthetic/
+
+# Databento market data and archives (large, never versioned)
+*.zip
+databento/
+databento_mnq/
+mnq_data_zp/
+*.csv
