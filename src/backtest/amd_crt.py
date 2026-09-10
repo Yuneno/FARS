@@ -57,6 +57,7 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from itertools import pairwise
 from typing import Literal
@@ -107,6 +108,34 @@ DEFAULT_EDGE_LOOKBACK_TRADES = 30
 DEFAULT_EDGE_MIN_TRADES = 20
 DEFAULT_EDGE_CI_LEVEL = 0.84  # ~1 sigma lower bound (one-sided-ish)
 DEFAULT_EDGE_BOOTSTRAP_N = 400
+
+DecisionReason = Literal[
+    "amd_not_confirmed",
+    "crt_not_confirmed",
+    "ema_against",
+    "edge_cold",
+    "risk_out_of_band",
+    "atr_insufficient",
+    "accepted",
+]
+
+
+@dataclass(frozen=True)
+class AmdCrtDecision:
+    """Causal snapshot of one AMD-confirmed candidate evaluation."""
+
+    day: date
+    weekday: int
+    direction: Literal["long", "short"]
+    crt_confirmed: bool
+    ema_regime: Literal["long", "short"] | None
+    atr: float | None
+    sl_pts: float | None
+    tp_pts: float | None
+    pre_ny_amplitude: float
+    median_amplitude: float
+    decision: DecisionReason
+    timestamp: datetime
 
 
 def _aware(ts: datetime) -> datetime:
@@ -518,6 +547,7 @@ class AmdCrtStrategy:
         edge_lookback_trades: int = DEFAULT_EDGE_LOOKBACK_TRADES,
         edge_min_trades: int = DEFAULT_EDGE_MIN_TRADES,
         edge_ci_level: float = DEFAULT_EDGE_CI_LEVEL,
+        log_decisions: bool = True,
     ) -> None:
         self.sl_cap_pts = sl_cap_pts
         self.atr_period = atr_period
@@ -538,6 +568,8 @@ class AmdCrtStrategy:
         self.edge_lookback_trades = edge_lookback_trades
         self.edge_min_trades = edge_min_trades
         self.edge_ci_level = edge_ci_level
+        self.log_decisions = log_decisions
+        self.decisions: list[AmdCrtDecision] = []
         self._amd: tuple[Literal["long", "short"], datetime] | None = None
         self._amd_day: date | None = None
         self._crt_day: date | None = None
@@ -552,6 +584,68 @@ class AmdCrtStrategy:
         self._closed: list[tuple[date, float]] = []
         self._edge_ok: bool | None = None
         self._edge_day: date | None = None
+
+    def clear_decisions(self) -> None:
+        """Empty the observational decision log without changing strategy state."""
+        self.decisions.clear()
+
+    def _record_decision(
+        self,
+        history: Sequence[Bar],
+        day: date,
+        direction: Literal["long", "short"],
+        *,
+        crt_confirmed: bool,
+        ema_regime: Literal["long", "short"] | None,
+        sl_tp: tuple[float, float] | None,
+        decision: DecisionReason,
+    ) -> None:
+        """Append a causal snapshot; this method never participates in gating."""
+        if not self.log_decisions:
+            return
+        day_bars = _day_bars(
+            history, day, session_tz=self.session_tz,
+            session_start=self.session_start,
+        )
+        pre_ny = [
+            bar for bar in day_bars
+            if PRE_NY_START <= _et_time(bar.timestamp) < PRE_NY_END
+        ]
+        # Real AMD confirmations imply both values exist. NaN fallbacks keep
+        # observation inert for synthetic/custom detectors that do not honor
+        # those detector invariants.
+        pre_ny_amplitude = (
+            max(bar.high for bar in pre_ny) - min(bar.low for bar in pre_ny)
+            if pre_ny else math.nan
+        )
+        median_amplitude = (
+            self._medians.get(day.weekday(), math.nan)
+            if self._medians is not None else math.nan
+        )
+        atr = self._atr_value(history)
+        observed_sl_tp = sl_tp
+        if observed_sl_tp is None and atr is not None and atr > 0:
+            observed_sl = min(atr * self.sl_atr_mult, self.sl_cap_pts)
+            observed_sl_tp = (observed_sl, observed_sl * self.tp_atr_ratio)
+        sl_pts, tp_pts = (
+            observed_sl_tp if observed_sl_tp is not None else (None, None)
+        )
+        self.decisions.append(
+            AmdCrtDecision(
+                day=day,
+                weekday=day.weekday(),
+                direction=direction,
+                crt_confirmed=crt_confirmed,
+                ema_regime=ema_regime if self.use_ema_filter else None,
+                atr=atr,
+                sl_pts=sl_pts,
+                tp_pts=tp_pts,
+                pre_ny_amplitude=pre_ny_amplitude,
+                median_amplitude=median_amplitude,
+                decision=decision,
+                timestamp=history[-1].timestamp,
+            )
+        )
 
     def note_trade(self, exit_time: datetime, r_result: float) -> None:
         """Record a CLOSED trade for the causal edge gate.
@@ -622,7 +716,13 @@ class AmdCrtStrategy:
                 medians=self._medians,
             )
         if self._amd is None:
+            # Not logged: by definition a candidate starts only once AMD has
+            # confirmed. ``amd_not_confirmed`` remains part of DecisionReason
+            # for schema compatibility, but emitting it here would violate the
+            # task's candidate boundary.
             return None
+
+        direction, _confirm_time = self._amd
 
         # A causal CRT confirmation is monotonic within a session: after a
         # qualifying sweep appears, it remains in every later history prefix.
@@ -633,10 +733,13 @@ class AmdCrtStrategy:
                 history, day, session_tz=self.session_tz,
                 session_start=self.session_start,
             ):
+                self._record_decision(
+                    history, day, direction, crt_confirmed=False,
+                    ema_regime=None, sl_tp=None, decision="crt_not_confirmed",
+                )
                 return None
             self._crt_day = day
 
-        direction, _confirm_time = self._amd
         # EMA confluence filter (opt-in). Cache the regime by the current 4h
         # bucket so we do not rescan history on every bar (O(n^2) otherwise);
         # the regime only changes when a new 4h bucket closes.
@@ -651,6 +754,11 @@ class AmdCrtStrategy:
                     min_bars=self.ema_min_bars,
                 )
             if self._ema_regime is None or self._ema_regime != direction:
+                self._record_decision(
+                    history, day, direction, crt_confirmed=True,
+                    ema_regime=self._ema_regime, sl_tp=None,
+                    decision="ema_against",
+                )
                 return None
 
         # Edge gate (opt-in, PROVISIONAL): only enter when the strategy's own
@@ -662,27 +770,51 @@ class AmdCrtStrategy:
                 self._edge_day = day
                 self._edge_ok = self._edge_gate_ok(day)
             if not self._edge_ok:
+                self._record_decision(
+                    history, day, direction, crt_confirmed=True,
+                    ema_regime=self._ema_regime, sl_tp=None,
+                    decision="edge_cold",
+                )
                 return None
 
         sl_tp = self._sl_tp(history)
         if sl_tp is None:
+            self._record_decision(
+                history, day, direction, crt_confirmed=True,
+                ema_regime=self._ema_regime, sl_tp=None,
+                decision="atr_insufficient",
+            )
             return None
         sl_pts, tp_pts = sl_tp
         # PROVISIONAL pre-trade risk filter (experimental, see __init__).
         # Reject the signal when the per-trade risk (SL distance in points) is
         # outside the configured band. Bound both sides; None skips that side.
         if self.min_risk_pts is not None and sl_pts < self.min_risk_pts:
+            self._record_decision(
+                history, day, direction, crt_confirmed=True,
+                ema_regime=self._ema_regime, sl_tp=sl_tp,
+                decision="risk_out_of_band",
+            )
             return None
         if self.max_risk_pts is not None and sl_pts > self.max_risk_pts:
+            self._record_decision(
+                history, day, direction, crt_confirmed=True,
+                ema_regime=self._ema_regime, sl_tp=sl_tp,
+                decision="risk_out_of_band",
+            )
             return None
         self._signal_day = day
+        self._record_decision(
+            history, day, direction, crt_confirmed=True,
+            ema_regime=self._ema_regime, sl_tp=sl_tp, decision="accepted",
+        )
         # stop/target are distances in points (positive); entry is unused.
         return Signal(
             direction=direction, entry=0.0, stop=sl_pts, target=tp_pts,
             stop_target_as_points=True,
         )
 
-    def _sl_tp(self, history: Sequence[Bar]) -> tuple[float, float] | None:
+    def _atr_value(self, history: Sequence[Bar]) -> float | None:
         today = _session_date(history[-1].timestamp, self.session_tz, self.session_start)
         cutoff = datetime.combine(today - timedelta(days=10), time(0, 0), tzinfo=ET)
         # ``history`` is chronological. Walk backward only through the bounded
@@ -695,7 +827,10 @@ class AmdCrtStrategy:
             if RTH_START <= _et_time(b.timestamp) <= RTH_END:
                 rth_reversed.append(b)
         rth = list(reversed(rth_reversed))
-        atr = _atr14(rth, self.atr_period)
+        return _atr14(rth, self.atr_period)
+
+    def _sl_tp(self, history: Sequence[Bar]) -> tuple[float, float] | None:
+        atr = self._atr_value(history)
         if atr is None or atr <= 0:
             return None
         sl_pts = min(atr * self.sl_atr_mult, self.sl_cap_pts)
@@ -724,6 +859,7 @@ class AmdCrtStrategy:
             "edge_lookback_trades": self.edge_lookback_trades,
             "edge_min_trades": self.edge_min_trades,
             "edge_ci_level": self.edge_ci_level,
+            "log_decisions": self.log_decisions,
         }
 
     def fresh(self) -> AmdCrtStrategy:
@@ -748,6 +884,7 @@ class AmdCrtStrategy:
             edge_lookback_trades=self.edge_lookback_trades,
             edge_min_trades=self.edge_min_trades,
             edge_ci_level=self.edge_ci_level,
+            log_decisions=self.log_decisions,
         )
 
 
@@ -784,6 +921,7 @@ __all__ = [
     "DEFAULT_EMA_TIMEFRAME_MINUTES",
     "ET",
     "SL_CAP_PTS",
+    "AmdCrtDecision",
     "AmdCrtStrategy",
     "_atr14",
     "_bootstrap_ci_lower",

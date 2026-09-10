@@ -827,6 +827,141 @@ def test_confluence_amd_expires_without_crt():
 
 
 # ---------------------------------------------------------------------------
+# Decision log
+# ---------------------------------------------------------------------------
+
+def _patched_candidate(
+    monkeypatch, *, crt: bool = True, sl_tp=(5.0, 10.0), atr: float | None = 2.5
+):
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._weekday_median_amplitudes",
+        lambda *args, **kwargs: {0: 50.0},
+    )
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._detect_amd",
+        lambda history, day, **kwargs: ("long", history[-1].timestamp),
+    )
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._detect_crt", lambda *args, **kwargs: crt,
+    )
+    monkeypatch.setattr(AmdCrtStrategy, "_sl_tp", lambda self, history: sl_tp)
+    monkeypatch.setattr(AmdCrtStrategy, "_atr_value", lambda self, history: atr)
+    day = date(2026, 9, 7)
+    return _continuous_pre_ny(day) + [
+        _bar(_et(2026, 9, 7, 9, 30), 110, 120, 105, 110)
+    ]
+
+
+def test_decision_log_records_accepted_candidate(monkeypatch):
+    history = _patched_candidate(monkeypatch)
+    strategy = AmdCrtStrategy()
+
+    assert strategy.evaluate(history) is not None
+    assert len(strategy.decisions) == 1
+    decision = strategy.decisions[0]
+    assert decision.decision == "accepted"
+    assert decision.day == date(2026, 9, 7)
+    assert decision.weekday == 0
+    assert decision.direction == "long"
+    assert decision.crt_confirmed is True
+    assert decision.ema_regime is None
+    assert decision.atr == 2.5
+    assert decision.sl_pts == 5.0 and decision.tp_pts == 10.0
+    assert decision.pre_ny_amplitude == 25.0
+    assert decision.median_amplitude == 50.0
+    assert decision.timestamp == history[-1].timestamp
+
+
+@pytest.mark.parametrize(
+    ("reason", "strategy_kwargs", "crt", "sl_tp", "atr", "edge_ok", "ema_regime"),
+    [
+        ("crt_not_confirmed", {}, False, (5.0, 10.0), 2.5, True, "long"),
+        ("ema_against", {"use_ema_filter": True}, True, (5.0, 10.0), 2.5, True, "short"),
+        ("edge_cold", {"use_edge_gate": True}, True, (5.0, 10.0), 2.5, False, "long"),
+        ("atr_insufficient", {}, True, None, None, True, "long"),
+        ("risk_out_of_band", {"min_risk_pts": 6.0}, True, (5.0, 10.0), 2.5, True, "long"),
+    ],
+)
+def test_decision_log_records_each_candidate_rejection(
+    monkeypatch, reason, strategy_kwargs, crt, sl_tp, atr, edge_ok, ema_regime
+):
+    history = _patched_candidate(monkeypatch, crt=crt, sl_tp=sl_tp, atr=atr)
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._ema_regime_direction",
+        lambda *args, **kwargs: ema_regime,
+    )
+    strategy = AmdCrtStrategy(**strategy_kwargs)
+    monkeypatch.setattr(strategy, "_edge_gate_ok", lambda day: edge_ok)
+
+    assert strategy.evaluate(history) is None
+    assert [item.decision for item in strategy.decisions] == [reason]
+
+
+def test_decision_log_excludes_pre_amd_bars(monkeypatch):
+    day = date(2026, 9, 7)
+    history = _continuous_pre_ny(day)
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._weekday_median_amplitudes",
+        lambda *args, **kwargs: {0: 50.0},
+    )
+    monkeypatch.setattr(
+        "src.backtest.amd_crt._detect_amd", lambda *args, **kwargs: None,
+    )
+    strategy = AmdCrtStrategy()
+
+    assert strategy.evaluate(history) is None
+    assert strategy.decisions == []
+
+
+def test_decision_log_is_causal_and_does_not_change_after_future_bars(monkeypatch):
+    history = _patched_candidate(monkeypatch)
+    strategy = AmdCrtStrategy()
+    assert strategy.evaluate(history) is not None
+    snapshot = strategy.decisions[0]
+
+    history.append(_bar(_et(2026, 9, 7, 9, 35), 1000, 2000, 0, 1500))
+    assert strategy.evaluate(history) is None
+    assert strategy.decisions == [snapshot]
+    assert snapshot.timestamp < history[-1].timestamp
+    assert snapshot.pre_ny_amplitude == 25.0
+
+
+def test_decision_log_is_observational_for_backtest_results():
+    bars = _pipeline_confluence_bars()
+    config = amd_crt_config(slippage_points=0.0)
+    logged_strategy = AmdCrtStrategy(log_decisions=True)
+    silent_strategy = AmdCrtStrategy(log_decisions=False)
+
+    logged = run_backtest(bars, logged_strategy, config)
+    silent = run_backtest(bars, silent_strategy, config)
+
+    assert logged.trades == silent.trades
+    assert (
+        logged.n_trades,
+        logged.win_rate,
+        logged.expectancy,
+        logged.profit_factor,
+        logged.max_drawdown_pct,
+    ) == (
+        silent.n_trades,
+        silent.win_rate,
+        silent.expectancy,
+        silent.profit_factor,
+        silent.max_drawdown_pct,
+    )
+    assert logged_strategy.decisions
+    assert silent_strategy.decisions == []
+
+
+def test_decision_log_can_be_cleared(monkeypatch):
+    history = _patched_candidate(monkeypatch)
+    strategy = AmdCrtStrategy()
+    assert strategy.evaluate(history) is not None
+    strategy.clear_decisions()
+    assert strategy.decisions == []
+
+
+# ---------------------------------------------------------------------------
 # Executor extensions
 # ---------------------------------------------------------------------------
 
