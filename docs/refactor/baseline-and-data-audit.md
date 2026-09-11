@@ -50,15 +50,19 @@
   Databento NO tiene, y la mayoría caen en la región `is_real_mnq=False`
   (pre-2019). Hipótesis: extended = Databento + relleno de huecos con proxy NQ.
 
-### Decisión propuesta (no ejecutada)
-- Candidato a canónico MNQ: Databento MNQ_M5.csv (procedencia directa, sin
-  mezcla de proxy).
-- PENDIENTE antes de declararlo oficial:
-  1. Localizar exactamente dónde están las 139k barras de diferencia
-     (¿huecos pre-2019? ¿empalme de contratos?).
-  2. Re-correr el backtest de referencia con Databento y comparar vs extended.
-  3. Documentar el tratamiento de rollover del Databento (no trae columna de
-     contrato; inferir por precio/volumen si hace falta).
+### Decisión ejecutada (2026-09-10)
+
+Ver `canonical-dataset.md`. Resumen:
+
+- Canónico MNQ = `databento_mnq/databento/MNQ_M1_2019-05-06.csv` (corte a
+  post-lanzamiento real de MNQ, 2019-05-06 → 2026-09-03, 2,589,531 velas M1,
+  SHA-256 `9cbf7da1a1019c02a6b3c14c5e13cb63d583f1548fc19ac1cb8781165fd5dc5a`).
+  Todo pre-2019 (en cualquier fuente) es backfill sintético y se descarta.
+- El MNQ-1M.csv de kai (5,346,796 velas M1, 2010-06-07 → 2026-07-08) NO se
+  persigue: su tabla de referencia sirvió solo para confirmar dirección/orden
+  de magnitud del edge, no como benchmark de paridad exacta.
+- PENDIENTE (heredado, no bloqueante): tratamiento de rollover del Databento
+  (no trae columna de contrato; inferir por precio/volumen si hace falta).
 - El contrato de datos común (multi-mercado: MNQ, MYM, MGC, BTC, ETH, MES)
   se diseña con adaptadores por símbolo, no arquitectura exclusiva MNQ.
 
