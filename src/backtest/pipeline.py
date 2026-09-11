@@ -15,7 +15,13 @@ from datetime import time, timedelta, tzinfo
 from pathlib import Path
 from typing import Any
 
-from src.backtest.executor import BacktestConfig, BacktestResult, ExecutedTrade, run_backtest
+from src.backtest.executor import (
+    BacktestConfig,
+    BacktestResult,
+    ExecutedTrade,
+    _uses_enhanced_execution,
+    run_backtest,
+)
 from src.backtest.history import Bar
 from src.backtest.strategy import Strategy
 
@@ -104,7 +110,17 @@ def result_summary(result: BacktestResult, label: str) -> dict[str, Any]:
 
 
 def config_dict(config: BacktestConfig) -> dict[str, Any]:
-    return asdict(config)
+    values = asdict(config)
+    if not _uses_enhanced_execution(config):
+        for field_name in (
+            "partial_take_profit_fraction",
+            "move_stop_to_break_even",
+            "pending_limit_entry",
+            "pending_order_wait_bars",
+            "cooldown_bars",
+        ):
+            values.pop(field_name)
+    return values
 
 
 def _fresh_strategy(strategy: Strategy) -> Strategy:

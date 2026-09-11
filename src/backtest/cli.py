@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from collections.abc import Sequence
 from datetime import datetime
@@ -20,6 +21,7 @@ from pathlib import Path
 
 from src.backtest.amd_crt import AmdCrtStrategy, amd_crt_config
 from src.backtest.batch import run_batch
+from src.backtest.emas import EmasStrategy, emas_config
 from src.backtest.executor import BacktestConfig, run_backtest
 from src.backtest.history import (
     download_bars,
@@ -43,6 +45,7 @@ from src.backtest.run_manifest import (
     validate_ohlcv_audit,
     write_manifest,
 )
+from src.backtest.smc_fvg import SmcFvgStrategy, smc_fvg_config
 from src.backtest.strategy import BreakoutStrategy
 from src.realtime.config import ProjectXConfigurationError, load_projectx_credentials
 from src.realtime.connectors.projectx import ProjectXClient, ProjectXError
@@ -132,6 +135,32 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="write separate IS/OOS trade CSVs and a reproducibility manifest",
     )
+
+    for command, help_text in (
+        ("smc-fvg", "run the causal SMC-FVG port end-to-end"),
+        ("emas", "run the causal EMAS port end-to-end"),
+    ):
+        ported = sub.add_parser(command, help=help_text)
+        ported.add_argument("--mnq-csv", default=None, help="canonical M1 OHLCV CSV")
+        ported.add_argument("--bars-csv", default=None, help="OHLCV CSV with timestamps")
+        ported.add_argument("--synthetic", action="store_true")
+        ported.add_argument("--n-bars", type=int, default=5000)
+        ported.add_argument("--out-dir", default="data/processed")
+        ported.add_argument("--initial-balance", type=_float_arg, default=50_000.0)
+        ported.add_argument("--risk-per-trade", type=_float_arg, default=0.01)
+        ported.add_argument("--market", choices=tuple(MARKETS), default=MNQ.symbol)
+        ported.add_argument(
+            "--friction-pts",
+            type=_float_arg,
+            default=0.0,
+            help="round-trip friction in points (default zero for gross parity)",
+        )
+        ported.add_argument("--train-fraction", type=_float_arg, default=0.7)
+        ported.add_argument(
+            "--write-trades",
+            action="store_true",
+            help="write separate IS/OOS trade CSVs and a reproducibility manifest",
+        )
 
     return parser
 
@@ -328,6 +357,106 @@ def _amd_crt(args) -> int:
     return EXIT_OK
 
 
+def _ported_strategy(args) -> int:
+    market = get_market_spec(args.market)
+    if args.friction_pts < 0 or not math.isfinite(args.friction_pts):
+        raise ValueError("friction_pts must be finite and >= 0")
+    config_overrides = {
+        "initial_balance": args.initial_balance,
+        "risk_per_trade": args.risk_per_trade,
+        "commission_per_side": args.friction_pts * market.dollar_per_point / 2.0,
+    }
+    if args.command == "smc-fvg":
+        strategy = SmcFvgStrategy(market=market)
+        config = smc_fvg_config(market=market, **config_overrides)
+    else:
+        strategy = EmasStrategy(market=market)
+        config = emas_config(market=market, **config_overrides)
+
+    source_path = args.mnq_csv or args.bars_csv
+    dataset_audit = None
+    if args.write_trades:
+        if source_path is None:
+            print("--write-trades requires --mnq-csv or --bars-csv", file=sys.stderr)
+            return EXIT_USAGE
+        dataset_audit = audit_ohlcv_csv(source_path)
+        expected_interval = 60 if dataset_audit.timeframes_found == ("M1",) else 300
+        validate_ohlcv_audit(
+            dataset_audit,
+            expected_symbol=market.symbol,
+            expected_interval_seconds=expected_interval,
+        )
+
+    if source_path:
+        bars = load_mnq_csv(source_path, target_interval_minutes=5)
+    elif args.synthetic:
+        bars = synthetic_bars(args.n_bars, seed=0, interval_seconds=300)
+    else:
+        print("no bars; pass --mnq-csv, --bars-csv, or --synthetic", file=sys.stderr)
+        return EXIT_USAGE
+    if not bars:
+        print("no bars loaded", file=sys.stderr)
+        return EXIT_USAGE
+
+    pipeline_run = None
+    if args.write_trades:
+        pipeline_run = execute_pipeline(
+            bars, strategy, config, train_fraction=args.train_fraction
+        )
+        report = pipeline_run.report
+        if config.commission_per_side == 0.0 and config.slippage_points == 0.0:
+            report["scenario_label"] = GROSS_ZERO_FRICTION_LABEL
+        report["detailed_segments"] = {
+            "in_sample": detailed_result_summary(pipeline_run.in_sample_result),
+            "out_of_sample": detailed_result_summary(pipeline_run.out_of_sample_result),
+        }
+    else:
+        report = run_pipeline(bars, strategy, config, train_fraction=args.train_fraction)
+    report["_source"] = (
+        "mnq_csv" if args.mnq_csv else ("synthetic" if args.synthetic else source_path)
+    )
+    out = Path(args.out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    paths = write_report(report, out)
+    if args.write_trades:
+        assert pipeline_run is not None and dataset_audit is not None
+        is_path = out / "in_sample_trades.csv"
+        oos_path = out / "out_of_sample_trades.csv"
+        strategy_name = strategy.__class__.__name__
+        write_trades_csv(
+            pipeline_run.in_sample_result.trades,
+            is_path,
+            symbol=market.symbol,
+            strategy_name=strategy_name,
+            segment="in_sample",
+        )
+        write_trades_csv(
+            pipeline_run.out_of_sample_result.trades,
+            oos_path,
+            symbol=market.symbol,
+            strategy_name=strategy_name,
+            segment="out_of_sample",
+        )
+        manifest = build_run_manifest(
+            audit=dataset_audit,
+            market=market,
+            config=config,
+            strategy_parameters=strategy.parameters(),
+            pipeline_run=pipeline_run,
+            train_fraction=args.train_fraction,
+            output_paths={
+                "summary": paths["summary"],
+                "in_sample_trades": is_path,
+                "out_of_sample_trades": oos_path,
+            },
+            strategy_name=strategy_name,
+        )
+        write_manifest(manifest, out / "run_manifest.json")
+    print(json.dumps(report, indent=2, sort_keys=True, default=str))
+    print(f"report written to {paths['summary']}", file=sys.stderr)
+    return EXIT_OK
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
@@ -339,6 +468,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _batch(args)
         if args.command == "amd-crt":
             return _amd_crt(args)
+        if args.command in {"smc-fvg", "emas"}:
+            return _ported_strategy(args)
         return EXIT_USAGE
     except Exception as exc:  # noqa: BLE001 - CLI safety boundary
         print(f"internal error: {type(exc).__name__}: {exc}", file=sys.stderr)

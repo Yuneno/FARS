@@ -20,7 +20,7 @@ from src.backtest.executor import (
     run_backtest,
 )
 from src.backtest.history import Bar
-from src.backtest.pipeline import chronological_split
+from src.backtest.pipeline import chronological_split, config_dict
 from src.backtest.strategy import BreakoutStrategy
 from src.monte_carlo import MonteCarloConfig, run_monte_carlo
 from src.types import FundedAccountRules
@@ -103,7 +103,7 @@ def run_batch(
                     "key": key,
                     "scenario": name,
                     "seed": seed,
-                    "config": asdict(config),
+                    "config": config_dict(config),
                     "strategy": asdict(strategy),
                     "in_sample": {
                         "net_pnl": is_result.net_pnl,

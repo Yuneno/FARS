@@ -17,7 +17,7 @@ from typing import Any
 
 from src.backtest.executor import BacktestConfig
 from src.backtest.markets import MarketSpec
-from src.backtest.pipeline import PipelineRun
+from src.backtest.pipeline import PipelineRun, config_dict
 
 GROSS_ZERO_FRICTION_LABEL = "GROSS ZERO-FRICTION UPPER BOUND — NOT LIVE-REALISTIC"
 _REQUIRED_OHLC = ("open", "high", "low", "close")
@@ -283,6 +283,7 @@ def build_run_manifest(
     pipeline_run: PipelineRun,
     train_fraction: float,
     output_paths: dict[str, str | Path],
+    strategy_name: str = "AmdCrtStrategy",
     git_commit: str | None = None,
     executed_at_utc: str | None = None,
 ) -> dict[str, Any]:
@@ -301,16 +302,19 @@ def build_run_manifest(
         ),
         "Zero friction is a theoretical gross upper bound, not a live cost model.",
     ]
-    return {
-        "schema_version": "fars-amd-crt-run-manifest-v1",
+    manifest = {
+        "schema_version": (
+            "fars-amd-crt-run-manifest-v1"
+            if strategy_name == "AmdCrtStrategy"
+            else "fars-strategy-run-manifest-v1"
+        ),
         "scenario_label": (
             GROSS_ZERO_FRICTION_LABEL if friction_points == 0.0 else None
         ),
         "symbol": market.symbol,
         "dataset": audit.to_dict(),
         "market_spec": market.to_dict(),
-        "backtest_config": asdict(config),
-        "amd_crt_parameters": strategy_parameters,
+        "backtest_config": config_dict(config),
         "friction_points": friction_points,
         "train_fraction": train_fraction,
         "split": {
@@ -333,6 +337,12 @@ def build_run_manifest(
         },
         "limitations": limitations,
     }
+    if strategy_name == "AmdCrtStrategy":
+        manifest["amd_crt_parameters"] = strategy_parameters
+    else:
+        manifest["strategy"] = strategy_name
+        manifest["strategy_parameters"] = strategy_parameters
+    return manifest
 
 
 def write_manifest(manifest: dict[str, Any], path: str | Path) -> None:

@@ -74,6 +74,13 @@ class BacktestConfig:
     fixed_quantity: int | None = None
     # expected bar interval (seconds) for entry-gap detection; None → disabled
     bar_interval_seconds: int | None = None
+    # Additive execution mechanics used by the ported kai strategies. All are
+    # disabled by default so the legacy AMD+CRT path remains unchanged.
+    partial_take_profit_fraction: float = 0.0
+    move_stop_to_break_even: bool = False
+    pending_limit_entry: bool = False
+    pending_order_wait_bars: int = 0
+    cooldown_bars: int = 0
 
     def __post_init__(self) -> None:
         float_fields = (
@@ -87,6 +94,7 @@ class BacktestConfig:
             "max_drawdown_pct",
             "daily_loss_limit_pct",
             "max_hold_minutes",
+            "partial_take_profit_fraction",
         )
         for name in float_fields:
             value = getattr(self, name)
@@ -99,6 +107,8 @@ class BacktestConfig:
             "max_bars_held",
             "fixed_quantity",
             "bar_interval_seconds",
+            "pending_order_wait_bars",
+            "cooldown_bars",
         )
         for name in integer_fields:
             value = getattr(self, name)
@@ -142,6 +152,18 @@ class BacktestConfig:
             raise ValueError("max_hold_minutes must be > 0 when set")
         if self.bar_interval_seconds is not None and self.bar_interval_seconds <= 0:
             raise ValueError("bar_interval_seconds must be > 0 when set")
+        if not 0.0 <= self.partial_take_profit_fraction < 1.0:
+            raise ValueError("partial_take_profit_fraction must be in [0, 1)")
+        if self.pending_order_wait_bars < 0:
+            raise ValueError("pending_order_wait_bars must be >= 0")
+        if self.cooldown_bars < 0:
+            raise ValueError("cooldown_bars must be >= 0")
+        if self.move_stop_to_break_even and self.partial_take_profit_fraction <= 0:
+            raise ValueError(
+                "move_stop_to_break_even requires partial_take_profit_fraction > 0"
+            )
+        if self.pending_limit_entry and self.pending_order_wait_bars <= 0:
+            raise ValueError("pending_limit_entry requires pending_order_wait_bars > 0")
 
 
 @dataclass(frozen=True)
@@ -281,7 +303,7 @@ def _empty_result(config: BacktestConfig) -> BacktestResult:
     )
 
 
-def run_backtest(
+def _run_backtest_legacy(
     bars: list[Bar],
     strategy: Strategy,
     config: BacktestConfig,
@@ -470,6 +492,294 @@ def run_backtest(
     unresolved = 1 if position is not None else 0
     symbol = getattr(strategy, "market", MNQ).symbol
     return _build_result(trades, config, strategy_name, gap_rejections, unresolved, symbol)
+
+
+def _uses_enhanced_execution(config: BacktestConfig) -> bool:
+    """Whether any opt-in kai execution mechanic is enabled."""
+    return bool(
+        config.partial_take_profit_fraction
+        or config.move_stop_to_break_even
+        or config.pending_limit_entry
+        or config.pending_order_wait_bars
+        or config.cooldown_bars
+    )
+
+
+def _strategy_execution_state(
+    strategy: Strategy,
+    *,
+    pending: bool,
+    position: bool,
+    cooldown: int,
+) -> None:
+    hook = getattr(strategy, "set_execution_state", None)
+    if callable(hook):
+        hook(pending=pending, position=position, cooldown=cooldown)
+
+
+def _observe_closed_bar(strategy: Strategy, history: list[Bar]) -> None:
+    """Advance optional stateful indicators without asking for a signal."""
+    hook = getattr(strategy, "observe", None)
+    if callable(hook):
+        hook(history)
+
+
+def _run_backtest_enhanced(
+    bars: list[Bar],
+    strategy: Strategy,
+    config: BacktestConfig,
+    *,
+    calibration_bars: Sequence[Bar] = (),
+) -> BacktestResult:
+    """Opt-in executor for partial/BE, pending limits, and cooldown.
+
+    The event order mirrors the kai loops: a signal is formed from the last
+    closed bar, its order is eligible on the next bar, stops are checked before
+    targets, and a bar which merely reaches TP1 cannot also hit the newly moved
+    break-even stop retroactively.
+    """
+    if len(bars) < 2:
+        return _empty_result(config)
+    if calibration_bars and calibration_bars[-1].timestamp >= bars[0].timestamp:
+        raise ValueError("calibration_bars must end before the simulated bars")
+
+    strategy_name = strategy.__class__.__name__
+    dollar_risk = config.risk_per_trade * config.initial_balance
+    trades: list[ExecutedTrade] = []
+    position: dict | None = None
+    pending: dict | None = None
+    history = list(calibration_bars)
+    gap_rejections = 0
+    cooldown = 0
+    partial_fraction = config.partial_take_profit_fraction
+
+    def notify(name: str, *args) -> None:
+        hook = getattr(strategy, name, None)
+        if callable(hook):
+            hook(*args)
+
+    def make_order(signal, bar: Bar, index: int, *, limit: bool) -> dict | None:
+        nonlocal gap_rejections
+        if not limit and _entry_gap(config, history, bar):
+            gap_rejections += 1
+            return None
+        entry = _round_tick(
+            signal.entry if limit else _entry_price(config, signal.direction, bar.open),
+            config.tick_size,
+        )
+        if config.fixed_quantity is not None:
+            qty = config.fixed_quantity
+        elif signal.stop_target_as_points:
+            qty = _quantity(config, signal.stop)
+        else:
+            qty = _quantity(config, abs(entry - signal.stop))
+        stop, target = _resolve_stop_target(
+            signal.direction,
+            entry,
+            signal.stop,
+            signal.target,
+            signal.stop_target_as_points,
+            config.tick_size,
+        )
+        if not _valid_levels(signal.direction, entry, stop, target):
+            return None
+        return {
+            "direction": signal.direction,
+            "entry": entry,
+            "stop": stop,
+            "initial_stop": stop,
+            "target": target,
+            "qty": qty,
+            "entry_index": index,
+            "entry_time": bar.timestamp,
+            "entry_open": entry if limit else bar.open,
+            "distance_mode": signal.stop_target_as_points,
+            "risk_points": abs(entry - stop),
+            "tp1": (
+                entry + abs(entry - stop)
+                if signal.direction == "long"
+                else entry - abs(entry - stop)
+            ),
+            "partial_taken": False,
+            "booked_move_points": 0.0,
+            "limit_entry": limit,
+        }
+
+    def close_position(reason: str, fill: float, bar: Bar) -> None:
+        nonlocal position, cooldown
+        assert position is not None
+        direction = position["direction"]
+        entry = position["entry"]
+        remaining = 1.0 - partial_fraction if position["partial_taken"] else 1.0
+        signed_move = fill - entry if direction == "long" else entry - fill
+        total_move = position["booked_move_points"] + remaining * signed_move
+        equivalent_exit = entry + total_move if direction == "long" else entry - total_move
+        gross_pnl = total_move * config.dollar_per_point * position["qty"]
+        commission = config.commission_per_side * 2 * position["qty"]
+        net_pnl = gross_pnl - commission
+        initial_risk = position["risk_points"]
+        stop_risk_dollars = initial_risk * config.dollar_per_point * position["qty"]
+        entry_slip_pts = (
+            0.0
+            if position["limit_entry"]
+            else (
+                max(entry - position["entry_open"], 0.0)
+                if direction == "long"
+                else max(position["entry_open"] - entry, 0.0)
+            )
+        )
+        exit_slip_pts = 0.0
+        if reason in {"stop_loss", "break_even_stop"}:
+            gap = (direction == "long" and bar.open < position["stop"]) or (
+                direction == "short" and bar.open > position["stop"]
+            )
+            if not gap:
+                exit_slip_pts = abs(fill - position["stop"]) * remaining
+        slippage_cost = (
+            entry_slip_pts + exit_slip_pts
+        ) * config.dollar_per_point * position["qty"]
+        executed = ExecutedTrade(
+            trade_id=f"bt-{len(trades) + 1}",
+            direction=direction,
+            entry_time=position["entry_time"],
+            exit_time=bar.timestamp,
+            entry_price=entry,
+            exit_price=equivalent_exit,
+            stop_price=position["stop"],
+            target_price=position["target"],
+            quantity=position["qty"],
+            gross_pnl=gross_pnl,
+            commission=commission,
+            net_pnl=net_pnl,
+            r_result=net_pnl / dollar_risk if dollar_risk > 0 else 0.0,
+            exit_reason=reason,
+            stop_risk_dollars=stop_risk_dollars,
+            slippage_cost=slippage_cost,
+        )
+        trades.append(executed)
+        notify("note_trade", executed.exit_time, executed.r_result)
+        position = None
+        cooldown = config.cooldown_bars
+
+    i = 0
+    while i < len(bars):
+        bar = bars[i]
+
+        if position is None and cooldown > 0:
+            history.append(bar)
+            # On the final cooldown bar kai decrements to zero and then allows
+            # structure evaluation. Defer that closed bar to the next loop so
+            # evaluate(history) can form an order for the following bar.
+            if cooldown > 1:
+                _observe_closed_bar(strategy, history)
+            cooldown -= 1
+            i += 1
+            continue
+
+        if position is None:
+            _strategy_execution_state(
+                strategy, pending=pending is not None, position=False, cooldown=0
+            )
+            signal = strategy.evaluate(history) if history else None
+            if pending is None and signal is not None:
+                if config.pending_limit_entry:
+                    order = make_order(signal, bar, i, limit=True)
+                    if order is not None:
+                        order["remaining_wait"] = config.pending_order_wait_bars
+                        pending = order
+                else:
+                    position = make_order(signal, bar, i, limit=False)
+
+            if pending is not None:
+                direction = pending["direction"]
+                filled = (
+                    bar.low <= pending["entry"]
+                    if direction == "long"
+                    else bar.high >= pending["entry"]
+                )
+                if filled:
+                    position = pending
+                    position["entry_index"] = i
+                    position["entry_time"] = bar.timestamp
+                    pending = None
+                    notify("note_order_filled", bar.timestamp)
+                else:
+                    pending["remaining_wait"] -= 1
+                    if pending["remaining_wait"] <= 0:
+                        pending = None
+                        notify("note_order_expired", bar.timestamp)
+                    history.append(bar)
+                    i += 1
+                    continue
+
+            if position is None:
+                history.append(bar)
+                i += 1
+                continue
+
+        direction = position["direction"]
+        stop = position["stop"]
+        target = position["target"]
+        tp1 = position["tp1"]
+        bars_held = i - position["entry_index"]
+
+        reason: str | None = None
+        fill: float | None = None
+        if _time_exit_open(config, position, bar):
+            reason, fill = "time_exit", _round_tick(bar.open, config.tick_size)
+        else:
+            hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
+            hit_target = target <= bar.high if direction == "long" else target >= bar.low
+            hit_tp1 = tp1 <= bar.high if direction == "long" else tp1 >= bar.low
+            if hit_stop:
+                reason = "break_even_stop" if position["partial_taken"] else "stop_loss"
+                fill = _stop_fill(config, direction, stop, bar.open)
+            elif hit_target:
+                if not position["partial_taken"] and hit_tp1 and partial_fraction > 0:
+                    position["booked_move_points"] = partial_fraction * position["risk_points"]
+                    position["partial_taken"] = True
+                reason, fill = "take_profit", target
+            elif (
+                hit_tp1
+                and partial_fraction > 0
+                and not position["partial_taken"]
+            ):
+                position["partial_taken"] = True
+                position["booked_move_points"] = partial_fraction * position["risk_points"]
+                if config.move_stop_to_break_even:
+                    position["stop"] = position["entry"]
+            elif _time_exit_close(config, position, bar, bars_held):
+                reason, fill = "time_exit", _round_tick(bar.close, config.tick_size)
+
+        if reason is not None and fill is not None:
+            close_position(reason, fill, bar)
+
+        history.append(bar)
+        _observe_closed_bar(strategy, history)
+        i += 1
+
+    unresolved = int(position is not None)
+    if pending is not None:
+        notify("note_order_expired", bars[-1].timestamp)
+    symbol = getattr(strategy, "market", MNQ).symbol
+    return _build_result(trades, config, strategy_name, gap_rejections, unresolved, symbol)
+
+
+def run_backtest(
+    bars: list[Bar],
+    strategy: Strategy,
+    config: BacktestConfig,
+    *,
+    calibration_bars: Sequence[Bar] = (),
+) -> BacktestResult:
+    """Run the legacy executor or the additive opt-in execution path."""
+    if not _uses_enhanced_execution(config):
+        return _run_backtest_legacy(
+            bars, strategy, config, calibration_bars=calibration_bars
+        )
+    return _run_backtest_enhanced(
+        bars, strategy, config, calibration_bars=calibration_bars
+    )
 
 
 def executed_to_core_trades(
