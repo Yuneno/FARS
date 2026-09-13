@@ -17,6 +17,8 @@ from typing import Any, Literal
 
 from src.types import FundedAccountRules
 
+from src.backtest.markets import get_market_spec
+
 
 # ---------------------------------------------------------------------------
 # Seed derivation
@@ -24,6 +26,16 @@ from src.types import FundedAccountRules
 
 _SEED_SCHEMA_VERSION = "1.0"
 MAX_WORKERS = 6
+
+# Cost schemes produced by :func:`build_market_config`. "market_friction"
+# derives commission from MarketSpec.friction_points with the canonical
+# round-trip aggregation (commission = friction / 2 per side, zero
+# slippage); "explicit_friction" is an operator-supplied scenario;
+# "provisional" is the legacy MVP scenario used only for markets whose
+# friction is unvalidated. Costs are never silent.
+COST_SCHEME_FRICTION = "market_friction"
+COST_SCHEME_EXPLICIT = "explicit_friction"
+COST_SCHEME_PROVISIONAL = "provisional"
 
 
 def derive_job_seed(master_seed: int, job_id: str) -> int:
@@ -58,6 +70,7 @@ class JobSpec:
     warmup_bars: int
     strategy_config_id: str
     execution_profile: str
+    friction_pts: float | None = None
     fold_id: str | None = None
     replicate_id: str | None = None
     master_seed: int = 42
@@ -79,6 +92,8 @@ class JobSpec:
             obj["fold"] = self.fold_id
         if self.replicate_id is not None:
             obj["replicate"] = self.replicate_id
+        if self.friction_pts is not None:
+            obj["friction"] = self.friction_pts
         raw = json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return hashlib.sha256(raw).hexdigest()
 
@@ -125,6 +140,97 @@ def _limit_threads():
         os.environ[var] = "1"
 
 
+def filter_job_bars(
+    bars_data: list[dict[str, Any]],
+    *,
+    range_start: str = "",
+    range_end: str = "",
+    warmup_bars: int = 0,
+) -> "list":
+    """Apply a job's range and warmup filters in a verifiable, fixed order.
+
+    Order is canonical: (1) full range filter (>= range_start, <= range_end),
+    then (2) hold out the first ``warmup_bars`` bars of the filtered range so
+    they cannot produce evaluated trades. Range-first / warmup-second guarantees
+    the warmup hold-out is relative to the effective evaluation window and never
+    silently consumes bars outside it.
+    """
+    from datetime import datetime, timezone as _tz
+    from src.backtest.history import Bar
+
+    bars = [
+        Bar(
+            timestamp=datetime.fromisoformat(bd["timestamp"]),
+            open=bd["open"],
+            high=bd["high"],
+            low=bd["low"],
+            close=bd["close"],
+            volume=bd.get("volume", 0),
+        )
+        for bd in bars_data
+    ]
+    tzinfo = bars[0].timestamp.tzinfo if bars else None
+    if range_start and bars:
+        rs = datetime.fromisoformat(range_start)
+        if rs.tzinfo is None and tzinfo is not None:
+            rs = rs.replace(tzinfo=_tz.utc)
+        bars = [b for b in bars if b.timestamp >= rs]
+    if range_end and bars:
+        re_ = datetime.fromisoformat(range_end)
+        if re_.tzinfo is None and tzinfo is not None:
+            re_ = re_.replace(tzinfo=_tz.utc)
+        bars = [b for b in bars if b.timestamp <= re_]
+    if warmup_bars > 0:
+        cut = min(warmup_bars, len(bars))
+        bars = bars[cut:]
+    return bars
+
+
+def build_market_config(
+    symbol: str,
+    *,
+    initial_balance: float = 50_000.0,
+    risk_per_trade: float = 0.01,
+    friction_pts: float | None = None,
+    fixed_quantity: int | None = None,
+) -> "tuple":
+    """Build a per-market executor config, reusing :class:`MarketSpec`.
+
+    dollar_per_point, tick_size, and quantity sizing come from the market spec;
+    costs follow the canonical round-trip friction aggregation (commission =
+    friction_per_point / 2 per side, zero slippage) so costs are never
+    double-counted. Markets whose friction is unvalidated
+    (``MarketSpec.friction_points is None``) require an explicit ``friction_pts``;
+    otherwise they fall back to the PROVISIONAL legacy cost scenario and the
+    returned cost scheme is ``provisional`` (never a silent zero-cost run).
+    """
+    from src.backtest.executor import BacktestConfig
+
+    market = get_market_spec(symbol)
+    dollar_per_point = market.dollar_per_point
+    friction = friction_pts if friction_pts is not None else market.friction_points
+    if friction is not None and friction >= 0:
+        commission = friction * dollar_per_point / 2.0
+        slippage = 0.0
+        scheme = COST_SCHEME_FRICTION if friction_pts is None else COST_SCHEME_EXPLICIT
+    else:
+        commission = 0.62
+        slippage = 0.25
+        scheme = COST_SCHEME_PROVISIONAL
+    return (
+        BacktestConfig(
+            initial_balance=initial_balance,
+            risk_per_trade=risk_per_trade,
+            dollar_per_point=dollar_per_point,
+            tick_size=market.tick_size,
+            commission_per_side=commission,
+            slippage_points=slippage,
+            fixed_quantity=fixed_quantity,
+        ),
+        scheme,
+    )
+
+
 def _run_single_job(
     spec_dict: dict[str, Any],
     bars_data: list[dict[str, Any]],
@@ -135,8 +241,7 @@ def _run_single_job(
     SUPPORTED_STRATEGIES = {"breakout_v1", "breakout"}
     SUPPORTED_PROFILES = {"legacy", "default"}
     try:
-        from src.backtest.executor import BacktestConfig, run_backtest
-        from src.backtest.history import Bar
+        from src.backtest.executor import run_backtest
         from src.backtest.strategy import BreakoutStrategy
         spec = JobSpec(**spec_dict)
         if spec.strategy_config_id not in SUPPORTED_STRATEGIES:
@@ -145,26 +250,22 @@ def _run_single_job(
         if spec.execution_profile not in SUPPORTED_PROFILES:
             elapsed = time.perf_counter() - t0
             return {"job_id": spec.job_id, "status": "error", "n_trades": 0, "net_pnl": 0.0, "win_rate": 0.0, "equity_curve_points": 0, "wall_seconds": elapsed, "error_message": f"unsupported profile: {spec.execution_profile!r}", "worker_pid": os.getpid()}
-        from datetime import datetime
-        bars = [Bar(timestamp=datetime.fromisoformat(bd["timestamp"]), open=bd["open"], high=bd["high"], low=bd["low"], close=bd["close"], volume=bd.get("volume", 0)) for bd in bars_data]
-        if spec.warmup_bars > 0 and len(bars) > spec.warmup_bars:
-            bars = bars[spec.warmup_bars:]
-        if spec.range_start and bars:
-            rs = datetime.fromisoformat(spec.range_start)
-            if rs.tzinfo is None and bars[0].timestamp.tzinfo is not None:
-                from datetime import timezone as _tz
-                rs = rs.replace(tzinfo=_tz.utc)
-            bars = [b for b in bars if b.timestamp >= rs]
-        if spec.range_end and bars:
-            re_ = datetime.fromisoformat(spec.range_end)
-            if re_.tzinfo is None and bars[0].timestamp.tzinfo is not None:
-                from datetime import timezone as _tz
-                re_ = re_.replace(tzinfo=_tz.utc)
-            bars = [b for b in bars if b.timestamp <= re_]
+        bars = filter_job_bars(
+            bars_data,
+            range_start=spec.range_start,
+            range_end=spec.range_end,
+            warmup_bars=spec.warmup_bars,
+        )
         if len(bars) < 2:
             elapsed = time.perf_counter() - t0
             return {"job_id": spec.job_id, "status": "done", "n_trades": 0, "net_pnl": 0.0, "win_rate": 0.0, "equity_curve_points": 0, "wall_seconds": elapsed, "error_message": None, "worker_pid": os.getpid()}
-        config = BacktestConfig(initial_balance=rules_dict.get("initial_balance", 50000) if rules_dict else 50000, risk_per_trade=rules_dict.get("risk_per_trade", 0.01) if rules_dict else 0.01)
+        rules = rules_dict or {}
+        config, _cost_scheme = build_market_config(
+            spec.symbol,
+            initial_balance=rules.get("initial_balance", 50000),
+            risk_per_trade=rules.get("risk_per_trade", 0.01),
+            friction_pts=spec.friction_pts,
+        )
         result = run_backtest(bars, BreakoutStrategy(), config)
         elapsed = time.perf_counter() - t0
         return {"job_id": spec.job_id, "status": "done", "n_trades": result.n_trades, "net_pnl": result.net_pnl, "win_rate": result.win_rate, "equity_curve_points": len(result.equity_curve), "wall_seconds": elapsed, "error_message": None, "worker_pid": os.getpid()}
@@ -329,9 +430,14 @@ def run_parallel(
 
 
 __all__ = [
+    "COST_SCHEME_EXPLICIT",
+    "COST_SCHEME_FRICTION",
+    "COST_SCHEME_PROVISIONAL",
     "JobSpec",
     "JobResult",
     "RunManifest",
+    "build_market_config",
     "derive_job_seed",
+    "filter_job_bars",
     "run_parallel",
 ]
