@@ -1,0 +1,38 @@
+{
+  "workers": 1,
+  "total_wall_seconds": 0.2826,
+  "n_jobs": 4,
+  "n_done": 4,
+  "n_errors": 0,
+  "effective_workers": 1,
+  "jobs": [
+    {
+      "job_id": "676fe447d4b95de95aba2f103641689006d6973e20f589da94c774d415974244",
+      "status": "done",
+      "n_trades": 1262,
+      "net_pnl": 1701.18,
+      "wall_seconds": 0.1328
+    },
+    {
+      "job_id": "ab09822570a84566e9cc5ec571ea54b03dc516688caff4bd3dc347218f374644",
+      "status": "done",
+      "n_trades": 1212,
+      "net_pnl": -14072.92,
+      "wall_seconds": 0.1028
+    },
+    {
+      "job_id": "d53c652edf0f243ddca79f921e0f87eb120cb32a75c9d9b0beefabfd5e6c3ee5",
+      "status": "done",
+      "n_trades": 263,
+      "net_pnl": 221.26,
+      "wall_seconds": 0.0209
+    },
+    {
+      "job_id": "d7062b3079544aa60cf7f21b0cc8a32becb596339941c68bc707040330a1821d",
+      "status": "done",
+      "n_trades": 278,
+      "net_pnl": -4627.42,
+      "wall_seconds": 0.0204
+    }
+  ]
+}

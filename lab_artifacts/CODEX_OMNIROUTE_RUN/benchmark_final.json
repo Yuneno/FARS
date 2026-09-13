@@ -1,0 +1,46 @@
+{
+  "generated": "2026-09-13T01:17:57.366665+00:00",
+  "data_source": {
+    "zip_sha256": "c3d8ebdfbcdedeb50cc188c5f7f189348e8a820d32f60b987819e1b57e8f45f7",
+    "markets_used": [
+      "MNQ",
+      "MYM"
+    ],
+    "ym_note": "YM only in _viejo_2026-07/ subdir - old data, limited tf",
+    "mym_note": "MYM is Micro Dow, NOT YM"
+  },
+  "sequential_benchmark": {
+    "w1": {
+      "requested": 1,
+      "effective": 1,
+      "wall_seconds": 0.2745,
+      "done": 4,
+      "errors": 0
+    },
+    "w2": {
+      "requested": 2,
+      "effective": 1,
+      "wall_seconds": 0.2809,
+      "done": 4,
+      "errors": 0
+    },
+    "w6": {
+      "requested": 6,
+      "effective": 1,
+      "wall_seconds": 0.2574,
+      "done": 4,
+      "errors": 0
+    }
+  },
+  "determinism": "All 4 jobs DETERMINISTIC across 3 runs",
+  "sandbox_limitation": "spawn blocked; all workers fall back to sequential",
+  "e2e_flow": {
+    "mnq_h4_bars": 23687,
+    "mnq_h4_trades": 1262,
+    "mnq_h4_pnl": 1701.18,
+    "r_values_count": 1262,
+    "expectancy_r": 0.002696,
+    "win_rate": 0.3487,
+    "std_r": 1.4417
+  }
+}

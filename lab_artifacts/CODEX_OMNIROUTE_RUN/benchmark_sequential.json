@@ -1,0 +1,50 @@
+{
+  "MNQ_H4": {
+    "symbol": "MNQ",
+    "timeframe": "H4",
+    "bars": 23687,
+    "date_range": "2010-06-07 .. 2026-09-03",
+    "n_trades": 1262,
+    "net_pnl": 1701.18,
+    "win_rate": 0.3487,
+    "equity_points": 1263,
+    "wall_seconds": 0.0763,
+    "final_balance": 51701.18
+  },
+  "MNQ_D1": {
+    "symbol": "MNQ",
+    "timeframe": "D1",
+    "bars": 5040,
+    "date_range": "2010-06-07 .. 2026-09-03",
+    "n_trades": 278,
+    "net_pnl": -4627.42,
+    "win_rate": 0.3345,
+    "equity_points": 279,
+    "wall_seconds": 0.014,
+    "final_balance": 45372.58
+  },
+  "MYM_H4": {
+    "symbol": "MYM",
+    "timeframe": "H4",
+    "bars": 23693,
+    "date_range": "2010-06-07 .. 2026-09-03",
+    "n_trades": 1215,
+    "net_pnl": -10551.16,
+    "win_rate": 0.335,
+    "equity_points": 1216,
+    "wall_seconds": 0.0646,
+    "final_balance": 39448.84
+  },
+  "MYM_D1": {
+    "symbol": "MYM",
+    "timeframe": "D1",
+    "bars": 5045,
+    "date_range": "2010-06-07 .. 2026-09-03",
+    "n_trades": 263,
+    "net_pnl": 1133.46,
+    "win_rate": 0.3308,
+    "equity_points": 264,
+    "wall_seconds": 0.0128,
+    "final_balance": 51133.46
+  }
+}

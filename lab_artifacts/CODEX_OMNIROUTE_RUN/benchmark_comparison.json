@@ -1,0 +1,17 @@
+{
+  "workers_1": {
+    "wall_seconds": 0.2826,
+    "effective_workers": 1
+  },
+  "workers_2": {
+    "wall_seconds": 0.2962,
+    "effective_workers": 1,
+    "done": 4
+  },
+  "workers_6": {
+    "wall_seconds": 0.3036,
+    "effective_workers": 1,
+    "done": 4
+  },
+  "note": "Sandbox blocks real spawn; effective_workers falls back to 1 on PermissionError"
+}
