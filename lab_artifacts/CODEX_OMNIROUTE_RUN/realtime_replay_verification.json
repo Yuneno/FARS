@@ -1,0 +1,65 @@
+{
+  "schema_version": "fars-realtime-replay-verification-v1",
+  "generated_utc": "2026-09-13T19:30:06.025423+00:00",
+  "git_commit": "836b92bf8cc8da6f8408094d7b71d676f4fbd8b0",
+  "dataset": {
+    "zip_path": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "loaded_bars": 518237,
+    "first_timestamp": "2019-05-06T00:00:00+00:00",
+    "last_timestamp": "2026-09-03T23:55:00+00:00",
+    "load_seconds": 2.3384,
+    "canonical_cutoff": "2019-05-06T00:00:00.000Z"
+  },
+  "verification": {
+    "verified_bars_count": 2000,
+    "first_bar_timestamp": "2019-05-06T00:00:00+00:00",
+    "last_bar_timestamp": "2019-05-15T07:20:00+00:00",
+    "events_played": 2000,
+    "chronological_order_strictly_monotonic": true,
+    "causality_violations": 0,
+    "backtest_signals_count": 20,
+    "replay_signals_count": 20,
+    "signals_count_match": true,
+    "signals_bit_for_bit_identical": true,
+    "divergences_count": 0,
+    "divergences_sample": [],
+    "wall_time_backtest_seconds": 0.0064,
+    "wall_time_replay_seconds": 0.1269,
+    "sample_signals": [
+      {
+        "signal_index": 1,
+        "bar_index": 430,
+        "timestamp": "2019-05-07T13:05:00+00:00",
+        "direction": "short",
+        "entry": 7725.25,
+        "stop": 7739.022525,
+        "target": 7704.5912124999995
+      },
+      {
+        "signal_index": 2,
+        "bar_index": 436,
+        "timestamp": "2019-05-07T13:35:00+00:00",
+        "direction": "long",
+        "entry": 7736.0,
+        "stop": 7719.9764,
+        "target": 7760.035400000001
+      },
+      {
+        "signal_index": 3,
+        "bar_index": 500,
+        "timestamp": "2019-05-07T18:55:00+00:00",
+        "direction": "long",
+        "entry": 7609.0,
+        "stop": 7599.7391,
+        "target": 7622.89135
+      }
+    ]
+  },
+  "verdict": {
+    "chronological_replay_verified": true,
+    "point_in_time_causality_verified": true,
+    "signal_parity_with_backtest_verified": true,
+    "summary": "Historical replay through ReplayEngine and FrozenClock preserves strict point-in-time causality. Every event is published at its historical timestamp; the strategy receives only closed bars up to the current clock instant with zero future lookahead. Across 2000 canonical bars, the realtime pipeline produced 20 signals, matching the offline backtest 100% bit-for-bit in timestamp, direction, entry, stop, and target."
+  }
+}
