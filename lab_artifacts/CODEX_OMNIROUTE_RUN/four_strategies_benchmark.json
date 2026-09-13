@@ -1,0 +1,1403 @@
+{
+  "metadata": {
+    "generated_at": "2026-09-13T19:58:36.843345+00:00",
+    "environment": "E:\\FARS-LAB\\FARS",
+    "dataset": {
+      "member": "databento/MNQ_M5.csv",
+      "n_bars": 518237,
+      "first_timestamp": "2019-05-06T00:00:00+00:00",
+      "last_timestamp": "2026-09-03T23:55:00+00:00",
+      "load_time_seconds": 2.3506
+    },
+    "multiprocessing": {
+      "configured_workers": 2,
+      "parent_pid": 15912,
+      "worker_pids": [
+        7140,
+        21612
+      ],
+      "used_fallback": false,
+      "total_wall_time_seconds": 10.5089
+    },
+    "parameters_common": {
+      "initial_balance": 50000.0,
+      "risk_per_trade": 0.01,
+      "risk_budget_dollars": 500.0,
+      "market": "MNQ",
+      "point_value": 2.0,
+      "tick_size": 0.25,
+      "friction_assumed_roundtrip": 4.0,
+      "sizing_mode": "discrete_integer_contracts"
+    }
+  },
+  "results": [
+    {
+      "strategy_id": "crt_tbs_champion",
+      "scenario_name": "friction_4rt",
+      "worker_pid": 21612,
+      "compute_time_seconds": 1.3893,
+      "n_trades": 93,
+      "win_rate": 26.88,
+      "gross_pnl": 3474.0,
+      "commission": 1932.0,
+      "net_pnl": 1542.0,
+      "net_r": 3.08,
+      "profit_factor": 1.0681,
+      "expectancy_per_trade": 16.58,
+      "max_drawdown_pct": 7.67,
+      "account_viability": {
+        "survived": true,
+        "ruin_trade_index": null,
+        "ruin_date": null,
+        "equity_at_ruin": null,
+        "terminal_equity": 51542.0
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 6,
+          "win_rate": 16.67,
+          "gross_pnl": -535.5,
+          "commission": 224.0,
+          "net_pnl": -759.5,
+          "profit_factor": 0.5628
+        },
+        "2020": {
+          "trades": 14,
+          "win_rate": 35.71,
+          "gross_pnl": 1214.5,
+          "commission": 256.0,
+          "net_pnl": 958.5,
+          "profit_factor": 1.2438
+        },
+        "2021": {
+          "trades": 11,
+          "win_rate": 27.27,
+          "gross_pnl": 1145.5,
+          "commission": 184.0,
+          "net_pnl": 961.5,
+          "profit_factor": 1.5391
+        },
+        "2022": {
+          "trades": 10,
+          "win_rate": 30.0,
+          "gross_pnl": -700.5,
+          "commission": 228.0,
+          "net_pnl": -928.5,
+          "profit_factor": 0.7524
+        },
+        "2023": {
+          "trades": 18,
+          "win_rate": 11.11,
+          "gross_pnl": -1015.5,
+          "commission": 456.0,
+          "net_pnl": -1471.5,
+          "profit_factor": 0.5529
+        },
+        "2024": {
+          "trades": 18,
+          "win_rate": 38.89,
+          "gross_pnl": 4534.0,
+          "commission": 360.0,
+          "net_pnl": 4174.0,
+          "profit_factor": 2.5259
+        },
+        "2025": {
+          "trades": 8,
+          "win_rate": 12.5,
+          "gross_pnl": -2029.5,
+          "commission": 120.0,
+          "net_pnl": -2149.5,
+          "profit_factor": 0.3214
+        },
+        "2026": {
+          "trades": 8,
+          "win_rate": 37.5,
+          "gross_pnl": 861.0,
+          "commission": 104.0,
+          "net_pnl": 757.0,
+          "profit_factor": 1.3376
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-06-03T15:10:00+00:00",
+          "exit_time": "2019-06-03T17:30:00+00:00",
+          "direction": "short",
+          "quantity": 5,
+          "entry_price": 7082.25,
+          "exit_price": 6982.5,
+          "gross_pnl": 997.5,
+          "commission": 20.0,
+          "net_pnl": 977.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-09-25T15:20:00+00:00",
+          "exit_time": "2019-09-25T16:05:00+00:00",
+          "direction": "short",
+          "quantity": 19,
+          "entry_price": 7753.0,
+          "exit_price": 7766.5,
+          "gross_pnl": -513.0,
+          "commission": 76.0,
+          "net_pnl": -589.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-11-07T16:35:00+00:00",
+          "exit_time": "2019-11-07T19:40:00+00:00",
+          "direction": "long",
+          "quantity": 8,
+          "entry_price": 8266.25,
+          "exit_price": 8234.0,
+          "gross_pnl": -516.0,
+          "commission": 32.0,
+          "net_pnl": -548.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-91",
+          "entry_time": "2026-06-03T13:35:00+00:00",
+          "exit_time": "2026-06-03T13:45:00+00:00",
+          "direction": "short",
+          "quantity": 3,
+          "entry_price": 30715.0,
+          "exit_price": 30527.25,
+          "gross_pnl": 1126.5,
+          "commission": 12.0,
+          "net_pnl": 1114.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-92",
+          "entry_time": "2026-06-24T17:05:00+00:00",
+          "exit_time": "2026-06-24T17:15:00+00:00",
+          "direction": "long",
+          "quantity": 2,
+          "entry_price": 29659.25,
+          "exit_price": 29525.0,
+          "gross_pnl": -537.0,
+          "commission": 8.0,
+          "net_pnl": -545.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-93",
+          "entry_time": "2026-09-02T14:00:00+00:00",
+          "exit_time": "2026-09-03T07:00:00+00:00",
+          "direction": "long",
+          "quantity": 2,
+          "entry_price": 29061.75,
+          "exit_price": 29061.75,
+          "gross_pnl": 0.0,
+          "commission": 8.0,
+          "net_pnl": -8.0,
+          "exit_reason": "time_exit"
+        }
+      ]
+    },
+    {
+      "strategy_id": "crt_tbs_champion",
+      "scenario_name": "gross",
+      "worker_pid": 7140,
+      "compute_time_seconds": 1.3789,
+      "n_trades": 93,
+      "win_rate": 26.88,
+      "gross_pnl": 3474.0,
+      "commission": 0.0,
+      "net_pnl": 3474.0,
+      "net_r": 6.95,
+      "profit_factor": 1.1631,
+      "expectancy_per_trade": 37.35,
+      "max_drawdown_pct": 6.56,
+      "account_viability": {
+        "survived": true,
+        "ruin_trade_index": null,
+        "ruin_date": null,
+        "equity_at_ruin": null,
+        "terminal_equity": 53474.0
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 6,
+          "win_rate": 16.67,
+          "gross_pnl": -535.5,
+          "commission": 0.0,
+          "net_pnl": -535.5,
+          "profit_factor": 0.6507
+        },
+        "2020": {
+          "trades": 14,
+          "win_rate": 35.71,
+          "gross_pnl": 1214.5,
+          "commission": 0.0,
+          "net_pnl": 1214.5,
+          "profit_factor": 1.3214
+        },
+        "2021": {
+          "trades": 11,
+          "win_rate": 27.27,
+          "gross_pnl": 1145.5,
+          "commission": 0.0,
+          "net_pnl": 1145.5,
+          "profit_factor": 1.7004
+        },
+        "2022": {
+          "trades": 10,
+          "win_rate": 30.0,
+          "gross_pnl": -700.5,
+          "commission": 0.0,
+          "net_pnl": -700.5,
+          "profit_factor": 0.8051
+        },
+        "2023": {
+          "trades": 18,
+          "win_rate": 11.11,
+          "gross_pnl": -1015.5,
+          "commission": 0.0,
+          "net_pnl": -1015.5,
+          "profit_factor": 0.6591
+        },
+        "2024": {
+          "trades": 18,
+          "win_rate": 38.89,
+          "gross_pnl": 4534.0,
+          "commission": 0.0,
+          "net_pnl": 4534.0,
+          "profit_factor": 2.7798
+        },
+        "2025": {
+          "trades": 8,
+          "win_rate": 12.5,
+          "gross_pnl": -2029.5,
+          "commission": 0.0,
+          "net_pnl": -2029.5,
+          "profit_factor": 0.3375
+        },
+        "2026": {
+          "trades": 8,
+          "win_rate": 37.5,
+          "gross_pnl": 861.0,
+          "commission": 0.0,
+          "net_pnl": 861.0,
+          "profit_factor": 1.396
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-06-03T15:10:00+00:00",
+          "exit_time": "2019-06-03T17:30:00+00:00",
+          "direction": "short",
+          "quantity": 5,
+          "entry_price": 7082.25,
+          "exit_price": 6982.5,
+          "gross_pnl": 997.5,
+          "commission": 0.0,
+          "net_pnl": 997.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-09-25T15:20:00+00:00",
+          "exit_time": "2019-09-25T16:05:00+00:00",
+          "direction": "short",
+          "quantity": 19,
+          "entry_price": 7753.0,
+          "exit_price": 7766.5,
+          "gross_pnl": -513.0,
+          "commission": 0.0,
+          "net_pnl": -513.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-11-07T16:35:00+00:00",
+          "exit_time": "2019-11-07T19:40:00+00:00",
+          "direction": "long",
+          "quantity": 8,
+          "entry_price": 8266.25,
+          "exit_price": 8234.0,
+          "gross_pnl": -516.0,
+          "commission": 0.0,
+          "net_pnl": -516.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-91",
+          "entry_time": "2026-06-03T13:35:00+00:00",
+          "exit_time": "2026-06-03T13:45:00+00:00",
+          "direction": "short",
+          "quantity": 3,
+          "entry_price": 30715.0,
+          "exit_price": 30527.25,
+          "gross_pnl": 1126.5,
+          "commission": 0.0,
+          "net_pnl": 1126.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-92",
+          "entry_time": "2026-06-24T17:05:00+00:00",
+          "exit_time": "2026-06-24T17:15:00+00:00",
+          "direction": "long",
+          "quantity": 2,
+          "entry_price": 29659.25,
+          "exit_price": 29525.0,
+          "gross_pnl": -537.0,
+          "commission": 0.0,
+          "net_pnl": -537.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-93",
+          "entry_time": "2026-09-02T14:00:00+00:00",
+          "exit_time": "2026-09-03T07:00:00+00:00",
+          "direction": "long",
+          "quantity": 2,
+          "entry_price": 29061.75,
+          "exit_price": 29061.75,
+          "gross_pnl": 0.0,
+          "commission": 0.0,
+          "net_pnl": 0.0,
+          "exit_reason": "time_exit"
+        }
+      ]
+    },
+    {
+      "strategy_id": "crt_tbs_default",
+      "scenario_name": "gross",
+      "worker_pid": 7140,
+      "compute_time_seconds": 1.4317,
+      "n_trades": 0,
+      "win_rate": 0.0,
+      "gross_pnl": 0,
+      "commission": 0,
+      "net_pnl": 0,
+      "net_r": 0.0,
+      "profit_factor": 0.0,
+      "expectancy_per_trade": 0.0,
+      "max_drawdown_pct": 0.0,
+      "account_viability": {
+        "survived": true,
+        "ruin_trade_index": null,
+        "ruin_date": null,
+        "equity_at_ruin": null,
+        "terminal_equity": 50000.0
+      },
+      "annual_breakdown": {},
+      "trades_sample": []
+    },
+    {
+      "strategy_id": "emas",
+      "scenario_name": "friction_4rt",
+      "worker_pid": 21612,
+      "compute_time_seconds": 2.4832,
+      "n_trades": 5098,
+      "win_rate": 51.59,
+      "gross_pnl": 123083.0,
+      "commission": 255132.0,
+      "net_pnl": -132049.0,
+      "net_r": -264.1,
+      "profit_factor": 0.9028,
+      "expectancy_per_trade": -25.9,
+      "max_drawdown_pct": 304.76,
+      "account_viability": {
+        "survived": false,
+        "ruin_trade_index": 364,
+        "ruin_date": "2019-11-25",
+        "equity_at_ruin": -222.5,
+        "terminal_equity": -82049.0
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 417,
+          "win_rate": 48.92,
+          "gross_pnl": -9611.0,
+          "commission": 44656.0,
+          "net_pnl": -54267.0,
+          "profit_factor": 0.5812
+        },
+        "2020": {
+          "trades": 692,
+          "win_rate": 53.61,
+          "gross_pnl": 31600.5,
+          "commission": 36844.0,
+          "net_pnl": -5243.5,
+          "profit_factor": 0.9704
+        },
+        "2021": {
+          "trades": 670,
+          "win_rate": 49.55,
+          "gross_pnl": 5195.5,
+          "commission": 36988.0,
+          "net_pnl": -31792.5,
+          "profit_factor": 0.8307
+        },
+        "2022": {
+          "trades": 704,
+          "win_rate": 50.71,
+          "gross_pnl": 9456.5,
+          "commission": 24216.0,
+          "net_pnl": -14759.5,
+          "profit_factor": 0.9207
+        },
+        "2023": {
+          "trades": 698,
+          "win_rate": 52.58,
+          "gross_pnl": 19001.5,
+          "commission": 40144.0,
+          "net_pnl": -21142.5,
+          "profit_factor": 0.8852
+        },
+        "2024": {
+          "trades": 705,
+          "win_rate": 51.21,
+          "gross_pnl": 23418.5,
+          "commission": 33456.0,
+          "net_pnl": -10037.5,
+          "profit_factor": 0.9466
+        },
+        "2025": {
+          "trades": 706,
+          "win_rate": 51.84,
+          "gross_pnl": 19035.5,
+          "commission": 25496.0,
+          "net_pnl": -6460.5,
+          "profit_factor": 0.9646
+        },
+        "2026": {
+          "trades": 506,
+          "win_rate": 53.75,
+          "gross_pnl": 24986.0,
+          "commission": 13332.0,
+          "net_pnl": 11654.0,
+          "profit_factor": 1.0938
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-05-06T17:25:00+00:00",
+          "exit_time": "2019-05-06T18:45:00+00:00",
+          "direction": "long",
+          "quantity": 17,
+          "entry_price": 7758.75,
+          "exit_price": 7789.632352941177,
+          "gross_pnl": 1050.0,
+          "commission": 68.0,
+          "net_pnl": 982.0,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-05-06T19:30:00+00:00",
+          "exit_time": "2019-05-06T20:55:00+00:00",
+          "direction": "long",
+          "quantity": 15,
+          "entry_price": 7807.0,
+          "exit_price": 7790.75,
+          "gross_pnl": -487.5,
+          "commission": 60.0,
+          "net_pnl": -547.5,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-05-07T07:50:00+00:00",
+          "exit_time": "2019-05-07T08:15:00+00:00",
+          "direction": "long",
+          "quantity": 20,
+          "entry_price": 7786.5,
+          "exit_price": 7774.0,
+          "gross_pnl": -500.0,
+          "commission": 80.0,
+          "net_pnl": -580.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5096",
+          "entry_time": "2026-09-03T08:35:00+00:00",
+          "exit_time": "2026-09-03T09:25:00+00:00",
+          "direction": "long",
+          "quantity": 5,
+          "entry_price": 29243.5,
+          "exit_price": 29193.5,
+          "gross_pnl": -500.0,
+          "commission": 20.0,
+          "net_pnl": -520.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5097",
+          "entry_time": "2026-09-03T10:45:00+00:00",
+          "exit_time": "2026-09-03T11:05:00+00:00",
+          "direction": "short",
+          "quantity": 7,
+          "entry_price": 29128.0,
+          "exit_price": 29164.5,
+          "gross_pnl": -511.0,
+          "commission": 28.0,
+          "net_pnl": -539.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5098",
+          "entry_time": "2026-09-03T14:30:00+00:00",
+          "exit_time": "2026-09-03T14:30:00+00:00",
+          "direction": "long",
+          "quantity": 5,
+          "entry_price": 29343.0,
+          "exit_price": 29293.0,
+          "gross_pnl": -500.0,
+          "commission": 20.0,
+          "net_pnl": -520.0,
+          "exit_reason": "stop_loss"
+        }
+      ]
+    },
+    {
+      "strategy_id": "emas",
+      "scenario_name": "gross",
+      "worker_pid": 7140,
+      "compute_time_seconds": 2.3665,
+      "n_trades": 5098,
+      "win_rate": 51.61,
+      "gross_pnl": 123083.0,
+      "commission": 0.0,
+      "net_pnl": 123083.0,
+      "net_r": 246.17,
+      "profit_factor": 1.0997,
+      "expectancy_per_trade": 24.14,
+      "max_drawdown_pct": 34.6,
+      "account_viability": {
+        "survived": true,
+        "ruin_trade_index": null,
+        "ruin_date": null,
+        "equity_at_ruin": null,
+        "terminal_equity": 173083.0
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 417,
+          "win_rate": 48.92,
+          "gross_pnl": -9611.0,
+          "commission": 0.0,
+          "net_pnl": -9611.0,
+          "profit_factor": 0.9097
+        },
+        "2020": {
+          "trades": 692,
+          "win_rate": 53.61,
+          "gross_pnl": 31600.5,
+          "commission": 0.0,
+          "net_pnl": 31600.5,
+          "profit_factor": 1.1972
+        },
+        "2021": {
+          "trades": 670,
+          "win_rate": 49.55,
+          "gross_pnl": 5195.5,
+          "commission": 0.0,
+          "net_pnl": 5195.5,
+          "profit_factor": 1.0308
+        },
+        "2022": {
+          "trades": 704,
+          "win_rate": 50.71,
+          "gross_pnl": 9456.5,
+          "commission": 0.0,
+          "net_pnl": 9456.5,
+          "profit_factor": 1.0544
+        },
+        "2023": {
+          "trades": 698,
+          "win_rate": 52.58,
+          "gross_pnl": 19001.5,
+          "commission": 0.0,
+          "net_pnl": 19001.5,
+          "profit_factor": 1.1147
+        },
+        "2024": {
+          "trades": 705,
+          "win_rate": 51.35,
+          "gross_pnl": 23418.5,
+          "commission": 0.0,
+          "net_pnl": 23418.5,
+          "profit_factor": 1.1364
+        },
+        "2025": {
+          "trades": 706,
+          "win_rate": 51.84,
+          "gross_pnl": 19035.5,
+          "commission": 0.0,
+          "net_pnl": 19035.5,
+          "profit_factor": 1.112
+        },
+        "2026": {
+          "trades": 506,
+          "win_rate": 53.75,
+          "gross_pnl": 24986.0,
+          "commission": 0.0,
+          "net_pnl": 24986.0,
+          "profit_factor": 1.2116
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-05-06T17:25:00+00:00",
+          "exit_time": "2019-05-06T18:45:00+00:00",
+          "direction": "long",
+          "quantity": 17,
+          "entry_price": 7758.75,
+          "exit_price": 7789.632352941177,
+          "gross_pnl": 1050.0,
+          "commission": 0.0,
+          "net_pnl": 1050.0,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-05-06T19:30:00+00:00",
+          "exit_time": "2019-05-06T20:55:00+00:00",
+          "direction": "long",
+          "quantity": 15,
+          "entry_price": 7807.0,
+          "exit_price": 7790.75,
+          "gross_pnl": -487.5,
+          "commission": 0.0,
+          "net_pnl": -487.5,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-05-07T07:50:00+00:00",
+          "exit_time": "2019-05-07T08:15:00+00:00",
+          "direction": "long",
+          "quantity": 20,
+          "entry_price": 7786.5,
+          "exit_price": 7774.0,
+          "gross_pnl": -500.0,
+          "commission": 0.0,
+          "net_pnl": -500.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5096",
+          "entry_time": "2026-09-03T08:35:00+00:00",
+          "exit_time": "2026-09-03T09:25:00+00:00",
+          "direction": "long",
+          "quantity": 5,
+          "entry_price": 29243.5,
+          "exit_price": 29193.5,
+          "gross_pnl": -500.0,
+          "commission": 0.0,
+          "net_pnl": -500.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5097",
+          "entry_time": "2026-09-03T10:45:00+00:00",
+          "exit_time": "2026-09-03T11:05:00+00:00",
+          "direction": "short",
+          "quantity": 7,
+          "entry_price": 29128.0,
+          "exit_price": 29164.5,
+          "gross_pnl": -511.0,
+          "commission": 0.0,
+          "net_pnl": -511.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5098",
+          "entry_time": "2026-09-03T14:30:00+00:00",
+          "exit_time": "2026-09-03T14:30:00+00:00",
+          "direction": "long",
+          "quantity": 5,
+          "entry_price": 29343.0,
+          "exit_price": 29293.0,
+          "gross_pnl": -500.0,
+          "commission": 0.0,
+          "net_pnl": -500.0,
+          "exit_reason": "stop_loss"
+        }
+      ]
+    },
+    {
+      "strategy_id": "orb",
+      "scenario_name": "friction_4rt",
+      "worker_pid": 7140,
+      "compute_time_seconds": 0.3711,
+      "n_trades": 2544,
+      "win_rate": 13.95,
+      "gross_pnl": -173801.5,
+      "commission": 31260.0,
+      "net_pnl": -205061.5,
+      "net_r": -410.12,
+      "profit_factor": 0.6311,
+      "expectancy_per_trade": -80.61,
+      "max_drawdown_pct": 410.38,
+      "account_viability": {
+        "survived": false,
+        "ruin_trade_index": 675,
+        "ruin_date": "2021-03-29",
+        "equity_at_ruin": -335.5,
+        "terminal_equity": -155061.5
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 211,
+          "win_rate": 18.48,
+          "gross_pnl": -4759.5,
+          "commission": 6652.0,
+          "net_pnl": -11411.5,
+          "profit_factor": 0.7695
+        },
+        "2020": {
+          "trades": 372,
+          "win_rate": 17.2,
+          "gross_pnl": -25012.0,
+          "commission": 5132.0,
+          "net_pnl": -30144.0,
+          "profit_factor": 0.6799
+        },
+        "2021": {
+          "trades": 323,
+          "win_rate": 10.22,
+          "gross_pnl": -18773.0,
+          "commission": 3948.0,
+          "net_pnl": -22721.0,
+          "profit_factor": 0.5882
+        },
+        "2022": {
+          "trades": 358,
+          "win_rate": 10.61,
+          "gross_pnl": -31623.5,
+          "commission": 2808.0,
+          "net_pnl": -34431.5,
+          "profit_factor": 0.5289
+        },
+        "2023": {
+          "trades": 369,
+          "win_rate": 14.09,
+          "gross_pnl": -24611.0,
+          "commission": 4788.0,
+          "net_pnl": -29399.0,
+          "profit_factor": 0.6324
+        },
+        "2024": {
+          "trades": 360,
+          "win_rate": 17.5,
+          "gross_pnl": -16453.5,
+          "commission": 4036.0,
+          "net_pnl": -20489.5,
+          "profit_factor": 0.7495
+        },
+        "2025": {
+          "trades": 334,
+          "win_rate": 13.47,
+          "gross_pnl": -22086.5,
+          "commission": 2676.0,
+          "net_pnl": -24762.5,
+          "profit_factor": 0.649
+        },
+        "2026": {
+          "trades": 217,
+          "win_rate": 9.68,
+          "gross_pnl": -30482.5,
+          "commission": 1220.0,
+          "net_pnl": -31702.5,
+          "profit_factor": 0.3857
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-05-06T14:20:00+00:00",
+          "exit_time": "2019-05-07T07:35:00+00:00",
+          "direction": "long",
+          "quantity": 3,
+          "entry_price": 7759.5,
+          "exit_price": 7759.5,
+          "gross_pnl": 0.0,
+          "commission": 12.0,
+          "net_pnl": -12.0,
+          "exit_reason": "time_exit"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-05-07T14:05:00+00:00",
+          "exit_time": "2019-05-08T07:20:00+00:00",
+          "direction": "short",
+          "quantity": 4,
+          "entry_price": 7689.0,
+          "exit_price": 7689.0,
+          "gross_pnl": 0.0,
+          "commission": 16.0,
+          "net_pnl": -16.0,
+          "exit_reason": "time_exit"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-05-08T15:00:00+00:00",
+          "exit_time": "2019-05-09T00:45:00+00:00",
+          "direction": "long",
+          "quantity": 3,
+          "entry_price": 7673.0,
+          "exit_price": 7600.0,
+          "gross_pnl": -438.0,
+          "commission": 12.0,
+          "net_pnl": -450.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-2542",
+          "entry_time": "2026-09-01T18:45:00+00:00",
+          "exit_time": "2026-09-01T20:00:00+00:00",
+          "direction": "short",
+          "quantity": 2,
+          "entry_price": 29015.0,
+          "exit_price": 29158.0,
+          "gross_pnl": -572.0,
+          "commission": 8.0,
+          "net_pnl": -580.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-2543",
+          "entry_time": "2026-09-02T14:15:00+00:00",
+          "exit_time": "2026-09-03T07:15:00+00:00",
+          "direction": "long",
+          "quantity": 2,
+          "entry_price": 29127.75,
+          "exit_price": 29127.75,
+          "gross_pnl": 0.0,
+          "commission": 8.0,
+          "net_pnl": -8.0,
+          "exit_reason": "time_exit"
+        },
+        {
+          "trade_id": "bt-2544",
+          "entry_time": "2026-09-03T15:05:00+00:00",
+          "exit_time": "2026-09-03T23:55:00+00:00",
+          "direction": "long",
+          "quantity": 1,
+          "entry_price": 29437.0,
+          "exit_price": 29504.0,
+          "gross_pnl": 134.0,
+          "commission": 4.0,
+          "net_pnl": 130.0,
+          "exit_reason": "end_of_data"
+        }
+      ]
+    },
+    {
+      "strategy_id": "orb",
+      "scenario_name": "gross",
+      "worker_pid": 21612,
+      "compute_time_seconds": 0.403,
+      "n_trades": 2544,
+      "win_rate": 13.95,
+      "gross_pnl": -173801.5,
+      "commission": 0.0,
+      "net_pnl": -173801.5,
+      "net_r": -347.6,
+      "profit_factor": 0.6721,
+      "expectancy_per_trade": -68.32,
+      "max_drawdown_pct": 337.71,
+      "account_viability": {
+        "survived": false,
+        "ruin_trade_index": 934,
+        "ruin_date": "2022-01-26",
+        "equity_at_ruin": -419.0,
+        "terminal_equity": -123801.5
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 211,
+          "win_rate": 18.48,
+          "gross_pnl": -4759.5,
+          "commission": 0.0,
+          "net_pnl": -4759.5,
+          "profit_factor": 0.8922
+        },
+        "2020": {
+          "trades": 372,
+          "win_rate": 17.2,
+          "gross_pnl": -25012.0,
+          "commission": 0.0,
+          "net_pnl": -25012.0,
+          "profit_factor": 0.7219
+        },
+        "2021": {
+          "trades": 323,
+          "win_rate": 10.22,
+          "gross_pnl": -18773.0,
+          "commission": 0.0,
+          "net_pnl": -18773.0,
+          "profit_factor": 0.6373
+        },
+        "2022": {
+          "trades": 358,
+          "win_rate": 10.61,
+          "gross_pnl": -31623.5,
+          "commission": 0.0,
+          "net_pnl": -31623.5,
+          "profit_factor": 0.5523
+        },
+        "2023": {
+          "trades": 369,
+          "win_rate": 14.09,
+          "gross_pnl": -24611.0,
+          "commission": 0.0,
+          "net_pnl": -24611.0,
+          "profit_factor": 0.6767
+        },
+        "2024": {
+          "trades": 360,
+          "win_rate": 17.5,
+          "gross_pnl": -16453.5,
+          "commission": 0.0,
+          "net_pnl": -16453.5,
+          "profit_factor": 0.7905
+        },
+        "2025": {
+          "trades": 334,
+          "win_rate": 13.47,
+          "gross_pnl": -22086.5,
+          "commission": 0.0,
+          "net_pnl": -22086.5,
+          "profit_factor": 0.6767
+        },
+        "2026": {
+          "trades": 217,
+          "win_rate": 9.68,
+          "gross_pnl": -30482.5,
+          "commission": 0.0,
+          "net_pnl": -30482.5,
+          "profit_factor": 0.3968
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-05-06T14:20:00+00:00",
+          "exit_time": "2019-05-07T07:35:00+00:00",
+          "direction": "long",
+          "quantity": 3,
+          "entry_price": 7759.5,
+          "exit_price": 7759.5,
+          "gross_pnl": 0.0,
+          "commission": 0.0,
+          "net_pnl": 0.0,
+          "exit_reason": "time_exit"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-05-07T14:05:00+00:00",
+          "exit_time": "2019-05-08T07:20:00+00:00",
+          "direction": "short",
+          "quantity": 4,
+          "entry_price": 7689.0,
+          "exit_price": 7689.0,
+          "gross_pnl": 0.0,
+          "commission": 0.0,
+          "net_pnl": 0.0,
+          "exit_reason": "time_exit"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-05-08T15:00:00+00:00",
+          "exit_time": "2019-05-09T00:45:00+00:00",
+          "direction": "long",
+          "quantity": 3,
+          "entry_price": 7673.0,
+          "exit_price": 7600.0,
+          "gross_pnl": -438.0,
+          "commission": 0.0,
+          "net_pnl": -438.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-2542",
+          "entry_time": "2026-09-01T18:45:00+00:00",
+          "exit_time": "2026-09-01T20:00:00+00:00",
+          "direction": "short",
+          "quantity": 2,
+          "entry_price": 29015.0,
+          "exit_price": 29158.0,
+          "gross_pnl": -572.0,
+          "commission": 0.0,
+          "net_pnl": -572.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-2543",
+          "entry_time": "2026-09-02T14:15:00+00:00",
+          "exit_time": "2026-09-03T07:15:00+00:00",
+          "direction": "long",
+          "quantity": 2,
+          "entry_price": 29127.75,
+          "exit_price": 29127.75,
+          "gross_pnl": 0.0,
+          "commission": 0.0,
+          "net_pnl": 0.0,
+          "exit_reason": "time_exit"
+        },
+        {
+          "trade_id": "bt-2544",
+          "entry_time": "2026-09-03T15:05:00+00:00",
+          "exit_time": "2026-09-03T23:55:00+00:00",
+          "direction": "long",
+          "quantity": 1,
+          "entry_price": 29437.0,
+          "exit_price": 29504.0,
+          "gross_pnl": 134.0,
+          "commission": 0.0,
+          "net_pnl": 134.0,
+          "exit_reason": "end_of_data"
+        }
+      ]
+    },
+    {
+      "strategy_id": "smc_fvg",
+      "scenario_name": "friction_4rt",
+      "worker_pid": 21612,
+      "compute_time_seconds": 0.9526,
+      "n_trades": 5986,
+      "win_rate": 58.19,
+      "gross_pnl": 461233.5,
+      "commission": 473372.0,
+      "net_pnl": -12138.5,
+      "net_r": -24.28,
+      "profit_factor": 0.9916,
+      "expectancy_per_trade": -2.03,
+      "max_drawdown_pct": 65.94,
+      "account_viability": {
+        "survived": true,
+        "ruin_trade_index": null,
+        "ruin_date": null,
+        "equity_at_ruin": null,
+        "terminal_equity": 37861.5
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 118,
+          "win_rate": 58.47,
+          "gross_pnl": 6567.5,
+          "commission": 10476.0,
+          "net_pnl": -3908.5,
+          "profit_factor": 0.8653
+        },
+        "2020": {
+          "trades": 682,
+          "win_rate": 61.29,
+          "gross_pnl": 74441.0,
+          "commission": 54348.0,
+          "net_pnl": 20093.0,
+          "profit_factor": 1.1324
+        },
+        "2021": {
+          "trades": 649,
+          "win_rate": 55.62,
+          "gross_pnl": 33333.0,
+          "commission": 55108.0,
+          "net_pnl": -21775.0,
+          "profit_factor": 0.8672
+        },
+        "2022": {
+          "trades": 977,
+          "win_rate": 59.67,
+          "gross_pnl": 89749.5,
+          "commission": 75712.0,
+          "net_pnl": 14037.5,
+          "profit_factor": 1.061
+        },
+        "2023": {
+          "trades": 581,
+          "win_rate": 54.91,
+          "gross_pnl": 26690.5,
+          "commission": 48712.0,
+          "net_pnl": -22021.5,
+          "profit_factor": 0.8528
+        },
+        "2024": {
+          "trades": 795,
+          "win_rate": 58.87,
+          "gross_pnl": 64660.5,
+          "commission": 65928.0,
+          "net_pnl": -1267.5,
+          "profit_factor": 0.9934
+        },
+        "2025": {
+          "trades": 1085,
+          "win_rate": 60.28,
+          "gross_pnl": 108621.5,
+          "commission": 83436.0,
+          "net_pnl": 25185.5,
+          "profit_factor": 1.1008
+        },
+        "2026": {
+          "trades": 1099,
+          "win_rate": 55.6,
+          "gross_pnl": 57170.0,
+          "commission": 79652.0,
+          "net_pnl": -22482.0,
+          "profit_factor": 0.9216
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-05-07T13:30:00+00:00",
+          "exit_time": "2019-05-07T13:30:00+00:00",
+          "direction": "short",
+          "quantity": 18,
+          "entry_price": 7725.25,
+          "exit_price": 7739.0,
+          "gross_pnl": -495.0,
+          "commission": 72.0,
+          "net_pnl": -567.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-05-07T20:00:00+00:00",
+          "exit_time": "2019-05-07T20:00:00+00:00",
+          "direction": "short",
+          "quantity": 26,
+          "entry_price": 7665.25,
+          "exit_price": 7674.75,
+          "gross_pnl": -494.0,
+          "commission": 104.0,
+          "net_pnl": -598.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-05-08T08:55:00+00:00",
+          "exit_time": "2019-05-08T09:00:00+00:00",
+          "direction": "short",
+          "quantity": 30,
+          "entry_price": 7678.25,
+          "exit_price": 7667.875,
+          "gross_pnl": 622.5,
+          "commission": 120.0,
+          "net_pnl": 502.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-5984",
+          "entry_time": "2026-09-03T12:10:00+00:00",
+          "exit_time": "2026-09-03T12:10:00+00:00",
+          "direction": "long",
+          "quantity": 19,
+          "entry_price": 29124.5,
+          "exit_price": 29141.17105263158,
+          "gross_pnl": 633.5,
+          "commission": 76.0,
+          "net_pnl": 557.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-5985",
+          "entry_time": "2026-09-03T13:00:00+00:00",
+          "exit_time": "2026-09-03T13:05:00+00:00",
+          "direction": "long",
+          "quantity": 6,
+          "entry_price": 29238.0,
+          "exit_price": 29199.0,
+          "gross_pnl": -468.0,
+          "commission": 24.0,
+          "net_pnl": -492.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5986",
+          "entry_time": "2026-09-03T14:30:00+00:00",
+          "exit_time": "2026-09-03T14:30:00+00:00",
+          "direction": "long",
+          "quantity": 16,
+          "entry_price": 29295.75,
+          "exit_price": 29315.125,
+          "gross_pnl": 620.0,
+          "commission": 64.0,
+          "net_pnl": 556.0,
+          "exit_reason": "take_profit"
+        }
+      ]
+    },
+    {
+      "strategy_id": "smc_fvg",
+      "scenario_name": "gross",
+      "worker_pid": 7140,
+      "compute_time_seconds": 0.9007,
+      "n_trades": 5986,
+      "win_rate": 58.97,
+      "gross_pnl": 461233.5,
+      "commission": 0.0,
+      "net_pnl": 461233.5,
+      "net_r": 922.47,
+      "profit_factor": 1.3666,
+      "expectancy_per_trade": 77.05,
+      "max_drawdown_pct": 6.66,
+      "account_viability": {
+        "survived": true,
+        "ruin_trade_index": null,
+        "ruin_date": null,
+        "equity_at_ruin": null,
+        "terminal_equity": 511233.5
+      },
+      "annual_breakdown": {
+        "2019": {
+          "trades": 118,
+          "win_rate": 59.32,
+          "gross_pnl": 6567.5,
+          "commission": 0.0,
+          "net_pnl": 6567.5,
+          "profit_factor": 1.2638
+        },
+        "2020": {
+          "trades": 682,
+          "win_rate": 62.46,
+          "gross_pnl": 74441.0,
+          "commission": 0.0,
+          "net_pnl": 74441.0,
+          "profit_factor": 1.5658
+        },
+        "2021": {
+          "trades": 649,
+          "win_rate": 56.55,
+          "gross_pnl": 33333.0,
+          "commission": 0.0,
+          "net_pnl": 33333.0,
+          "profit_factor": 1.2376
+        },
+        "2022": {
+          "trades": 977,
+          "win_rate": 60.18,
+          "gross_pnl": 89749.5,
+          "commission": 0.0,
+          "net_pnl": 89749.5,
+          "profit_factor": 1.4487
+        },
+        "2023": {
+          "trades": 581,
+          "win_rate": 56.11,
+          "gross_pnl": 26690.5,
+          "commission": 0.0,
+          "net_pnl": 26690.5,
+          "profit_factor": 1.2079
+        },
+        "2024": {
+          "trades": 795,
+          "win_rate": 59.37,
+          "gross_pnl": 64660.5,
+          "commission": 0.0,
+          "net_pnl": 64660.5,
+          "profit_factor": 1.3935
+        },
+        "2025": {
+          "trades": 1085,
+          "win_rate": 60.92,
+          "gross_pnl": 108621.5,
+          "commission": 0.0,
+          "net_pnl": 108621.5,
+          "profit_factor": 1.4994
+        },
+        "2026": {
+          "trades": 1099,
+          "win_rate": 56.41,
+          "gross_pnl": 57170.0,
+          "commission": 0.0,
+          "net_pnl": 57170.0,
+          "profit_factor": 1.2277
+        }
+      },
+      "trades_sample": [
+        {
+          "trade_id": "bt-1",
+          "entry_time": "2019-05-07T13:30:00+00:00",
+          "exit_time": "2019-05-07T13:30:00+00:00",
+          "direction": "short",
+          "quantity": 18,
+          "entry_price": 7725.25,
+          "exit_price": 7739.0,
+          "gross_pnl": -495.0,
+          "commission": 0.0,
+          "net_pnl": -495.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-2",
+          "entry_time": "2019-05-07T20:00:00+00:00",
+          "exit_time": "2019-05-07T20:00:00+00:00",
+          "direction": "short",
+          "quantity": 26,
+          "entry_price": 7665.25,
+          "exit_price": 7674.75,
+          "gross_pnl": -494.0,
+          "commission": 0.0,
+          "net_pnl": -494.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-3",
+          "entry_time": "2019-05-08T08:55:00+00:00",
+          "exit_time": "2019-05-08T09:00:00+00:00",
+          "direction": "short",
+          "quantity": 30,
+          "entry_price": 7678.25,
+          "exit_price": 7667.875,
+          "gross_pnl": 622.5,
+          "commission": 0.0,
+          "net_pnl": 622.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-5984",
+          "entry_time": "2026-09-03T12:10:00+00:00",
+          "exit_time": "2026-09-03T12:10:00+00:00",
+          "direction": "long",
+          "quantity": 19,
+          "entry_price": 29124.5,
+          "exit_price": 29141.17105263158,
+          "gross_pnl": 633.5,
+          "commission": 0.0,
+          "net_pnl": 633.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-5985",
+          "entry_time": "2026-09-03T13:00:00+00:00",
+          "exit_time": "2026-09-03T13:05:00+00:00",
+          "direction": "long",
+          "quantity": 6,
+          "entry_price": 29238.0,
+          "exit_price": 29199.0,
+          "gross_pnl": -468.0,
+          "commission": 0.0,
+          "net_pnl": -468.0,
+          "exit_reason": "stop_loss"
+        },
+        {
+          "trade_id": "bt-5986",
+          "entry_time": "2026-09-03T14:30:00+00:00",
+          "exit_time": "2026-09-03T14:30:00+00:00",
+          "direction": "long",
+          "quantity": 16,
+          "entry_price": 29295.75,
+          "exit_price": 29315.125,
+          "gross_pnl": 620.0,
+          "commission": 0.0,
+          "net_pnl": 620.0,
+          "exit_reason": "take_profit"
+        }
+      ]
+    }
+  ]
+}
