@@ -281,3 +281,43 @@ class TestFullPipeline:
         assert "win_rate" in m
         assert "n_trades" in m
         assert "std_r" in m
+
+    def test_two_datasets_same_asset_independent(self, tmp_path):
+        """Two separate imports of the same asset produce independent pipelines."""
+        def _make(n, prefix, base_date):
+            recs = []
+            for i in range(n):
+                side = 1 if i % 2 == 0 else -1
+                entry = 15000 + i * 10
+                risk = 20.0
+                pnl = 15.0 if i % 3 != 0 else -10.0
+                stop = entry - risk if side == 1 else entry + risk
+                recs.append({
+                    "t": f"{base_date}T{9 + i % 8:02d}:00:00+00:00",
+                    "strategy": "breakout_v1", "side": side,
+                    "entry": entry, "stop": stop,
+                    "exit_price": entry + pnl * 0.3, "pnl_net": pnl,
+                    "outcome": "closed", "asset": "MNQ",
+                    "trade_id": f"{prefix}-{i:03d}",
+                })
+            return recs
+        recs1 = _make(10, "D1", "2024-07-01")
+        recs2 = _make(8, "D2", "2024-08-01")
+        src1 = _write_tsfm_csv(tmp_path / "ds1.csv", recs1)
+        src2 = _write_tsfm_csv(tmp_path / "ds2.csv", recs2)
+        r1 = run_full_pipeline(src1, tmp_path / "out1", config=ConversionConfig(symbol="MNQ"))
+        r2 = run_full_pipeline(src2, tmp_path / "out2", config=ConversionConfig(symbol="MNQ"))
+        assert r1["audit"]["accepted"] == 10
+        assert r2["audit"]["accepted"] == 8
+        assert r1["audit"]["source_sha256"] != r2["audit"]["source_sha256"]
+        assert r1["metrics"]["n_trades"] == 10
+        assert r2["metrics"]["n_trades"] == 8
+
+    def test_reject_invalid_batch_by_default(self, tmp_path):
+        """CLI-like behavior: batch with errors is rejected unless accept_partial."""
+        records = _make_records(5, include_errors=True)
+        src = _write_tsfm_csv(tmp_path / "src.csv", records)
+        dst = tmp_path / "out" / "fars.csv"
+        audit = import_csv(src, dst, config=ConversionConfig(symbol="MNQ"))
+        assert audit.rejected >= 1
+        assert audit.accepted + audit.rejected + audit.deduplicated == audit.total_rows
