@@ -1,0 +1,159 @@
+{
+  "generated_utc": "2026-09-13T19:25:43.569498+00:00",
+  "dataset": {
+    "zip_path": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "loaded_bars": 518237,
+    "first_timestamp": "2019-05-06T00:00:00+00:00",
+    "last_timestamp": "2026-09-03T23:55:00+00:00",
+    "load_seconds": 2.3461,
+    "canonical_cutoff": "2019-05-06T00:00:00.000Z"
+  },
+  "scenarios": {
+    "continuous_gross": {
+      "n_trades": 5986,
+      "win_rate": 0.590043,
+      "wins": 3532,
+      "losses": 2454,
+      "breakeven": 0,
+      "gross_pnl": 463261.0,
+      "total_commission": 0.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": 463261.0,
+      "profit_factor": 1.3683,
+      "net_r": 926.522,
+      "expectancy_r": 0.154781,
+      "expectancy_dollars": 77.3907,
+      "max_drawdown_pct": 0.06533,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.8444
+    },
+    "discrete_gross": {
+      "n_trades": 5986,
+      "win_rate": 0.589709,
+      "wins": 3530,
+      "losses": 2456,
+      "breakeven": 0,
+      "gross_pnl": 461233.5,
+      "total_commission": 0.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": 461233.5,
+      "profit_factor": 1.3666,
+      "net_r": 922.467,
+      "expectancy_r": 0.154104,
+      "expectancy_dollars": 77.052,
+      "max_drawdown_pct": 0.066631,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.8386
+    },
+    "continuous_friction": {
+      "n_trades": 5986,
+      "win_rate": 0.583862,
+      "wins": 3495,
+      "losses": 2486,
+      "breakeven": 5,
+      "gross_pnl": 463261.0,
+      "total_commission": 473372.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": -10111.0,
+      "profit_factor": 0.993,
+      "net_r": -20.222,
+      "expectancy_r": -0.003378,
+      "expectancy_dollars": -1.6891,
+      "max_drawdown_pct": 0.641938,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.8384
+    },
+    "discrete_friction": {
+      "n_trades": 5986,
+      "win_rate": 0.581858,
+      "wins": 3483,
+      "losses": 2501,
+      "breakeven": 2,
+      "gross_pnl": 461233.5,
+      "total_commission": 473372.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": -12138.5,
+      "profit_factor": 0.9916,
+      "net_r": -24.277,
+      "expectancy_r": -0.004056,
+      "expectancy_dollars": -2.0278,
+      "max_drawdown_pct": 0.659396,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.893
+    }
+  },
+  "comparison_analysis": {
+    "total_trades": 5986,
+    "even_quantity_trades": 2919,
+    "even_quantity_max_abs_diff": 0.0,
+    "odd_quantity_trades": 3067,
+    "odd_quantity_total_pnl_diff": -2027.5,
+    "q1_trade_count": 11,
+    "q1_examples": [
+      {
+        "trade_id": "bt-2384",
+        "exit_reason": "stop_loss",
+        "cont_gross": -434.5,
+        "disc_gross": -434.5,
+        "cont_net": -438.5,
+        "disc_net": -438.5
+      },
+      {
+        "trade_id": "bt-2702",
+        "exit_reason": "take_profit",
+        "cont_gross": 447.5,
+        "disc_gross": 537.0,
+        "cont_net": 443.5,
+        "disc_net": 533.0
+      },
+      {
+        "trade_id": "bt-3000",
+        "exit_reason": "take_profit",
+        "cont_gross": 524.75,
+        "disc_gross": 629.5,
+        "cont_net": 520.75,
+        "disc_net": 625.5
+      },
+      {
+        "trade_id": "bt-3219",
+        "exit_reason": "stop_loss",
+        "cont_gross": -385.0,
+        "disc_gross": -385.0,
+        "cont_net": -389.0,
+        "disc_net": -389.0
+      },
+      {
+        "trade_id": "bt-3296",
+        "exit_reason": "stop_loss",
+        "cont_gross": -546.0,
+        "disc_gross": -546.0,
+        "cont_net": -550.0,
+        "disc_net": -550.0
+      }
+    ],
+    "commission_identity_verified": true,
+    "signal_identity_verified": true,
+    "explanation": "For even quantities (Q=2k), floor(2k/2) = k = 0.50*Q, yielding bit-for-bit identical PnL to the continuous 50% partial model (max diff = 0.00). For odd quantities (Q=2k+1), discrete closes k contracts at TP1 and k+1 contracts at the final exit, shifting weight slightly toward the final exit (runner). With Q=1, 0 contracts exit at TP1 while the stop is trailed to break-even at 1R; winners achieve full 1.5R target rather than being diluted to 1.25R, while trades stopped at BE realize $0 gross rather than $1R on half a contract."
+  }
+}

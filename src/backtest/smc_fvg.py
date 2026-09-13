@@ -269,6 +269,7 @@ def smc_fvg_config(
     f: float = DEFAULT_FRACTION,
     wait: int = DEFAULT_WAIT,
     cooldown: int = DEFAULT_COOLDOWN,
+    discrete_partial_contracts: bool = False,
     **overrides,
 ) -> BacktestConfig:
     """Gross-reference execution config for SMC-FVG."""
@@ -285,6 +286,7 @@ def smc_fvg_config(
         "pending_limit_entry": True,
         "pending_order_wait_bars": wait,
         "cooldown_bars": cooldown,
+        "discrete_partial_contracts": discrete_partial_contracts,
     }
     params.update(overrides)
     return BacktestConfig(**params)

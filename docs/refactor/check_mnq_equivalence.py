@@ -31,6 +31,7 @@ _ADDITIVE_EXECUTOR_FIELDS = {
     "pending_limit_entry",
     "pending_order_wait_bars",
     "cooldown_bars",
+    "discrete_partial_contracts",
 }
 
 

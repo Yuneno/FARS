@@ -81,6 +81,7 @@ class BacktestConfig:
     pending_limit_entry: bool = False
     pending_order_wait_bars: int = 0
     cooldown_bars: int = 0
+    discrete_partial_contracts: bool = False
 
     def __post_init__(self) -> None:
         float_fields = (
@@ -164,6 +165,12 @@ class BacktestConfig:
             )
         if self.pending_limit_entry and self.pending_order_wait_bars <= 0:
             raise ValueError("pending_limit_entry requires pending_order_wait_bars > 0")
+        if not isinstance(self.discrete_partial_contracts, bool):
+            raise ValueError("discrete_partial_contracts must be a bool")
+        if self.discrete_partial_contracts and self.partial_take_profit_fraction <= 0:
+            raise ValueError(
+                "discrete_partial_contracts requires partial_take_profit_fraction > 0"
+            )
 
 
 @dataclass(frozen=True)
@@ -502,6 +509,7 @@ def _uses_enhanced_execution(config: BacktestConfig) -> bool:
         or config.pending_limit_entry
         or config.pending_order_wait_bars
         or config.cooldown_bars
+        or config.discrete_partial_contracts
     )
 
 
@@ -603,6 +611,9 @@ def _run_backtest_enhanced(
             "partial_taken": False,
             "booked_move_points": 0.0,
             "limit_entry": limit,
+            "q_tp1": 0,
+            "q_rem": qty,
+            "booked_pnl": 0.0,
         }
 
     def close_position(reason: str, fill: float, bar: Bar) -> None:
@@ -610,15 +621,43 @@ def _run_backtest_enhanced(
         assert position is not None
         direction = position["direction"]
         entry = position["entry"]
-        remaining = 1.0 - partial_fraction if position["partial_taken"] else 1.0
-        signed_move = fill - entry if direction == "long" else entry - fill
-        total_move = position["booked_move_points"] + remaining * signed_move
-        equivalent_exit = entry + total_move if direction == "long" else entry - total_move
-        gross_pnl = total_move * config.dollar_per_point * position["qty"]
-        commission = config.commission_per_side * 2 * position["qty"]
+        qty = position["qty"]
+        if config.discrete_partial_contracts:
+            if position["partial_taken"]:
+                q_tp1 = position.get("q_tp1", math.floor(qty * partial_fraction))
+                q_rem = position.get("q_rem", qty - q_tp1)
+                booked_pnl = position.get(
+                    "booked_pnl",
+                    q_tp1 * position["risk_points"] * config.dollar_per_point,
+                )
+            else:
+                q_tp1 = 0
+                q_rem = qty
+                booked_pnl = 0.0
+            signed_move = fill - entry if direction == "long" else entry - fill
+            rem_pnl = q_rem * signed_move * config.dollar_per_point
+            gross_pnl = booked_pnl + rem_pnl
+            total_move = (
+                gross_pnl / (config.dollar_per_point * qty) if qty > 0 else 0.0
+            )
+            equivalent_exit = (
+                entry + total_move if direction == "long" else entry - total_move
+            )
+            remaining_frac = q_rem / qty if qty > 0 else 1.0
+        else:
+            remaining = 1.0 - partial_fraction if position["partial_taken"] else 1.0
+            signed_move = fill - entry if direction == "long" else entry - fill
+            total_move = position["booked_move_points"] + remaining * signed_move
+            equivalent_exit = (
+                entry + total_move if direction == "long" else entry - total_move
+            )
+            gross_pnl = total_move * config.dollar_per_point * qty
+            remaining_frac = remaining
+
+        commission = config.commission_per_side * 2 * qty
         net_pnl = gross_pnl - commission
         initial_risk = position["risk_points"]
-        stop_risk_dollars = initial_risk * config.dollar_per_point * position["qty"]
+        stop_risk_dollars = initial_risk * config.dollar_per_point * qty
         entry_slip_pts = (
             0.0
             if position["limit_entry"]
@@ -634,10 +673,10 @@ def _run_backtest_enhanced(
                 direction == "short" and bar.open > position["stop"]
             )
             if not gap:
-                exit_slip_pts = abs(fill - position["stop"]) * remaining
+                exit_slip_pts = abs(fill - position["stop"]) * remaining_frac
         slippage_cost = (
             entry_slip_pts + exit_slip_pts
-        ) * config.dollar_per_point * position["qty"]
+        ) * config.dollar_per_point * qty
         executed = ExecutedTrade(
             trade_id=f"bt-{len(trades) + 1}",
             direction=direction,
@@ -736,8 +775,18 @@ def _run_backtest_enhanced(
                 fill = _stop_fill(config, direction, stop, bar.open)
             elif hit_target:
                 if not position["partial_taken"] and hit_tp1 and partial_fraction > 0:
-                    position["booked_move_points"] = partial_fraction * position["risk_points"]
                     position["partial_taken"] = True
+                    if config.discrete_partial_contracts:
+                        q_tp1 = math.floor(position["qty"] * partial_fraction)
+                        position["q_tp1"] = q_tp1
+                        position["q_rem"] = position["qty"] - q_tp1
+                        position["booked_pnl"] = (
+                            q_tp1 * position["risk_points"] * config.dollar_per_point
+                        )
+                    else:
+                        position["booked_move_points"] = (
+                            partial_fraction * position["risk_points"]
+                        )
                 reason, fill = "take_profit", target
             elif (
                 hit_tp1
@@ -745,7 +794,17 @@ def _run_backtest_enhanced(
                 and not position["partial_taken"]
             ):
                 position["partial_taken"] = True
-                position["booked_move_points"] = partial_fraction * position["risk_points"]
+                if config.discrete_partial_contracts:
+                    q_tp1 = math.floor(position["qty"] * partial_fraction)
+                    position["q_tp1"] = q_tp1
+                    position["q_rem"] = position["qty"] - q_tp1
+                    position["booked_pnl"] = (
+                        q_tp1 * position["risk_points"] * config.dollar_per_point
+                    )
+                else:
+                    position["booked_move_points"] = (
+                        partial_fraction * position["risk_points"]
+                    )
                 if config.move_stop_to_break_even:
                     position["stop"] = position["entry"]
             elif _time_exit_close(config, position, bar, bars_held):

@@ -1,6 +1,8 @@
 """Deterministic signal tests for the causal SMC-FVG port."""
 
 from datetime import UTC, datetime, timedelta
+import math
+import pytest
 
 from src.backtest.executor import run_backtest
 from src.backtest.history import Bar
@@ -229,5 +231,179 @@ def test_break_even_stop_does_not_trigger_on_tp1_trigger_bar():
     assert trade.exit_reason == "break_even_stop"
     assert trade.entry_price == 111.0
     assert trade.stop_price == 111.0
+
+
+@pytest.mark.parametrize("quantity", [1, 2, 3, 5])
+@pytest.mark.parametrize("scenario", ["tp1_then_be", "tp1_then_target", "direct_stop_loss"])
+def test_discrete_partial_contracts_long(quantity: int, scenario: str):
+    """Verify discrete contracts execution for Longs across Q=1,2,3,5."""
+    strategy = SmcFvgStrategy(swing_w=1, min_risk_pts=0.0)
+    config = smc_fvg_config(
+        initial_balance=50_000.0,
+        fixed_quantity=quantity,
+        commission_per_side=2.0,
+        discrete_partial_contracts=True,
+    )
+    base = _bullish_structure()
+    if scenario == "tp1_then_be":
+        bars = base + [
+            _bar(5, 111.5, 111.8, 110.5, 111.2),
+            _bar(6, 111.2, 112.2, 111.0, 112.0),
+            _bar(7, 112.0, 112.0, 109.5, 110.0),
+        ]
+        result = run_backtest(bars, strategy, config)
+        assert result.n_trades == 1
+        t = result.trades[0]
+        assert t.exit_reason == "break_even_stop"
+        assert t.quantity == quantity
+        risk_pts = t.stop_risk_dollars / (config.dollar_per_point * quantity)
+        q_tp1 = quantity // 2
+        q_rem = quantity - q_tp1
+        expected_gross = q_tp1 * risk_pts * config.dollar_per_point
+        expected_comm = config.commission_per_side * 2 * quantity
+        assert math.isclose(t.gross_pnl, expected_gross, abs_tol=1e-3)
+        assert math.isclose(t.commission, expected_comm, abs_tol=1e-3)
+        assert math.isclose(t.net_pnl, t.gross_pnl - t.commission, abs_tol=1e-3)
+        if quantity == 1:
+            assert t.gross_pnl == 0.0
+            assert t.net_pnl == -expected_comm
+
+    elif scenario == "tp1_then_target":
+        bars = base + [
+            _bar(5, 111.5, 111.8, 110.5, 111.2),
+            _bar(6, 111.2, 112.5, 111.0, 112.0),
+            _bar(7, 112.0, 113.0, 111.5, 112.8),
+        ]
+        result = run_backtest(bars, strategy, config)
+        assert result.n_trades == 1
+        t = result.trades[0]
+        assert t.exit_reason == "take_profit"
+        assert t.quantity == quantity
+        risk_pts = t.stop_risk_dollars / (config.dollar_per_point * quantity)
+        q_tp1 = quantity // 2
+        q_rem = quantity - q_tp1
+        expected_gross = (q_tp1 * risk_pts + q_rem * 1.5 * risk_pts) * config.dollar_per_point
+        expected_comm = config.commission_per_side * 2 * quantity
+        assert math.isclose(t.gross_pnl, expected_gross, abs_tol=1e-3)
+        assert math.isclose(t.commission, expected_comm, abs_tol=1e-3)
+        assert math.isclose(t.net_pnl, t.gross_pnl - t.commission, abs_tol=1e-3)
+        if quantity == 1:
+            assert math.isclose(t.gross_pnl, 1.5 * risk_pts * config.dollar_per_point, abs_tol=1e-3)
+
+    elif scenario == "direct_stop_loss":
+        bars = base + [
+            _bar(5, 111.5, 111.8, 110.5, 111.2),
+            _bar(6, 111.0, 111.2, 108.0, 109.0),
+        ]
+        result = run_backtest(bars, strategy, config)
+        assert result.n_trades == 1
+        t = result.trades[0]
+        assert t.exit_reason == "stop_loss"
+        assert t.quantity == quantity
+        risk_pts = t.stop_risk_dollars / (config.dollar_per_point * quantity)
+        expected_gross = -quantity * risk_pts * config.dollar_per_point
+        expected_comm = config.commission_per_side * 2 * quantity
+        assert math.isclose(t.gross_pnl, expected_gross, abs_tol=1e-3)
+        assert math.isclose(t.commission, expected_comm, abs_tol=1e-3)
+        assert math.isclose(t.net_pnl, t.gross_pnl - t.commission, abs_tol=1e-3)
+
+
+@pytest.mark.parametrize("quantity", [1, 2, 3, 7])
+@pytest.mark.parametrize("scenario", ["tp1_then_be", "tp1_then_target", "direct_stop_loss"])
+def test_discrete_partial_contracts_short(quantity: int, scenario: str):
+    """Verify discrete contracts execution for Shorts across Q=1,2,3,7."""
+    strategy = SmcFvgStrategy(swing_w=1, min_risk_pts=0.0)
+    config = smc_fvg_config(
+        initial_balance=50_000.0,
+        fixed_quantity=quantity,
+        commission_per_side=2.0,
+        discrete_partial_contracts=True,
+    )
+    base = _bearish_structure()
+    if scenario == "tp1_then_be":
+        bars = base + [
+            _bar(5, 88.5, 89.5, 88.2, 88.8),
+            _bar(6, 88.8, 88.9, 87.8, 88.0),
+            _bar(7, 88.0, 90.5, 88.0, 89.5),
+        ]
+        result = run_backtest(bars, strategy, config)
+        assert result.n_trades == 1
+        t = result.trades[0]
+        assert t.exit_reason == "break_even_stop"
+        assert t.quantity == quantity
+        risk_pts = t.stop_risk_dollars / (config.dollar_per_point * quantity)
+        q_tp1 = quantity // 2
+        q_rem = quantity - q_tp1
+        expected_gross = q_tp1 * risk_pts * config.dollar_per_point
+        expected_comm = config.commission_per_side * 2 * quantity
+        assert math.isclose(t.gross_pnl, expected_gross, abs_tol=1e-3)
+        assert math.isclose(t.commission, expected_comm, abs_tol=1e-3)
+        assert math.isclose(t.net_pnl, t.gross_pnl - t.commission, abs_tol=1e-3)
+        if quantity == 1:
+            assert t.gross_pnl == 0.0
+            assert t.net_pnl == -expected_comm
+
+    elif scenario == "tp1_then_target":
+        bars = base + [
+            _bar(5, 88.5, 89.5, 88.2, 88.8),
+            _bar(6, 88.8, 88.9, 87.8, 88.0),
+            _bar(7, 88.0, 88.2, 87.0, 87.2),
+        ]
+        result = run_backtest(bars, strategy, config)
+        assert result.n_trades == 1
+        t = result.trades[0]
+        assert t.exit_reason == "take_profit"
+        assert t.quantity == quantity
+        risk_pts = t.stop_risk_dollars / (config.dollar_per_point * quantity)
+        q_tp1 = quantity // 2
+        q_rem = quantity - q_tp1
+        expected_gross = (q_tp1 * risk_pts + q_rem * 1.5 * risk_pts) * config.dollar_per_point
+        expected_comm = config.commission_per_side * 2 * quantity
+        assert math.isclose(t.gross_pnl, expected_gross, abs_tol=1e-3)
+        assert math.isclose(t.commission, expected_comm, abs_tol=1e-3)
+        assert math.isclose(t.net_pnl, t.gross_pnl - t.commission, abs_tol=1e-3)
+
+    elif scenario == "direct_stop_loss":
+        bars = base + [
+            _bar(5, 88.5, 89.5, 88.2, 88.8),
+            _bar(6, 88.8, 91.0, 88.5, 90.5),
+        ]
+        result = run_backtest(bars, strategy, config)
+        assert result.n_trades == 1
+        t = result.trades[0]
+        assert t.exit_reason == "stop_loss"
+        assert t.quantity == quantity
+        risk_pts = t.stop_risk_dollars / (config.dollar_per_point * quantity)
+        expected_gross = -quantity * risk_pts * config.dollar_per_point
+        expected_comm = config.commission_per_side * 2 * quantity
+        assert math.isclose(t.gross_pnl, expected_gross, abs_tol=1e-3)
+        assert math.isclose(t.commission, expected_comm, abs_tol=1e-3)
+        assert math.isclose(t.net_pnl, t.gross_pnl - t.commission, abs_tol=1e-3)
+
+
+def test_discrete_vs_continuous_equivalence_at_quantity_2():
+    """At Q=2, discrete (1 at TP1, 1 at target) is mathematically identical to 50% continuous partial."""
+    strategy = SmcFvgStrategy(swing_w=1, min_risk_pts=0.0)
+    bars = _bullish_structure() + [
+        _bar(5, 111.5, 111.8, 110.5, 111.2),
+        _bar(6, 111.2, 112.5, 111.0, 112.0),
+        _bar(7, 112.0, 113.0, 111.5, 112.8),
+    ]
+    cfg_cont = smc_fvg_config(fixed_quantity=2, commission_per_side=2.0, discrete_partial_contracts=False)
+    cfg_disc = smc_fvg_config(fixed_quantity=2, commission_per_side=2.0, discrete_partial_contracts=True)
+
+    res_cont = run_backtest(bars, strategy.fresh(), cfg_cont)
+    res_disc = run_backtest(bars, strategy.fresh(), cfg_disc)
+
+    assert res_cont.n_trades == 1
+    assert res_disc.n_trades == 1
+    tc = res_cont.trades[0]
+    td = res_disc.trades[0]
+
+    assert math.isclose(tc.gross_pnl, td.gross_pnl, abs_tol=1e-4)
+    assert math.isclose(tc.commission, td.commission, abs_tol=1e-4)
+    assert math.isclose(tc.net_pnl, td.net_pnl, abs_tol=1e-4)
+
+
 
 

@@ -455,7 +455,11 @@ class EmasStrategy:
 
 
 def emas_config(
-    *, market: MarketSpec = MNQ, f: float = 0.5, **overrides
+    *,
+    market: MarketSpec = MNQ,
+    f: float = 0.5,
+    discrete_partial_contracts: bool = False,
+    **overrides,
 ) -> BacktestConfig:
     """Gross-reference execution config for EMAS."""
     params = {
@@ -468,6 +472,7 @@ def emas_config(
         "max_bars_held": 1_000_000_000,
         "partial_take_profit_fraction": f,
         "move_stop_to_break_even": True,
+        "discrete_partial_contracts": discrete_partial_contracts,
     }
     params.update(overrides)
     return BacktestConfig(**params)
