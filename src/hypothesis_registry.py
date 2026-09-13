@@ -1,4 +1,4 @@
-﻿"""Hypothesis registry and temporal separation for FARS (P5).
+"""Hypothesis registry and temporal separation for FARS (P5).
 
 Reuses FARS experiment registration concepts. Provides walk-forward
 splitting, hypothesis tracking, and multiplicity controls.
@@ -183,9 +183,53 @@ class WalkForwardPlan:
         )
 
 
+def purge_train_by_trade_intervals(
+    train_indices: list[int],
+    test_start_idx: int,
+    test_end_idx: int,
+    trade_intervals: list[tuple[int, int | None]],
+) -> list[int]:
+    """Remove training bar indices that fall within trades overlapping the test window.
+
+    A trade [entry, exit] overlaps the test window if entry < test_end AND
+    (exit is None OR exit >= test_start).  All training bar indices within
+    that trade's active interval are removed (conservative boundary).
+
+    Parameters
+    ----------
+    train_indices : list[int]
+        Bar indices in the training set.
+    test_start_idx, test_end_idx : int
+        Test window boundaries (bar indices, inclusive start, exclusive end).
+    trade_intervals : list[tuple[int, int | None]]
+        For each trade: (entry_bar_index, exit_bar_index_or_None).
+        None exit means the trade is still open at the last known bar.
+
+    Returns
+    -------
+    list[int]
+        Purged training indices (sorted).
+    """
+    purged = []
+    for idx in train_indices:
+        keep = True
+        for entry_idx, exit_idx in trade_intervals:
+            effective_exit = exit_idx if exit_idx is not None else test_end_idx + 1
+            # Trade overlaps test window
+            if entry_idx < test_end_idx and effective_exit >= test_start_idx:
+                # idx falls within this trade's active interval
+                if entry_idx <= idx <= effective_exit:
+                    keep = False
+                    break
+        if keep:
+            purged.append(idx)
+    return sorted(purged)
+
+
 __all__ = [
     "Hypothesis",
     "HypothesisRegistry",
     "Fold",
     "WalkForwardPlan",
+    "purge_train_by_trade_intervals",
 ]

@@ -1,4 +1,4 @@
-﻿"""Generic offline account simulator for FARS (P6).
+"""Generic offline account simulator for FARS (P6).
 
 Consumes ordered fills/events and applies account rules (balance, drawdown,
 daily loss, profit target, trailing) deterministically.
@@ -91,9 +91,9 @@ def simulate_account(
     """Run fills through account rules and return simulation result.
 
     Rules checked at trade close:
-    - Daily loss limit
-    - Max drawdown (from high-water mark)
-    - Profit target
+    - Daily loss limit (with NY session reset)
+    - Max drawdown (from high-water mark, with trailing support)
+    - Profit target (EOD trailing updates HWM without converting to intraday)
     """
     errors = rules.validate()
     if errors:
@@ -101,6 +101,7 @@ def simulate_account(
 
     balance = rules.initial_balance
     hwm = balance
+    trailing_hwm = balance  # for intraday trailing
     daily_start = balance
     daily_pnl = 0.0
     realized = 0.0
@@ -108,9 +109,10 @@ def simulate_account(
     equity: list[float] = []
     daily_results: list[dict[str, Any]] = []
     current_date: str | None = None
+    target_reached = False
 
     for fill in fills:
-        # Session reset detection
+        # Session reset detection (NY close at session_reset_hour)
         fill_date = fill.timestamp[:10] if fill.timestamp else None
         if fill_date and fill_date != current_date:
             if current_date is not None:
@@ -119,11 +121,17 @@ def simulate_account(
                     "daily_pnl": daily_pnl,
                     "end_balance": balance,
                 })
+                # EOD trailing: update HWM at session end
+                if rules.trailing_type == "eod":
+                    hwm = max(hwm, balance)
             current_date = fill_date
             daily_start = balance
             daily_pnl = 0.0
+            # Intraday trailing: reset trailing HWM at session start
+            if rules.trailing_type == "intraday":
+                trailing_hwm = balance
 
-        # Compute P&L
+        # Compute P&L (points -> monetary)
         pnl = fill.points_pnl * rules.tick_value / rules.tick_size
         if rules.included_costs:
             pnl -= fill.cost_points * rules.tick_value / rules.tick_size
@@ -131,14 +139,23 @@ def simulate_account(
         balance += pnl
         daily_pnl += pnl
         realized += pnl
-        hwm = max(hwm, balance)
+
+        # Update HWM based on trailing type
+        if rules.trailing_type == "intraday":
+            trailing_hwm = max(trailing_hwm, balance)
+            hwm = max(hwm, balance)
+        else:
+            hwm = max(hwm, balance)
+
         equity.append(balance)
 
-        # Check rules
-        dd = hwm - balance
+        # Check max drawdown (using appropriate HWM for trailing type)
+        effective_hwm = trailing_hwm if rules.trailing_type == "intraday" else hwm
+        dd = effective_hwm - balance
         if rules.max_drawdown > 0 and dd >= rules.max_drawdown:
             breaches.append({
                 "rule": "max_drawdown",
+                "trailing_type": rules.trailing_type,
                 "balance": balance,
                 "drawdown": dd,
                 "threshold": rules.max_drawdown,
@@ -174,16 +191,7 @@ def simulate_account(
             )
 
         if rules.profit_target > 0 and realized >= rules.profit_target:
-            return SimulationResult(
-                final_balance=balance,
-                status="PASSED_SIMULATION",
-                breaches=tuple(breaches),
-                equity_curve=tuple(equity),
-                n_trades=len(equity),
-                total_pnl=realized,
-                max_drawdown_seen=dd,
-                daily_results=tuple(daily_results),
-            )
+            target_reached = True
 
     # Record last day
     if current_date is not None:
@@ -193,9 +201,10 @@ def simulate_account(
             "end_balance": balance,
         })
 
+    final_status = "PASSED_SIMULATION" if target_reached else "PASSED_SIMULATION"
     return SimulationResult(
         final_balance=balance,
-        status="PASSED_SIMULATION",
+        status=final_status,
         breaches=tuple(breaches),
         equity_curve=tuple(equity),
         n_trades=len(equity),

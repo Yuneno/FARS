@@ -23,6 +23,7 @@ from src.types import FundedAccountRules
 # ---------------------------------------------------------------------------
 
 _SEED_SCHEMA_VERSION = "1.0"
+MAX_WORKERS = 6
 
 
 def derive_job_seed(master_seed: int, job_id: str) -> int:
@@ -273,13 +274,15 @@ def run_parallel(
     RunManifest
         Deterministically ordered results (by job_id).
     """
+    if not isinstance(max_workers, int) or max_workers < 1:
+        raise ValueError(f"max_workers must be a positive integer, got {max_workers}")
     if not jobs:
         return RunManifest(
             master_seed=0, n_workers=0, n_jobs=0, n_done=0, n_errors=0,
             total_wall_seconds=0.0, results=(),
         )
 
-    effective_workers = max(1, min(max_workers, len(jobs)))
+    effective_workers = max(1, min(max_workers, 6, len(jobs)))
     rules_dict = asdict(rules) if rules else None
     t0 = time.perf_counter()
 
