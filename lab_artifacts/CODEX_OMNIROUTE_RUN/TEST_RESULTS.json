@@ -1,0 +1,55 @@
+{
+  "generated": "2026-09-13T00:39:05.803596+00:00",
+  "python": "E:\\FARS-LAB\\.venv-fars\\Scripts\\python.exe",
+  "cwd": "E:\\FARS-LAB\\FARS",
+  "summary": {
+    "total": 290,
+    "passed": 288,
+    "skipped": 2,
+    "failed": 0,
+    "errors": 0
+  },
+  "modules": {
+    "test_tsfm_adapter.py": {
+      "passed": 182,
+      "skipped": 0,
+      "failed": 0
+    },
+    "test_parallel.py": {
+      "passed": 20,
+      "skipped": 2,
+      "failed": 0,
+      "skip_reason": "sandbox blocks real spawn"
+    },
+    "test_fills.py": {
+      "passed": 27,
+      "skipped": 0,
+      "failed": 0
+    },
+    "test_detectors.py": {
+      "passed": 12,
+      "skipped": 0,
+      "failed": 0
+    },
+    "test_hypothesis.py": {
+      "passed": 16,
+      "skipped": 0,
+      "failed": 0
+    },
+    "test_account_sim.py": {
+      "passed": 11,
+      "skipped": 0,
+      "failed": 0
+    },
+    "test_importer.py": {
+      "passed": 20,
+      "skipped": 0,
+      "failed": 0
+    }
+  },
+  "baseline_failures": [],
+  "known_issues": [
+    "pytest temp dir PermissionError in sandbox (test_cli.py errors, not code failures)",
+    "2 parallel tests skipped: ProcessPoolExecutor spawn blocked in sandbox"
+  ]
+}

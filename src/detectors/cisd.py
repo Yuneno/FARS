@@ -1,5 +1,14 @@
 """CISD (Close-Invalidation Sell/Demand) detector for FARS (P4).
 
+CISD is dated at the close that confirms it. Baseline-first, opt-in diagnostic.
+
+JITA comparison (patterns/cisd.py):
+- JITA CISD uses confluence with other patterns for trade decisions; FARS is event-only.
+- JITA identifies support/resistance from swing structure; FARS uses simple lookback extremes.
+- FARS CISD available_at == pattern_time (confirmed at bar close).
+- JITA may require multi-bar confirmation; FARS emits at single-bar close.
+- Differences documented; no forced equivalences.
+
 CISD is dated at the close that confirms it.
 """
 from __future__ import annotations

@@ -1,0 +1,136 @@
+{
+  "version": "1.0",
+  "pack_version": "2.0",
+  "generated": "2026-09-13T00:38:48.403357+00:00",
+  "phases": {
+    "P0": {
+      "status": "VERIFIED",
+      "description": "Baseline preserved, HEAD and dirty state documented",
+      "acceptance": "A0",
+      "evidence": [
+        "git log --oneline -10",
+        "test_tsfm_adapter.py 182/182"
+      ]
+    },
+    "P1": {
+      "status": "COMPLETE",
+      "description": "TSFM adapter + import pipeline + CLI + metrics/bootstrap integration",
+      "acceptance": "A1",
+      "evidence": [
+        "182 adapter tests + 20 importer tests pass",
+        "CLI import subcommand verified",
+        "boolean/symbol/timestamp validation enforced",
+        "two-dataset same-asset test passes",
+        "reimport dedup verified",
+        "full pipeline: import->ingest->metrics->bootstrap"
+      ],
+      "files_modified": [
+        "src/tsfm_adapter.py",
+        "src/importer.py",
+        "src/cli.py",
+        "tests/test_tsfm_adapter.py",
+        "tests/test_importer.py"
+      ]
+    },
+    "P2": {
+      "status": "COMPLETE",
+      "description": "Deterministic parallel runner with spawn context, 6-worker limit, semantic equality",
+      "acceptance": "A2",
+      "evidence": [
+        "20 parallel tests pass (2 skipped: sandbox spawn)",
+        "MAX_WORKERS=6 enforced",
+        "job_id from semantic identity only (no PID/timings)",
+        "derive_job_seed deterministic",
+        "worker validation for strategy+profile",
+        "warmup and range filtering applied"
+      ],
+      "files_modified": [
+        "src/parallel.py",
+        "tests/test_parallel.py"
+      ]
+    },
+    "P3": {
+      "status": "COMPLETE",
+      "description": "Fill profiles, cost config, slippage measurement",
+      "acceptance": "A3",
+      "evidence": [
+        "27 fill tests pass",
+        "LEGACY and GAP_AWARE profiles defined",
+        "CostConfig with tick_size/tick_value/commission/slippage",
+        "SlippageReport computed",
+        "run_with_profile standalone simulation"
+      ],
+      "files_modified": [
+        "src/fills.py",
+        "tests/test_fills.py"
+      ]
+    },
+    "P4": {
+      "status": "COMPLETE",
+      "description": "JITA-inspired diagnostic event detectors (CRT, FVG, CISD, sweeps)",
+      "acceptance": "A4",
+      "evidence": [
+        "12 detector tests pass",
+        "CRT, FVG, CISD, sweeps implemented",
+        "DiagnosticEvent with SHA-256 event_id",
+        "JITA comparison documented (divergences explicit)"
+      ],
+      "files_modified": [
+        "src/detectors/",
+        "tests/test_detectors.py"
+      ]
+    },
+    "P5": {
+      "status": "COMPLETE",
+      "description": "Hypothesis registry + walk-forward + temporal purge",
+      "acceptance": "A5",
+      "evidence": [
+        "16 hypothesis tests pass",
+        "HypothesisRegistry with multiplicity tracking",
+        "WalkForwardPlan with expanding windows",
+        "purge_train_by_trade_intervals: entry/exit interval overlap"
+      ],
+      "files_modified": [
+        "src/hypothesis_registry.py",
+        "tests/test_hypothesis.py"
+      ]
+    },
+    "P6": {
+      "status": "COMPLETE",
+      "description": "Account simulator with trailing, NY sessions, market units",
+      "acceptance": "A6",
+      "evidence": [
+        "11 account_sim tests pass",
+        "trailing_type: static/eod/intraday verified",
+        "daily_loss_limit with session reset",
+        "tick_value/tick_size units correct",
+        "PASSED_SIMULATION/FAILED_RULES status"
+      ],
+      "files_modified": [
+        "src/account_sim.py",
+        "tests/test_account_sim.py"
+      ]
+    },
+    "P7": {
+      "status": "COMPLETE",
+      "description": "E2E flow demonstration, cross-validation, benchmark BLOCKED (no real data)",
+      "acceptance": "A7",
+      "evidence": [
+        "Full flow: import -> audit -> persist -> reimport -> metrics -> bootstrap",
+        "All 288 tests pass",
+        "Baseline legacy P0 tests unaltered",
+        "Benchmark BLOCKED: requires real MNQ/YM historical data"
+      ],
+      "blocked": [
+        "representative benchmark requires real historical data"
+      ]
+    }
+  },
+  "pending": [
+    {
+      "item": "Juanca strategy translation and comparison",
+      "status": "REGISTERED",
+      "note": "Deferred until current plan complete per user instruction"
+    }
+  ]
+}

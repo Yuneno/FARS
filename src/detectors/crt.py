@@ -2,6 +2,16 @@
 
 Detects range contraction patterns with confirmation delay.
 Pattern forms over N bars; available_at is after the confirming bar closes.
+
+JITA comparison (patterns/crt.py):
+- JITA uses an OrderManager to trade CRT signals; FARS CRT is diagnostic-only.
+- JITA CRT requires session-level high/low context; FARS uses configurable lookback.
+- FARS CRT emits available_at at pattern bar close (no confirmation delay beyond that).
+- FARS CRT direction is inferred from close vs midpoint; JITA may use additional context.
+- Differences are documented; divergences do not force false equivalences.
+
+Detects range contraction patterns with confirmation delay.
+Pattern forms over N bars; available_at is after the confirming bar closes.
 """
 from __future__ import annotations
 from datetime import datetime
