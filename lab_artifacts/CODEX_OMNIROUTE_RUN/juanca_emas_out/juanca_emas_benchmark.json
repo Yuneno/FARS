@@ -1,0 +1,318 @@
+{
+  "strategy_benchmarked": "EMAS (EmasStrategy) with SMC-FVG Comparative Reference",
+  "generated_utc": "2026-09-13T19:28:48.076062+00:00",
+  "git_commit": "86cc57524bbdcbd845877bb13cec350e6c01cc75",
+  "dataset": {
+    "zip_path": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "loaded_bars": 518237,
+    "first_timestamp": "2019-05-06T00:00:00+00:00",
+    "last_timestamp": "2026-09-03T23:55:00+00:00",
+    "load_seconds": 2.3112,
+    "canonical_cutoff": "2019-05-06T00:00:00.000Z"
+  },
+  "market": {
+    "symbol": "MNQ",
+    "session_timezone": "America/New_York",
+    "pre_session_start": "00:00:00",
+    "pre_session_end": "09:30:00",
+    "regular_session_start": "09:30:00",
+    "regular_session_end": "16:00:00",
+    "dollar_per_point": 2.0,
+    "tick_size": 0.25,
+    "friction_points": 2.0
+  },
+  "emas_parameters": {
+    "f": 0.5,
+    "target_rr": 3.0,
+    "confirm_closes": 3,
+    "atr_mult": 2.0,
+    "stop_min": 5.0,
+    "stop_max": 50.0,
+    "hivol_atr": 30.0,
+    "hivol_mult": 1.6,
+    "max_dist_atr": 0.5,
+    "vol3_max": 1.8,
+    "chop_atr": 0.0,
+    "htf_filter": true,
+    "max_trades_day": 3,
+    "session_block": "18,21,22,23",
+    "blackout": "09:15-09:45",
+    "p_entry": 10,
+    "p_second": 20,
+    "p_pullback": 55,
+    "p_bias": 200,
+    "entry_on_20": false,
+    "log_decisions": true,
+    "timeframe": "M5",
+    "atr": "SMA(14)",
+    "ema_seed": "SMA then recursive full-series EMA"
+  },
+  "smc_fvg_parameters": {
+    "f": 0.5,
+    "swing_w": 5,
+    "target_rr": 1.5,
+    "wait": 48,
+    "min_risk_pts": 8.0,
+    "cooldown": 6,
+    "log_decisions": true,
+    "timeframe": "M5",
+    "pivot_confirmation": "point_in_time"
+  },
+  "results": {
+    "emas_gross": {
+      "n_trades": 5098,
+      "win_rate": 0.516085,
+      "wins": 2631,
+      "losses": 2467,
+      "breakeven": 0,
+      "gross_pnl": 120481.75,
+      "total_commission": 0.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": 120481.75,
+      "profit_factor": 1.0976,
+      "net_r": 240.9635,
+      "expectancy_r": 0.047266,
+      "expectancy_dollars": 23.6331,
+      "max_drawdown_pct": 0.34172,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "take_profit": 933,
+        "stop_loss": 2466,
+        "break_even_stop": 1699
+      },
+      "wall_seconds": 2.2767
+    },
+    "emas_friction": {
+      "n_trades": 5098,
+      "win_rate": 0.515889,
+      "wins": 2630,
+      "losses": 2468,
+      "breakeven": 0,
+      "gross_pnl": 120481.75,
+      "total_commission": 255132.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": -134650.25,
+      "profit_factor": 0.9009,
+      "net_r": -269.3005,
+      "expectancy_r": -0.052825,
+      "expectancy_dollars": -26.4124,
+      "max_drawdown_pct": 3.089383,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "take_profit": 933,
+        "stop_loss": 2466,
+        "break_even_stop": 1699
+      },
+      "wall_seconds": 2.1836
+    },
+    "emas_discrete_friction": {
+      "n_trades": 5098,
+      "win_rate": 0.515889,
+      "wins": 2630,
+      "losses": 2468,
+      "breakeven": 0,
+      "gross_pnl": 123083.0,
+      "total_commission": 255132.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": -132049.0,
+      "profit_factor": 0.9028,
+      "net_r": -264.098,
+      "expectancy_r": -0.051804,
+      "expectancy_dollars": -25.9021,
+      "max_drawdown_pct": 3.047585,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "take_profit": 933,
+        "stop_loss": 2466,
+        "break_even_stop": 1699
+      },
+      "wall_seconds": 2.1896
+    },
+    "smc_gross": {
+      "n_trades": 5986,
+      "win_rate": 0.590043,
+      "wins": 3532,
+      "losses": 2454,
+      "breakeven": 0,
+      "gross_pnl": 463261.0,
+      "total_commission": 0.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": 463261.0,
+      "profit_factor": 1.3683,
+      "net_r": 926.522,
+      "expectancy_r": 0.154781,
+      "expectancy_dollars": 77.3907,
+      "max_drawdown_pct": 0.06533,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.862
+    },
+    "smc_friction": {
+      "n_trades": 5986,
+      "win_rate": 0.583862,
+      "wins": 3495,
+      "losses": 2486,
+      "breakeven": 5,
+      "gross_pnl": 463261.0,
+      "total_commission": 473372.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": -10111.0,
+      "profit_factor": 0.993,
+      "net_r": -20.222,
+      "expectancy_r": -0.003378,
+      "expectancy_dollars": -1.6891,
+      "max_drawdown_pct": 0.641938,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.9128
+    },
+    "smc_discrete_friction": {
+      "n_trades": 5986,
+      "win_rate": 0.581858,
+      "wins": 3483,
+      "losses": 2501,
+      "breakeven": 2,
+      "gross_pnl": 461233.5,
+      "total_commission": 473372.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": -12138.5,
+      "profit_factor": 0.9916,
+      "net_r": -24.277,
+      "expectancy_r": -0.004056,
+      "expectancy_dollars": -2.0278,
+      "max_drawdown_pct": 0.659396,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.8915
+    }
+  },
+  "comparative_analysis": {
+    "common_parameters": {
+      "market": "MNQ (Micro E-mini Nasdaq-100)",
+      "dollar_per_point": 2.0,
+      "tick_size": 0.25,
+      "initial_balance": 50000.0,
+      "risk_per_trade": 0.01,
+      "canonical_friction": "$4.00 round-trip per contract ($2.00/side commission, 0 slippage)",
+      "evaluation_window": "2019-05-06T00:00:00+00:00 to 2026-09-03T23:55:00+00:00",
+      "total_bars_m5": 518237,
+      "period_years": 7.33
+    },
+    "gross_zero_friction_comparison": {
+      "metric": "Gross (Zero-Friction Reference)",
+      "smc_fvg": {
+        "trades": 5986,
+        "trades_per_day": 3.24,
+        "win_rate": 0.590043,
+        "profit_factor": 1.3683,
+        "gross_pnl": 463261.0,
+        "net_pnl": 463261.0,
+        "net_r": 926.522,
+        "expectancy_dollars": 77.3907,
+        "expectancy_r": 0.154781,
+        "max_drawdown_pct": 0.06533
+      },
+      "emas": {
+        "trades": 5098,
+        "trades_per_day": 2.76,
+        "win_rate": 0.516085,
+        "profit_factor": 1.0976,
+        "gross_pnl": 120481.75,
+        "net_pnl": 120481.75,
+        "net_r": 240.9635,
+        "expectancy_dollars": 23.6331,
+        "expectancy_r": 0.047266,
+        "max_drawdown_pct": 0.34172
+      },
+      "delta_smc_minus_emas": {
+        "trades_diff": 888,
+        "win_rate_diff_pp": 7.4,
+        "profit_factor_diff": 0.2707,
+        "gross_pnl_diff": 342779.25,
+        "net_r_diff": 685.56
+      }
+    },
+    "canonical_market_friction_comparison": {
+      "metric": "Market Friction ($4.00 RT)",
+      "smc_fvg": {
+        "trades": 5986,
+        "win_rate": 0.583862,
+        "profit_factor": 0.993,
+        "gross_pnl": 463261.0,
+        "total_commission": 473372.0,
+        "net_pnl": -10111.0,
+        "net_r": -20.222,
+        "expectancy_dollars": -1.6891,
+        "expectancy_r": -0.003378,
+        "max_drawdown_pct": 0.641938
+      },
+      "emas": {
+        "trades": 5098,
+        "win_rate": 0.515889,
+        "profit_factor": 0.9009,
+        "gross_pnl": 120481.75,
+        "total_commission": 255132.0,
+        "net_pnl": -134650.25,
+        "net_r": -269.3005,
+        "expectancy_dollars": -26.4124,
+        "expectancy_r": -0.052825,
+        "max_drawdown_pct": 3.089383
+      },
+      "delta_smc_minus_emas": {
+        "trades_diff": 888,
+        "win_rate_diff_pp": 6.8,
+        "profit_factor_diff": 0.0921,
+        "net_pnl_diff": 124539.25,
+        "net_r_diff": 249.08,
+        "commission_drag_ratio": {
+          "smc_drag_pct": 102.2,
+          "emas_drag_pct": 211.8
+        }
+      }
+    },
+    "discrete_contracts_friction_comparison": {
+      "metric": "Discrete Integer Contracts under Market Friction ($4.00 RT)",
+      "smc_fvg": {
+        "trades": 5986,
+        "win_rate": 0.581858,
+        "profit_factor": 0.9916,
+        "gross_pnl": 461233.5,
+        "total_commission": 473372.0,
+        "net_pnl": -12138.5,
+        "net_r": -24.277,
+        "expectancy_dollars": -2.0278,
+        "max_drawdown_pct": 0.659396
+      },
+      "emas": {
+        "trades": 5098,
+        "win_rate": 0.515889,
+        "profit_factor": 0.9028,
+        "gross_pnl": 123083.0,
+        "total_commission": 255132.0,
+        "net_pnl": -132049.0,
+        "net_r": -264.098,
+        "expectancy_dollars": -25.9021,
+        "max_drawdown_pct": 3.047585
+      }
+    },
+    "scientific_evaluation_and_caveats": {
+      "classification": "HISTORICAL_EXPLORATORY_BENCHMARK",
+      "no_winner_by_win_rate_statement": "Neither strategy can be declared an operational winner based on Win Rate (58.39% vs 51.59%). Win rate in isolation is mathematically uninformative because it ignores payoff asymmetry, stop-to-target ratio, and friction sensitivity.",
+      "friction_drag_verdict": "Under standard CME market friction ($4.00/contract round-trip), both high-frequency M5 strategies suffer severe performance degradation: SMC-FVG turns from +$463k (PF 1.37) to -$10k (PF 0.99), with commission consuming 102.2% of gross profits. EMAS turns from +$120k (PF 1.10) to -$135k (PF 0.90), with commission consuming 211.8% of gross profits. While SMC-FVG shows a superior gross edge (+3.8x gross PnL) and superior resilience to costs (-$10k vs -$135k net), neither strategy achieves positive net expectancy under raw retail execution on M5 without regime filtering or execution cost optimization.",
+      "discrete_contract_impact": "Discrete contract execution introduces a minor structural drag (-$2,027 on SMC-FVG, -$1,350 on EMAS) exclusively due to odd-contract rounding (floor(Q/2)), while even-contract orders remain bit-for-bit identical."
+    }
+  }
+}
