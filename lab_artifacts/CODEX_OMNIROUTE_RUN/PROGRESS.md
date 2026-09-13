@@ -1,18 +1,22 @@
 # FARS LAB - Codex + OmniRoute Progress
 
 ## Current HEAD
+- 731f980 bench(strategies): benchmark 4 strategies with 2 workers on canonical MNQ M5
+- e232344 feat(orb): implement Opening Range Breakout strategy with unit tests
+- a1ef293 feat(crt_tbs): implement causal CRT-TBS strategy with unit tests
+- 11409f3 feat(backtest): add time_exit_mode to BacktestConfig for flat expiry exits
+- f353872 docs(progress): update PROGRESS.md with full evidence for Tasks 1-4
 - 2dfcd78 feat(realtime): verify chronological replay causality and document live bridge architecture
 - 836b92b bench(emas): benchmark EMAS and compare with SMC-FVG on canonical MNQ M5
 - 86cc575 bench(parallel): benchmark multiprocessing runner across 1 to 6 workers
 - ea380c8 feat(backtest): add discrete partial contracts mode with unit tests and benchmark
-- 3a34838 test(backtest): add strict causality and intrabar resolution regression tests for SMC-FVG
-- baffec5 fix(P7): market config from MarketSpec, canonical range-first filter, and reproducible benchmark
-- 94ee2b6 feat(P7): real data benchmark with databento.zip (MNQ, MYM)
 
 ## Test Results
-- **Full Project Test Suite**: 1,471 passed (across Core, CLI, adapters, bootstrap, detectors, backtest, and realtime).
-- **SMC-FVG Backtest Tests**: 37 passed (12 causality + 25 discrete contract parametrization tests).
-- **Realtime Suite**: 236 passed (including 1 new strict replay causality test).
+- **Full Project Test Suite**: 1,489 passed across Core, CLI, adapters, bootstrap, detectors, backtest, and realtime.
+- **CRT-TBS Backtest Tests**: 7 passed (causality, H1/H4 availability, parameter paradox validation, execution).
+- **ORB Backtest Tests**: 7 passed (long/short breakouts, midpoint rearm, session cutoff, flat time exit).
+- **SMC-FVG Backtest Tests**: 37 passed.
+- **Realtime Suite**: 236 passed.
 - **Zero regressions**: Pre-refactor regression test against commit `1fa30ae` preserved bit-for-bit.
 
 ## Phase Status
@@ -23,6 +27,9 @@
 | Real Parallelism | COMPLETE | E2E (18 jobs x 6 workers x 3 reps) | Real ProcessPoolExecutor spawn, unique PIDs, zero fallback |
 | Juanca-2 (EMAS) | COMPLETE | 5,098 trades on canonical M5 | Gross PF 1.0976, friction PF 0.9009, side-by-side vs SMC-FVG |
 | Realtime Replay | COMPLETE | 2,000 bars verified | 100% bit-for-bit signal parity against causal backtest |
+| Juanca-3 (CRT-TBS) | COMPLETE | 7 | Causal H1/H4 bar aggregation, champion fixed_rr=2.0, zero-trade paradox documented |
+| Juanca-4 (ORB) | COMPLETE | 7 | 09:30-10:00 NY range, opposite stop, 2R target, midpoint rearm, 192-bar flat exit |
+| 4-Way Comparison | COMPLETE | 9 jobs across 2 workers | 100% equivalence, zero fallback, account viability & ruin tracking, annual breakdown |
 
 ---
 
@@ -124,3 +131,59 @@
 - **Protocolo de Seguridad para Exness / MT5**:
   - Arquitectura en 4 fases: Replay Histórico $\to$ Shadow / Read-Only $\to$ Paper Trading Demo $\to$ Live Staging.
   - Cero conexiones a brokers en esta fase; cero credenciales almacenadas o requeridas; cero órdenes enviadas.
+
+---
+
+## Task 5: Incorporación de CRT-TBS y ORB en FARS
+
+- **Módulos Implementados**:
+  - `src/backtest/crt_tbs.py` (`CrtTbsStrategy`, `CrtTbsConfig`, `crt_tbs_config`): Motor top-down H4-H1-M5 con causalidad estricta.
+  - `src/backtest/orb.py` (`OrbStrategy`, `OrbConfig`, `orb_config`): Opening Range Breakout 09:30–10:00 NY con rearme en el punto medio (`orm`), corte de entradas a las 16:00 ET y salida plana a 192 barras.
+  - `src/backtest/executor.py`: Soporte para `time_exit_mode="flat"` en salidas por vencimiento temporal.
+- **Correcciones Causales y Documentación de Parámetros**:
+  1. **Disponibilidad Causal de H1 y H4**: Las barras H1/H4 no están completas en su apertura. Una barra H1 iniciada a las 09:00 solo se evalúa a las 10:00:00 (cierre de la barra M5 de 09:55). El sesgo H4 solo utiliza barras H4 ya finalizadas. Esto eliminó 9 operaciones espurias del script original.
+  2. **Paradoja Matemática de `CrtTbsConfig` original**: La configuración literal por defecto (`target_mode="crt"`, `min_rr=1.50`, `require_half_zone=True`) produce 0 operaciones porque el objetivo al extremo CRT garantiza geométricamente un ratio recompensa/riesgo $\le 1.0 < 1.50$. Se incorporó la configuración operativa real de Juanca (`champion_configs.py`: `crt_tbs_topdown_fullrange_rr20` con `target_mode="fixed_rr"`, `fixed_rr=2.0`).
+  3. **Configuración Experimental de ORB**: Fijada según especificación: rango 09:30–10:00 NY, stop opuesto, 2R target, sin bias, `fade=False`, corte a las 16:00 ET, `max_hold=192` barras M5 con salida plana.
+- **Validación con Pruebas Unitarias**:
+  - `tests/test_backtest_crt_tbs.py`: 7 tests pasando (largos, cortos, causalidad temporal estricta, paradoja de 0 operaciones en modo literal y ejecución con `run_backtest`).
+  - `tests/test_backtest_orb.py`: 7 tests pasando (rupturas largas/cortas, rearme en punto medio, corte de sesión ET, salida plana y ejecución con `run_backtest`).
+  - `tests/test_backtest_executor.py`: Verificación de `time_exit_mode="flat"` vs `"market"`.
+  - `docs/refactor/check_mnq_equivalence.py`: 100% idéntico bit a bit contra el commit pre-refactor `1fa30ae`.
+
+---
+
+## Task 6: Comparativa Integral de Cuatro Estrategias (MNQ M5 Canónico 2019–2026)
+
+- **Script Reproducible**: `lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py`
+- **Artefacto JSON**: `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json`
+- **Condiciones Comunes**: Periodo canónico 2019-05-06 a 2026-09-03 (518.237 barras M5, 7,33 años), Capital inicial $\$50.000$, Riesgo 1,0% ($\$500$/trade), Contratos enteros discretos (`_quantity`), Escenarios Bruto y Fricción de Mercado (\$4.00 RT/contrato).
+- **Paralelismo Real**: 9 jobs independientes ejecutados sobre 2 workers multiproceso (`spawn`, PIDs 7140 y 21612, proceso padre 15912). Tiempo total: 10,51s. Cero caídas a fallback. 100% de invariancia contra la ejecución secuencial.
+
+### Matriz Comparativa Integral de Cuatro Estrategias
+
+| Estrategia | Escenario | Trades | Win Rate | Profit Factor | PnL Bruto | Comisión Total | PnL Neto | Net R | Max Drawdown | Supervivencia de Cuenta | Fecha de Ruina ($E \le 0$) | Trade de Ruina |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|:---:|:---:|---:|
+| **CRT-TBS (Champion)** | Fricción ($4 RT) | 93 | 26.88% | 1.0681 | +$3,474.00 | $1,932.00 | +$1,542.00 | +3.08 R | 7.67% | **Sí** | N/A | N/A |
+| **CRT-TBS (Champion)** | Bruto | 93 | 26.88% | 1.1631 | +$3,474.00 | $0.00 | +$3,474.00 | +6.95 R | 6.56% | **Sí** | N/A | N/A |
+| **CRT-TBS (Default)** | Bruto | 0 | 0.00% | 0.0000 | $0.00 | $0.00 | $0.00 | 0.00 R | 0.00% | **Sí** | N/A | N/A |
+| **SMC-FVG (Discreto)** | Bruto | 5,986 | 58.97% | 1.3666 | +$461,233.50 | $0.00 | +$461,233.50 | +922.47 R | 6.66% | **Sí** | N/A | N/A |
+| **SMC-FVG (Discreto)** | Fricción ($4 RT) | 5,986 | 58.19% | 0.9916 | +$461,233.50 | $473,372.00 | -$12,138.50 | -24.28 R | 65.94% | **Sí** | N/A | N/A |
+| **EMAS (Discreto)** | Bruto | 5,098 | 51.61% | 1.0997 | +$123,083.00 | $0.00 | +$123,083.00 | +246.17 R | 34.60% | **Sí** | N/A | N/A |
+| **EMAS (Discreto)** | Fricción ($4 RT) | 5,098 | 51.59% | 0.9028 | +$123,083.00 | $255,132.00 | -$132,049.00 | -264.10 R | 304.76% | **No** | **2019-11-25** | Trade #364 |
+| **ORB (Experimental)** | Bruto | 2,544 | 13.95% | 0.6721 | -$173,801.50 | $0.00 | -$173,801.50 | -347.60 R | 337.71% | **No** | **2022-01-26** | Trade #934 |
+| **ORB (Experimental)** | Fricción ($4 RT) | 2,544 | 13.95% | 0.6311 | -$173,801.50 | $31,260.00 | -$205,061.50 | -410.12 R | 410.38% | **No** | **2021-03-29** | Trade #675 |
+
+### Hallazgos Fundamentales de la Comparativa
+
+1. **Separación Estricta entre Matemáticas y Viabilidad de Cuenta**:
+   - **EMAS ($4 RT)**: Entra en quiebra a los 6 meses de operativa (**2019-11-25**, trade #364). Las 4.734 operaciones simuladas posteriores son una construcción matemática de curva acumulada, no operaciones financiables en una cuenta real de \$50.000.
+   - **ORB ($4 RT)**: Entra en quiebra el **2021-03-29** (trade #675). Incluso en bruto entra en quiebra en enero de 2022 (-$173k PnL bruto). La ruptura pura de momentum sin filtro de régimen genera una pérdida sistemática severa en M5.
+   - **SMC-FVG**: Nunca entra en quiebra (el capital cerrado mínimo fue de \$17.904,50). El arrastre de comisiones (\$473k) devora la totalidad de la ganancia bruta (\$461k), dejando un PnL neto de -\$12.138,50 (-24,28 R).
+   - **CRT-TBS (Champion)**: Es la **única estrategia que conserva PnL neto positivo tras fricción** (+$1.542,00 neto, +3,08 R, Max DD 7,67%). Su baja frecuencia operativa (~13 trades/año) reduce el drag de comisión a solo \$1.932,00 frente a los cientos de miles de dólares de SMC-FVG y EMAS.
+
+2. **La Falacia del Win Rate Desmontada Empíricamente**:
+   - Mayor Win Rate: SMC-FVG (58,19%) $\to$ PnL Neto negativo (-$12.138,50).
+   - Segundo Win Rate: EMAS (51,59%) $\to$ Quiebra de cuenta (-$132.049,00).
+   - Menor Win Rate ganador: CRT-TBS (26,88%) $\to$ **Único PnL Neto positivo** (+$1.542,00) gracias a la asimetría de 2R por operación y costes controlados.
+   - No es posible declarar una ganadora por tasa de acierto; la asimetría de recompensa/riesgo y la tasa de fricción dominan la rentabilidad real.
+
