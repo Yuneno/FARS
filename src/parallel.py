@@ -1,4 +1,4 @@
-﻿"""Deterministic parallel runner for FARS backtest jobs (P2).
+"""Deterministic parallel runner for FARS backtest jobs (P2).
 
 Wraps the sequential backtest runner with ProcessPoolExecutor (spawn context).
 Each job is a self-contained unit of work with deterministic seeds and identity.
@@ -129,72 +129,47 @@ def _run_single_job(
     bars_data: list[dict[str, Any]],
     rules_dict: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Execute one backtest job inside a worker process.
-
-    This is kept as a plain function (not a closure) so it can be pickled
-    for ProcessPoolExecutor with spawn context.
-    """
     _limit_threads()
     t0 = time.perf_counter()
-
+    SUPPORTED_STRATEGIES = {"breakout_v1", "breakout"}
+    SUPPORTED_PROFILES = {"legacy", "default"}
     try:
         from src.backtest.executor import BacktestConfig, run_backtest
         from src.backtest.history import Bar
         from src.backtest.strategy import BreakoutStrategy
-
         spec = JobSpec(**spec_dict)
-
-        # Reconstruct bars from serialized form
-        bars = []
-        for bd in bars_data:
-            from datetime import datetime, timezone
-            ts = datetime.fromisoformat(bd["timestamp"])
-            bars.append(Bar(
-                timestamp=ts,
-                open=bd["open"],
-                high=bd["high"],
-                low=bd["low"],
-                close=bd["close"],
-                volume=bd.get("volume", 0),
-            ))
-
-        config = BacktestConfig(
-            initial_balance=rules_dict.get("initial_balance", 50000) if rules_dict else 50000,
-            risk_per_trade=rules_dict.get("risk_per_trade", 0.01) if rules_dict else 0.01,
-        )
-
+        if spec.strategy_config_id not in SUPPORTED_STRATEGIES:
+            elapsed = time.perf_counter() - t0
+            return {"job_id": spec.job_id, "status": "error", "n_trades": 0, "net_pnl": 0.0, "win_rate": 0.0, "equity_curve_points": 0, "wall_seconds": elapsed, "error_message": f"unsupported strategy: {spec.strategy_config_id!r}", "worker_pid": os.getpid()}
+        if spec.execution_profile not in SUPPORTED_PROFILES:
+            elapsed = time.perf_counter() - t0
+            return {"job_id": spec.job_id, "status": "error", "n_trades": 0, "net_pnl": 0.0, "win_rate": 0.0, "equity_curve_points": 0, "wall_seconds": elapsed, "error_message": f"unsupported profile: {spec.execution_profile!r}", "worker_pid": os.getpid()}
+        from datetime import datetime
+        bars = [Bar(timestamp=datetime.fromisoformat(bd["timestamp"]), open=bd["open"], high=bd["high"], low=bd["low"], close=bd["close"], volume=bd.get("volume", 0)) for bd in bars_data]
+        if spec.warmup_bars > 0 and len(bars) > spec.warmup_bars:
+            bars = bars[spec.warmup_bars:]
+        if spec.range_start and bars:
+            rs = datetime.fromisoformat(spec.range_start)
+            if rs.tzinfo is None and bars[0].timestamp.tzinfo is not None:
+                from datetime import timezone as _tz
+                rs = rs.replace(tzinfo=_tz.utc)
+            bars = [b for b in bars if b.timestamp >= rs]
+        if spec.range_end and bars:
+            re_ = datetime.fromisoformat(spec.range_end)
+            if re_.tzinfo is None and bars[0].timestamp.tzinfo is not None:
+                from datetime import timezone as _tz
+                re_ = re_.replace(tzinfo=_tz.utc)
+            bars = [b for b in bars if b.timestamp <= re_]
+        if len(bars) < 2:
+            elapsed = time.perf_counter() - t0
+            return {"job_id": spec.job_id, "status": "done", "n_trades": 0, "net_pnl": 0.0, "win_rate": 0.0, "equity_curve_points": 0, "wall_seconds": elapsed, "error_message": None, "worker_pid": os.getpid()}
+        config = BacktestConfig(initial_balance=rules_dict.get("initial_balance", 50000) if rules_dict else 50000, risk_per_trade=rules_dict.get("risk_per_trade", 0.01) if rules_dict else 0.01)
         result = run_backtest(bars, BreakoutStrategy(), config)
         elapsed = time.perf_counter() - t0
-
-        return {
-            "job_id": spec.job_id,
-            "status": "done",
-            "n_trades": result.n_trades,
-            "net_pnl": result.net_pnl,
-            "win_rate": result.win_rate,
-            "equity_curve_points": len(result.equity_curve),
-            "wall_seconds": elapsed,
-            "error_message": None,
-            "worker_pid": os.getpid(),
-        }
+        return {"job_id": spec.job_id, "status": "done", "n_trades": result.n_trades, "net_pnl": result.net_pnl, "win_rate": result.win_rate, "equity_curve_points": len(result.equity_curve), "wall_seconds": elapsed, "error_message": None, "worker_pid": os.getpid()}
     except Exception as exc:
         elapsed = time.perf_counter() - t0
-        return {
-            "job_id": spec_dict.get("job_id", "unknown"),
-            "status": "error",
-            "n_trades": 0,
-            "net_pnl": 0.0,
-            "win_rate": 0.0,
-            "equity_curve_points": 0,
-            "wall_seconds": elapsed,
-            "error_message": str(exc),
-            "worker_pid": os.getpid(),
-        }
-
-
-# ---------------------------------------------------------------------------
-# Parallel runner
-# ---------------------------------------------------------------------------
+        return {"job_id": spec_dict.get("job_id", "unknown"), "status": "error", "n_trades": 0, "net_pnl": 0.0, "win_rate": 0.0, "equity_curve_points": 0, "wall_seconds": elapsed, "error_message": str(exc), "worker_pid": os.getpid()}
 
 
 @dataclass(frozen=True)

@@ -163,6 +163,19 @@ def _parse_timestamp(
         if not s:
             return None
         # Precision check: reject >6 fractional digits (Python 3.13 truncates silently)
+        if "," in s:
+            errors.append(
+                ConversionError(
+                    code="INVALID_TIMESTAMP_FORMAT",
+                    message=(
+                        f"timestamp {value!r} contains a comma; "
+                        f"ISO-8601 uses '.' for fractional seconds"
+                    ),
+                    record_index=record_index,
+                    field="t",
+                )
+            )
+            return None
         dot_pos = s.find(".")
         if dot_pos >= 0:
             # Find end of fractional part (before +, -, Z, or end)
@@ -419,6 +432,13 @@ def _validate_numeric(
                 field=name,
             )
         return None, None
+    if isinstance(value, bool):
+        return None, ConversionError(
+            code=f"INVALID_{name.upper()}_TYPE",
+            message=f"{name} must be numeric, got bool {value!r}",
+            record_index=record_index,
+            field=name,
+        )
     try:
         fval = float(value)
     except (TypeError, ValueError):
@@ -589,6 +609,16 @@ def convert_trades(
                 field="analysis_timezone",
             )
         )
+    if config.symbol is not None and isinstance(config.symbol, str) and config.symbol not in VALID_SYMBOLS:
+        config_errors.append(
+            ConversionError(
+                code="INVALID_CONFIG_SYMBOL",
+                message=f"config.symbol {config.symbol!r} is not a supported contract; valid: {sorted(VALID_SYMBOLS)}",
+                record_index=0,
+                field="symbol",
+            )
+        )
+
     # PnL units validation
     if config.pnl_units not in ("points", "monetary"):
         config_errors.append(
@@ -1181,8 +1211,8 @@ def convert_trades(
         if config.pnl_units == "monetary":
             _meta["quantity"] = config.quantity
             _meta["dollar_per_point"] = config.dollar_per_point
-        _meta["source_dataset"] = config.source_dataset
         if cand.normalised_outcome is None:
+            _meta["source_dataset"] = config.source_dataset
             _meta["outcomes_finalized"] = config.outcomes_finalized
         accepted.append(
             Trade(

@@ -1666,13 +1666,13 @@ class TestReviewP1B1Regression:
         r = convert_trades(recs)
         assert r.symbol_used is None
 
-    def test_config_symbol_allows_unknown_symbol(self):
+    def test_config_symbol_rejects_unknown_symbol(self):
         rec = _base_record()
         cfg = ConversionConfig(symbol="XYZABC")
         result = convert_trades([rec], config=cfg)
         invalid_sym_errors = [e for e in result.errors if e.code == "INVALID_SYMBOL"]
-        assert len(invalid_sym_errors) == 0
-        assert result.symbol_used == "XYZABC"
+        assert any(e.code == "INVALID_CONFIG_SYMBOL" for e in result.errors)
+        assert result.accepted == 0
 
     def test_config_symbol_validates_record_asset_against_config(self):
         rec = _base_record(asset="MNQ")
@@ -1680,17 +1680,17 @@ class TestReviewP1B1Regression:
         result = convert_trades([rec], config=cfg)
         assert any(e.code == "SYMBOL_CONFLICT" for e in result.errors)
 
-    def test_pnl_net_boolean_true_accepted(self):
+    def test_pnl_net_boolean_true_rejected(self):
         rec = _base_record(pnl_net=True, entry=100, stop=95)
         result = convert_trades([rec])
-        assert result.accepted == 1
-        assert result.trades[0].r_result == pytest.approx(1.0 / 5.0)
+        assert result.accepted == 0
+        assert any(e.code == "INVALID_PNL_NET_TYPE" for e in result.errors)
 
-    def test_pnl_net_boolean_false_accepted(self):
+    def test_pnl_net_boolean_false_rejected(self):
         rec = _base_record(pnl_net=False, entry=100, stop=95)
         result = convert_trades([rec])
-        assert result.accepted == 1
-        assert result.trades[0].r_result == pytest.approx(0.0)
+        assert result.accepted == 0
+        assert any(e.code == "INVALID_PNL_NET_TYPE" for e in result.errors)
 
     def test_side_decimal_non_integer_rejected(self):
         from decimal import Decimal
@@ -1714,12 +1714,14 @@ class TestReviewP1B1Regression:
 
     def test_source_dataset_valid_preserved_in_metadata(self):
         cfg = ConversionConfig(outcomes_finalized=True, source_dataset="ds-2024Q1")
-        rec = _base_record()  # _base_record has outcome=closed
+        cfg = ConversionConfig(outcomes_finalized=True, source_dataset="ds-2024Q1")
+        rec = _base_record()
+        rec.pop("outcome", None)  # Remove outcome to trigger source_dataset path
         result = convert_trades([rec], config=cfg)
         assert result.accepted == 1
         m = result.trades[0].metadata
         assert m.get("source_dataset") == "ds-2024Q1"
-
+        assert m.get("outcomes_finalized") is True
     def test_invalid_source_timezone_rejected(self):
         cfg = ConversionConfig(source_timezone="Not/A/Zone")
         rec = _base_record(t="2024-06-01T10:00:00")
@@ -1744,12 +1746,17 @@ class TestReviewP1B1Regression:
         result = convert_trades([rec], config=cfg)
         assert any(e.code == "AMBIGUOUS_TIMESTAMP" for e in result.errors)
 
-    def test_timestamp_comma_rejected_gracefully(self):
+    def test_timestamp_comma_rejected(self):
         rec = _base_record(t="2024-06-01T10:00:00,000+00:00")
         result = convert_trades([rec])
-        assert result.accepted + len(result.errors) > 0
+        assert result.accepted == 0
+        assert any(e.code == "INVALID_TIMESTAMP_FORMAT" for e in result.errors)
 
     def test_timestamp_seven_decimal_digits_rejected(self):
+        rec = _base_record(t="2024-06-01T10:00:00.1234567+00:00")
+        result = convert_trades([rec])
+        assert any(e.code == "UNSUPPORTED_TIMESTAMP_PRECISION" for e in result.errors)
+
         rec = _base_record(t="2024-06-01T10:00:00.1234567+00:00")
         result = convert_trades([rec])
         assert any(e.code == "UNSUPPORTED_TIMESTAMP_PRECISION" for e in result.errors)
