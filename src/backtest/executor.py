@@ -82,8 +82,11 @@ class BacktestConfig:
     pending_order_wait_bars: int = 0
     cooldown_bars: int = 0
     discrete_partial_contracts: bool = False
+    time_exit_mode: str = "market"
 
     def __post_init__(self) -> None:
+        if self.time_exit_mode not in {"market", "flat"}:
+            raise ValueError("time_exit_mode must be 'market' or 'flat'")
         float_fields = (
             "initial_balance",
             "risk_per_trade",
@@ -386,7 +389,12 @@ def _run_backtest_legacy(
         if _time_exit_open(config, position, bar):
             # hold limit reached at this bar's open: close at the open, before
             # consulting the new bar's high/low/close.
-            reason, exit_price = "time_exit", _round_tick(bar.open, config.tick_size)
+            reason = "time_exit"
+            exit_price = (
+                position["entry"]
+                if config.time_exit_mode == "flat"
+                else _round_tick(bar.open, config.tick_size)
+            )
         else:
             hit_target = target <= bar.high if direction == "long" else target >= bar.low
             hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
@@ -397,7 +405,12 @@ def _run_backtest_legacy(
             elif hit_stop:
                 reason, exit_price = "stop_loss", _stop_fill(config, direction, stop, bar.open)
             elif _time_exit_close(config, position, bar, bars_held):
-                reason, exit_price = "time_exit", _round_tick(bar.close, config.tick_size)
+                reason = "time_exit"
+                exit_price = (
+                    position["entry"]
+                    if config.time_exit_mode == "flat"
+                    else _round_tick(bar.close, config.tick_size)
+                )
 
         if reason is not None and exit_price is not None:
             entry = position["entry"]
@@ -765,7 +778,12 @@ def _run_backtest_enhanced(
         reason: str | None = None
         fill: float | None = None
         if _time_exit_open(config, position, bar):
-            reason, fill = "time_exit", _round_tick(bar.open, config.tick_size)
+            reason = "time_exit"
+            fill = (
+                position["entry"]
+                if config.time_exit_mode == "flat"
+                else _round_tick(bar.open, config.tick_size)
+            )
         else:
             hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
             hit_target = target <= bar.high if direction == "long" else target >= bar.low
@@ -808,7 +826,12 @@ def _run_backtest_enhanced(
                 if config.move_stop_to_break_even:
                     position["stop"] = position["entry"]
             elif _time_exit_close(config, position, bar, bars_held):
-                reason, fill = "time_exit", _round_tick(bar.close, config.tick_size)
+                reason = "time_exit"
+                fill = (
+                    position["entry"]
+                    if config.time_exit_mode == "flat"
+                    else _round_tick(bar.close, config.tick_size)
+                )
 
         if reason is not None and fill is not None:
             close_position(reason, fill, bar)

@@ -372,3 +372,57 @@ def test_pipeline_and_report_persistence(tmp_path):
     result = run_backtest(bars, BreakoutStrategy(), BacktestConfig())
     write_trades_csv(result.trades, tmp_path / "trades.csv")
     assert (tmp_path / "trades.csv").exists()
+
+
+def test_time_exit_mode_flat_vs_market():
+    # Construct bars where a trade opens and neither TP nor SL is hit before max_bars_held
+    from src.backtest.strategy import Signal
+
+    class SingleTradeStrategy:
+        def __init__(self):
+            self.fired = False
+
+        def evaluate(self, history):
+            if not self.fired and len(history) >= 2:
+                self.fired = True
+                return Signal(direction="long", entry=100.0, stop=90.0, target=120.0)
+            return None
+
+    # Entry bar at t=10 opens at 100.0. Subsequent bars stay flat around 105.0.
+    bars = [
+        _bar(_min(0), 100.0, 101.0, 99.0, 100.0),
+        _bar(_min(5), 100.0, 101.0, 99.0, 100.0),
+        _bar(_min(10), 100.0, 102.0, 98.0, 101.0),  # entry filled here at open 100.0
+        _bar(_min(15), 101.0, 106.0, 101.0, 105.0), # bar 1 held
+        _bar(_min(20), 105.0, 107.0, 104.0, 106.0), # bar 2 held -> exit at max_bars_held=2
+        _bar(_min(25), 106.0, 107.0, 105.0, 106.0),
+    ]
+
+    # Mode 1: market (default) -> exits at bar.close (106.0) -> gross_pnl = (106 - 100) * 2 = $12.00
+    cfg_market = BacktestConfig(
+        max_bars_held=2,
+        fixed_quantity=1,
+        time_exit_mode="market",
+        commission_per_side=0.0,
+        slippage_points=0.0,
+    )
+    res_market = run_backtest(bars, SingleTradeStrategy(), cfg_market)
+    assert len(res_market.trades) == 1
+    assert res_market.trades[0].exit_reason == "time_exit"
+    assert res_market.trades[0].exit_price == 106.0
+    assert res_market.trades[0].gross_pnl == 12.0
+
+    # Mode 2: flat -> exits at entry price (100.0) -> gross_pnl = $0.00
+    cfg_flat = BacktestConfig(
+        max_bars_held=2,
+        fixed_quantity=1,
+        time_exit_mode="flat",
+        commission_per_side=0.0,
+        slippage_points=0.0,
+    )
+    res_flat = run_backtest(bars, SingleTradeStrategy(), cfg_flat)
+    assert len(res_flat.trades) == 1
+    assert res_flat.trades[0].exit_reason == "time_exit"
+    assert res_flat.trades[0].exit_price == 100.0
+    assert res_flat.trades[0].gross_pnl == 0.0
+
