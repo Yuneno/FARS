@@ -198,6 +198,40 @@ def test_write_trades_is_optional_and_mnq_remains_default(tmp_path):
     assert manifest["market_spec"] == MES.to_dict()
 
 
+@pytest.mark.parametrize(
+    ("command", "strategy_name"),
+    [("smc-fvg", "SmcFvgStrategy"), ("emas", "EmasStrategy")],
+)
+def test_ported_strategy_cli_writes_trades_and_generic_manifest(
+    tmp_path, command, strategy_name
+):
+    source = tmp_path / "MNQ_M5.csv"
+    _write_market_csv(source, symbol="MNQ")
+    out = tmp_path / command
+
+    assert main([
+        command,
+        "--bars-csv",
+        str(source),
+        "--out-dir",
+        str(out),
+        "--write-trades",
+        "--train-fraction",
+        "0.5",
+    ]) == 0
+
+    assert {path.name for path in out.iterdir()} == {
+        "backtest_summary.json",
+        "in_sample_trades.csv",
+        "out_of_sample_trades.csv",
+        "run_manifest.json",
+    }
+    manifest = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == "fars-strategy-run-manifest-v1"
+    assert manifest["strategy"] == strategy_name
+    assert manifest["strategy_parameters"]["timeframe"] == "M5"
+
+
 def test_market_datasets_are_not_tracked_by_git():
     root = Path(__file__).resolve().parents[1]
     tracked = subprocess.run(

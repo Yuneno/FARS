@@ -90,13 +90,13 @@ class _FixedSignal:
 # MNQ CSV loader
 # ---------------------------------------------------------------------------
 
-def test_load_mnq_csv_aggregates_m1_to_m5():
+def test_load_mnq_csv_aggregates_m1_to_m5(tmp_path: Path):
     rows = ["time,open,high,low,close"]
     base = datetime(2026, 5, 4, 16, 0, tzinfo=ZoneInfo("UTC"))
     for k in range(10):
         ts = base + timedelta(minutes=k)
         rows.append(f"{ts.isoformat()},{100 + k},{101 + k},{99 + k},{100.5 + k}")
-    p = Path("/tmp") / "test_m1.csv"
+    p = tmp_path / "test_m1.csv"
     p.write_text("\n".join(rows) + "\n", encoding="utf-8")
     bars = load_mnq_csv(p, target_interval_minutes=5)
     assert len(bars) == 2
@@ -458,7 +458,7 @@ def test_ema_regime_direction_requires_min_bars():
 
 def test_ema_filter_gates_signal_on_regime_mismatch(monkeypatch):
     # A full confluence (AMD + CRT) but EMA regime opposes the fade -> no signal.
-    bars, day = _confluence_history()  # AMD direction "short" (pre-NY high sweep)
+    bars, _day = _confluence_history()  # AMD direction "short" (pre-NY high sweep)
     monkeypatch.setattr(
         "src.backtest.amd_crt._ema_regime_direction", lambda *a, **k: "long"
     )
@@ -467,7 +467,7 @@ def test_ema_filter_gates_signal_on_regime_mismatch(monkeypatch):
 
 
 def test_ema_filter_allows_signal_on_regime_match(monkeypatch):
-    bars, day = _confluence_history()
+    bars, _day = _confluence_history()
     monkeypatch.setattr(
         "src.backtest.amd_crt._ema_regime_direction", lambda *a, **k: "short"
     )
@@ -476,7 +476,7 @@ def test_ema_filter_allows_signal_on_regime_match(monkeypatch):
 
 
 def test_ema_filter_off_preserves_no_ema_behavior():
-    bars, day = _confluence_history()
+    bars, _day = _confluence_history()
     strat = AmdCrtStrategy(use_ema_filter=False, median_lookback_days=5, min_weekday_samples=3)
     assert strat.evaluate(bars) is not None  # no-EMA path still fires
 
@@ -551,7 +551,7 @@ def test_edge_gate_suppresses_when_edge_cold():
     strat.note_trade(_et(2026, 9, 2, 10, 0), -1.0)
     strat.note_trade(_et(2026, 9, 3, 10, 0), -1.0)
     strat.note_trade(_et(2026, 9, 4, 10, 0), -1.0)
-    bars, day = _confluence_history()
+    bars, _day = _confluence_history()
     assert strat.evaluate(bars) is None  # cold edge -> suppressed
 
 
@@ -565,7 +565,7 @@ def test_edge_gate_permits_when_edge_hot():
     strat.note_trade(_et(2026, 9, 2, 10, 0), 1.2)
     strat.note_trade(_et(2026, 9, 3, 10, 0), 0.8)
     strat.note_trade(_et(2026, 9, 4, 10, 0), 1.1)
-    bars, day = _confluence_history()
+    bars, _day = _confluence_history()
     assert strat.evaluate(bars) is not None  # hot edge -> allowed
 
 
@@ -578,7 +578,7 @@ def test_edge_gate_ignores_same_day_trades():
     strat.note_trade(_et(2026, 9, 7, 10, 0), -5.0)
     strat.note_trade(_et(2026, 9, 7, 11, 0), -5.0)
     # With no PRIOR-day trades, edge_min_trades not met -> permissive (True).
-    bars, day = _confluence_history()
+    bars, _day = _confluence_history()
     assert strat.evaluate(bars) is not None
 
 
@@ -586,7 +586,7 @@ def test_edge_gate_off_preserves_behavior():
     strat = AmdCrtStrategy(
         use_edge_gate=False, median_lookback_days=5, min_weekday_samples=3
     )
-    bars, day = _confluence_history()
+    bars, _day = _confluence_history()
     assert strat.evaluate(bars) is not None
 
 
@@ -965,6 +965,15 @@ def test_decision_log_can_be_cleared(monkeypatch):
 # Executor extensions
 # ---------------------------------------------------------------------------
 
+def test_amd_crt_keeps_all_new_executor_mechanics_disabled():
+    config = amd_crt_config()
+
+    assert config.partial_take_profit_fraction == 0.0
+    assert config.move_stop_to_break_even is False
+    assert config.pending_limit_entry is False
+    assert config.pending_order_wait_bars == 0
+    assert config.cooldown_bars == 0
+
 def test_distance_sl_tp_resolves_against_entry():
     base = _et(2026, 9, 7, 9, 30)
     bars = [
@@ -1141,6 +1150,12 @@ def test_stop_and_time_exit_fills_are_on_tick_and_costed_coherently():
         ({"max_contracts": 1.5}, "max_contracts"),
         ({"max_trades": 1.5}, "max_trades"),
         ({"max_bars_held": 1.5}, "max_bars_held"),
+        ({"partial_take_profit_fraction": -0.1}, "partial_take_profit_fraction"),
+        ({"partial_take_profit_fraction": 1.0}, "partial_take_profit_fraction"),
+        ({"move_stop_to_break_even": True}, "partial_take_profit_fraction"),
+        ({"pending_limit_entry": True}, "pending_order_wait_bars"),
+        ({"pending_order_wait_bars": -1}, "pending_order_wait_bars"),
+        ({"cooldown_bars": -1}, "cooldown_bars"),
     ],
 )
 def test_backtest_config_rejects_invalid_executor_extensions(kwargs, message):

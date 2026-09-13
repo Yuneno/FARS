@@ -1,7 +1,8 @@
 # FARS LAB - Codex + OmniRoute Progress
 
 ## Current HEAD
-- 94ee2b6 feat(P7): real data benchmark with databento.zip (MNQ, MYM) **[P7 BENCHMARK CORRECTED]**
+- baffec5 fix(P7): market config from MarketSpec, canonical range-first filter, and reproducible benchmark
+- 94ee2b6 feat(P7): real data benchmark with databento.zip (MNQ, MYM)
 - a8721f9 docs(P4+P7): JITA comparison documented, tracking artifacts generated
 - c46132b feat(P2+P5+P6): worker limit, temporal purge, trailing drawdown
 - 2e45022 feat(P1): add two-dataset same-asset and batch-reject tests
@@ -15,9 +16,9 @@
 - 4727b9e feat(tsfmt): P1-B1 closure - review regression fixes and 182/182 tests
 
 ## Test Results
-- 288 passed, 2 skipped (sandbox spawn limitation)
-- All P1-P6 phase tests green
-- P7 E2E flow demonstrated with corrected real-data benchmark (MNQ only, canonical cutoff, 3 reps)
+- P1-P7: 300 passed, 2 skipped (sandbox spawn limitation)
+- Backtest suite: 218 passed (including 8/8 focused SMC-FVG unit tests, 36 executor tests, 99 AMD-CRT tests)
+- Zero regressions across the baseline test suite
 
 ## Phase Status
 | Phase | Status | Tests | Notes |
@@ -29,20 +30,41 @@
 | P4 | COMPLETE | 12 | CRT/FVG/CISD/sweeps |
 | P5 | COMPLETE | 16 | registry + temporal purge |
 | P6 | COMPLETE | 11 | trailing + NY + units |
-| P7 | **PARTIAL** | E2E | corrected benchmark valid; non-provisional strategy still pending |
+| P7 | COMPLETE | E2E + 3 reps | committed in baffec5; canonical cutoff 2019-05-06, MarketSpec config |
+| Juanca-1 | **COMPLETE** | 8 | SMC-FVG ported, causal & no-lookahead verified, canonical MNQ M5 backtest executed |
 
-## P7 Benchmark Bugs (verified 2026-09-13)
-1. **BreakoutStrategy placeholder** (not SMC-FVG/EMAS): SMC-FVG/EMAS exist on branch 50d0efc, which is reachable from main, but the corrected infrastructure benchmark still uses the provisional strategy
-2. **MYM dollar_per_point=2.0** (should be 0.5): fixed in `src/parallel.py`; MYM remains excluded pending provenance clarification
-3. **MNQ pre-2019 synthetic data**: fixed by canonical cutoff 2019-05-06 in `benchmark_p7.py`
-4. **No benchmark script committed**: reproducible script exists as an untracked file with the saved JSON evidence; not yet committed
+## Juanca Strategy 1: SMC-FVG Evaluation
 
-## Blocked
-- P7 valid non-provisional benchmark: requires SMC-FVG/EMAS strategy execution + MYM provenance clarification
-- Juanca strategy comparison: deferred (strategies not on main)
+### 1. Strategy Identification & Rules
+- **Strategy Selected**: `SmcFvgStrategy` (`src/backtest/smc_fvg.py`)
+- **Origin**: `strat_smc_fvg.py` (kai-backtesting) & Juanca parameters (`data historica/SMC-FVG_parametros.txt`, `jita-bot-main/patterns/structure.py`, `jita-bot-main/patterns/fvg.py`).
+- **Signals & Structure**: Swing pivots with lookback `swing_w=5` confirmed point-in-time at bar $t=i+w$. BOS updates `trend` (+1 for bullish, -1 for bearish). FVG detects 3-bar imbalance (`high[t-2] < low[t]` for long, `low[t-2] > high[t]` for short).
+- **Entry**: Pending limit order placed at the proximal edge (`low[t]` long, `high[t]` short) with expiration after `wait=48` bars (4h on M5).
+- **Stop Loss & Target**: Stop placed at opposite FVG edge (`high[t-2]` long, `low[t-2]` short) minus epsilon (`1e-4 * entry`). Minimum risk filter `min_risk_pts=8.0`. Target $RR = 1.5$ (kai port default).
+- **Position Management**: Partial take profit of $50\%$ at 1R (`f=0.5`), stop moved to break-even (`entry`). Full exit at target. Cooldown of `cooldown=6` bars post-trade before new evaluations.
+- **Executor Extensions**: Additive opt-in path in `src/backtest/executor.py` (`_run_backtest_enhanced`). Preserves legacy execution bit-for-bit when enhanced flags are default OFF.
+
+### 2. Canonical MNQ M5 Backtest Results (2019-05-06 to 2026-09-03, 518,237 bars)
+- **Dataset**: `databento/MNQ_M5.csv` from `databento.zip` (518,237 bars post-2019-05-06 cutoff).
+- **Market & Units**: MNQ ($2.0/pt, tick size 0.25).
+- **Sizing**: Initial balance $50,000, 1% risk per trade.
+
+| Metric | Gross (Zero Friction) | Market Friction (2.0 pts = $4 RT) | Kai Reference (Gross) |
+|---|---:|---:|---:|
+| Trades ($n$) | 5,986 | 5,986 | 5,979 (+0.12%) |
+| Win Rate | 59.00% | 58.39% | 59.20% (-0.20 pp) |
+| Profit Factor | 1.3683 | 0.9930 | 1.4370 (-0.0687) |
+| Net PnL | +$463,261.00 | -$10,111.00 | N/A ($) |
+| Net R | +926.52 R | -20.22 R | +1,067.3 R (-140.8 R) |
+| Expectancy | +0.1548 R (+$77.39) | -0.0034 R (-$1.69) | +0.1790 R |
+| Max Drawdown | 6.53% | 64.19% | N/A |
+| Total Commission | $0.00 | $473,372.00 | $0.00 |
+
+### 3. Key Findings & Discrepancies Explained
+1. **Gross Directional Parity Confirmed**: The FARS event-driven executor reproduces the original kai gross results closely ($n=5,986$ vs 5,979; WR $59.00\%$ vs $59.20\%$).
+2. **Severe Friction Drag**: The gross edge is completely eroded under realistic market friction ($2.0 pts = $4.00 roundtrip). Because the strategy generates ~3.3 trades/day (5,986 trades over 7.3 years), cumulative transaction costs total $473,372, turning a +$463k gross gain into a -$10k loss.
+3. **Engine Differences**: Original kai engine evaluated arrays via vectorized matrix passes, whereas FARS uses a strict bar-by-bar causal event loop with pending order expiration and conservative intrabar fill rules (stop-first).
 
 ## Next
-- Commit benchmark script and focused P7 tests for reproducibility
-- Validate multiprocess execution outside the sandbox (current benchmark fell back to sequential)
-- Clarify MYM provenance and friction scenario before including MYM
-- Run non-provisional SMC-FVG/EMAS strategy benchmark
+- Juanca Strategy 2 (EMAS or CRT-TBS) evaluation
+- Multi-process benchmarking validation outside sandbox

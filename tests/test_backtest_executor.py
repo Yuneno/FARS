@@ -50,6 +50,36 @@ class _NoSignal:
         return None
 
 
+class _OneLimit:
+    def __init__(self):
+        self.fired = False
+
+    def evaluate(self, history):
+        if self.fired or not history:
+            return None
+        self.fired = True
+        return Signal("long", 95.0, 90.0, 105.0)
+
+
+class _FixedDistanceLong:
+    def __init__(self):
+        self.fired = False
+
+    def evaluate(self, history):
+        if self.fired or not history:
+            return None
+        self.fired = True
+        return Signal("long", 0.0, 10.0, 20.0, stop_target_as_points=True)
+
+
+class _EveryEligibleBar:
+    def evaluate(self, history):
+        return Signal("long", 0.0, 1.0, 1.0, stop_target_as_points=True)
+
+    def observe(self, history):
+        del history
+
+
 def test_mnq_quantity_sizing_rounds_to_contracts():
     config = BacktestConfig(initial_balance=50_000, risk_per_trade=0.01)  # $500 risk
     # 5 point stop * $2/point = $10/contract -> 50 contracts, capped at 10
@@ -193,6 +223,90 @@ def test_entry_bar_both_levels_is_conservative_stop():
     result = run_backtest(bars, _OneLong(), config)
     assert len(result.trades) == 1
     assert result.trades[0].exit_reason == "stop_loss"  # conservative: stop first
+
+
+def test_partial_tp_exact_half_then_break_even_stop_is_half_r():
+    bars = [
+        _bar(_min(0), 100, 101, 99, 100),
+        _bar(_min(1), 100, 111, 99, 110),  # TP1 at 110; original SL 90 untouched
+        _bar(_min(2), 100, 101, 99, 100),  # remaining half stops at entry
+    ]
+    config = BacktestConfig(
+        initial_balance=1_000.0,
+        risk_per_trade=0.02,  # $20 budget = 10 points * $2 * one contract
+        dollar_per_point=2.0,
+        fixed_quantity=1,
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        partial_take_profit_fraction=0.5,
+        move_stop_to_break_even=True,
+    )
+    result = run_backtest(bars, _FixedDistanceLong(), config)
+
+    trade = result.trades[0]
+    assert trade.stop_price == trade.entry_price == 100.0
+    assert trade.gross_pnl == 10.0
+    assert trade.r_result == 0.5
+    assert trade.exit_reason == "break_even_stop"
+
+
+def test_pending_limit_expires_after_exact_wait_without_trade():
+    bars = [
+        _bar(_min(0), 100, 101, 99, 100),
+        _bar(_min(1), 100, 101, 96, 100),
+        _bar(_min(2), 100, 101, 96, 100),
+    ]
+    config = BacktestConfig(
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        pending_limit_entry=True,
+        pending_order_wait_bars=2,
+    )
+
+    result = run_backtest(bars, _OneLimit(), config)
+
+    assert result.n_trades == 0
+    assert result.unresolved_positions == 0
+
+
+def test_pending_limit_fills_on_fvg_retracement_and_trades():
+    bars = [
+        _bar(_min(0), 100, 101, 99, 100),
+        _bar(_min(1), 100, 106, 94, 100),
+    ]
+    config = BacktestConfig(
+        fixed_quantity=1,
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        pending_limit_entry=True,
+        pending_order_wait_bars=2,
+    )
+
+    result = run_backtest(bars, _OneLimit(), config)
+
+    assert result.n_trades == 1
+    assert result.trades[0].entry_price == 95.0
+    assert result.trades[0].exit_price == 105.0
+    assert result.trades[0].exit_reason == "take_profit"
+
+
+def test_cooldown_rearms_from_final_closed_cooldown_bar():
+    bars = [
+        _bar(_min(index), 100, 102, 98, 100)
+        for index in range(5)
+    ]
+    config = BacktestConfig(
+        fixed_quantity=1,
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        partial_take_profit_fraction=0.5,
+        move_stop_to_break_even=True,
+        cooldown_bars=2,
+    )
+
+    result = run_backtest(bars, _EveryEligibleBar(), config)
+
+    assert [trade.entry_time for trade in result.trades] == [_min(1), _min(4)]
 
 
 def test_strategy_with_no_signals_produces_zero_trades():

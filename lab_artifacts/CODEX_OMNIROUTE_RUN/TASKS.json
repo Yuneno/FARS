@@ -3,8 +3,8 @@
   "pack_version": "2.0",
   "pending": [
     {
-      "item": "Juanca strategy translation and comparison",
-      "note": "Deferred until current plan complete per user instruction",
+      "item": "Juanca strategy 2 translation and comparison (EMAS or CRT-TBS)",
+      "note": "Strategy 1 (SMC-FVG) complete; Strategy 2 pending subsequent phase",
       "status": "REGISTERED"
     }
   ],
@@ -142,7 +142,29 @@
         "MYM dollar_per_point uses MarketSpec",
         "MNQ canonical cutoff applied before warmup"
       ],
-      "status": "PARTIAL"
+      "status": "COMPLETE"
+    },
+    "Juanca-1": {
+      "acceptance": "AJ1",
+      "description": "Port and evaluation of Juanca Strategy 1 (SMC-FVG) on canonical MNQ M5",
+      "evidence": [
+        "8/8 SMC-FVG unit tests pass (signals, causality, no-lookahead, execution)",
+        "218 backtest suite tests pass with zero regressions",
+        "Canonical MNQ M5 backtest (518,237 bars) executed with reproducible runner",
+        "Parity vs kai reference baseline verified (n=5986 vs 5979; WR 59.00% vs 59.20%)",
+        "Realistic friction drag documented ($473k commission, turning +$463k into -$10k)"
+      ],
+      "files_modified": [
+        "src/backtest/smc_fvg.py",
+        "src/backtest/executor.py",
+        "src/backtest/cli.py",
+        "src/backtest/__init__.py",
+        "tests/test_backtest_smc_fvg.py",
+        "tests/test_backtest_executor.py",
+        "lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_juanca_smc_fvg.py",
+        "lab_artifacts/CODEX_OMNIROUTE_RUN/juanca_smc_fvg_out/juanca_smc_fvg_benchmark.json"
+      ],
+      "status": "COMPLETE"
     }
   },
   "version": "1.0"

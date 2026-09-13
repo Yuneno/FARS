@@ -19,14 +19,31 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
 from src.backtest.amd_crt import ET, AmdCrtStrategy, amd_crt_config
+from src.backtest.emas import EmasStrategy, emas_config
 from src.backtest.executor import run_backtest
 from src.backtest.history import Bar
 from src.backtest.mnq_csv import load_mnq_csv
+from src.backtest.smc_fvg import SmcFvgStrategy, smc_fvg_config
+
+_ADDITIVE_EXECUTOR_FIELDS = {
+    "partial_take_profit_fraction",
+    "move_stop_to_break_even",
+    "pending_limit_entry",
+    "pending_order_wait_bars",
+    "cooldown_bars",
+}
 
 
 def exact(value):
     if is_dataclass(value):
-        return {field.name: exact(getattr(value, field.name)) for field in fields(value)}
+        return {
+            field.name: exact(getattr(value, field.name))
+            for field in fields(value)
+            if not (
+                value.__class__.__name__ == "BacktestConfig"
+                and field.name in _ADDITIVE_EXECUTOR_FIELDS
+            )
+        }
     if isinstance(value, float):
         return {"binary64": struct.pack("!d", value).hex()}
     if isinstance(value, (datetime, date)):
@@ -90,15 +107,23 @@ def synthetic_cases():
             yield f"{direction}_{reason}", calibration, bars
 
 
-def capture(csv_path=None, *, ema=False):
+def capture(csv_path=None, *, ema=False, strategy_name="amd-crt"):
     if csv_path is not None:
         cases = [("full_csv", [], load_mnq_csv(csv_path))]
     else:
         cases = synthetic_cases()
     payload = {}
     for name, calibration, bars in cases:
-        strategy = AmdCrtStrategy(use_ema_filter=ema)
-        result = run_backtest(bars, strategy, amd_crt_config(), calibration_bars=calibration)
+        if strategy_name == "smc-fvg":
+            strategy = SmcFvgStrategy()
+            config = smc_fvg_config()
+        elif strategy_name == "emas":
+            strategy = EmasStrategy()
+            config = emas_config()
+        else:
+            strategy = AmdCrtStrategy(use_ema_filter=ema)
+            config = amd_crt_config()
+        result = run_backtest(bars, strategy, config, calibration_bars=calibration)
         payload[name] = {
             "result": exact(result),
             "decisions": exact(strategy.decisions),
@@ -112,6 +137,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", type=Path)
     parser.add_argument("--ema", action="store_true")
+    parser.add_argument(
+        "--strategy", choices=("amd-crt", "smc-fvg", "emas"), default="amd-crt"
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--reference", type=Path)
     args = parser.parse_args()
@@ -121,7 +149,9 @@ def main():
     ):
         parser.error("--output must not overwrite --reference")
     reference = args.reference.read_bytes() if args.reference else None
-    payload = capture(args.csv, ema=args.ema)
+    if args.strategy != "amd-crt" and args.csv is None:
+        parser.error("--strategy smc-fvg/emas requires --csv")
+    payload = capture(args.csv, ema=args.ema, strategy_name=args.strategy)
     data = encoded(payload)
     args.output.write_bytes(data)
     print(f"sha256={hashlib.sha256(data).hexdigest()}", flush=True)

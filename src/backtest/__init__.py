@@ -7,6 +7,7 @@ rule engine.
 
 from src.backtest.amd_crt import AmdCrtStrategy, amd_crt_config
 from src.backtest.batch import run_batch
+from src.backtest.emas import EmasStrategy, emas_config
 from src.backtest.executor import (
     BacktestConfig,
     BacktestResult,
@@ -30,6 +31,7 @@ from src.backtest.pipeline import (
     write_report,
     write_trades_csv,
 )
+from src.backtest.smc_fvg import SmcFvgStrategy, smc_fvg_config
 from src.backtest.strategy import BreakoutStrategy, Signal, Strategy
 
 __all__ = [
@@ -44,14 +46,17 @@ __all__ = [
     "Bar",
     "BreakoutStrategy",
     "DownloadResult",
+    "EmasStrategy",
     "ExecutedTrade",
     "Manifest",
     "MarketSpec",
     "Signal",
+    "SmcFvgStrategy",
     "Strategy",
     "amd_crt_config",
     "chronological_split",
     "download_bars",
+    "emas_config",
     "get_market_spec",
     "load_bars_csv",
     "load_mnq_csv",
@@ -59,6 +64,7 @@ __all__ = [
     "run_backtest",
     "run_batch",
     "run_pipeline",
+    "smc_fvg_config",
     "synthetic_bars",
     "write_report",
     "write_trades_csv",

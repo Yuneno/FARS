@@ -1,0 +1,113 @@
+{
+  "strategy": "SMC-FVG (SmcFvgStrategy)",
+  "source_references": [
+    "src/backtest/smc_fvg.py",
+    "docs/refactor/tasks/task-08-port-smcfvg-emas.md",
+    "docs/refactor/canonical-dataset.md",
+    "jita-bot-main/patterns/structure.py",
+    "jita-bot-main/patterns/fvg.py"
+  ],
+  "generated_utc": "2026-09-13T18:41:33.958858+00:00",
+  "git_commit": "baffec5c037dad043b780531be5f7977624d12ff",
+  "dataset": {
+    "zip_path": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "loaded_bars": 518237,
+    "first_timestamp": "2019-05-06T00:00:00+00:00",
+    "last_timestamp": "2026-09-03T23:55:00+00:00",
+    "load_seconds": 2.4987,
+    "canonical_cutoff": "2019-05-06T00:00:00.000Z"
+  },
+  "market": {
+    "symbol": "MNQ",
+    "session_timezone": "America/New_York",
+    "pre_session_start": "00:00:00",
+    "pre_session_end": "09:30:00",
+    "regular_session_start": "09:30:00",
+    "regular_session_end": "16:00:00",
+    "dollar_per_point": 2.0,
+    "tick_size": 0.25,
+    "friction_points": 2.0
+  },
+  "strategy_parameters": {
+    "f": 0.5,
+    "swing_w": 5,
+    "target_rr": 1.5,
+    "wait": 48,
+    "min_risk_pts": 8.0,
+    "cooldown": 6,
+    "log_decisions": true,
+    "timeframe": "M5",
+    "pivot_confirmation": "point_in_time"
+  },
+  "kai_reference_baseline": {
+    "source": "docs/refactor/canonical-dataset.md & task-08-port-smcfvg-emas.md",
+    "n_trades": 5979,
+    "win_rate": 0.592,
+    "gross_pf": 1.437,
+    "net_r": 1067.3,
+    "expectancy_r": 0.179,
+    "engine": "kai-backtesting (original array-based, gross without friction)"
+  },
+  "results": {
+    "gross_zero_friction": {
+      "n_trades": 5986,
+      "win_rate": 0.590043,
+      "wins": 3532,
+      "losses": 2454,
+      "breakeven": 0,
+      "gross_pnl": 463261.0,
+      "total_commission": 0.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": 463261.0,
+      "profit_factor": 1.3683,
+      "net_r": 926.522,
+      "expectancy_r": 0.154781,
+      "expectancy_dollars": 77.3907,
+      "max_drawdown_pct": 0.06533,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.9136
+    },
+    "canonical_market_friction": {
+      "n_trades": 5986,
+      "win_rate": 0.583862,
+      "wins": 3495,
+      "losses": 2486,
+      "breakeven": 5,
+      "gross_pnl": 463261.0,
+      "total_commission": 473372.0,
+      "total_slippage_cost": 0.0,
+      "net_pnl": -10111.0,
+      "profit_factor": 0.993,
+      "net_r": -20.222,
+      "expectancy_r": -0.003378,
+      "expectancy_dollars": -1.6891,
+      "max_drawdown_pct": 0.641938,
+      "unresolved_positions": 0,
+      "exit_reasons": {
+        "stop_loss": 2452,
+        "take_profit": 2313,
+        "break_even_stop": 1221
+      },
+      "wall_seconds": 0.8412
+    }
+  },
+  "parity_analysis": {
+    "n_trades_diff": 7,
+    "n_trades_ratio": 1.0012,
+    "win_rate_diff_pp": -0.2,
+    "profit_factor_diff": -0.0687,
+    "net_r_diff": -140.78,
+    "parity_verdict": "DIRECTION_AND_ORDER_OF_MAGNITUDE_VERIFIED: n=5986 vs 5979 (+0.12%), WR=59.00% vs 59.20% (-0.20 pp), Gross PF=1.3683 vs 1.437."
+  },
+  "friction_impact_analysis": {
+    "total_commission_cost": 473372.0,
+    "net_pnl_drag": 473372.0,
+    "conclusion": "Under realistic round-trip market friction ($4.00/contract = 2.0 pts), the gross edge is almost entirely consumed by friction due to high trading frequency (5,986 trades over 7.3 years \u2248 3.3 trades/day). The strategy achieves a gross edge before costs (+463k, PF 1.37) but becomes breakeven/slightly negative under standard friction (-10k, PF 0.993, DD 64.2%)."
+  }
+}
