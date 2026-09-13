@@ -1,0 +1,539 @@
+{
+  "schema_version": "fars-parallel-benchmark-v2",
+  "generated_utc": "2026-09-13T19:27:41.959184+00:00",
+  "git_commit": "ea380c8738b24a6cbfa556fdbddf20963958271a",
+  "environment": {
+    "platform": "win32",
+    "os_name": "nt",
+    "cpu_count": 12,
+    "python_executable": "E:\\FARS-LAB\\.venv-fars\\Scripts\\python.exe",
+    "mp_spawn_context": true
+  },
+  "dataset": {
+    "zip_path": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M15.csv",
+    "total_loaded_bars": 172789,
+    "load_seconds": 0.6433,
+    "n_jobs": 18,
+    "bars_per_job_avg": 5882.4,
+    "bars_per_job_min": 5711,
+    "bars_per_job_max": 6040
+  },
+  "benchmark": {
+    "parent_pid": 15692,
+    "worker_counts": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "repetitions": 3,
+    "semantic_equivalence_verified": true,
+    "scaling_summary": {
+      "1": {
+        "requested_workers": 1,
+        "wall_mean_seconds": 1.0627,
+        "wall_min_seconds": 1.0593,
+        "wall_max_seconds": 1.0664,
+        "speedup_mean": 1.0,
+        "speedup_min": 1.0,
+        "efficiency_mean": 1.0,
+        "efficiency_min": 1.0,
+        "unique_pids_avg": 1.0,
+        "all_runs_non_parent": true,
+        "no_fallback_detected": true
+      },
+      "2": {
+        "requested_workers": 2,
+        "wall_mean_seconds": 0.9308,
+        "wall_min_seconds": 0.9277,
+        "wall_max_seconds": 0.9328,
+        "speedup_mean": 1.1417,
+        "speedup_min": 1.1419,
+        "efficiency_mean": 0.5708,
+        "efficiency_min": 0.5709,
+        "unique_pids_avg": 2.0,
+        "all_runs_non_parent": true,
+        "no_fallback_detected": true
+      },
+      "3": {
+        "requested_workers": 3,
+        "wall_mean_seconds": 0.927,
+        "wall_min_seconds": 0.9023,
+        "wall_max_seconds": 0.9545,
+        "speedup_mean": 1.1464,
+        "speedup_min": 1.174,
+        "efficiency_mean": 0.3821,
+        "efficiency_min": 0.3913,
+        "unique_pids_avg": 3.0,
+        "all_runs_non_parent": true,
+        "no_fallback_detected": true
+      },
+      "4": {
+        "requested_workers": 4,
+        "wall_mean_seconds": 0.9828,
+        "wall_min_seconds": 0.9657,
+        "wall_max_seconds": 1.0084,
+        "speedup_mean": 1.0813,
+        "speedup_min": 1.0969,
+        "efficiency_mean": 0.2703,
+        "efficiency_min": 0.2742,
+        "unique_pids_avg": 4.0,
+        "all_runs_non_parent": true,
+        "no_fallback_detected": true
+      },
+      "5": {
+        "requested_workers": 5,
+        "wall_mean_seconds": 1.0334,
+        "wall_min_seconds": 1.0208,
+        "wall_max_seconds": 1.05,
+        "speedup_mean": 1.0284,
+        "speedup_min": 1.0377,
+        "efficiency_mean": 0.2057,
+        "efficiency_min": 0.2075,
+        "unique_pids_avg": 5.0,
+        "all_runs_non_parent": true,
+        "no_fallback_detected": true
+      },
+      "6": {
+        "requested_workers": 6,
+        "wall_mean_seconds": 1.0939,
+        "wall_min_seconds": 1.0783,
+        "wall_max_seconds": 1.1088,
+        "speedup_mean": 0.9715,
+        "speedup_min": 0.9824,
+        "efficiency_mean": 0.1619,
+        "efficiency_min": 0.1637,
+        "unique_pids_avg": 6.0,
+        "all_runs_non_parent": true,
+        "no_fallback_detected": true
+      }
+    },
+    "runs": {
+      "1": [
+        {
+          "rep": 1,
+          "requested_workers": 1,
+          "effective_workers": 1,
+          "unique_pids": 1,
+          "pids": [
+            14268
+          ],
+          "non_parent_pids": [
+            14268
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0664,
+          "manifest_hash": "13462a709ae8ea0a5f8d42ceaf8241fc358f6aa4faa6708556f81e099f5ea3e8"
+        },
+        {
+          "rep": 2,
+          "requested_workers": 1,
+          "effective_workers": 1,
+          "unique_pids": 1,
+          "pids": [
+            16940
+          ],
+          "non_parent_pids": [
+            16940
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0624,
+          "manifest_hash": "d8a5681ef06f18deb2a1983203a35db17bbd0294c5c0966e653866a820a0e402"
+        },
+        {
+          "rep": 3,
+          "requested_workers": 1,
+          "effective_workers": 1,
+          "unique_pids": 1,
+          "pids": [
+            13248
+          ],
+          "non_parent_pids": [
+            13248
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0593,
+          "manifest_hash": "e3825cb74b3087ab362c31a1778186b10e41654c3b03dcf35a67d5799abd3877"
+        }
+      ],
+      "2": [
+        {
+          "rep": 1,
+          "requested_workers": 2,
+          "effective_workers": 2,
+          "unique_pids": 2,
+          "pids": [
+            2652,
+            15800
+          ],
+          "non_parent_pids": [
+            2652,
+            15800
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.9277,
+          "manifest_hash": "800ebe27f5206107416a1f4029f2ece237bfde5ee0a4c48721350af4dbc51768"
+        },
+        {
+          "rep": 2,
+          "requested_workers": 2,
+          "effective_workers": 2,
+          "unique_pids": 2,
+          "pids": [
+            18856,
+            24456
+          ],
+          "non_parent_pids": [
+            18856,
+            24456
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.932,
+          "manifest_hash": "850213e4f9c5a1778278c259704f81da9c22e5d1b93ec357e506c5c2c1ee190e"
+        },
+        {
+          "rep": 3,
+          "requested_workers": 2,
+          "effective_workers": 2,
+          "unique_pids": 2,
+          "pids": [
+            4028,
+            23876
+          ],
+          "non_parent_pids": [
+            4028,
+            23876
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.9328,
+          "manifest_hash": "6fdb90a85ffcdfca2d6ed7d7e3cf1e7b1322c39eafcbdba23811ddf8bb8abaff"
+        }
+      ],
+      "3": [
+        {
+          "rep": 1,
+          "requested_workers": 3,
+          "effective_workers": 3,
+          "unique_pids": 3,
+          "pids": [
+            2940,
+            4808,
+            14248
+          ],
+          "non_parent_pids": [
+            2940,
+            4808,
+            14248
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.9242,
+          "manifest_hash": "ae0c3b4480c9c20785c0d4f6d28df956facc9e4653fb0ccca968a43527389fa1"
+        },
+        {
+          "rep": 2,
+          "requested_workers": 3,
+          "effective_workers": 3,
+          "unique_pids": 3,
+          "pids": [
+            2820,
+            9984,
+            19720
+          ],
+          "non_parent_pids": [
+            2820,
+            9984,
+            19720
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.9023,
+          "manifest_hash": "ac65d4c29cef4f8e35fed6ef9e6bfeb858f8a494e1f247802ccca5ea418e9e1e"
+        },
+        {
+          "rep": 3,
+          "requested_workers": 3,
+          "effective_workers": 3,
+          "unique_pids": 3,
+          "pids": [
+            6580,
+            8124,
+            19508
+          ],
+          "non_parent_pids": [
+            6580,
+            8124,
+            19508
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.9545,
+          "manifest_hash": "4866d4ade9da9c55c28d54a78933851f0072c2bfadc7e59d37c206bf88cb4e9e"
+        }
+      ],
+      "4": [
+        {
+          "rep": 1,
+          "requested_workers": 4,
+          "effective_workers": 4,
+          "unique_pids": 4,
+          "pids": [
+            8852,
+            11016,
+            15472,
+            24016
+          ],
+          "non_parent_pids": [
+            8852,
+            11016,
+            15472,
+            24016
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.9744,
+          "manifest_hash": "5f04a1e7926c1d4bcc48a5e94a7af81d788879d1fdefdde85d7627074d422d52"
+        },
+        {
+          "rep": 2,
+          "requested_workers": 4,
+          "effective_workers": 4,
+          "unique_pids": 4,
+          "pids": [
+            3436,
+            10720,
+            11424,
+            12632
+          ],
+          "non_parent_pids": [
+            3436,
+            10720,
+            11424,
+            12632
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0084,
+          "manifest_hash": "5244e7374833c2212d8ad89c8a694e0029a0080138e536db76e50eb3f55f4397"
+        },
+        {
+          "rep": 3,
+          "requested_workers": 4,
+          "effective_workers": 4,
+          "unique_pids": 4,
+          "pids": [
+            252,
+            776,
+            15504,
+            22840
+          ],
+          "non_parent_pids": [
+            252,
+            776,
+            15504,
+            22840
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 0.9657,
+          "manifest_hash": "6186c7d816f5b94ae428ac0c00fec8d4defbbeb29128256b12e793b22bdb565c"
+        }
+      ],
+      "5": [
+        {
+          "rep": 1,
+          "requested_workers": 5,
+          "effective_workers": 5,
+          "unique_pids": 5,
+          "pids": [
+            7752,
+            8468,
+            20744,
+            21844,
+            22756
+          ],
+          "non_parent_pids": [
+            7752,
+            8468,
+            20744,
+            21844,
+            22756
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.05,
+          "manifest_hash": "806427759612ed07796a26a4a7850de63a0a3491817c9ef3b22ab68621d4fbca"
+        },
+        {
+          "rep": 2,
+          "requested_workers": 5,
+          "effective_workers": 5,
+          "unique_pids": 5,
+          "pids": [
+            4692,
+            10060,
+            20720,
+            21208,
+            23672
+          ],
+          "non_parent_pids": [
+            4692,
+            10060,
+            20720,
+            21208,
+            23672
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0208,
+          "manifest_hash": "91e7ef4ebe2bcb4688e130907223b2a99a2100a604c37c08466fd9237640e641"
+        },
+        {
+          "rep": 3,
+          "requested_workers": 5,
+          "effective_workers": 5,
+          "unique_pids": 5,
+          "pids": [
+            2000,
+            5736,
+            6068,
+            17664,
+            23988
+          ],
+          "non_parent_pids": [
+            2000,
+            5736,
+            6068,
+            17664,
+            23988
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0293,
+          "manifest_hash": "357cb8442e5b19e43d022987c2b5c5674116b3bd25ca00d6899d83af049c283b"
+        }
+      ],
+      "6": [
+        {
+          "rep": 1,
+          "requested_workers": 6,
+          "effective_workers": 6,
+          "unique_pids": 6,
+          "pids": [
+            860,
+            5656,
+            6564,
+            12984,
+            19872,
+            21152
+          ],
+          "non_parent_pids": [
+            860,
+            5656,
+            6564,
+            12984,
+            19872,
+            21152
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0783,
+          "manifest_hash": "746dc24b02a560379946d699aaf82a310e55e8a241a8391fb9e0dbbb2517edce"
+        },
+        {
+          "rep": 2,
+          "requested_workers": 6,
+          "effective_workers": 6,
+          "unique_pids": 6,
+          "pids": [
+            5352,
+            5480,
+            7712,
+            8496,
+            18856,
+            22728
+          ],
+          "non_parent_pids": [
+            5352,
+            5480,
+            7712,
+            8496,
+            18856,
+            22728
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.1088,
+          "manifest_hash": "893c1c63533a409ad7a0cf6d30eb731550c95616b4fca0a571e00f5a5c3efff1"
+        },
+        {
+          "rep": 3,
+          "requested_workers": 6,
+          "effective_workers": 6,
+          "unique_pids": 6,
+          "pids": [
+            2640,
+            6868,
+            9756,
+            10052,
+            15548,
+            19864
+          ],
+          "non_parent_pids": [
+            2640,
+            6868,
+            9756,
+            10052,
+            15548,
+            19864
+          ],
+          "sequential_fallback": false,
+          "n_done": 18,
+          "n_errors": 0,
+          "wall_seconds": 1.0945,
+          "manifest_hash": "c25503bab23fa7f47ed548895347ad9b3fa6ecf6aa157547c8bb840616ea61e6"
+        }
+      ]
+    }
+  },
+  "verdict": {
+    "multiprocessing_spawn_functional": true,
+    "sequential_fallback_triggered": false,
+    "distinct_pids_verified": true,
+    "semantic_equivalence_100_pct": true,
+    "speedup_scaling": {
+      "workers_1": "1.0x (efficiency 100.0%)",
+      "workers_2": "1.1417x (efficiency 57.1%)",
+      "workers_3": "1.1464x (efficiency 38.2%)",
+      "workers_4": "1.0813x (efficiency 27.0%)",
+      "workers_5": "1.0284x (efficiency 20.6%)",
+      "workers_6": "0.9715x (efficiency 16.2%)"
+    }
+  }
+}
