@@ -163,3 +163,71 @@ def test_smc_fvg_partial_tp_and_breakeven_stop_execution():
     assert trade.stop_price == 111.0
     assert trade.r_result > 0.0
 
+
+def test_causality_signal_bar_cannot_fill_same_bar():
+    """A signal formed at the close of bar t cannot fill on bar t itself."""
+    bars = _bullish_structure()  # bars 0-4; bar 4 emits long limit at 111.0
+    strategy = SmcFvgStrategy(swing_w=1, min_risk_pts=0.0)
+    config = smc_fvg_config(fixed_quantity=1)
+
+    result = run_backtest(bars, strategy, config)
+    assert result.n_trades == 0
+    assert result.unresolved_positions == 0
+
+
+def test_causality_limit_order_fills_only_when_next_bar_touches_level():
+    """A pending limit fills only when a subsequent bar touches the limit price."""
+    # Bar 5 does not touch entry 111.0 (low is 111.5).
+    # Bar 6 touches entry 111.0 (low is 110.5, high is 111.8 - does not reach TP).
+    bars = _bullish_structure() + [
+        _bar(5, 114, 115, 111.5, 114),
+        _bar(6, 111.5, 111.8, 110.5, 111.2),
+    ]
+    strategy = SmcFvgStrategy(swing_w=1, min_risk_pts=0.0)
+    config = smc_fvg_config(fixed_quantity=1)
+
+    result = run_backtest(bars, strategy, config)
+    # The order was filled on bar 6 and remains open at end of data
+    assert result.n_trades == 0
+    assert result.unresolved_positions == 1
+
+
+def test_intrabar_resolution_pessimistic_entry_and_stop_same_bar():
+    """When a single bar touches entry, TP, and stop, pessimistic resolution awards stop loss."""
+    # Bar 5 touches entry 111.0, TP1 112.0, target 112.5, and stop 109.98
+    bars = _bullish_structure() + [
+        _bar(5, 111.0, 115.0, 105.0, 110.0),
+    ]
+    strategy = SmcFvgStrategy(swing_w=1, min_risk_pts=0.0)
+    config = smc_fvg_config(fixed_quantity=1)
+
+    result = run_backtest(bars, strategy, config)
+    assert result.n_trades == 1
+    trade = result.trades[0]
+    assert trade.exit_reason == "stop_loss"
+    assert trade.exit_time == bars[5].timestamp
+
+
+def test_break_even_stop_does_not_trigger_on_tp1_trigger_bar():
+    """When TP1 is reached and stop moves to BE, BE stop does not execute on the TP1 bar itself."""
+    # Bar 5 fills entry at 111.0 (low=110.5, high=111.8; does not reach TP1=112.0)
+    # Bar 6 dips to 110.8 (< entry 111.0) and rallies to 112.5 (touches TP1 112.0, moves stop to 111.0).
+    # Crucially, bar 6 must NOT be stopped out at break-even on bar 6.
+    # Bar 7 dips to 110.0 and hits the newly armed break-even stop at 111.0.
+    bars = _bullish_structure() + [
+        _bar(5, 111.5, 111.8, 110.5, 111.2),
+        _bar(6, 111.2, 112.5, 110.8, 112.0),
+        _bar(7, 112.0, 112.0, 110.0, 110.5),
+    ]
+    strategy = SmcFvgStrategy(swing_w=1, target_rr=3.0, min_risk_pts=0.0)
+    config = smc_fvg_config(fixed_quantity=1)
+
+    result = run_backtest(bars, strategy, config)
+    assert result.n_trades == 1
+    trade = result.trades[0]
+    assert trade.exit_time == bars[7].timestamp
+    assert trade.exit_reason == "break_even_stop"
+    assert trade.entry_price == 111.0
+    assert trade.stop_price == 111.0
+
+
