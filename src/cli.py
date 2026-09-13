@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import pathlib
 import sys
 from typing import Any, Sequence
 
@@ -149,6 +150,46 @@ def _build_parser() -> argparse.ArgumentParser:
                 metavar="INTEGER",
                 help="bootstrap replicates, at least 2000 (default 2000)",
             )
+    # --- import subcommand (TSFM CSV -> FARS pipeline) ---
+    imp = subparsers.add_parser(
+        "import",
+        help="import a TSFM-format CSV through the full conversion/audit/persist pipeline",
+    )
+    imp.add_argument("csv", help="path to the TSFM-format CSV file")
+    imp.add_argument(
+        "output_dir",
+        help="directory to write the output FARS CSV and audit JSON",
+    )
+    imp.add_argument(
+        "--symbol",
+        default=None,
+        help="expected contract symbol (e.g. MNQ, MES, YM); rejects conflicts",
+    )
+    imp.add_argument(
+        "--pnl-units",
+        default="points",
+        choices=("points", "monetary"),
+        help="PnL unit system (default: points)",
+    )
+    imp.add_argument(
+        "--namespace",
+        default="tsfm",
+        help="trade identity namespace (default: tsfm)",
+    )
+    imp.add_argument(
+        "--accept-partial",
+        action="store_true",
+        default=False,
+        help="exit 0 even if some rows are rejected; default exits non-zero on errors",
+    )
+    imp.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="output format (default text)",
+    )
+
+
     return parser
 
 
@@ -367,7 +408,60 @@ def _emit_bootstrap(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
-    mapping = _parse_mapping(args.mapping, parser)
+
+    # --- import subcommand: TSFM CSV -> FARS pipeline ---
+    if args.command == "import":
+        from .importer import run_full_pipeline
+        from .tsfm_adapter import ConversionConfig
+
+        src = pathlib.Path(args.csv)
+        out_dir = pathlib.Path(args.output_dir)
+        if not src.exists():
+            print(f"error: source file not found: {src}", file=sys.stderr)
+            return EXIT_STRUCTURAL
+
+        cfg = ConversionConfig(
+            symbol=args.symbol,
+            pnl_units=args.pnl_units,
+            namespace=args.namespace,
+        )
+
+        try:
+            result = run_full_pipeline(src, out_dir, config=cfg)
+        except Exception as exc:
+            print(f"internal error: {type(exc).__name__}: {exc}", file=sys.stderr)
+            return EXIT_INTERNAL
+
+        audit = result["audit"]
+        has_errors = audit["rejected"] > 0
+
+        if args.format == "json":
+            import json as _json
+            print(_json.dumps(result, indent=2, default=str))
+        else:
+            print(f"Source: {audit['source_path']}")
+            print(f"  SHA-256: {audit['source_sha256'][:16]}...")
+            print(f"  Total rows: {audit['total_rows']}")
+            print(f"  Accepted: {audit['accepted']}")
+            print(f"  Rejected: {audit['rejected']}")
+            print(f"  Deduplicated: {audit['deduplicated']}")
+            m = result["metrics"]
+            print(f"  Metrics: n={m['n_trades']}, win_rate={m['win_rate']:.4f}, expectancy_r={m['expectancy_r']:.4f}")
+            b = result["bootstrap"]
+            print(f"  Bootstrap: eligible={b['eligible']}, state={b['state']}")
+            print(f"  Output: {result['output_path']}")
+
+        if has_errors and not args.accept_partial:
+            print(
+                f"error: {audit['rejected']} row(s) rejected; "
+                "use --accept-partial to allow partial import",
+                file=sys.stderr,
+            )
+            return EXIT_STRUCTURAL
+        return EXIT_OK
+
+    # --- audit/metrics/bootstrap: require FARS CSV + outcomes_finalized ---
+    mapping = _parse_mapping(getattr(args, "mapping", []), parser)
 
     try:
         dataset = load_trade_csv(
@@ -391,10 +485,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "bootstrap":
         try:
-            # Keep audit/metrics startup independent of the heavier statistical
-            # imports while still delegating all Phase 10A decisions here.
             from .bootstrap import STATE_UNSUPPORTED, analyze_bootstrap
-
             result = analyze_bootstrap(
                 dataset,
                 master_seed=args.seed,
@@ -413,6 +504,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             return EXIT_BLOCKED
         return EXIT_OK
 
+    # metrics
     capability = dataset.capabilities["core_metrics"]
     if not capability.available:
         _emit(dataset, args.format)
@@ -426,9 +518,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         metrics = compute_metrics(r_results)
     except ValueError as exc:
-        # Inputs are finite (validated at load), so this is derived overflow:
-        # the data block the requested analysis. Emit the audit first so the
-        # result stays connected to its data and provenance.
         _emit(dataset, args.format)
         print(f"error: cannot compute metrics for this dataset: {exc}", file=sys.stderr)
         return EXIT_BLOCKED
