@@ -96,13 +96,15 @@ def build_strategy_and_config(strat_id: str, slip_pts: float):
 
 def extract_leg_stats(trades):
     legs = {}
-    for reason in ("stop_loss", "take_profit", "time_exit"):
+    distinct_reasons = sorted({t.exit_reason for t in trades})
+    for reason in distinct_reasons:
         leg_trades = [t for t in trades if t.exit_reason == reason]
         legs[reason] = {
             "n_trades": len(leg_trades),
             "net_pnl": round(sum(t.net_pnl for t in leg_trades), 2),
             "total_slippage_cost": round(sum(t.slippage_cost for t in leg_trades), 2),
             "total_quantity": sum(int(t.quantity) for t in leg_trades),
+            "commission": round(sum(t.commission for t in leg_trades), 2),
         }
     return legs
 
@@ -173,6 +175,36 @@ def main():
             label, strategy, cfg = build_strategy_and_config(strat_id, slip)
             res = run_backtest(bars, strategy, cfg)
             row = analyze_run(label, res, slip)
+            # Aserciones de reconciliacion exacta (FIX-1)
+            legs = row["delta_por_pata"]
+            sum_n = sum(p["n_trades"] for p in legs.values())
+            sum_net = round(sum(p["net_pnl"] for p in legs.values()), 2)
+            sum_comm = round(sum(p["commission"] for p in legs.values()), 2)
+
+            assert sum_n == row["n_trades"], f"Reconciliacion n_trades fallo: {sum_n} != {row['n_trades']}"
+            assert sum_net == round(row["net_pnl"], 2), f"Reconciliacion net_pnl fallo: {sum_net} != {row['net_pnl']}"
+            assert sum_comm == round(res.total_commission, 2), f"Reconciliacion commission fallo: {sum_comm} != {res.total_commission}"
+
+            if strat_id == "crt_tbs_champion":
+                assert sum_comm == 1932.00, f"Control cruzado comision CRT-TBS fallo: {sum_comm} != 1932.00"
+                if slip == 0.0:
+                    assert legs["stop_loss"] == {"n_trades": 42, "net_pnl": -22350.00, "total_slippage_cost": 0.0, "total_quantity": 261, "commission": 1044.00}
+                    assert legs["take_profit"] == {"n_trades": 25, "net_pnl": 24180.00, "total_slippage_cost": 0.0, "total_quantity": 150, "commission": 600.00}
+                    assert legs["time_exit"] == {"n_trades": 26, "net_pnl": 2971.00, "total_slippage_cost": 0.0, "total_quantity": 72, "commission": 288.00}
+                elif slip == TICK_PTS:
+                    assert legs["time_exit"]["net_pnl"] == 2935.00
+                    assert legs["time_exit"]["total_slippage_cost"] == 36.00
+            elif strat_id == "orb":
+                assert sum_comm == 31260.00, f"Control cruzado comision ORB fallo: {sum_comm} != 31260.00"
+                if slip == 0.0:
+                    assert legs["time_exit"] == {"n_trades": 1141, "net_pnl": 213080.50, "total_slippage_cost": 0.0, "total_quantity": 2884, "commission": 11536.00}
+                    assert legs["stop_loss"] == {"n_trades": 1048, "net_pnl": -544310.00, "total_slippage_cost": 0.0, "total_quantity": 3584, "commission": 14336.00}
+                    assert legs["take_profit"] == {"n_trades": 354, "net_pnl": 350654.50, "total_slippage_cost": 0.0, "total_quantity": 1346, "commission": 5384.00}
+                    assert legs["end_of_data"] == {"n_trades": 1, "net_pnl": 130.00, "total_slippage_cost": 0.0, "total_quantity": 1, "commission": 4.00}
+                elif slip == TICK_PTS:
+                    assert legs["time_exit"]["net_pnl"] == 211638.50
+                    assert legs["time_exit"]["total_slippage_cost"] == 1442.00
+
             strat_results.append(row)
             print(
                 f"  slip={slip} pts | n={row['n_trades']} | exp={row['n_expiraciones']} | "

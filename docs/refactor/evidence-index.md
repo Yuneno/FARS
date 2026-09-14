@@ -72,16 +72,28 @@ Clasificacion segun taxonomia formal:
 
 ## 4. Politica de Fin de Dataset por Corrida Canonica (A3.2)
 
-De acuerdo con el hallazgo A3.2 de la revision de Hermes, se audita y declara explicitamente la politica `end_of_data_policy` utilizada por cada corrida canonica sobre el dataset MNQ M5 (`timestamp >= 2019-05-06`, 518,237 barras):
+De acuerdo con el hallazgo A3.2 de la revision de Hermes, se audita y declara con precision la politica `end_of_data_policy` utilizada por cada corrida canonica sobre el dataset MNQ M5 (`timestamp >= 2019-05-06`, 518,237 barras) y la semantica real del motor de ejecucion (`src/backtest/executor.py:540-542`):
 
-| Corrida Canonica | Artefacto | Politica Declarada | Posiciones Sin Resolver (`unresolved_positions`) | Estado de Posicion Abierta (`open_position`) | Homogeneidad del Baseline |
-|---|---|---|:---:|:---:|:---:|
-| **CRT-TBS (Champion)** | `lab_artifacts/flat_vs_market_comparison.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Verificado homogeneo: 0 trades abiertos en barra 518,237. `close` vs `unresolved` dan identicos 93 trades. |
-| **ORB (Experimental)** | `lab_artifacts/flat_vs_market_comparison.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Verificado homogeneo: 0 trades abiertos en barra 518,237. `close` vs `unresolved` dan identicos 2,544 trades. |
-| **Auditoria Intrabarra M1** | `lab_artifacts/intrabar_canonical_audit.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Idem. Cero posiciones abiertas al final del dataset. |
-| **Slippage Salida Temporal A3** | `lab_artifacts/a3/time_exit_slippage.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Idem. Cero posiciones abiertas al final del dataset. |
+```python
+should_close = (config.end_of_data_policy == "close") or (
+    config.end_of_data_policy == "unresolved" and not position["distance_mode"]
+)
+```
 
-Ninguna corrida canonica cerro forzadamente posiciones al ultimo `close`. Ambas estrategias se encontraban totalmente liquidas al final del historico.
+### Semantica de Ejecucion al Fin de Dataset
+En el executor (`src/backtest/executor.py`), `unresolved_positions=0` **no** significa que no existiera una posicion abierta al llegar a la ultima barra. La politica por defecto (`"unresolved"`) cierra forzosamente al `close` de la ultima barra aquellas posiciones cuyas señales **no** operan en `distance_mode` (`stop_target_as_points=False`), generando un trade ejecutado con `exit_reason="end_of_data"` y dejando `position = None` (por lo que `unresolved_positions` se computa como `0` y `open_position=None`). Unicamente las señales con `stop_target_as_points=True` permanecen marcadas como abiertas en `open_position` y reportan `unresolved_positions=1`.
+
+| Corrida Canonica | Artefacto | Politica Declarada | Posiciones al Final del Dataset | Trades `end_of_data` Generados | `unresolved_positions` | Justificacion de Homogeneidad (`close` vs `unresolved`) |
+|---|---|---|:---:|:---:|:---:|---|
+| **CRT-TBS (Champion)** | `lab_artifacts/flat_vs_market_comparison.json` | `end_of_data_policy="unresolved"` | **0 abiertas** (plana) | **0** | **0** | Totalmente liquida al final del dataset (93 trades = 42 `stop_loss` + 25 `take_profit` + 26 `time_exit`). `close` y `unresolved` dan exactamente los mismos 93 trades. |
+| **ORB (Experimental)** | `lab_artifacts/flat_vs_market_comparison.json` | `end_of_data_policy="unresolved"` | **1 abierta** | **1** (n=1, qty=1, net=+$130.00, comm=$4.00) | **0** | Al no ser `distance_mode` (`stop_target_as_points=False`), `should_close` es `True` tanto bajo `"close"` como bajo `"unresolved"` (`not position["distance_mode"]`). Ambas politicas producen identicos 2,544 trades. |
+| **Auditoria Intrabarra M1** | `lab_artifacts/intrabar_canonical_audit.json` | `end_of_data_policy="unresolved"` | CRT: 0 / ORB: 1 | CRT: 0 / ORB: 1 | **0** | Idem. Homogeneidad garantizada por la semantica del executor. |
+| **Slippage Salida Temporal A3** | `lab_artifacts/a3/time_exit_slippage.json` | `end_of_data_policy="unresolved"` | CRT: 0 / ORB: 1 | CRT: 0 / ORB: 1 | **0** | Idem. El trade `end_of_data` forma la 4ª pata del ledger reconciliado de ORB. |
+
+Conclusiones clave:
+1. **CRT-TBS** concluyo el dataset sin ninguna posicion abierta (0 abiertas, 0 `end_of_data`).
+2. **ORB** tenia exactamente **1 posicion abierta** en la barra 518,237, la cual fue liquidada al precio de cierre de la barra final generando un trade `end_of_data` (n=1, net +$130.00, qty=1, commission $4.00), representando el 0.66% del net PnL acumulado.
+3. La identidad de resultados entre `end_of_data_policy="close"` y `"unresolved"` para ambas estrategias queda demostrada rigurosamente por el codigo: CRT-TBS no tenia posiciones abiertas, y ORB no usa `distance_mode`, por lo que en ambos casos la rama de ejecucion es invariante ante la politica.
 
 ---
 
@@ -101,6 +113,6 @@ Ninguna corrida canonica cerro forzadamente posiciones al ultimo `close`. Ambas 
 
 | Artefacto | Ruta | Commit / Rama | Descripcion | Hash SHA-256 |
 |---|---|---|---|---|
-| **Slippage Salida Temporal** | `lab_artifacts/a3/time_exit_slippage.json` | `fix/a3-hallazgos` | Impacto de 0.0 vs 0.25 pts en CRT-TBS y ORB, distribucion de cantidad, friction_R, delta por pata | `732b2be9f4944d2ce049f1f35ed4ba27d71f68c2f133b0f09d3938e4dbda8b93` |
+| **Slippage Salida Temporal** | `lab_artifacts/a3/time_exit_slippage.json` | `fix/a3-hallazgos` | Impacto de 0.0 vs 0.25 pts en CRT-TBS y ORB, distribucion de cantidad, friction_R, delta por pata reconciliado | `6cc4acf0bdcd12e145265028cff668683e71bed611cca4fb7911b0254f9cc0d0` |
 | **Auditoria Intrabarra M1 (A3.3)** | `lab_artifacts/intrabar_canonical_audit.json` | `fix/a3-hallazgos` | Tasas de ambiguedad etiquetadas (`ambiguous_pct_of_all_bars` y `ambiguous_pct_of_bars_in_position`), `bars_in_position` | `4d772416a0eb8b98de425835f954154498e1b4b2b1cb9a8da06a288d962c262d` |
 

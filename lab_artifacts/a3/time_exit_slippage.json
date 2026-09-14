@@ -5,7 +5,7 @@
     "total_bars": 518237,
     "cost_basis": "$4.00 RT commission, MNQ $2.00/pt",
     "tick_size_pts": 0.25,
-    "generated_at": "2026-09-14T22:21:55.911151+00:00"
+    "generated_at": "2026-09-14T22:53:08.449788+00:00"
   },
   "comparisons": [
     {
@@ -38,19 +38,22 @@
             "n_trades": 42,
             "net_pnl": -22350.0,
             "total_slippage_cost": 0.0,
-            "total_quantity": 261
+            "total_quantity": 261,
+            "commission": 1044.0
           },
           "take_profit": {
             "n_trades": 25,
             "net_pnl": 24180.0,
             "total_slippage_cost": 0.0,
-            "total_quantity": 150
+            "total_quantity": 150,
+            "commission": 600.0
           },
           "time_exit": {
             "n_trades": 26,
             "net_pnl": 2971.0,
             "total_slippage_cost": 0.0,
-            "total_quantity": 72
+            "total_quantity": 72,
+            "commission": 288.0
           }
         }
       },
@@ -82,19 +85,22 @@
             "n_trades": 42,
             "net_pnl": -22350.0,
             "total_slippage_cost": 0.0,
-            "total_quantity": 261
+            "total_quantity": 261,
+            "commission": 1044.0
           },
           "take_profit": {
             "n_trades": 25,
             "net_pnl": 24180.0,
             "total_slippage_cost": 0.0,
-            "total_quantity": 150
+            "total_quantity": 150,
+            "commission": 600.0
           },
           "time_exit": {
             "n_trades": 26,
             "net_pnl": 2935.0,
             "total_slippage_cost": 36.0,
-            "total_quantity": 72
+            "total_quantity": 72,
+            "commission": 288.0
           }
         }
       },
@@ -133,23 +139,33 @@
         "median_stop_distance_pts": 102.75,
         "friction_R_del_slippage_por_trade": 0.0,
         "delta_por_pata": {
+          "end_of_data": {
+            "n_trades": 1,
+            "net_pnl": 130.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 1,
+            "commission": 4.0
+          },
           "stop_loss": {
             "n_trades": 1048,
             "net_pnl": -544310.0,
             "total_slippage_cost": 0.0,
-            "total_quantity": 3584
+            "total_quantity": 3584,
+            "commission": 14336.0
           },
           "take_profit": {
             "n_trades": 354,
             "net_pnl": 350654.5,
             "total_slippage_cost": 0.0,
-            "total_quantity": 1346
+            "total_quantity": 1346,
+            "commission": 5384.0
           },
           "time_exit": {
             "n_trades": 1141,
             "net_pnl": 213080.5,
             "total_slippage_cost": 0.0,
-            "total_quantity": 2884
+            "total_quantity": 2884,
+            "commission": 11536.0
           }
         }
       },
@@ -181,23 +197,33 @@
         "median_stop_distance_pts": 102.75,
         "friction_R_del_slippage_por_trade": 0.002528,
         "delta_por_pata": {
+          "end_of_data": {
+            "n_trades": 1,
+            "net_pnl": 130.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 1,
+            "commission": 4.0
+          },
           "stop_loss": {
             "n_trades": 1048,
             "net_pnl": -544310.0,
             "total_slippage_cost": 0.0,
-            "total_quantity": 3584
+            "total_quantity": 3584,
+            "commission": 14336.0
           },
           "take_profit": {
             "n_trades": 354,
             "net_pnl": 350654.5,
             "total_slippage_cost": 0.0,
-            "total_quantity": 1346
+            "total_quantity": 1346,
+            "commission": 5384.0
           },
           "time_exit": {
             "n_trades": 1141,
             "net_pnl": 211638.5,
             "total_slippage_cost": 1442.0,
-            "total_quantity": 2884
+            "total_quantity": 2884,
+            "commission": 11536.0
           }
         }
       },
