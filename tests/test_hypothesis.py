@@ -110,3 +110,94 @@ class TestWalkForward:
         plan = WalkForwardPlan.create(total_bars=200, n_folds=4)
         ids = [f.fold_id for f in plan.folds]
         assert ids == list(range(len(plan.folds)))
+
+    def test_calendar_rolling_plan(self):
+        from datetime import datetime, timedelta
+
+        # Create daily bars from 2019-05-06 to 2026-07-15
+        cur = datetime(2019, 5, 6)
+        end = datetime(2026, 7, 15)
+        bars = []
+        while cur <= end:
+            bars.append({"timestamp": cur.strftime("%Y-%m-%dT00:00:00.000Z")})
+            cur += timedelta(days=1)
+
+        plan = WalkForwardPlan.create_calendar_rolling(
+            bars,
+            train_months=36,
+            test_months=6,
+            step_months=6,
+            start_date="2019-07-01",
+            end_date="2026-07-01",
+        )
+
+        assert plan.n_folds == 8
+        expected_folds = [
+            (0, "2019-07-01", "2022-07-01", "2022-07-01", "2023-01-01"),
+            (1, "2020-01-01", "2023-01-01", "2023-01-01", "2023-07-01"),
+            (2, "2020-07-01", "2023-07-01", "2023-07-01", "2024-01-01"),
+            (3, "2021-01-01", "2024-01-01", "2024-01-01", "2024-07-01"),
+            (4, "2021-07-01", "2024-07-01", "2024-07-01", "2025-01-01"),
+            (5, "2022-01-01", "2025-01-01", "2025-01-01", "2025-07-01"),
+            (6, "2022-07-01", "2025-07-01", "2025-07-01", "2026-01-01"),
+            (7, "2023-01-01", "2026-01-01", "2026-01-01", "2026-07-01"),
+        ]
+        for f, (exp_id, tr_s, tr_e, te_s, te_e) in zip(plan.folds, expected_folds):
+            assert f.fold_id == exp_id
+            assert f.train_start == tr_s
+            assert f.train_end == tr_e
+            assert f.test_start == te_s
+            assert f.test_end == te_e
+            assert f.train_bars > 0
+            assert f.test_bars > 0
+            assert f.train_end_idx <= f.test_start_idx
+            assert f.warmup_bars > 0
+
+        # Verify rolling property (train_start advances, NOT expanding)
+        for i in range(len(plan.folds) - 1):
+            assert plan.folds[i].train_start < plan.folds[i + 1].train_start
+
+    def test_calendar_rolling_purge_gap(self):
+        from datetime import datetime, timedelta
+
+        cur = datetime(2019, 5, 6)
+        end = datetime(2026, 7, 15)
+        bars = []
+        while cur <= end:
+            bars.append({"timestamp": cur.strftime("%Y-%m-%dT00:00:00.000Z")})
+            cur += timedelta(days=1)
+
+        plan = WalkForwardPlan.create_calendar_rolling(
+            bars,
+            train_months=36,
+            test_months=6,
+            step_months=6,
+            start_date="2019-07-01",
+            end_date="2026-07-01",
+            purge_gap_bars=10,
+        )
+        for f in plan.folds:
+            assert f.test_start_idx - f.train_end_idx == 10
+
+    def test_purge_train_by_trade_intervals_boundary_crossing(self):
+        from src.hypothesis_registry import purge_train_by_trade_intervals
+
+        train_indices = list(range(100))  # bars 0..99
+        test_start_idx = 100
+        test_end_idx = 150
+
+        # Trade 1: [10, 20] completely inside training -> keep
+        # Trade 2: [85, 115] crosses boundary into test -> purge bars 85..99
+        # Trade 3: [120, 130] completely inside test -> keep
+        trade_intervals = [(10, 20), (85, 115), (120, 130)]
+
+        purged = purge_train_by_trade_intervals(
+            train_indices, test_start_idx, test_end_idx, trade_intervals
+        )
+
+        assert 84 in purged
+        assert 85 not in purged
+        assert 99 not in purged
+        assert len(purged) == 85
+        assert purged == list(range(85))
+

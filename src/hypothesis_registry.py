@@ -130,6 +130,27 @@ class Fold:
     train_bars: int
     test_bars: int
     warmup_bars: int
+    train_start_idx: int = 0
+    train_end_idx: int = 0
+    test_start_idx: int = 0
+    test_end_idx: int = 0
+    purge_gap_bars: int = 0
+
+
+def _add_months(dt: datetime, n: int) -> datetime:
+    year = dt.year + (dt.month - 1 + n) // 12
+    month = (dt.month - 1 + n) % 12 + 1
+    day = min(dt.day, 28) if dt.day > 28 else dt.day
+    return dt.replace(year=year, month=month, day=day)
+
+
+def _extract_bar_ts(bar: Any) -> str:
+    if hasattr(bar, "timestamp"):
+        ts = bar.timestamp
+        return ts.isoformat() if isinstance(ts, datetime) else str(ts)
+    if isinstance(bar, dict) and "timestamp" in bar:
+        return str(bar["timestamp"])
+    return str(bar)
 
 
 @dataclass(frozen=True)
@@ -174,7 +195,97 @@ class WalkForwardPlan:
                 train_bars=train_end - train_start,
                 test_bars=test_end - test_start,
                 warmup_bars=warmup_bars,
+                train_start_idx=train_start,
+                train_end_idx=train_end,
+                test_start_idx=test_start,
+                test_end_idx=test_end,
+                purge_gap_bars=purge_gap_bars,
             ))
+        return cls(
+            n_folds=len(folds),
+            folds=tuple(folds),
+            purge_gap_bars=purge_gap_bars,
+            warmup_bars=warmup_bars,
+        )
+
+    @classmethod
+    def create_calendar_rolling(
+        cls,
+        bars: list[Any] | tuple[Any, ...],
+        *,
+        train_months: int = 36,
+        test_months: int = 6,
+        step_months: int = 6,
+        start_date: str = "2019-07-01",
+        end_date: str = "2026-07-01",
+        purge_gap_bars: int = 0,
+        warmup_bars: int = 0,
+    ) -> WalkForwardPlan:
+        """Create a calendar-based rolling walk-forward plan.
+
+        Default parameters implement the 36m train / 6m test / 6m rolling step protocol:
+        train_start = test_start - 36 months, train_end = test_start - purge_gap.
+        """
+        import bisect
+
+        if not bars:
+            return cls(n_folds=0, folds=(), purge_gap_bars=purge_gap_bars, warmup_bars=warmup_bars)
+
+        ts_list = [_extract_bar_ts(b) for b in bars]
+        dt_start = datetime.fromisoformat(start_date)
+        dt_end = datetime.fromisoformat(end_date)
+
+        folds: list[Fold] = []
+        cur_train_start = dt_start
+        fid = 0
+
+        while True:
+            cur_test_start = _add_months(cur_train_start, train_months)
+            cur_test_end = _add_months(cur_test_start, test_months)
+            if cur_test_end > dt_end:
+                break
+
+            tr_s_str = cur_train_start.strftime("%Y-%m-%d")
+            tr_e_str = cur_test_start.strftime("%Y-%m-%d")
+            te_s_str = cur_test_start.strftime("%Y-%m-%d")
+            te_e_str = cur_test_end.strftime("%Y-%m-%d")
+
+            tr_start_idx = bisect.bisect_left(ts_list, tr_s_str)
+            tr_end_raw_idx = bisect.bisect_left(ts_list, tr_e_str)
+            tr_end_idx = max(tr_start_idx, tr_end_raw_idx - purge_gap_bars)
+
+            te_start_idx = bisect.bisect_left(ts_list, te_s_str)
+            te_end_idx = bisect.bisect_left(ts_list, te_e_str)
+
+            tr_bars = max(0, tr_end_idx - tr_start_idx)
+            te_bars = max(0, te_end_idx - te_start_idx)
+            warmup = min(warmup_bars, tr_start_idx) if warmup_bars > 0 else tr_start_idx
+
+            if purge_gap_bars > 0 and tr_end_idx < tr_end_raw_idx and tr_end_idx > 0:
+                actual_tr_end_str = ts_list[tr_end_idx - 1][:10]
+            else:
+                actual_tr_end_str = tr_e_str
+
+            folds.append(
+                Fold(
+                    fold_id=fid,
+                    train_start=tr_s_str,
+                    train_end=actual_tr_end_str,
+                    test_start=te_s_str,
+                    test_end=te_e_str,
+                    train_bars=tr_bars,
+                    test_bars=te_bars,
+                    warmup_bars=warmup,
+                    train_start_idx=tr_start_idx,
+                    train_end_idx=tr_end_idx,
+                    test_start_idx=te_start_idx,
+                    test_end_idx=te_end_idx,
+                    purge_gap_bars=purge_gap_bars,
+                )
+            )
+            fid += 1
+            cur_train_start = _add_months(cur_train_start, step_months)
+
         return cls(
             n_folds=len(folds),
             folds=tuple(folds),
