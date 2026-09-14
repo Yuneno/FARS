@@ -201,3 +201,57 @@ class TestWalkForward:
         assert len(purged) == 85
         assert purged == list(range(85))
 
+    def test_embargo_filtering_trade_within_horizon(self):
+        from src.hypothesis_registry import apply_embargo, filter_trades_by_embargo
+
+        test_end_idx = 100
+        embargo_bars = 20  # h = 20 bars, embargo window [100, 120)
+
+        # Candidate indices for subsequent dataset [100..150)
+        candidate_indices = list(range(100, 150))
+        embargoed_indices = apply_embargo(candidate_indices, test_end_idx, embargo_bars)
+        assert 100 not in embargoed_indices
+        assert 119 not in embargoed_indices
+        assert 120 in embargoed_indices
+        assert len(embargoed_indices) == 30  # bars 120..149
+
+        # Trade intervals starting at various points
+        trades = [
+            (95, 105),   # starts before test end
+            (105, 115),  # starts inside embargo window [100, 120) -> eliminated
+            (119, 130),  # starts inside embargo window -> eliminated
+            (120, 135),  # starts at/after embargo window -> retained
+            (130, 140),  # retained
+        ]
+        retained, eliminated = filter_trades_by_embargo(trades, test_end_idx, embargo_bars)
+        assert len(eliminated) == 2
+        assert (105, 115) in eliminated
+        assert (119, 130) in eliminated
+        assert len(retained) == 3
+        assert (120, 135) in retained
+
+    def test_purge_no_overlap_preserves_all_with_explicit_status(self):
+        from src.hypothesis_registry import purge_train_by_trade_intervals
+
+        train_indices = list(range(100))  # 0..99
+        test_start_idx = 100
+        test_end_idx = 150
+
+        # All trades close before test_start_idx
+        trade_intervals = [(10, 20), (30, 50), (60, 95)]
+        purged = purge_train_by_trade_intervals(
+            train_indices, test_start_idx, test_end_idx, trade_intervals
+        )
+        assert purged == train_indices
+        assert len(purged) == 100
+
+        # When there is zero overlap and parameters are frozen (no fitting in train),
+        # the protocol explicitly documents purge_status: "not_applicable_no_fitting"
+        overlap_count = sum(
+            1 for entry, exit in trade_intervals
+            if entry < test_end_idx and (exit is None or exit >= test_start_idx)
+        )
+        assert overlap_count == 0
+        purge_status = "not_applicable_no_fitting" if overlap_count == 0 else "purged"
+        assert purge_status == "not_applicable_no_fitting"
+

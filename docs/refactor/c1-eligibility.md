@@ -2,7 +2,8 @@
 
 **Estado:** V1.0 Congelada  
 **Ambito:** Bloque C (Validacion temporal Walk-Forward y Exploracion de Hipotesis)  
-**Dataset Base:** `databento/MNQ_M5.csv` (`timestamp >= 2019-05-06`, 518,237 barras, SHA-256: `5b190bca6638f68842206329b0d1c248af7bb6f022fd8fe955cde0d92539655c`)  
+**Dataset Base:** `databento/MNQ_M5.csv` en `E:\FARS-LAB\databento.zip` (`timestamp >= 2019-05-06`, 518,237 barras, SHA-256 del miembro del zip: `fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96`)  
+**Convencion de Fingerprint:** SHA-256 del miembro del zip + filtro `timestamp >= 2019-05-06`; `bars_count = 518,237`.  
 **Base Commit:** `d09da0d` (Post-A.3)
 
 ---
@@ -49,7 +50,21 @@ Cada corrida walk-forward debe emitir, para cada uno de los 8 folds calendaricos
 
 ## 3. Criterios Cuantitativos de Elegibilidad (Gates de Aceptacion)
 
-Para que una hipotesis candidata supere el Bloque C1/C2 y sea promovida a evaluacion en el simulador de cuentas (Bloque D), debe satisfacer simultaneamente los siguientes 7 gates:
+Para que una hipotesis candidata supere el Bloque C1/C2 y sea promovida a evaluacion en el simulador de cuentas (Bloque D), debe satisfacer simultaneamente los criterios aplicables.
+
+### 3.0 Matriz de Aplicabilidad y Estado de los Gates
+
+| Gate | Nombre del Criterio | Ambito / Donde se Aplica | Estado en C1 | Observaciones |
+|:---:|---|:---:|:---:|---|
+| **Gate 1** | Expectativa Neta Positiva OOS ($E[R]_{net} > 0$) | Bloque C1 / C2 | **Activo** | Evaluado en el runner walk-forward |
+| **Gate 2** | IC Bootstrap por Bloques ($CI_{low} > 0$) | Bloque C1 / C2 | **Activo** | CBB 95% con `arch.bootstrap` |
+| **Gate 3** | Estabilidad Temporal entre Folds | Bloque C1 / C2 | **Activo** | $\ge 75\%$ folds $>0$, conc. $<60\%$ |
+| **Gate 4** | Estabilidad en Vecindario Parametrico | **Bloque C3** | **Pendiente** | Asignado formalmente a C3 |
+| **Gate 5** | Compatibilidad con Drawdown ($<5\%$, $<12R$) | Bloque C1 / C2 | **Activo** | MaxDD global de cuenta |
+| **Gate 6** | Regla de Muestra Minima ($n \ge 15$) | Bloque C1 / C2 | **Activo** | $n < 15 \rightarrow$ `evidencia_insuficiente` |
+| **Gate 7** | Criterio de Cambio Estructural / Fase 10 | **Bloque C3** | **Pendiente** | Asignado formalmente a C3 |
+
+> **Nota Metodologica:** En C1 se aplican estrictamente los Gates 1, 2, 3, 5 y 6 (+ bandera de insuficiencia muestral). Los Gates 4 (vecindario parametrico) y 7 (diagnostico de estacionariedad / clasificador bootstrap de Fase 10) estan programados formalmente para ejecutarse en el **Bloque C3** sobre las hipotesis que superen la pre-seleccion de C2. No se aplican de forma preliminar en C1.
 
 ### Gate 1: Expectativa Neta Positiva OOS
 - **Condicion:** $E[R]_{net} > 0.0$ tanto a nivel agregado del out-of-sample completo como en la mediana de los folds individuales.

@@ -337,10 +337,80 @@ def purge_train_by_trade_intervals(
     return sorted(purged)
 
 
+def apply_embargo(
+    candidate_indices: list[int],
+    test_end_idx: int,
+    embargo_bars: int,
+) -> list[int]:
+    """Remove indices that fall within the embargo window immediately following the test set.
+
+    Per AFML §7.4.2, observations starting in [test_end_idx, test_end_idx + embargo_bars]
+    are embargoed to prevent post-test information leakage into subsequent training/evaluation sets.
+
+    Parameters
+    ----------
+    candidate_indices : list[int]
+        Bar indices under consideration (e.g. training set following a test set).
+    test_end_idx : int
+        End index of the test window (exclusive).
+    embargo_bars : int
+        Number of embargo bars (h).
+
+    Returns
+    -------
+    list[int]
+        Indices with embargoed bars removed (sorted).
+    """
+    if embargo_bars <= 0:
+        return sorted(candidate_indices)
+    embargo_end = test_end_idx + embargo_bars
+    return sorted([idx for idx in candidate_indices if not (test_end_idx <= idx < embargo_end)])
+
+
+def filter_trades_by_embargo(
+    trade_intervals: list[tuple[int, int | None]],
+    test_end_idx: int,
+    embargo_bars: int,
+) -> tuple[list[tuple[int, int | None]], list[tuple[int, int | None]]]:
+    """Separate trades into retained and embargoed sets.
+
+    Trades whose entry falls within [test_end_idx, test_end_idx + embargo_bars]
+    are placed in the embargoed set.
+
+    Parameters
+    ----------
+    trade_intervals : list[tuple[int, int | None]]
+        For each trade: (entry_bar_index, exit_bar_index_or_None).
+    test_end_idx : int
+        End index of the test window (exclusive).
+    embargo_bars : int
+        Number of embargo bars (h).
+
+    Returns
+    -------
+    tuple[list, list]
+        (retained_trades, embargoed_trades)
+    """
+    if embargo_bars <= 0:
+        return list(trade_intervals), []
+    embargo_end = test_end_idx + embargo_bars
+    retained = []
+    embargoed = []
+    for t in trade_intervals:
+        entry_idx = t[0]
+        if test_end_idx <= entry_idx < embargo_end:
+            embargoed.append(t)
+        else:
+            retained.append(t)
+    return retained, embargoed
+
+
 __all__ = [
     "Hypothesis",
     "HypothesisRegistry",
     "Fold",
     "WalkForwardPlan",
     "purge_train_by_trade_intervals",
+    "apply_embargo",
+    "filter_trades_by_embargo",
 ]
