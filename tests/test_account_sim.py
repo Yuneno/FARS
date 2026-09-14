@@ -99,3 +99,53 @@ class TestSimulation:
         r = simulate_account(fills, AccountRules(profit_target=50000))
         assert r.status == "PASSED_SIMULATION"
         assert r.total_pnl < 50000
+
+    def test_session_reset_at_2300_utc_rolls_over_to_next_day(self):
+        """Fill at 23:00 UTC (=19:00 EDT in summer, =18:00 EST in winter) rolls over to next trading session.
+
+        Since session_reset_hour is 17:00 NY, any trade after 17:00 NY belongs
+        to the next calendar day's trading session.
+        """
+        # Summer (EDT, UTC-4): 23:00 UTC = 19:00 EDT (>= 17:00 -> rolls to 2024-06-11)
+        fill_evening = _fill("t_eve", -100, ts="2024-06-10T23:00:00Z")
+        # Next trade at 01:00 UTC on 2024-06-11 = 21:00 EDT on 2024-06-10 (>= 17:00 -> also session 2024-06-11)
+        fill_night = _fill("t_night", -100, ts="2024-06-11T01:00:00Z")
+        # Next trade at 14:00 UTC on 2024-06-11 = 10:00 EDT (< 17:00 -> session 2024-06-11)
+        fill_morning = _fill("t_morn", 300, ts="2024-06-11T14:00:00Z")
+
+        r = simulate_account([fill_evening, fill_night, fill_morning], AccountRules())
+        assert r.status == "PASSED_SIMULATION"
+        # All three fills belong to the single session date 2024-06-11
+        assert len(r.daily_results) == 1
+        assert r.daily_results[0]["date"] == "2024-06-11"
+
+    def test_session_reset_dst_transition(self):
+        """Clock-based NY session reset is invariant to DST clock shifts.
+
+        US DST transition in March 2024 occurred Sunday, 2024-03-10:
+        - Before DST (Friday 2024-03-08, EST UTC-5): 17:00 NY = 22:00 UTC.
+          A fill at 21:30 UTC is 16:30 EST (< 17:00) -> session 2024-03-08.
+          A fill at 22:30 UTC is 17:30 EST (>= 17:00) -> session 2024-03-09 (or Monday 2024-03-09).
+        - After DST (Monday 2024-03-11, EDT UTC-4): 17:00 NY = 21:00 UTC.
+          A fill at 20:30 UTC is 16:30 EDT (< 17:00) -> session 2024-03-11.
+          A fill at 21:30 UTC is 17:30 EDT (>= 17:00) -> session 2024-03-12.
+        """
+        fills = [
+            _fill("pre_dst_day", 100, ts="2024-03-08T21:30:00Z"),   # 16:30 EST -> 2024-03-08
+            _fill("pre_dst_eve", 100, ts="2024-03-08T22:30:00Z"),   # 17:30 EST -> 2024-03-09
+            _fill("post_dst_day", 100, ts="2024-03-11T20:30:00Z"),  # 16:30 EDT -> 2024-03-11
+            _fill("post_dst_eve", 100, ts="2024-03-11T21:30:00Z"),  # 17:30 EDT -> 2024-03-12
+        ]
+        r = simulate_account(fills, AccountRules())
+        dates = [d["date"] for d in r.daily_results]
+        assert dates == ["2024-03-08", "2024-03-09", "2024-03-11", "2024-03-12"]
+
+    def test_broker_margin_reported_as_no_evaluable(self):
+        """When broker margin check is requested, offline simulator returns NO_EVALUABLE without inventing broker data."""
+        fills = [_fill("t1", 100, ts="2024-01-01T10:00:00Z")]
+        rules = AccountRules(check_broker_margin=True)
+        r = simulate_account(fills, rules)
+        assert r.broker_margin_status == "NO_EVALUABLE"
+        assert r.broker_margin_evaluable is False
+        assert r.status == "NO_EVALUABLE"
+        assert any(b["rule"] == "broker_margin" and b["status"] == "NO_EVALUABLE" for b in r.breaches)

@@ -33,6 +33,19 @@ _ADDITIVE_EXECUTOR_FIELDS = {
     "cooldown_bars",
     "discrete_partial_contracts",
     "time_exit_mode",
+    "end_of_data_policy",
+}
+
+_ADDITIVE_RESULT_FIELDS = {
+    "open_position",
+    "intrabar_audit",
+}
+
+_ADDITIVE_TRADE_FIELDS = {
+    "budgeted_risk_dollars",
+    "effective_risk_dollars",
+    "budgeted_r",
+    "effective_r",
 }
 
 
@@ -44,6 +57,14 @@ def exact(value):
             if not (
                 value.__class__.__name__ == "BacktestConfig"
                 and field.name in _ADDITIVE_EXECUTOR_FIELDS
+            )
+            and not (
+                value.__class__.__name__ == "BacktestResult"
+                and field.name in _ADDITIVE_RESULT_FIELDS
+            )
+            and not (
+                value.__class__.__name__ == "ExecutedTrade"
+                and field.name in _ADDITIVE_TRADE_FIELDS
             )
         }
     if isinstance(value, float):

@@ -7,9 +7,45 @@ daily loss, profit target, trailing) deterministically.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from typing import Any, Literal
+from zoneinfo import ZoneInfo
 
 from src.types import FundedAccountRules
+
+NY_TZ = ZoneInfo("America/New_York")
+UTC_TZ = ZoneInfo("UTC")
+
+
+def get_session_date(ts: str | datetime | None, session_reset_hour: int = 17) -> str | None:
+    """Determine the trading session date based on America/New_York clock and session_reset_hour.
+
+    CME futures trading sessions roll over at session_reset_hour (default 17:00 NY).
+    Trades occurring at or after session_reset_hour belong to the NEXT calendar day's session.
+    Trades occurring before session_reset_hour belong to the current day's session.
+    DST transitions are handled automatically via ZoneInfo("America/New_York").
+    """
+    if not ts:
+        return None
+    if isinstance(ts, str):
+        cleaned = ts.replace("Z", "+00:00")
+        try:
+            dt = datetime.fromisoformat(cleaned)
+        except ValueError:
+            return ts[:10]
+    else:
+        dt = ts
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC_TZ)
+
+    dt_ny = dt.astimezone(NY_TZ)
+    if dt_ny.hour >= session_reset_hour:
+        session_dt = dt_ny.date() + timedelta(days=1)
+    else:
+        session_dt = dt_ny.date()
+
+    return session_dt.isoformat()
 
 
 @dataclass(frozen=True)
@@ -28,6 +64,7 @@ class AccountRules:
     max_concurrent_positions: int = 1
     tick_value: float = 0.50  # MNQ per tick
     tick_size: float = 0.25
+    check_broker_margin: bool = False
 
     def validate(self) -> list[str]:
         errors = []
@@ -75,13 +112,15 @@ class SimulationResult:
     """Outcome of running fills through account rules."""
 
     final_balance: float
-    status: Literal["PASSED_SIMULATION", "FAILED_RULES", "TIMEOUT", "INSUFFICIENT_DATA"]
+    status: Literal["PASSED_SIMULATION", "FAILED_RULES", "TIMEOUT", "INSUFFICIENT_DATA", "NO_EVALUABLE"]
     breaches: tuple[dict[str, Any], ...]
     equity_curve: tuple[float, ...]
     n_trades: int
     total_pnl: float
     max_drawdown_seen: float
     daily_results: tuple[dict[str, Any], ...]
+    broker_margin_status: str = "NO_EVALUABLE"
+    broker_margin_evaluable: bool = False
 
 
 def simulate_account(
@@ -112,8 +151,8 @@ def simulate_account(
     target_reached = False
 
     for fill in fills:
-        # Session reset detection (NY close at session_reset_hour)
-        fill_date = fill.timestamp[:10] if fill.timestamp else None
+        # Session reset detection (NY close at session_reset_hour, DST-aware)
+        fill_date = get_session_date(fill.timestamp, rules.session_reset_hour)
         if fill_date and fill_date != current_date:
             if current_date is not None:
                 daily_results.append({
@@ -202,6 +241,14 @@ def simulate_account(
         })
 
     final_status = "PASSED_SIMULATION" if target_reached else "PASSED_SIMULATION"
+    if rules.check_broker_margin:
+        breaches.append({
+            "rule": "broker_margin",
+            "status": "NO_EVALUABLE",
+            "reason": "Intrabar broker margin data not available in offline fill events",
+        })
+        final_status = "NO_EVALUABLE"
+
     return SimulationResult(
         final_balance=balance,
         status=final_status,

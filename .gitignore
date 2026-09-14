@@ -20,3 +20,5 @@ databento/
 databento_mnq/
 mnq_data_zp/
 *.csv
+!lab_artifacts/flat_vs_market_comparison.csv
+scratch/

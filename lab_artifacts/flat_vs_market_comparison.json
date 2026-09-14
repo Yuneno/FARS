@@ -1,0 +1,67 @@
+{
+  "comparison": [
+    {
+      "strategy": "CRT-TBS (Champion)",
+      "strategy_id": "crt_tbs_champion",
+      "n_trades": 93,
+      "n_expiraciones": 26,
+      "pct_expiraciones": 27.956989247311824,
+      "flat": {
+        "gross_pnl": 3474.0,
+        "commission": 1932.0,
+        "net_pnl": 1542.0,
+        "profit_factor": 1.0681155579114763,
+        "win_rate_pct": 26.881720430107524,
+        "time_exit_net_pnl": -288.0
+      },
+      "market": {
+        "gross_pnl": 6733.0,
+        "commission": 1932.0,
+        "net_pnl": 4801.0,
+        "profit_factor": 1.2006352125036566,
+        "win_rate_pct": 44.086021505376344,
+        "time_exit_net_pnl": 2971.0
+      },
+      "delta_atribuido": {
+        "net_pnl_delta": 3259.0,
+        "time_exit_pnl_delta": 3259.0,
+        "gross_pnl_delta": 3259.0,
+        "commission_delta": 0.0,
+        "pf_delta": 0.1325196545921803,
+        "wr_delta_pp": 17.20430107526882
+      }
+    },
+    {
+      "strategy": "ORB (Experimental)",
+      "strategy_id": "orb",
+      "n_trades": 2544,
+      "n_expiraciones": 1141,
+      "pct_expiraciones": 44.85062893081761,
+      "flat": {
+        "gross_pnl": -173801.5,
+        "commission": 31260.0,
+        "net_pnl": -205061.5,
+        "profit_factor": 0.6310821702413978,
+        "win_rate_pct": 13.954402515723272,
+        "time_exit_net_pnl": -11536.0
+      },
+      "market": {
+        "gross_pnl": 50815.0,
+        "commission": 31260.0,
+        "net_pnl": 19555.0,
+        "profit_factor": 1.0321129693370819,
+        "win_rate_pct": 44.37893081761006,
+        "time_exit_net_pnl": 213080.5
+      },
+      "delta_atribuido": {
+        "net_pnl_delta": 224616.5,
+        "time_exit_pnl_delta": 224616.5,
+        "gross_pnl_delta": 224616.5,
+        "commission_delta": 0.0,
+        "pf_delta": 0.40103079909568407,
+        "wr_delta_pp": 30.424528301886788
+      }
+    }
+  ],
+  "timestamp_utc": "2026-09-14T01:17:59.388124+00:00"
+}

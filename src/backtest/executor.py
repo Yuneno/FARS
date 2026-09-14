@@ -41,6 +41,12 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from src.backtest.history import Bar
+from src.backtest.intrabar import (
+    IntrabarAudit,
+    index_m1_bars,
+    is_m5_ambiguous,
+    resolve_intrabar_with_m1,
+)
 from src.backtest.markets import MNQ
 from src.backtest.strategy import Strategy
 from src.engine import SimulationResult, run_simulation
@@ -83,10 +89,13 @@ class BacktestConfig:
     cooldown_bars: int = 0
     discrete_partial_contracts: bool = False
     time_exit_mode: str = "market"
-
+    end_of_data_policy: str = "unresolved"  # "unresolved" or "close"
+ 
     def __post_init__(self) -> None:
         if self.time_exit_mode not in {"market", "flat"}:
             raise ValueError("time_exit_mode must be 'market' or 'flat'")
+        if self.end_of_data_policy not in {"unresolved", "close"}:
+            raise ValueError("end_of_data_policy must be 'unresolved' or 'close'")
         float_fields = (
             "initial_balance",
             "risk_per_trade",
@@ -194,6 +203,10 @@ class ExecutedTrade:
     exit_reason: str
     stop_risk_dollars: float = 0.0  # |entry - stop| * dollar_per_point * quantity
     slippage_cost: float = 0.0  # slippage actually applied, in dollars
+    budgeted_risk_dollars: float = 0.0  # Requested fixed risk budget ($500)
+    effective_risk_dollars: float = 0.0  # Actual effective risk at stop (same as stop_risk_dollars)
+    budgeted_r: float = 0.0  # net_pnl / budgeted_risk_dollars (identical to r_result)
+    effective_r: float = 0.0  # net_pnl / effective_risk_dollars
 
 
 @dataclass(frozen=True)
@@ -212,6 +225,8 @@ class BacktestResult:
     equity_curve: tuple[float, ...] = field(default_factory=tuple)
     gap_rejections: int = 0  # entries rejected because the next bar was missing
     unresolved_positions: int = 0  # positions still open at end-of-data
+    open_position: dict | None = None  # marked price & state when open at end of data
+    intrabar_audit: Any | None = None  # Intrabar ambiguity audit metrics
 
 
 def _round_tick(price: float, tick_size: float) -> float:
@@ -310,6 +325,8 @@ def _empty_result(config: BacktestConfig) -> BacktestResult:
         total_commission=0.0,
         total_slippage_cost=0.0,
         equity_curve=(config.initial_balance,),
+        open_position=None,
+        intrabar_audit=IntrabarAudit(),
     )
 
 
@@ -319,6 +336,7 @@ def _run_backtest_legacy(
     config: BacktestConfig,
     *,
     calibration_bars: Sequence[Bar] = (),
+    m1_index: dict[datetime, list[Bar]] | None = None,
 ) -> BacktestResult:
     """Simulate a contiguous run, optionally seeded with prior calibration bars."""
     if len(bars) < 2:
@@ -332,6 +350,7 @@ def _run_backtest_legacy(
     position: dict | None = None
     history = list(calibration_bars)
     gap_rejections = 0
+    intrabar_audit = IntrabarAudit(total_bars_evaluated=len(bars))
 
     i = 0
     while i < len(bars):
@@ -348,21 +367,24 @@ def _run_backtest_legacy(
                 entry = _round_tick(
                     _entry_price(config, signal.direction, bar.open), config.tick_size
                 )
-                if config.fixed_quantity is not None:
-                    qty = config.fixed_quantity
-                elif signal.stop_target_as_points:
-                    qty = _quantity(config, signal.stop)  # stop IS the distance
-                else:
-                    qty = _quantity(config, abs(entry - signal.stop))
                 stop, target = _resolve_stop_target(
-                    signal.direction, entry, signal.stop, signal.target,
-                    signal.stop_target_as_points, config.tick_size,
+                    signal.direction,
+                    entry,
+                    signal.stop,
+                    signal.target,
+                    signal.stop_target_as_points,
+                    config.tick_size,
                 )
                 if not _valid_levels(signal.direction, entry, stop, target):
-                    # levels collapsed after rounding: reject the signal
                     history.append(bar)
                     i += 1
                     continue
+                stop_distance = abs(entry - stop)
+                qty = (
+                    config.fixed_quantity
+                    if config.fixed_quantity is not None
+                    else _quantity(config, stop_distance)
+                )
                 position = {
                     "direction": signal.direction,
                     "entry": entry,
@@ -399,7 +421,25 @@ def _run_backtest_legacy(
             hit_target = target <= bar.high if direction == "long" else target >= bar.low
             hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
             if hit_target and hit_stop:
-                reason, exit_price = "stop_loss", _stop_fill(config, direction, stop, bar.open)
+                intrabar_audit.ambiguous_bars_count += 1
+                if m1_index and bar.timestamp in m1_index:
+                    m1_slice = m1_index[bar.timestamp]
+                    m1_reason, status = resolve_intrabar_with_m1(direction, stop, target, m1_slice)
+                    if status == "resolved_by_m1_target":
+                        intrabar_audit.resolved_by_m1_target += 1
+                        reason, exit_price = "take_profit", target
+                    elif status == "resolved_by_m1_stop":
+                        intrabar_audit.resolved_by_m1_stop += 1
+                        reason, exit_price = "stop_loss", _stop_fill(config, direction, stop, bar.open)
+                    elif status == "m1_residual_ambiguity_conservative_stop":
+                        intrabar_audit.m1_residual_ambiguity += 1
+                        reason, exit_price = "stop_loss", _stop_fill(config, direction, stop, bar.open)
+                    else:
+                        intrabar_audit.no_m1_data_fallback += 1
+                        reason, exit_price = "stop_loss", _stop_fill(config, direction, stop, bar.open)
+                else:
+                    intrabar_audit.no_m1_data_fallback += 1
+                    reason, exit_price = "stop_loss", _stop_fill(config, direction, stop, bar.open)
             elif hit_target:
                 reason, exit_price = "take_profit", target
             elif hit_stop:
@@ -453,6 +493,10 @@ def _run_backtest_legacy(
                 exit_reason=reason,
                 stop_risk_dollars=stop_risk_dollars,
                 slippage_cost=slippage_cost,
+                budgeted_risk_dollars=dollar_risk,
+                effective_risk_dollars=stop_risk_dollars,
+                budgeted_r=r_result,
+                effective_r=net_pnl / stop_risk_dollars if stop_risk_dollars > 0 else 0.0,
             )
             trades.append(executed)
             # Optional strategy hook: notify a closed trade (e.g. causal edge
@@ -465,53 +509,86 @@ def _run_backtest_legacy(
         history.append(bar)
         i += 1
 
-    if position is not None and not position["distance_mode"]:
+    open_pos = None
+    if position is not None:
         last = bars[-1]
         direction = position["direction"]
         entry = position["entry"]
+        qty = position["qty"]
         exit_price = _round_tick(last.close, config.tick_size)
         move = exit_price - entry if direction == "long" else entry - exit_price
-        gross_pnl = move * config.dollar_per_point * position["qty"]
-        commission = config.commission_per_side * 2 * position["qty"]
+        gross_pnl = move * config.dollar_per_point * qty
+        commission = config.commission_per_side * 2 * qty
         net_pnl = gross_pnl - commission
         stop_distance = abs(entry - position["stop"])
-        entry_slip_pts = (
-            max(entry - position["entry_open"], 0.0)
-            if direction == "long"
-            else max(position["entry_open"] - entry, 0.0)
+        stop_risk_dollars = stop_distance * config.dollar_per_point * qty
+
+        should_close = (config.end_of_data_policy == "close") or (
+            config.end_of_data_policy == "unresolved" and not position["distance_mode"]
         )
-        trades.append(
-            ExecutedTrade(
-                trade_id=f"bt-{len(trades) + 1}",
-                direction=direction,
-                entry_time=position["entry_time"],
-                exit_time=last.timestamp,
-                entry_price=entry,
-                exit_price=exit_price,
-                stop_price=position["stop"],
-                target_price=position["target"],
-                quantity=position["qty"],
-                gross_pnl=gross_pnl,
-                commission=commission,
-                net_pnl=net_pnl,
-                r_result=net_pnl / dollar_risk if dollar_risk > 0 else 0.0,
-                exit_reason="end_of_data",
-                stop_risk_dollars=(
-                    stop_distance * config.dollar_per_point * position["qty"]
-                ),
-                slippage_cost=(
-                    entry_slip_pts * config.dollar_per_point * position["qty"]
-                ),
+        if should_close:
+            entry_slip_pts = (
+                max(entry - position["entry_open"], 0.0)
+                if direction == "long"
+                else max(position["entry_open"] - entry, 0.0)
             )
-        )
-        note = getattr(strategy, "note_trade", None)
-        if callable(note):
-            note(last.timestamp, net_pnl / dollar_risk if dollar_risk > 0 else 0.0)
-        position = None
+            trades.append(
+                ExecutedTrade(
+                    trade_id=f"bt-{len(trades) + 1}",
+                    direction=direction,
+                    entry_time=position["entry_time"],
+                    exit_time=last.timestamp,
+                    entry_price=entry,
+                    exit_price=exit_price,
+                    stop_price=position["stop"],
+                    target_price=position["target"],
+                    quantity=qty,
+                    gross_pnl=gross_pnl,
+                    commission=commission,
+                    net_pnl=net_pnl,
+                    r_result=net_pnl / dollar_risk if dollar_risk > 0 else 0.0,
+                    exit_reason="end_of_data",
+                    stop_risk_dollars=stop_risk_dollars,
+                    slippage_cost=(
+                        entry_slip_pts * config.dollar_per_point * qty
+                    ),
+                    budgeted_risk_dollars=dollar_risk,
+                    effective_risk_dollars=stop_risk_dollars,
+                    budgeted_r=net_pnl / dollar_risk if dollar_risk > 0 else 0.0,
+                    effective_r=net_pnl / stop_risk_dollars if stop_risk_dollars > 0 else 0.0,
+                )
+            )
+            note = getattr(strategy, "note_trade", None)
+            if callable(note):
+                note(last.timestamp, net_pnl / dollar_risk if dollar_risk > 0 else 0.0)
+            position = None
+        else:
+            open_pos = {
+                "direction": direction,
+                "entry_price": entry,
+                "entry_time": position["entry_time"],
+                "last_price": exit_price,
+                "last_time": last.timestamp,
+                "stop_price": position["stop"],
+                "target_price": position["target"],
+                "quantity": qty,
+                "unrealized_gross_pnl": gross_pnl,
+                "unrealized_net_pnl": net_pnl,
+                "state": "open",
+            }
 
     unresolved = 1 if position is not None else 0
     symbol = getattr(strategy, "market", MNQ).symbol
-    return _build_result(trades, config, strategy_name, gap_rejections, unresolved, symbol)
+    return _build_result(
+        trades,
+        config,
+        strategy_name,
+        gap_rejections,
+        unresolved,
+        symbol,
+        open_position=open_pos,
+        intrabar_audit=intrabar_audit,
+    )
 
 
 def _uses_enhanced_execution(config: BacktestConfig) -> bool:
@@ -551,6 +628,7 @@ def _run_backtest_enhanced(
     config: BacktestConfig,
     *,
     calibration_bars: Sequence[Bar] = (),
+    m1_index: dict[datetime, list[Bar]] | None = None,
 ) -> BacktestResult:
     """Opt-in executor for partial/BE, pending limits, and cooldown.
 
@@ -573,6 +651,7 @@ def _run_backtest_enhanced(
     gap_rejections = 0
     cooldown = 0
     partial_fraction = config.partial_take_profit_fraction
+    intrabar_audit = IntrabarAudit(total_bars_evaluated=len(bars))
 
     def notify(name: str, *args) -> None:
         hook = getattr(strategy, name, None)
@@ -631,7 +710,9 @@ def _run_backtest_enhanced(
 
     def close_position(reason: str, fill: float, bar: Bar) -> None:
         nonlocal position, cooldown
-        assert position is not None
+        if position is None:
+            return
+
         direction = position["direction"]
         entry = position["entry"]
         qty = position["qty"]
@@ -707,6 +788,10 @@ def _run_backtest_enhanced(
             exit_reason=reason,
             stop_risk_dollars=stop_risk_dollars,
             slippage_cost=slippage_cost,
+            budgeted_risk_dollars=dollar_risk,
+            effective_risk_dollars=stop_risk_dollars,
+            budgeted_r=net_pnl / dollar_risk if dollar_risk > 0 else 0.0,
+            effective_r=net_pnl / stop_risk_dollars if stop_risk_dollars > 0 else 0.0,
         )
         trades.append(executed)
         notify("note_trade", executed.exit_time, executed.r_result)
@@ -788,7 +873,44 @@ def _run_backtest_enhanced(
             hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
             hit_target = target <= bar.high if direction == "long" else target >= bar.low
             hit_tp1 = tp1 <= bar.high if direction == "long" else tp1 >= bar.low
-            if hit_stop:
+            if hit_target and hit_stop:
+                intrabar_audit.ambiguous_bars_count += 1
+                if m1_index and bar.timestamp in m1_index:
+                    m1_slice = m1_index[bar.timestamp]
+                    m1_reason, status = resolve_intrabar_with_m1(direction, stop, target, m1_slice)
+                    if status == "resolved_by_m1_target":
+                        intrabar_audit.resolved_by_m1_target += 1
+                        if not position["partial_taken"] and hit_tp1 and partial_fraction > 0:
+                            position["partial_taken"] = True
+                            if config.discrete_partial_contracts:
+                                q_tp1 = math.floor(position["qty"] * partial_fraction)
+                                position["q_tp1"] = q_tp1
+                                position["q_rem"] = position["qty"] - q_tp1
+                                position["booked_pnl"] = (
+                                    q_tp1 * position["risk_points"] * config.dollar_per_point
+                                )
+                            else:
+                                position["booked_move_points"] = (
+                                    partial_fraction * position["risk_points"]
+                                )
+                        reason, fill = "take_profit", target
+                    elif status == "resolved_by_m1_stop":
+                        intrabar_audit.resolved_by_m1_stop += 1
+                        reason = "break_even_stop" if position["partial_taken"] else "stop_loss"
+                        fill = _stop_fill(config, direction, stop, bar.open)
+                    elif status == "m1_residual_ambiguity_conservative_stop":
+                        intrabar_audit.m1_residual_ambiguity += 1
+                        reason = "break_even_stop" if position["partial_taken"] else "stop_loss"
+                        fill = _stop_fill(config, direction, stop, bar.open)
+                    else:
+                        intrabar_audit.no_m1_data_fallback += 1
+                        reason = "break_even_stop" if position["partial_taken"] else "stop_loss"
+                        fill = _stop_fill(config, direction, stop, bar.open)
+                else:
+                    intrabar_audit.no_m1_data_fallback += 1
+                    reason = "break_even_stop" if position["partial_taken"] else "stop_loss"
+                    fill = _stop_fill(config, direction, stop, bar.open)
+            elif hit_stop:
                 reason = "break_even_stop" if position["partial_taken"] else "stop_loss"
                 fill = _stop_fill(config, direction, stop, bar.open)
             elif hit_target:
@@ -840,11 +962,56 @@ def _run_backtest_enhanced(
         _observe_closed_bar(strategy, history)
         i += 1
 
+    open_pos = None
+    if position is not None:
+        last = bars[-1]
+        exit_price = _round_tick(last.close, config.tick_size)
+        if config.end_of_data_policy == "close":
+            close_position("end_of_data", exit_price, last)
+        else:
+            direction = position["direction"]
+            entry = position["entry"]
+            qty = position["qty"]
+            remaining = 1.0 - partial_fraction if position["partial_taken"] else 1.0
+            signed_move = exit_price - entry if direction == "long" else entry - exit_price
+            if config.discrete_partial_contracts and position["partial_taken"]:
+                q_rem = position.get("q_rem", qty)
+                unrealized_gross = position.get("booked_pnl", 0.0) + (
+                    signed_move * config.dollar_per_point * q_rem
+                )
+            else:
+                total_move = position.get("booked_move_points", 0.0) + remaining * signed_move
+                unrealized_gross = total_move * config.dollar_per_point * qty
+            commission = config.commission_per_side * 2 * qty
+            unrealized_net = unrealized_gross - commission
+            open_pos = {
+                "direction": direction,
+                "entry_price": entry,
+                "entry_time": position["entry_time"],
+                "last_price": exit_price,
+                "last_time": last.timestamp,
+                "stop_price": position["stop"],
+                "target_price": position["target"],
+                "quantity": qty,
+                "unrealized_gross_pnl": unrealized_gross,
+                "unrealized_net_pnl": unrealized_net,
+                "state": "open",
+            }
+
     unresolved = int(position is not None)
     if pending is not None:
         notify("note_order_expired", bars[-1].timestamp)
     symbol = getattr(strategy, "market", MNQ).symbol
-    return _build_result(trades, config, strategy_name, gap_rejections, unresolved, symbol)
+    return _build_result(
+        trades,
+        config,
+        strategy_name,
+        gap_rejections,
+        unresolved,
+        symbol,
+        open_position=open_pos,
+        intrabar_audit=intrabar_audit,
+    )
 
 
 def run_backtest(
@@ -853,14 +1020,16 @@ def run_backtest(
     config: BacktestConfig,
     *,
     calibration_bars: Sequence[Bar] = (),
+    m1_bars: Sequence[Bar] | None = None,
 ) -> BacktestResult:
     """Run the legacy executor or the additive opt-in execution path."""
+    m1_idx = index_m1_bars(m1_bars) if m1_bars else None
     if not _uses_enhanced_execution(config):
         return _run_backtest_legacy(
-            bars, strategy, config, calibration_bars=calibration_bars
+            bars, strategy, config, calibration_bars=calibration_bars, m1_index=m1_idx
         )
     return _run_backtest_enhanced(
-        bars, strategy, config, calibration_bars=calibration_bars
+        bars, strategy, config, calibration_bars=calibration_bars, m1_index=m1_idx
     )
 
 
@@ -920,6 +1089,9 @@ def _build_result(
     gap_rejections: int,
     unresolved: int,
     symbol: str = MNQ.symbol,
+    *,
+    open_position: dict | None = None,
+    intrabar_audit: Any | None = None,
 ) -> BacktestResult:
     core_trades = executed_to_core_trades(tuple(trades), config, strategy_name, symbol=symbol)
     simulation = (
@@ -982,6 +1154,8 @@ def _build_result(
         equity_curve=tuple(curve),
         gap_rejections=gap_rejections,
         unresolved_positions=unresolved,
+        open_position=open_position,
+        intrabar_audit=intrabar_audit,
     )
 
 
