@@ -34,6 +34,7 @@ _ADDITIVE_EXECUTOR_FIELDS = {
     "discrete_partial_contracts",
     "time_exit_mode",
     "end_of_data_policy",
+    "time_exit_slippage_points",
 }
 
 _ADDITIVE_RESULT_FIELDS = {

@@ -3,7 +3,7 @@
     "dataset_m5": "databento/MNQ_M5.csv (timestamp >= 2019-05-06)",
     "dataset_m1": "databento/MNQ_M1.csv (timestamp >= 2019-05-06)",
     "total_m5_bars": 518237,
-    "generated_at": "2026-09-14T01:56:37.171655+00:00",
+    "generated_at": "2026-09-14T22:20:21.982614+00:00",
     "time_exit_mode": "market",
     "friction": "$4.00 RT commission, 0.0 slippage",
     "approach": "two_pass_selective_m1_streaming",
@@ -14,11 +14,14 @@
       "strategy_label": "CRT-TBS (Champion)",
       "intrabar_audit": {
         "total_bars_evaluated": 518237,
+        "bars_in_position": 7178,
         "ambiguous_bars_count": 1,
         "resolved_by_m1_stop": 1,
         "resolved_by_m1_target": 0,
         "m1_residual_ambiguity": 0,
         "no_m1_data_fallback": 0,
+        "ambiguous_pct_of_all_bars": 0.000193,
+        "ambiguous_pct_of_bars_in_position": 0.013931,
         "ambiguous_bars_pct": 0.000193,
         "resolution_rate_pct": 100.0,
         "ambiguous_timestamps": [
@@ -55,11 +58,14 @@
       "strategy_label": "ORB (Experimental)",
       "intrabar_audit": {
         "total_bars_evaluated": 518237,
+        "bars_in_position": 296672,
         "ambiguous_bars_count": 0,
         "resolved_by_m1_stop": 0,
         "resolved_by_m1_target": 0,
         "m1_residual_ambiguity": 0,
         "no_m1_data_fallback": 0,
+        "ambiguous_pct_of_all_bars": 0.0,
+        "ambiguous_pct_of_bars_in_position": 0.0,
         "ambiguous_bars_pct": 0.0,
         "resolution_rate_pct": 100.0,
         "ambiguous_timestamps": []
@@ -92,10 +98,10 @@
     }
   },
   "performance_and_cost": {
-    "total_elapsed_seconds": 80.8,
+    "total_elapsed_seconds": 84.37,
     "peak_ram_mb": 170.73,
     "current_ram_mb": 149.6,
-    "m1_streaming_seconds": 36.72,
+    "m1_streaming_seconds": 38.28,
     "m1_bars_extracted": 5
   }
 }

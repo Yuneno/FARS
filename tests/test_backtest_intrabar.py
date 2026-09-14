@@ -227,3 +227,45 @@ def test_r_and_equity_ledger_fields():
     # Effective risk to stop is 10 points * $2/pt * 1 = $20
     assert t.effective_risk_dollars == 20.0
     assert t.effective_r == 20.0 / 20.0
+
+
+def test_intrabar_audit_denominators_and_rates():
+    from src.backtest.intrabar import IntrabarAudit
+
+    audit = IntrabarAudit(
+        total_bars_evaluated=1000,
+        bars_in_position=50,
+        ambiguous_bars_count=5,
+    )
+    assert audit.ambiguous_pct_of_all_bars == 0.5
+    assert audit.ambiguous_pct_of_bars_in_position == 10.0
+    assert audit.ambiguous_bars_pct == 0.5
+
+    # Zero denominators safeguard
+    empty_audit = IntrabarAudit()
+    assert empty_audit.ambiguous_pct_of_all_bars == 0.0
+    assert empty_audit.ambiguous_pct_of_bars_in_position == 0.0
+    assert empty_audit.ambiguous_bars_pct == 0.0
+
+    # Backtest integration: bars in position counter
+    t0 = datetime(2026, 9, 1, 9, 30)
+    bars = [
+        _bar(t0 + timedelta(minutes=5 * i), 100 + i, 101 + i, 99 + i, 100 + i)
+        for i in range(10)
+    ]
+    # Trade enters on bar 1 (index 1), held until max_bars_held=3 expires
+    cfg = BacktestConfig(
+        slippage_points=0.0,
+        commission_per_side=0.0,
+        fixed_quantity=1,
+        max_bars_held=3,
+        time_exit_mode="market",
+    )
+    strat = _SignalOnce("long", stop=50.0, target=200.0)
+    res = run_backtest(bars, strat, cfg)
+
+    assert res.intrabar_audit.total_bars_evaluated == 10
+    assert res.intrabar_audit.bars_in_position == 4
+    assert res.intrabar_audit.ambiguous_pct_of_all_bars == 0.0
+    assert res.intrabar_audit.ambiguous_pct_of_bars_in_position == 0.0
+

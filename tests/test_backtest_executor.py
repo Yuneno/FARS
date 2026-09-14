@@ -20,7 +20,7 @@ from src.backtest.pipeline import (
     write_report,
     write_trades_csv,
 )
-from src.backtest.strategy import BreakoutStrategy, Signal
+from src.backtest.strategy import BreakoutStrategy, Signal, Strategy
 
 
 def _bar(ts, o, h, l, c, v=10):
@@ -425,4 +425,52 @@ def test_time_exit_mode_flat_vs_market():
     assert res_flat.trades[0].exit_reason == "time_exit"
     assert res_flat.trades[0].exit_price == 100.0
     assert res_flat.trades[0].gross_pnl == 0.0
+
+
+def test_end_of_data_policy_close_and_unresolved():
+    t0 = datetime(2026, 9, 1, 9, 30)
+    bars = [
+        _bar(t0, 100, 101, 99, 100),
+        _bar(t0 + timedelta(minutes=5), 100, 102, 98, 101),
+        _bar(t0 + timedelta(minutes=10), 101, 103, 99, 102.5),
+    ]
+
+    class _PointsHoldStrategy(Strategy):
+        def __init__(self):
+            self.fired = False
+
+        def evaluate(self, history):
+            if not self.fired:
+                self.fired = True
+                return Signal("long", history[-1].close, 50.0, 50.0, stop_target_as_points=True)
+            return None
+
+    # 1. Policy "close": closes open position at last bar close with exit_reason="end_of_data"
+    cfg_close = BacktestConfig(
+        slippage_points=0.0,
+        commission_per_side=0.0,
+        fixed_quantity=1,
+        end_of_data_policy="close",
+    )
+    res_close = run_backtest(bars, _PointsHoldStrategy(), cfg_close)
+    assert res_close.unresolved_positions == 0
+    assert res_close.open_position is None
+    assert res_close.n_trades == 1
+    assert res_close.trades[0].exit_reason == "end_of_data"
+    assert res_close.trades[0].exit_price == 102.5
+
+    # 2. Policy "unresolved": leaves position open without emitting executed trade
+    cfg_unres = BacktestConfig(
+        slippage_points=0.0,
+        commission_per_side=0.0,
+        fixed_quantity=1,
+        end_of_data_policy="unresolved",
+    )
+    res_unres = run_backtest(bars, _PointsHoldStrategy(), cfg_unres)
+    assert res_unres.unresolved_positions == 1
+    assert res_unres.n_trades == 0
+    assert res_unres.open_position is not None
+    assert res_unres.open_position["state"] == "open"
+    assert res_unres.open_position["last_price"] == 102.5
+
 

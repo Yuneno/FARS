@@ -124,21 +124,50 @@ class TestSimulation:
 
         US DST transition in March 2024 occurred Sunday, 2024-03-10:
         - Before DST (Friday 2024-03-08, EST UTC-5): 17:00 NY = 22:00 UTC.
-          A fill at 21:30 UTC is 16:30 EST (< 17:00) -> session 2024-03-08.
-          A fill at 22:30 UTC is 17:30 EST (>= 17:00) -> session 2024-03-09 (or Monday 2024-03-09).
+          A fill at 21:30 UTC is 16:30 EST (< 17:00) -> session 2024-03-08 (Friday).
+          A fill at 22:30 UTC is 17:30 EST (>= 17:00) -> session 2024-03-11 (Monday, Option B skips weekend).
         - After DST (Monday 2024-03-11, EDT UTC-4): 17:00 NY = 21:00 UTC.
-          A fill at 20:30 UTC is 16:30 EDT (< 17:00) -> session 2024-03-11.
-          A fill at 21:30 UTC is 17:30 EDT (>= 17:00) -> session 2024-03-12.
+          A fill at 20:30 UTC is 16:30 EDT (< 17:00) -> session 2024-03-11 (Monday).
+          A fill at 21:30 UTC is 17:30 EDT (>= 17:00) -> session 2024-03-12 (Tuesday).
         """
         fills = [
             _fill("pre_dst_day", 100, ts="2024-03-08T21:30:00Z"),   # 16:30 EST -> 2024-03-08
-            _fill("pre_dst_eve", 100, ts="2024-03-08T22:30:00Z"),   # 17:30 EST -> 2024-03-09
+            _fill("pre_dst_eve", 100, ts="2024-03-08T22:30:00Z"),   # 17:30 EST -> 2024-03-11 (rolls over weekend)
             _fill("post_dst_day", 100, ts="2024-03-11T20:30:00Z"),  # 16:30 EDT -> 2024-03-11
             _fill("post_dst_eve", 100, ts="2024-03-11T21:30:00Z"),  # 17:30 EDT -> 2024-03-12
         ]
         r = simulate_account(fills, AccountRules())
         dates = [d["date"] for d in r.daily_results]
-        assert dates == ["2024-03-08", "2024-03-09", "2024-03-11", "2024-03-12"]
+        assert dates == ["2024-03-08", "2024-03-11", "2024-03-12"]
+
+    def test_get_session_date_friday_rollover_and_dst(self):
+        """A3.4 Option B: explicit tests for session date mapping."""
+        from src.account_sim import get_session_date
+
+        # (a) Viernes 17:00 ET rolls over to Monday
+        assert get_session_date("2024-03-08T16:59:00-05:00") == "2024-03-08"
+        assert get_session_date("2024-03-08T17:00:00-05:00") == "2024-03-11"
+        assert get_session_date("2024-03-08T17:30:00-05:00") == "2024-03-11"
+
+        # Weekend fills map to Monday
+        assert get_session_date("2024-03-09T12:00:00-05:00") == "2024-03-11"
+        assert get_session_date("2024-03-10T18:00:00-04:00") == "2024-03-11"
+
+        # (b) Cruce horario DST (marzo 2024)
+        # Invierno (UTC-5): 17:00 NY = 22:00 UTC
+        assert get_session_date("2024-03-07T21:59:00Z") == "2024-03-07"
+        assert get_session_date("2024-03-07T22:00:00Z") == "2024-03-08"
+        # Verano (UTC-4): 17:00 NY = 21:00 UTC
+        assert get_session_date("2024-03-11T20:59:00Z") == "2024-03-11"
+        assert get_session_date("2024-03-11T21:00:00Z") == "2024-03-12"
+
+        # (c) Fill a las 23:00 UTC (= 19:00 EDT / 18:00 EST, ambas >= 17:00 NY)
+        assert get_session_date("2024-06-10T23:00:00Z") == "2024-06-11"  # lunes -> martes
+        assert get_session_date("2024-06-14T23:00:00Z") == "2024-06-17"  # viernes -> lunes
+
+        # Option A switchable via skip_weekends=False
+        assert get_session_date("2024-03-08T17:00:00-05:00", skip_weekends=False) == "2024-03-09"
+
 
     def test_broker_margin_reported_as_no_evaluable(self):
         """When broker margin check is requested, offline simulator returns NO_EVALUABLE without inventing broker data."""

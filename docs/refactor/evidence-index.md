@@ -67,3 +67,40 @@ Clasificacion segun taxonomia formal:
 | `scratch/baseline_before.json`, `baseline_after.json`, `baseline_check.json` | **Mover a `lab_artifacts/`** | Evidencia de equivalencia historica y regresion bit a bit (SHA `71debb93...`) pre y post refactor. Versionado como evidencia. |
 | `scratch/display_table.py` | **Mover a `.gitignore`** | Script de conveniencia para formatear tablas Markdown en consola durante el analisis exploratorio. |
 | `scratch/generate_final_report.py` | **Mover a `.gitignore`** | Script auxiliar temporal utilizado para ensamblar el informe `CUATRO_ESTRATEGIAS_EVALUACION_COMPARATIVA.md`. |
+
+---
+
+## 4. Politica de Fin de Dataset por Corrida Canonica (A3.2)
+
+De acuerdo con el hallazgo A3.2 de la revision de Hermes, se audita y declara explicitamente la politica `end_of_data_policy` utilizada por cada corrida canonica sobre el dataset MNQ M5 (`timestamp >= 2019-05-06`, 518,237 barras):
+
+| Corrida Canonica | Artefacto | Politica Declarada | Posiciones Sin Resolver (`unresolved_positions`) | Estado de Posicion Abierta (`open_position`) | Homogeneidad del Baseline |
+|---|---|---|:---:|:---:|:---:|
+| **CRT-TBS (Champion)** | `lab_artifacts/flat_vs_market_comparison.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Verificado homogeneo: 0 trades abiertos en barra 518,237. `close` vs `unresolved` dan identicos 93 trades. |
+| **ORB (Experimental)** | `lab_artifacts/flat_vs_market_comparison.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Verificado homogeneo: 0 trades abiertos en barra 518,237. `close` vs `unresolved` dan identicos 2,544 trades. |
+| **Auditoria Intrabarra M1** | `lab_artifacts/intrabar_canonical_audit.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Idem. Cero posiciones abiertas al final del dataset. |
+| **Slippage Salida Temporal A3** | `lab_artifacts/a3/time_exit_slippage.json` | `end_of_data_policy="unresolved"` | **0** | `None` | Idem. Cero posiciones abiertas al final del dataset. |
+
+Ninguna corrida canonica cerro forzadamente posiciones al ultimo `close`. Ambas estrategias se encontraban totalmente liquidas al final del historico.
+
+---
+
+## 5. Registro de Deuda Tecnica — Bloque D (A3.4 / Fuera de Alcance)
+
+- **Ubicacion:** `src/account_sim.py:243`
+- **Defecto Identificado:**
+  ```python
+  final_status = "PASSED_SIMULATION" if target_reached else "PASSED_SIMULATION"
+  ```
+- **Analisis:** Ambas ramas del operador ternario asignan `"PASSED_SIMULATION"`, ignorando la condicion booleana `target_reached` cuando no hay violacion de drawdown o perdida diaria.
+- **Accion / Estado:** **Fuera de alcance del Bloque A.3.** Corresponde a la maquina de estados de evaluacion y financiamiento del **Bloque D**. Se registra aqui formalmente para preservar trazabilidad y garantizar su correccion durante el Bloque D sin modificar el comportamiento del simulador en esta etapa.
+
+---
+
+## 6. Indice de Artefactos de la Revision A.3
+
+| Artefacto | Ruta | Commit / Rama | Descripcion | Hash SHA-256 |
+|---|---|---|---|---|
+| **Slippage Salida Temporal** | `lab_artifacts/a3/time_exit_slippage.json` | `fix/a3-hallazgos` | Impacto de 0.0 vs 0.25 pts en CRT-TBS y ORB, distribucion de cantidad, friction_R, delta por pata | `732b2be9f4944d2ce049f1f35ed4ba27d71f68c2f133b0f09d3938e4dbda8b93` |
+| **Auditoria Intrabarra M1 (A3.3)** | `lab_artifacts/intrabar_canonical_audit.json` | `fix/a3-hallazgos` | Tasas de ambiguedad etiquetadas (`ambiguous_pct_of_all_bars` y `ambiguous_pct_of_bars_in_position`), `bars_in_position` | `4d772416a0eb8b98de425835f954154498e1b4b2b1cb9a8da06a288d962c262d` |
+

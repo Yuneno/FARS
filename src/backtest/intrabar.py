@@ -85,6 +85,7 @@ class IntrabarAudit:
     """Audit metrics for M5 intrabar ambiguity and M1 resolution."""
 
     total_bars_evaluated: int = 0
+    bars_in_position: int = 0
     ambiguous_bars_count: int = 0
     resolved_by_m1_target: int = 0
     resolved_by_m1_stop: int = 0
@@ -93,10 +94,21 @@ class IntrabarAudit:
     ambiguous_timestamps: list[datetime] = field(default_factory=list)
 
     @property
-    def ambiguous_bars_pct(self) -> float:
+    def ambiguous_pct_of_all_bars(self) -> float:
         if self.total_bars_evaluated == 0:
             return 0.0
         return (self.ambiguous_bars_count / self.total_bars_evaluated) * 100.0
+
+    @property
+    def ambiguous_pct_of_bars_in_position(self) -> float:
+        if self.bars_in_position == 0:
+            return 0.0
+        return (self.ambiguous_bars_count / self.bars_in_position) * 100.0
+
+    @property
+    def ambiguous_bars_pct(self) -> float:
+        """Percentage of total evaluated bars that were ambiguous (legacy metric)."""
+        return self.ambiguous_pct_of_all_bars
 
     @property
     def resolution_rate_pct(self) -> float:

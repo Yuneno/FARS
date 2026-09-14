@@ -90,7 +90,8 @@ class BacktestConfig:
     discrete_partial_contracts: bool = False
     time_exit_mode: str = "market"
     end_of_data_policy: str = "unresolved"  # "unresolved" or "close"
- 
+    time_exit_slippage_points: float = 0.0
+
     def __post_init__(self) -> None:
         if self.time_exit_mode not in {"market", "flat"}:
             raise ValueError("time_exit_mode must be 'market' or 'flat'")
@@ -103,6 +104,7 @@ class BacktestConfig:
             "tick_size",
             "commission_per_side",
             "slippage_points",
+            "time_exit_slippage_points",
             "profit_target_pct",
             "max_drawdown_pct",
             "daily_loss_limit_pct",
@@ -140,6 +142,7 @@ class BacktestConfig:
         nonnegative_economic_fields = (
             "commission_per_side",
             "slippage_points",
+            "time_exit_slippage_points",
         )
         for name in nonnegative_economic_fields:
             if getattr(self, name) < 0:
@@ -260,6 +263,17 @@ def _stop_fill(
             return _round_tick(bar_open, config.tick_size)
     slip = config.slippage_points
     fill = stop - slip if direction == "long" else stop + slip
+    return _round_tick(fill, config.tick_size)
+
+
+def _time_exit_fill(
+    config: BacktestConfig, direction: str, price: float, entry: float
+) -> float:
+    """Time exit fill price. Returns entry if flat, adverse slippage if market."""
+    if config.time_exit_mode == "flat":
+        return entry
+    slip = config.time_exit_slippage_points
+    fill = price - slip if direction == "long" else price + slip
     return _round_tick(fill, config.tick_size)
 
 
@@ -405,6 +419,7 @@ def _run_backtest_legacy(
         stop = position["stop"]
         target = position["target"]
         bars_held = i - position["entry_index"]
+        intrabar_audit.bars_in_position += 1
 
         reason: str | None = None
         exit_price: float | None = None
@@ -412,10 +427,8 @@ def _run_backtest_legacy(
             # hold limit reached at this bar's open: close at the open, before
             # consulting the new bar's high/low/close.
             reason = "time_exit"
-            exit_price = (
-                position["entry"]
-                if config.time_exit_mode == "flat"
-                else _round_tick(bar.open, config.tick_size)
+            exit_price = _time_exit_fill(
+                config, direction, bar.open, position["entry"]
             )
         else:
             hit_target = target <= bar.high if direction == "long" else target >= bar.low
@@ -447,10 +460,8 @@ def _run_backtest_legacy(
                 reason, exit_price = "stop_loss", _stop_fill(config, direction, stop, bar.open)
             elif _time_exit_close(config, position, bar, bars_held):
                 reason = "time_exit"
-                exit_price = (
-                    position["entry"]
-                    if config.time_exit_mode == "flat"
-                    else _round_tick(bar.close, config.tick_size)
+                exit_price = _time_exit_fill(
+                    config, direction, bar.close, position["entry"]
                 )
 
         if reason is not None and exit_price is not None:
@@ -472,6 +483,8 @@ def _run_backtest_legacy(
                     direction == "short" and bar.open > stop
                 )
                 exit_slip_pts = 0.0 if gap else abs(exit_price - stop)
+            elif reason == "time_exit" and config.time_exit_mode == "market":
+                exit_slip_pts = config.time_exit_slippage_points
             else:
                 exit_slip_pts = 0.0
             slippage_cost = (
@@ -769,6 +782,8 @@ def _run_backtest_enhanced(
             )
             if not gap:
                 exit_slip_pts = abs(fill - position["stop"]) * remaining_frac
+        elif reason == "time_exit" and config.time_exit_mode == "market":
+            exit_slip_pts = config.time_exit_slippage_points * remaining_frac
         slippage_cost = (
             entry_slip_pts + exit_slip_pts
         ) * config.dollar_per_point * qty
@@ -860,15 +875,14 @@ def _run_backtest_enhanced(
         target = position["target"]
         tp1 = position["tp1"]
         bars_held = i - position["entry_index"]
+        intrabar_audit.bars_in_position += 1
 
         reason: str | None = None
         fill: float | None = None
         if _time_exit_open(config, position, bar):
             reason = "time_exit"
-            fill = (
-                position["entry"]
-                if config.time_exit_mode == "flat"
-                else _round_tick(bar.open, config.tick_size)
+            fill = _time_exit_fill(
+                config, direction, bar.open, position["entry"]
             )
         else:
             hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
@@ -951,10 +965,8 @@ def _run_backtest_enhanced(
                     position["stop"] = position["entry"]
             elif _time_exit_close(config, position, bar, bars_held):
                 reason = "time_exit"
-                fill = (
-                    position["entry"]
-                    if config.time_exit_mode == "flat"
-                    else _round_tick(bar.close, config.tick_size)
+                fill = _time_exit_fill(
+                    config, direction, bar.close, position["entry"]
                 )
 
         if reason is not None and fill is not None:

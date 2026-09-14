@@ -17,11 +17,17 @@ NY_TZ = ZoneInfo("America/New_York")
 UTC_TZ = ZoneInfo("UTC")
 
 
-def get_session_date(ts: str | datetime | None, session_reset_hour: int = 17) -> str | None:
+def get_session_date(
+    ts: str | datetime | None,
+    session_reset_hour: int = 17,
+    skip_weekends: bool = True,
+) -> str | None:
     """Determine the trading session date based on America/New_York clock and session_reset_hour.
 
     CME futures trading sessions roll over at session_reset_hour (default 17:00 NY).
-    Trades occurring at or after session_reset_hour belong to the NEXT calendar day's session.
+    Trades occurring at or after session_reset_hour belong to the NEXT trading session.
+    When skip_weekends is True (default, Option B), rolls from Friday after reset (or weekend)
+    to Monday's trading session.
     Trades occurring before session_reset_hour belong to the current day's session.
     DST transitions are handled automatically via ZoneInfo("America/New_York").
     """
@@ -44,6 +50,12 @@ def get_session_date(ts: str | datetime | None, session_reset_hour: int = 17) ->
         session_dt = dt_ny.date() + timedelta(days=1)
     else:
         session_dt = dt_ny.date()
+
+    if skip_weekends:
+        if session_dt.weekday() == 5:  # Saturday -> Monday
+            session_dt += timedelta(days=2)
+        elif session_dt.weekday() == 6:  # Sunday -> Monday
+            session_dt += timedelta(days=1)
 
     return session_dt.isoformat()
 

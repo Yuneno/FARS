@@ -1,0 +1,210 @@
+{
+  "metadata": {
+    "title": "A3.1 - Impacto del Slippage en la Salida Temporal a Mercado",
+    "dataset": "databento/MNQ_M5.csv (>= 2019-05-06)",
+    "total_bars": 518237,
+    "cost_basis": "$4.00 RT commission, MNQ $2.00/pt",
+    "tick_size_pts": 0.25,
+    "generated_at": "2026-09-14T22:21:55.911151+00:00"
+  },
+  "comparisons": [
+    {
+      "estrategia": "CRT-TBS (Champion)",
+      "baseline_0_tick": {
+        "estrategia": "CRT-TBS (Champion)",
+        "slip_pts_por_contrato": 0.0,
+        "n_trades": 93,
+        "n_expiraciones": 26,
+        "qty_distribution_time_exits": {
+          "1": 5,
+          "2": 11,
+          "3": 4,
+          "4": 2,
+          "5": 1,
+          "6": 1,
+          "7": 2
+        },
+        "qty_total_time_exits": 72,
+        "slippage_total_dollars": 0.0,
+        "slippage_total_R": 0.0,
+        "net_pnl": 4801.0,
+        "profit_factor": 1.2006,
+        "expectancy_r": 0.103247,
+        "max_drawdown_pct": 0.0763,
+        "median_stop_distance_pts": 76.75,
+        "friction_R_del_slippage_por_trade": 0.0,
+        "delta_por_pata": {
+          "stop_loss": {
+            "n_trades": 42,
+            "net_pnl": -22350.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 261
+          },
+          "take_profit": {
+            "n_trades": 25,
+            "net_pnl": 24180.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 150
+          },
+          "time_exit": {
+            "n_trades": 26,
+            "net_pnl": 2971.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 72
+          }
+        }
+      },
+      "slippage_1_tick": {
+        "estrategia": "CRT-TBS (Champion)",
+        "slip_pts_por_contrato": 0.25,
+        "n_trades": 93,
+        "n_expiraciones": 26,
+        "qty_distribution_time_exits": {
+          "1": 5,
+          "2": 11,
+          "3": 4,
+          "4": 2,
+          "5": 1,
+          "6": 1,
+          "7": 2
+        },
+        "qty_total_time_exits": 72,
+        "slippage_total_dollars": 36.0,
+        "slippage_total_R": 0.072,
+        "net_pnl": 4765.0,
+        "profit_factor": 1.199,
+        "expectancy_r": 0.102473,
+        "max_drawdown_pct": 0.0765,
+        "median_stop_distance_pts": 76.75,
+        "friction_R_del_slippage_por_trade": 0.002769,
+        "delta_por_pata": {
+          "stop_loss": {
+            "n_trades": 42,
+            "net_pnl": -22350.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 261
+          },
+          "take_profit": {
+            "n_trades": 25,
+            "net_pnl": 24180.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 150
+          },
+          "time_exit": {
+            "n_trades": 26,
+            "net_pnl": 2935.0,
+            "total_slippage_cost": 36.0,
+            "total_quantity": 72
+          }
+        }
+      },
+      "delta_net_pnl": -36.0,
+      "delta_profit_factor": -0.0016,
+      "delta_expectancy_r": -0.000774,
+      "delta_max_drawdown_pct": 0.0002
+    },
+    {
+      "estrategia": "ORB (Experimental)",
+      "baseline_0_tick": {
+        "estrategia": "ORB (Experimental)",
+        "slip_pts_por_contrato": 0.0,
+        "n_trades": 2544,
+        "n_expiraciones": 1141,
+        "qty_distribution_time_exits": {
+          "1": 278,
+          "2": 421,
+          "3": 245,
+          "4": 88,
+          "5": 51,
+          "6": 25,
+          "7": 13,
+          "8": 8,
+          "9": 5,
+          "10": 5,
+          "11": 2
+        },
+        "qty_total_time_exits": 2884,
+        "slippage_total_dollars": 0.0,
+        "slippage_total_R": 0.0,
+        "net_pnl": 19555.0,
+        "profit_factor": 1.0321,
+        "expectancy_r": 0.015373,
+        "max_drawdown_pct": 0.2556,
+        "median_stop_distance_pts": 102.75,
+        "friction_R_del_slippage_por_trade": 0.0,
+        "delta_por_pata": {
+          "stop_loss": {
+            "n_trades": 1048,
+            "net_pnl": -544310.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 3584
+          },
+          "take_profit": {
+            "n_trades": 354,
+            "net_pnl": 350654.5,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 1346
+          },
+          "time_exit": {
+            "n_trades": 1141,
+            "net_pnl": 213080.5,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 2884
+          }
+        }
+      },
+      "slippage_1_tick": {
+        "estrategia": "ORB (Experimental)",
+        "slip_pts_por_contrato": 0.25,
+        "n_trades": 2544,
+        "n_expiraciones": 1141,
+        "qty_distribution_time_exits": {
+          "1": 278,
+          "2": 421,
+          "3": 245,
+          "4": 88,
+          "5": 51,
+          "6": 25,
+          "7": 13,
+          "8": 8,
+          "9": 5,
+          "10": 5,
+          "11": 2
+        },
+        "qty_total_time_exits": 2884,
+        "slippage_total_dollars": 1442.0,
+        "slippage_total_R": 2.884,
+        "net_pnl": 18113.0,
+        "profit_factor": 1.0297,
+        "expectancy_r": 0.01424,
+        "max_drawdown_pct": 0.2617,
+        "median_stop_distance_pts": 102.75,
+        "friction_R_del_slippage_por_trade": 0.002528,
+        "delta_por_pata": {
+          "stop_loss": {
+            "n_trades": 1048,
+            "net_pnl": -544310.0,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 3584
+          },
+          "take_profit": {
+            "n_trades": 354,
+            "net_pnl": 350654.5,
+            "total_slippage_cost": 0.0,
+            "total_quantity": 1346
+          },
+          "time_exit": {
+            "n_trades": 1141,
+            "net_pnl": 211638.5,
+            "total_slippage_cost": 1442.0,
+            "total_quantity": 2884
+          }
+        }
+      },
+      "delta_net_pnl": -1442.0,
+      "delta_profit_factor": -0.0024,
+      "delta_expectancy_r": -0.001133,
+      "delta_max_drawdown_pct": 0.0061
+    }
+  ]
+}

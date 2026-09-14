@@ -233,11 +233,14 @@ def main():
         audit = res_m1.intrabar_audit
         audit_dict = {
             "total_bars_evaluated": audit.total_bars_evaluated,
+            "bars_in_position": audit.bars_in_position,
             "ambiguous_bars_count": audit.ambiguous_bars_count,
             "resolved_by_m1_stop": audit.resolved_by_m1_stop,
             "resolved_by_m1_target": audit.resolved_by_m1_target,
             "m1_residual_ambiguity": audit.m1_residual_ambiguity,
             "no_m1_data_fallback": audit.no_m1_data_fallback,
+            "ambiguous_pct_of_all_bars": round(audit.ambiguous_pct_of_all_bars, 6),
+            "ambiguous_pct_of_bars_in_position": round(audit.ambiguous_pct_of_bars_in_position, 6),
             "ambiguous_bars_pct": round(audit.ambiguous_bars_pct, 6),
             "resolution_rate_pct": round(audit.resolution_rate_pct, 2),
             "ambiguous_timestamps": [ts.isoformat() for ts in audit.ambiguous_timestamps],
@@ -296,13 +299,16 @@ def main():
         m_m = entry["metrics_m1_resolved"]
         d = entry["delta"]
         print(f"\nEstrategia: {lbl}")
-        print(f"  Total Barras Evaluadas: {aud['total_bars_evaluated']:,}")
-        print(f"  Barras Ambiguas:        {aud['ambiguous_bars_count']} ({aud['ambiguous_bars_pct']}%)")
-        print(f"  Resueltas M1 -> Stop:   {aud['resolved_by_m1_stop']}")
-        print(f"  Resueltas M1 -> Target: {aud['resolved_by_m1_target']}")
-        print(f"  Ambiguedad Residual M1: {aud['m1_residual_ambiguity']}")
-        print(f"  Fallback sin M1:        {aud['no_m1_data_fallback']}")
-        print(f"  Tasa de Resolucion:     {aud['resolution_rate_pct']}%")
+        print(f"  Total Barras Evaluadas:  {aud['total_bars_evaluated']:,}")
+        print(f"  Barras con Posicion:     {aud['bars_in_position']:,}")
+        print(f"  Barras Ambiguas:         {aud['ambiguous_bars_count']}")
+        print(f"  Tasa (sobre total):      {aud['ambiguous_pct_of_all_bars']}%")
+        print(f"  Tasa (sobre posicion):   {aud['ambiguous_pct_of_bars_in_position']}%")
+        print(f"  Resueltas M1 -> Stop:    {aud['resolved_by_m1_stop']}")
+        print(f"  Resueltas M1 -> Target:  {aud['resolved_by_m1_target']}")
+        print(f"  Ambiguedad Residual M1:  {aud['m1_residual_ambiguity']}")
+        print(f"  Fallback sin M1:         {aud['no_m1_data_fallback']}")
+        print(f"  Tasa de Resolucion:      {aud['resolution_rate_pct']}%")
         print(f"  Metricas Comparativas:")
         print(f"    - Cota Conservadora (SL): PnL=${m_c['net_pnl']:,.2f} | PF={m_c['profit_factor']} | WR={m_c['win_rate']*100:.2f}%")
         print(f"    - Resuelta por M1:        PnL=${m_m['net_pnl']:,.2f} | PF={m_m['profit_factor']} | WR={m_m['win_rate']*100:.2f}%")
