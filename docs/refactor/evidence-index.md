@@ -54,14 +54,16 @@ Clasificacion segun taxonomia formal:
 | **CRT-TBS (Default Literal)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canonico, `target_mode="crt"`, `min_rr=1.50`, produce 0 trades (paradoja geometrica demostrada) | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy crt_tbs_default` | `verificado` |
 | **ORB (Experimental)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canonico, 09:30-10:00 NY, stop opuesto, target 2R, `max_hold=192` barras M5, `time_exit_mode="flat"`, $4.00 RT friccion | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy orb` | `reportado-sin-revision` |
 | **Replay Historico RT** | `lab_artifacts/CODEX_OMNIROUTE_RUN/realtime_replay_verification.json` | `2dfcd78` | ReplayEngine, FrozenClock, 2,000 barras canonicas MNQ M5, AsyncIOEventBus, SmcFvgStrategy (20 senales identicas a backtest) | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/verify_realtime_replay.py` | `verificado` |
-| **CRT-TBS & ORB (Flat vs Market)** | `lab_artifacts/flat_vs_market_comparison.json` | `fix/a1-a2-baseline` | Comparativa directa `time_exit_mode="market"` vs `"flat"`, atribucion de PnL a expiraciones | `5b190bca...` (M5) | `python lab_artifacts/run_flat_vs_market.py` | `verificado` |
+| **CRT-TBS & ORB (Flat vs Market)** | `lab_artifacts/flat_vs_market_comparison.json` | `bdc9480` | Comparativa directa `time_exit_mode="market"` vs `"flat"`, atribucion de PnL a expiraciones | `5b190bca...` (M5) | `python lab_artifacts/run_flat_vs_market.py` | `verificado` |
+| **Auditoria Intrabarra M1 (A2.4)** | `lab_artifacts/intrabar_canonical_audit.json` | `fix/a1-a2-baseline` | Resolucion causal M1 selectivo en dos pasadas sobre M5 canonico, cota conservadora vs resuelta | `5b190bca...` (M5) + `9cbf7da1...` (M1) | `python lab_artifacts/run_intrabar_canonical.py` | `verificado` |
 
 ---
 
-## 3. Resolucion de Archivos sin Commit (A1.3)
+## 3. Resolucion de Archivos sin Commit (A1.3 / T3)
 
 | Archivo Original | Decision | Justificacion |
 |---|---|---|
 | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_out/four_strategies_benchmark.json` | **Eliminar directorio** | Copia redundante bit a bit (SHA `0af572b4...`) del archivo ya versionado `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json`. |
+| `scratch/baseline_before.json`, `baseline_after.json`, `baseline_check.json` | **Mover a `lab_artifacts/`** | Evidencia de equivalencia historica y regresion bit a bit (SHA `71debb93...`) pre y post refactor. Versionado como evidencia. |
 | `scratch/display_table.py` | **Mover a `.gitignore`** | Script de conveniencia para formatear tablas Markdown en consola durante el analisis exploratorio. |
 | `scratch/generate_final_report.py` | **Mover a `.gitignore`** | Script auxiliar temporal utilizado para ensamblar el informe `CUATRO_ESTRATEGIAS_EVALUACION_COMPARATIVA.md`. |

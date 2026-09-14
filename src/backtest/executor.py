@@ -422,6 +422,7 @@ def _run_backtest_legacy(
             hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
             if hit_target and hit_stop:
                 intrabar_audit.ambiguous_bars_count += 1
+                intrabar_audit.ambiguous_timestamps.append(bar.timestamp)
                 if m1_index and bar.timestamp in m1_index:
                     m1_slice = m1_index[bar.timestamp]
                     m1_reason, status = resolve_intrabar_with_m1(direction, stop, target, m1_slice)
@@ -875,6 +876,7 @@ def _run_backtest_enhanced(
             hit_tp1 = tp1 <= bar.high if direction == "long" else tp1 >= bar.low
             if hit_target and hit_stop:
                 intrabar_audit.ambiguous_bars_count += 1
+                intrabar_audit.ambiguous_timestamps.append(bar.timestamp)
                 if m1_index and bar.timestamp in m1_index:
                     m1_slice = m1_index[bar.timestamp]
                     m1_reason, status = resolve_intrabar_with_m1(direction, stop, target, m1_slice)

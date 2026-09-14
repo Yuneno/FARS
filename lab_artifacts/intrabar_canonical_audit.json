@@ -1,0 +1,101 @@
+{
+  "metadata": {
+    "dataset_m5": "databento/MNQ_M5.csv (timestamp >= 2019-05-06)",
+    "dataset_m1": "databento/MNQ_M1.csv (timestamp >= 2019-05-06)",
+    "total_m5_bars": 518237,
+    "generated_at": "2026-09-14T01:56:37.171655+00:00",
+    "time_exit_mode": "market",
+    "friction": "$4.00 RT commission, 0.0 slippage",
+    "approach": "two_pass_selective_m1_streaming",
+    "conservative_bound_definition": "When SL and TP fall within the same M5 bar, resolve to stop_loss if M1 data is absent or if both levels remain touched in the same M1 candle."
+  },
+  "benchmarks": {
+    "crt_tbs_champion": {
+      "strategy_label": "CRT-TBS (Champion)",
+      "intrabar_audit": {
+        "total_bars_evaluated": 518237,
+        "ambiguous_bars_count": 1,
+        "resolved_by_m1_stop": 1,
+        "resolved_by_m1_target": 0,
+        "m1_residual_ambiguity": 0,
+        "no_m1_data_fallback": 0,
+        "ambiguous_bars_pct": 0.000193,
+        "resolution_rate_pct": 100.0,
+        "ambiguous_timestamps": [
+          "2025-03-11T14:00:00+00:00"
+        ]
+      },
+      "metrics_conservative_stop": {
+        "n_trades": 93,
+        "n_time_exits": 26,
+        "win_rate": 0.4409,
+        "profit_factor": 1.2006,
+        "net_pnl": 4801.0,
+        "expectancy": 51.62,
+        "max_drawdown_pct": 0.0763,
+        "total_commission": 1932.0
+      },
+      "metrics_m1_resolved": {
+        "n_trades": 93,
+        "n_time_exits": 26,
+        "win_rate": 0.4409,
+        "profit_factor": 1.2006,
+        "net_pnl": 4801.0,
+        "expectancy": 51.62,
+        "max_drawdown_pct": 0.0763,
+        "total_commission": 1932.0
+      },
+      "delta": {
+        "net_pnl": 0.0,
+        "profit_factor": 0.0,
+        "win_rate": 0.0
+      }
+    },
+    "orb": {
+      "strategy_label": "ORB (Experimental)",
+      "intrabar_audit": {
+        "total_bars_evaluated": 518237,
+        "ambiguous_bars_count": 0,
+        "resolved_by_m1_stop": 0,
+        "resolved_by_m1_target": 0,
+        "m1_residual_ambiguity": 0,
+        "no_m1_data_fallback": 0,
+        "ambiguous_bars_pct": 0.0,
+        "resolution_rate_pct": 100.0,
+        "ambiguous_timestamps": []
+      },
+      "metrics_conservative_stop": {
+        "n_trades": 2544,
+        "n_time_exits": 1141,
+        "win_rate": 0.4438,
+        "profit_factor": 1.0321,
+        "net_pnl": 19555.0,
+        "expectancy": 7.69,
+        "max_drawdown_pct": 0.2556,
+        "total_commission": 31260.0
+      },
+      "metrics_m1_resolved": {
+        "n_trades": 2544,
+        "n_time_exits": 1141,
+        "win_rate": 0.4438,
+        "profit_factor": 1.0321,
+        "net_pnl": 19555.0,
+        "expectancy": 7.69,
+        "max_drawdown_pct": 0.2556,
+        "total_commission": 31260.0
+      },
+      "delta": {
+        "net_pnl": 0.0,
+        "profit_factor": 0.0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "performance_and_cost": {
+    "total_elapsed_seconds": 80.8,
+    "peak_ram_mb": 170.73,
+    "current_ram_mb": 149.6,
+    "m1_streaming_seconds": 36.72,
+    "m1_bars_extracted": 5
+  }
+}

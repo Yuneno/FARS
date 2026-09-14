@@ -90,6 +90,7 @@ class IntrabarAudit:
     resolved_by_m1_stop: int = 0
     m1_residual_ambiguity: int = 0
     no_m1_data_fallback: int = 0
+    ambiguous_timestamps: list[datetime] = field(default_factory=list)
 
     @property
     def ambiguous_bars_pct(self) -> float:
