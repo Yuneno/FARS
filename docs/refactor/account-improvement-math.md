@@ -117,6 +117,18 @@ Fórmula cerrada (browniano con deriva, barreras simétricas): objetivo 12.85R, 
 | 7 | **Filtros horarios/sesión** | Sube E[R] por operación (menos trades) | Sin empezar |
 | 8 | **Política óptima por programación dinámica** | Techo exacto de la estructura | Idea |
 
+## Estado del Bloque E (2026-09-15, sesión autónoma con permisos totales de Ricardo)
+
+| Ítem | Estado |
+|---|---|
+| E1 (criterio de cuenta) | ✅ `run_account_score.py` + `docs/refactor/account-objective.md` |
+| E2 (promoción del pilar) | ✅ **Pilar: 5.0 + buffer k=0.10 → 41.6% pase / 13.45% fracaso** (frontera preregistrada `e2_protocol/frontera.json`; objetivo de Ricardo: menor fracaso con mayor pase) |
+| E3 (Gate 5) | ✅ **Aprobado e implementado:** Gate 5 = higiene; SMC 5.0/8.0/10.0 PASS en por_tramo; el motor juzga el riesgo |
+| E4 (políticas de apuesta) | ✅ `src/account_policy.py` + integración + 19/19 tests + evaluación formal |
+| E5 (fill de pendientes) | ✅ quema 6.6%→3.1%, E[R] +0.104; los 2 trades restantes de la cola son legítimos (gap-through real + crash abril 2025) |
+| E6 (métrico DD) | ✅ p95 551%→5.6% |
+| E7 (multi-mercado) | ✅ **Cerrado:** MYM descartado (port directo se desangra, E[R] −0.07..−0.20); MGC con edge vivo (+0.09..+0.21R) pero muestra insuficiente; **MNQ+MGC mejora la cuenta: 51.8% de pase (5.0 fija) o 37.0% con 8.7% fracaso (10.0 buffer)**. Ver `e7_protocol/VEREDICTO_E7.md` |
+
 ## 7. Re-ranking de configs por el OBJETIVO DE CUENTA (el cambio de criterio)
 
 C3 eligió min_risk_pts=10.0 con criterios de backtest (E[R]/PF/DD). La primera pasada de re-ranking con el motor de cuenta (modelo de trades cerrados, riesgo fijo 0.4671%, presupuesto de trades por frecuencia real de cada config) dio:

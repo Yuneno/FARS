@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "title": "E7 — Preregistro de validacion multi-mercado (MYM/MGC)",
+    "preregistered_at_utc": "2026-09-15T20:55:00+00:00",
+    "author": "Hermes",
+    "objective": "Validar si el edge de SMC-FVG sobrevive en MYM y MGC (autorizado por Ricardo), y medir el efecto de 2-3 mercados sobre la misma cuenta Apex 25K.",
+    "anti_leakage": "Rejilla, escenarios y criterios congelados aqui ANTES de correr; no se ajusta despues de ver resultados."
+  },
+  "grid": {
+    "markets": ["MYM", "MGC"],
+    "data": {
+      "source": "D:\\fars move\\FARS\\{MYM,MGC}_M5.csv (databento, mismo formato que el canonico MNQ)",
+      "canonical_cut": "2019-05-06T00:00:00Z",
+      "mae_mode": "M5 fallback conservador (no hay M1 de estos mercados en disco)"
+    },
+    "configs": ["smc_fvg_risk_5", "smc_fvg_baseline", "smc_fvg_risk_10"],
+    "scenarios": ["canonico", "por_tramo"],
+    "account_stage": {
+      "pools": ["smc_fvg_risk_5", "smc_fvg_risk_10"],
+      "markets_combined": ["MNQ", "MYM", "MGC"],
+      "policies": ["fixed", "buffer_k010", "buffer_k010_streak"],
+      "risk_pct": 0.004671,
+      "trailing_mode": "intraday_event",
+      "horizon_calendar_days": 30,
+      "n_simulations": 2000,
+      "seed": 20260729
+    }
+  },
+  "evaluation_criteria": {
+    "per_market_edge_holds": "por_tramo: E[R] > 0 Y bootstrap CI excluye cero Y folds positivos >= 75%",
+    "account": "reportar P(pase)/quema/bloqueadas de los pools combinados vs MNQ solo",
+    "decision_rule": "si el edge aguanta en ambos mercados, el plan multi-mercado es viable; si aguanta en uno, viable parcial; si en ninguno, se descarta y la frecuencia se busca en otra parte (zonas)"
+  }
+}
