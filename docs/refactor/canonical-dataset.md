@@ -1,19 +1,14 @@
-# Dataset canónico MNQ — decisión final (2026-09-10)
+# Dataset canónico MNQ — convención única y verificación
 
-## Decisión
+## Decisión y Convención Única
 
-Dataset canónico de FARS para MNQ (y para el port de estrategias de
-kai-backtesting) = `databento_mnq/databento/MNQ_M1.csv` **restringido a
-`timestamp >= 2019-05-06`** (post-lanzamiento real de MNQ).
-
-Archivo cortado (fuera del repo, no versionado):
-
-- `databento_mnq/databento/MNQ_M1_2019-05-06.csv`
-- SHA-256: `9cbf7da1a1019c02a6b3c14c5e13cb63d583f1548fc19ac1cb8781165fd5dc5a`
-- Bytes: 181,245,992
-- Filas M1: 2,589,531 (53.8% del archivo completo)
-- Rango: 2019-05-06T00:00:00.000Z → 2026-09-03T23:59:00.000Z (UTC)
-- Agregación M5: 518,237 velas M5 · 7.33 años
+Dataset canónico de FARS para MNQ:
+- **Ubicación:** Miembro `databento/MNQ_M5.csv` en `E:\FARS-LAB\databento.zip`
+- **Filtro canónico:** `timestamp >= 2019-05-06` (post-lanzamiento real del contrato MNQ)
+- **SHA-256 del miembro del zip:** `fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96`
+- **Velas M5 resultantes:** 518,237 barras · 7.33 años
+- **Rango temporal:** 2019-05-06T00:00:00.000Z → 2026-09-03T23:55:00.000Z (UTC)
+- **Script de verificación reproducible:** `lab_artifacts/verify_canonical_dataset.py` (hashea el miembro crudo y valida el conteo de barras)
 
 ## Justificación
 

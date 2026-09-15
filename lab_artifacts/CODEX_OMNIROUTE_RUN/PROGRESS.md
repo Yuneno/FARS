@@ -1,5 +1,11 @@
 # FARS LAB - Codex + OmniRoute Progress
 
+> **SUPERSEDED por la corrección de ejecución (Bloques A/A.2/A.3).** Las cifras se calcularon con
+> `time_exit_mode="flat"` (cierre al precio de entrada), no realizable. Valores corregidos: CRT-TBS
+> PF 1.2006 / +$4,801; ORB PF 1.0321 / +$19,555. Ver `lab_artifacts/flat_vs_market_comparison.json`,
+> `lab_artifacts/a3/time_exit_slippage.json` y la validación temporal de C1
+> (`lab_artifacts/c1_protocol/`, veredicto **FAIL** en ambas).
+
 ## Current HEAD
 - 731f980 bench(strategies): benchmark 4 strategies with 2 workers on canonical MNQ M5
 - e232344 feat(orb): implement Opening Range Breakout strategy with unit tests

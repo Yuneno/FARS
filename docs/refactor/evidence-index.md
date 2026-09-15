@@ -30,32 +30,39 @@ Comando reproducible para materializar el archivo fisico en disco:
 python -c "import zipfile, pathlib; z = zipfile.ZipFile('E:/FARS-LAB/databento.zip'); out = pathlib.Path('E:/FARS-LAB/MNQ_M1_2019-05-06.csv'); f = z.open('databento/MNQ_M1.csv'); header = f.readline(); out.write_bytes(header); [out.open('ab').write(line) for line in f if line[:10] >= b'2019-05-06']"
 ```
 
-### 1.3 Dataset Canonico M5 Derivado
-- **Miembro:** `databento/MNQ_M5.csv` (filtrado `timestamp >= 2019-05-06`)
-- **Total de Barras:** `518,237` velas M5 (7.33 anos, 2019-05-06 a 2026-09-03)
-- **Total de Bytes:** `36,641,505`
-- **SHA-256 Canonico M5:** `5b190bca6638f68842206329b0d1c248af7bb6f022fd8fe955cde0d92539655c`
+### 1.3 Dataset Canónico M5 Derivado (Convención Única)
+- **Fuente:** `E:\FARS-LAB\databento.zip`
+- **Miembro:** `databento/MNQ_M5.csv` (filtrado causal `timestamp >= 2019-05-06`)
+- **Total de Barras:** `518,237` velas M5 (7.33 años, 2019-05-06 a 2026-09-03)
+- **SHA-256 Canónico del Miembro:** `fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96`
+- **Script de Verificación:** `lab_artifacts/verify_canonical_dataset.py` (valida hash y conteo exacto)
+- **Aclaración de Entornos:** La ruta `E:\FARS-LAB\lab_artifacts\` (fuera del repositorio) es un directorio de trabajo local externo, conceptualmente y físicamente separado de `E:\FARS-LAB\FARS\lab_artifacts\` (artefactos formales versionados).
 
 ---
 
-## 2. Indice de Evidencia de Estrategias y Replay (A1.1)
+## 2. Indice de Evidencia de Estrategias y Replay (A1.1 / A5.3)
 
-Clasificacion segun taxonomia formal:
-- `verificado`: Auditado causalmente, sin defectos conocidos, reproduce metricas bit a bit.
-- `reportado-sin-revision`: Resultados preliminares de corridas anteriores; requiere auditoria o correccion de defectos de ejecucion (ej. D1, D2, D3, D4).
-- `pendiente necesario`: Bloqueante para la fase de produccion/evaluacion financiable.
+Clasificación según taxonomía formal:
+- `verificado`: Auditado causalmente, sin defectos conocidos, reproduce métricas bit a bit.
+- `superseded`: Resultado preliminar histórico sustituido formalmente por correcciones metodológicas o de ejecución.
+- `reportado-sin-revision`: Resultados preliminares de corridas anteriores; auditoría de ejecución aún no realizada.
+- `bloqueado`: Sin sustituto viable o muestra insuficiente para emitir conclusión válida.
+- `pendiente necesario`: Bloqueante para la fase de producción/evaluación financiable.
 - `diferido`: No prioritario para el baseline inmediato.
 
-| Artefacto | Ruta | Commit | Configuracion | Hash de Datos | Comando Reproducible | Clasificacion |
+| Artefacto | Ruta | Commit | Configuración | Hash de Datos | Comando Reproducible | Clasificación |
 |---|---|---|---|---|---|---|
-| **SMC-FVG (Discreto)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/juanca_smc_fvg_out/juanca_smc_fvg_benchmark.json` | `ea380c8` | MNQ M5 canonico, 518.237 barras, $50k inicial, riesgo $500 (1%), `discrete_partial_contracts=True`, TP1 1R, TP2 1.5R, BE en 1R, $4.00 RT friccion | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_juanca_smc_fvg.py` | `reportado-sin-revision` |
-| **EMAS (Discreto)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/juanca_emas_out/juanca_emas_benchmark.json` | `836b92b` | MNQ M5 canonico, EMAs 10/20/55/200 + HTF M15/H1, $50k inicial, riesgo $500 (1%), `discrete_partial_contracts=True`, $4.00 RT friccion | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_juanca_emas.py` | `reportado-sin-revision` |
-| **CRT-TBS (Champion)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canonico, H4 bias, H1 CRT, M5 confirmation, `target_mode="fixed_rr"`, `fixed_rr=2.0`, `time_exit_mode="flat"`, $4.00 RT friccion | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy crt_tbs_champion` | `reportado-sin-revision` |
-| **CRT-TBS (Default Literal)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canonico, `target_mode="crt"`, `min_rr=1.50`, produce 0 trades (paradoja geometrica demostrada) | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy crt_tbs_default` | `verificado` |
-| **ORB (Experimental)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canonico, 09:30-10:00 NY, stop opuesto, target 2R, `max_hold=192` barras M5, `time_exit_mode="flat"`, $4.00 RT friccion | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy orb` | `reportado-sin-revision` |
-| **Replay Historico RT** | `lab_artifacts/CODEX_OMNIROUTE_RUN/realtime_replay_verification.json` | `2dfcd78` | ReplayEngine, FrozenClock, 2,000 barras canonicas MNQ M5, AsyncIOEventBus, SmcFvgStrategy (20 senales identicas a backtest) | `5b190bca...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/verify_realtime_replay.py` | `verificado` |
-| **CRT-TBS & ORB (Flat vs Market)** | `lab_artifacts/flat_vs_market_comparison.json` | `bdc9480` | Comparativa directa `time_exit_mode="market"` vs `"flat"`, atribucion de PnL a expiraciones | `5b190bca...` (M5) | `python lab_artifacts/run_flat_vs_market.py` | `verificado` |
-| **Auditoria Intrabarra M1 (A2.4)** | `lab_artifacts/intrabar_canonical_audit.json` | `fix/a1-a2-baseline` | Resolucion causal M1 selectivo en dos pasadas sobre M5 canonico, cota conservadora vs resuelta | `5b190bca...` (M5) + `9cbf7da1...` (M1) | `python lab_artifacts/run_intrabar_canonical.py` | `verificado` |
+| **SMC-FVG (Discreto)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/juanca_smc_fvg_out/juanca_smc_fvg_benchmark.json` | `ea380c8` | MNQ M5 canónico, 518.237 barras, $50k inicial, riesgo $500 (1%), `discrete_partial_contracts=True`, TP1 1R, TP2 1.5R, BE en 1R, $4.00 RT fricción | `fbed6061...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_juanca_smc_fvg.py` | `reportado-sin-revision` |
+| **EMAS (Discreto)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/juanca_emas_out/juanca_emas_benchmark.json` | `836b92b` | MNQ M5 canónico, EMAs 10/20/55/200 + HTF M15/H1, $50k inicial, riesgo $500 (1%), `discrete_partial_contracts=True`, $4.00 RT fricción | `fbed6061...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_juanca_emas.py` | `reportado-sin-revision` |
+| **CRT-TBS (Champion, Flat)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canónico, H4 bias, H1 CRT, M5 confirmation, `target_mode="fixed_rr"`, `fixed_rr=2.0`, `time_exit_mode="flat"`, $4.00 RT fricción | `fbed6061...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy crt_tbs_champion` | `superseded` |
+| **CRT-TBS (Default Literal)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canónico, `target_mode="crt"`, `min_rr=1.50`, produce 0 trades (paradoja geométrica demostrada) | `fbed6061...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy crt_tbs_default` | `verificado` |
+| **ORB (Experimental, Flat)** | `lab_artifacts/CODEX_OMNIROUTE_RUN/four_strategies_benchmark.json` | `731f980` | MNQ M5 canónico, 09:30-10:00 NY, stop opuesto, target 2R, `max_hold=192` barras M5, `time_exit_mode="flat"`, $4.00 RT fricción | `fbed6061...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/benchmark_four_strategies.py --strategy orb` | `superseded` |
+| **CRT 4H de Kai** | `docs/refactor/canonical-dataset.md` | `d09da0d` | Dataset cortado M5 post-2019, n=372 trades, muestra insuficiente para meta-labeling | `fbed6061...` (M5) | `python -m docs.refactor.check_mnq_equivalence` | `bloqueado` |
+| **Replay Histórico RT** | `lab_artifacts/CODEX_OMNIROUTE_RUN/realtime_replay_verification.json` | `2dfcd78` | ReplayEngine, FrozenClock, 2,000 barras canónicas MNQ M5, AsyncIOEventBus, SmcFvgStrategy (20 señales idénticas a backtest) | `fbed6061...` (M5) | `python lab_artifacts/CODEX_OMNIROUTE_RUN/verify_realtime_replay.py` | `verificado` |
+| **CRT-TBS & ORB (Flat vs Market)** | `lab_artifacts/flat_vs_market_comparison.json` | `bdc9480` | Comparativa directa `time_exit_mode="market"` vs `"flat"`, atribución de PnL a expiraciones de tiempo | `fbed6061...` (M5) | `python lab_artifacts/run_flat_vs_market.py` | `verificado` |
+| **Auditoría Intrabarra M1 (A2.4/A3.3)** | `lab_artifacts/intrabar_canonical_audit.json` | `22c7d0e` | Resolución causal M1 selectivo en dos pasadas sobre M5 canónico, ambigüedad etiquetada | `fbed6061...` (M5) | `python lab_artifacts/run_intrabar_canonical.py` | `verificado` |
+| **Slippage Salida Temporal (A.3)** | `lab_artifacts/a3/time_exit_slippage.json` | `22c7d0e` | Impacto de 0.0 vs 0.25 pts slippage adverso en time_exit para CRT-TBS y ORB, ledger reconciliado | `fbed6061...` (M5) | `python lab_artifacts/a3/run_time_exit_slippage.py` | `verificado` |
+| **Validación Temporal C1 (Walk-Forward)** | `lab_artifacts/c1_protocol/manifest.json` | `22c7d0e` | 8 folds rolling calendáricos (36m/6m), purga/embargo auditados, veredicto formal FAIL en CRT-TBS y ORB | `fbed6061...` (M5) | `python lab_artifacts/run_c1_walkforward.py` | `verificado` |
 
 ---
 

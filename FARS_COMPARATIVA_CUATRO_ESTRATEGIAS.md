@@ -2,6 +2,12 @@
 
 ## SMC-FVG, EMAS, CRT-TBS y Opening Range Breakout (ORB) sobre MNQ Canónico (2019–2026)
 
+> **SUPERSEDED por la corrección de ejecución (Bloques A/A.2/A.3).** Las cifras se calcularon con
+> `time_exit_mode="flat"` (cierre al precio de entrada), no realizable. Valores corregidos: CRT-TBS
+> PF 1.2006 / +$4,801; ORB PF 1.0321 / +$19,555. Ver `lab_artifacts/flat_vs_market_comparison.json`,
+> `lab_artifacts/a3/time_exit_slippage.json` y la validación temporal de C1
+> (`lab_artifacts/c1_protocol/`, veredicto **FAIL** en ambas).
+
 **Fecha de Evaluación**: 2026-09-13  
 **Entorno de Trabajo**: `E:\FARS-LAB\FARS`  
 **Dataset Base**: `E:\FARS-LAB\databento.zip` (Miembro canónico `databento/MNQ_M5.csv`, 518.237 barras, rango 2019-05-06 a 2026-09-03)  
