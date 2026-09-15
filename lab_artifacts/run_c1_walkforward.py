@@ -312,9 +312,17 @@ def evaluate_scenario(
         if accounting_cfg is not None:
             repriced = []
             for trade in test_res.trades:
+                partial_was_closed = (
+                    trade.exit_reason == "break_even_stop"
+                    or (
+                        cfg.partial_take_profit_fraction > 0
+                        and trade.exit_reason in {"stop_loss", "time_exit"}
+                        and trade.stop_price == trade.entry_price
+                    )
+                )
                 remaining_qty = (
                     trade.quantity - int(trade.quantity * cfg.partial_take_profit_fraction)
-                    if trade.exit_reason == "break_even_stop"
+                    if partial_was_closed
                     else trade.quantity
                 )
                 slipping_qty = 0

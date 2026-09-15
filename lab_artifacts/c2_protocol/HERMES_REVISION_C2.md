@@ -88,3 +88,66 @@ En el reprecio, `remaining_qty` solo se calcula para `break_even_stop`; en `time
 1. **C2.2-bis**: spec completa del CRT 4H desde `strat_crt4h.py` (lectura autorizada) + port + los 4 tests + corrida de su familia. Sin él, C2 no está cerrado.
 2. Añadir al informe la **fila del baseline** (ya está en mi tabla de arriba) y la nota de primacía de escenario (§2a).
 3. (Opcional, cuando toque) corregir el nit de `time_exit` del reprecio.
+
+---
+
+# Revisión de C2-bis (port del CRT 4H) — añadido por Hermes
+
+**Ejecutor:** Codex CLI (`gpt-5.6-sol`, `low`) · **Resultado: PASS de revisión. C2 queda cerrado en lo ejecutable.**
+
+## A. Verificación de fidelidad del port (`src/backtest/crt4h.py`, 381 líneas)
+
+La especificación autoritativa **no es `strat_crt4h.py`** (su `run()` delega) sino **`kai_bt/live/live_crt4h_bridge.py`** — el propio docstring de Kai dice que backtest y vivo son el mismo código. Se cotejaron **19 puntos** contra ese archivo, todos coinciden:
+
+| Punto | Fuente (bridge) | Port FARS | ✓ |
+|---|---|---|---|
+| Buckets H4 anclados a 18:00 ET, 6/día | `_build_h4_cme` (`shifted.hour // 4`) | `_h4_key` (`((h−18)%24)*60+m)//240`) | ✅ |
+| Pivote confirmado con barra siguiente | `_last_swing` (guarda `i+1 >= len`) | idéntico | ✅ |
+| MSS por desplazamiento (ventana 20, `≥ disp_mult`) | `_detect_mss` | idéntico | ✅ |
+| FVG: último hueco de la ventana, `entry_edge = h[i]`/`l[i]` | `_detect_fvg` | idéntico | ✅ |
+| Bucle raid/quiebre (acumulación de extremos + `close` fuera de C1) | loop 139-154 | idéntico | ✅ |
+| Sesgo D1 con las **dos** velas previas | `days[d-2]`, `days[d-1]` | idéntico | ✅ |
+| Orden y exclusividad de setups (`len != 1 → return`) | 161-167 | idéntico | ✅ |
+| `raid_i = max(raid, broke)` y armado solo en esa barra | 169-171 | idéntico | ✅ |
+| **Estado armado que reintenta el MSS en cada barra nueva** | 172-179 (documenta su bug: la versión de un solo intento daba **0 trades**) | implementa la versión **arreglada** | ✅ |
+| `window_end = raid_i + max_hold + 30` | 98 | idéntico | ✅ |
+| **Pad del SL = `\|extremo − cierre C1\| × sl_pad_frac`** | 106 | idéntico | ✅ |
+| `rr = (tp − entry)/risk ≥ min_rr` | 110-112 | idéntico | ✅ |
+| Entrada LÍMITE en el borde del FVG; vence en `mss + max_hold` | 114-116, 83 | `pending_order_wait_bars=96` | ✅ |
+| Time-stop: cierre al cierre de la última barra de la ventana, sin evaluar SL/TP | 57-62 | `max_bars_held = max_hold − 1` (equivalencia documentada) | ✅ |
+| **Regla de las 8 barras** (`c1_end > t − 8 → skip`) | 128 | `c1.end > t - 8` | ✅ |
+| `c1_end <= open_until → skip` | 131 | `c1.end <= self._open_until` | ✅ |
+| MSS hallado pero FVG/RR no cumplen → la raid se abandona | 119-122 | `_armed = None` | ✅ |
+| SL gana empates | contrato del executor | test dedicado | ✅ |
+| Sin look-ahead (el array solo crece hasta `t`) | — | test con **futuro alterado** | ✅ |
+
+**Dos cosas que anoto para el futuro (no son defectos del port):**
+1. El comentario de `DEFAULTS["sl_pad_frac"]` en Kai dice *"% del rango del barrido 5M"*, pero el **código** (bridge:106) usa `|extremo − cierre C1|`. **El port sigue el código, que es lo correcto** — el comentario de Kai es impreciso. Queda escrito para que nadie "corrija" el port hacia el comentario.
+2. El port **no reprodujo** el bug de un solo intento de MSS (que en Kai daba 0 trades): implementa la semántica arreglada.
+
+## B. Verificaciones independientes de C2-bis
+
+| Verificación | Resultado |
+|---|---|
+| Determinismo (mi re-corrida del escenario canónico) | ✅ **7/7 JSON idénticos bit a bit** (incluido `crt4h_defaults`) |
+| Tests del port | ✅ 4 tests sustantivos: causalidad con futuro alterado, **paridad replay↔backtest con el motor real**, SL gana empates en la barra del fill, agregación D1/H4 con DST EST/EDT |
+| Fix del reprecio | ✅ `remaining_qty` ahora cubre `stop_loss` y `time_exit` (el nit de §4 queda corregido) |
+| Fila del baseline en la tabla | ✅ Añadidas las 6 filas de baseline; **filas de candidatas intactas** |
+| `src/` | ✅ Solo el archivo nuevo `crt4h.py` (+ su test). Nada más tocado |
+
+## C. Resultado del CRT 4H (175 operaciones OOS, mínimo 15 por fold → **G6 pasa**: el FAIL es real, no por falta de muestra)
+
+| Escenario | E[R] | PF | IC 95% | Folds + | DD |
+|---|---:|---:|---|---:|---:|
+| canónico | −0.348731 | 0.6705 | [−0.738408, +0.022428] | 12.5% | 78.3R |
+| por tramo | −0.140562 | 0.8382 | [−0.426016, +0.176749] | 25% | 42.9R |
+| Kai | −0.156939 | 0.8224 | [−0.450025, +0.164767] | 25% | 45.4R |
+
+**FAIL G1, G2, G3 y G5 en los tres escenarios.** Coherente con el aviso de su propio `RANKING.md`: el CRT 4H no tiene frecuencia para jugar la mano. Tenía razón Juanca en señalarlo y razón el protocolo en darle su corrida y su veredicto.
+
+## D. Cierre de C2
+
+- **8 configuraciones** (3 baselines + 5 candidatas) × **3 escenarios** de coste, sobre el canónico post-2019, con preregistro previo y orden auditado.
+- **Ninguna candidata promovida a C3.** El veredicto es invariante al escenario decisorio.
+- **El diagnóstico no es "no hay señal"**: SMC-FVG (baseline 8.0 y risk=10) tiene E[R] positivo, IC que excluye cero y 75-100% de folds positivos bajo coste por pata. **Lo que la mata es el drawdown** → C3/D deben atacar el **modelo de riesgo/sizing**, no buscar otra estrategia.
+- **Las configuraciones "óptimas" de Kai no replican** en nuestro corte: la nuestra (8.0 / rr=3.0) es mejor que las suyas (5.0 / rr=0.4) en los tres escenarios.

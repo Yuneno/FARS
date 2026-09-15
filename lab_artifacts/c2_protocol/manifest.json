@@ -1,9 +1,9 @@
 {
   "metadata": {
     "title": "C2 walk-forward manifest",
-    "generated_at_utc": "2026-09-15T01:55:11.138484+00:00",
-    "git_commit": "b3223636136bd9ea2bd4ded4af56e83a69dfa3ea",
-    "git_branch": "main",
+    "generated_at_utc": "2026-09-15T02:34:53.785769+00:00",
+    "git_commit": "8134f294752c967d2fd5f459dc4f23078479f177",
+    "git_branch": "bloque-c2-busqueda",
     "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]"
   },
   "dataset": {
@@ -59,10 +59,18 @@
         "min_risk_pts": 10.0
       },
       "role": "candidate"
+    },
+    "crt4h_defaults": {
+      "parameters": {
+        "max_follow": 3,
+        "min_rr": 1.5,
+        "sl_pad_frac": 0.1,
+        "disp_mult": 1.2,
+        "max_hold_bars": 96,
+        "require_bias": 1
+      },
+      "role": "candidate"
     }
-  },
-  "blocked_configurations": {
-    "crt4h": "Exact algorithmic specification unavailable; see BLOCKERS.md"
   },
   "scenarios": {
     "canonico": {
@@ -85,33 +93,37 @@
     }
   },
   "artifacts": {
+    "crt4h_defaults_fold_metrics.json": {
+      "sha256": "11610a37c45cf8adab664dbaeeabbd83a2758c30b54b66080d91ddeaf4361d09",
+      "size_bytes": 35488
+    },
     "emas_baseline_fold_metrics.json": {
-      "sha256": "e77f421595fb3f13fc28c5fcd1cbd41fe291237e35420e86e6f36f7587e9635f",
+      "sha256": "fbffa8a4927562392e08633d4bfbe4c7ff2d9ff0facec91ed74830758c42e723",
       "size_bytes": 35461
     },
     "emas_rr_0_3_fold_metrics.json": {
-      "sha256": "295c178ecb7d581e0c18209fe199b763abb2eb0fd00d74907735589322977820",
+      "sha256": "28bd8b1784dd14be8e3a74891647bb41318eadc973e52dfb2e80af18eced8198",
       "size_bytes": 35468
     },
     "emas_rr_0_4_fold_metrics.json": {
-      "sha256": "0d2367427eca7d8f970f4d7466e21ca124e7ce4c15e1d94de779227accd63621",
+      "sha256": "f1280928c1a27a87862bc01ffa28dfecbb62ae69a5ce8e65eacd74c6a778e508",
       "size_bytes": 35469
     },
     "smc_fvg_baseline_fold_metrics.json": {
-      "sha256": "fd11a4b7a02205aad9bf247372cc2c82e666632de6cb18fa38240957b5805927",
+      "sha256": "d3fde82b0319f590d6d99d304d529e426baf3ae18db7dbaf95309a964e8af050",
       "size_bytes": 35381
     },
     "smc_fvg_risk_10_fold_metrics.json": {
-      "sha256": "d5e44c3cea0d29371ead679ced790182f9efb81ec938446dd1b85f180885b2ed",
+      "sha256": "495f9da3eafe0020a4cce4667533fc38541537e6206b67f4a7ad8d5f9dd69395",
       "size_bytes": 35389
     },
     "smc_fvg_risk_5_fold_metrics.json": {
-      "sha256": "27377b4d7addb5c5178868afd281dfd6f44430b5b8c1e75910dc860d9a460280",
+      "sha256": "1309c696ea786cc5d768f21b0249f8e920874b7560c4a94b5c055be065a3dda4",
       "size_bytes": 35457
     },
     "evaluation_order.json": {
-      "sha256": "28eeac46b3ece8e3e532dd6e35c52ac656b3be9d48bbd43e886bd7588bfa1942",
-      "size_bytes": 101069
+      "sha256": "1c939b540411394cc4d2b16a4fff2a33c82405c28fc48848ac8a1edeb2c3a17d",
+      "size_bytes": 248325
     }
   }
 }

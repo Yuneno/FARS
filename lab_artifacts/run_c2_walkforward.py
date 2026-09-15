@@ -25,6 +25,7 @@ from lab_artifacts.run_c1_walkforward import (
     load_canonical_m5,
 )
 from src.backtest.emas import EmasStrategy, emas_config
+from src.backtest.crt4h import Crt4hStrategy, crt4h_config
 from src.backtest.markets import MNQ
 from src.backtest.smc_fvg import SmcFvgStrategy, smc_fvg_config
 from src.hypothesis_registry import WalkForwardPlan
@@ -43,6 +44,12 @@ CONFIGURATIONS = {
     "smc_fvg_baseline": (lambda: SmcFvgStrategy(min_risk_pts=8.0), smc_fvg_config, {"min_risk_pts": 8.0}, "baseline"),
     "smc_fvg_risk_5": (lambda: SmcFvgStrategy(min_risk_pts=5.0), smc_fvg_config, {"min_risk_pts": 5.0}, "candidate"),
     "smc_fvg_risk_10": (lambda: SmcFvgStrategy(min_risk_pts=10.0), smc_fvg_config, {"min_risk_pts": 10.0}, "candidate"),
+    "crt4h_defaults": (
+        lambda: Crt4hStrategy(max_follow=3, min_rr=1.5, sl_pad_frac=0.1, disp_mult=1.2, max_hold_bars=96, require_bias=1),
+        crt4h_config,
+        {"max_follow": 3, "min_rr": 1.5, "sl_pad_frac": 0.1, "disp_mult": 1.2, "max_hold_bars": 96, "require_bias": 1},
+        "candidate",
+    ),
 }
 
 
@@ -85,7 +92,7 @@ def main() -> None:
         result = evaluate_scenario(
             name, args.scenario, factory, cfg, bars, plan, audits, evaluation["sequence"],
             accounting_cfg=accounting_cfg,
-            entry_order_type="limit" if name.startswith("smc_fvg") else "market",
+            entry_order_type="limit" if name.startswith(("smc_fvg", "crt4h")) else "market",
         )
         for row in evaluation["sequence"][before:]:
             row["configuration_role"] = role
@@ -117,7 +124,6 @@ def _write_manifest(bars, fingerprint, plan) -> None:
         "dataset": {"archive": str(ZIP_PATH), "member": M5_MEMBER, "bars_count": len(bars), "start_time": bars[0].timestamp.isoformat(), "end_time": bars[-1].timestamp.isoformat(), "sha256": fingerprint},
         "walk_forward_plan": {"type": "calendar_rolling", "train_months": 36, "test_months": 6, "step_months": 6, "n_folds": plan.n_folds, "purge": "real trade intervals", "embargo_h_bars": 192},
         "configurations": {name: {"parameters": values[2], "role": values[3]} for name, values in CONFIGURATIONS.items()},
-        "blocked_configurations": {"crt4h": "Exact algorithmic specification unavailable; see BLOCKERS.md"},
         "scenarios": {
             "canonico": {"commission_rt_usd": 4.00, "slippage": "none"},
             "por_tramo": {"commission_per_side_usd": 0.62, "commission_rt_usd": 1.24, "slippage": "1 tick only STOP and MARKET/time exits; LIMIT and TP do not slip"},
