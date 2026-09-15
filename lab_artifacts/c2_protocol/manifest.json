@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "title": "C2 walk-forward manifest",
+    "generated_at_utc": "2026-09-15T01:55:11.138484+00:00",
+    "git_commit": "b3223636136bd9ea2bd4ded4af56e83a69dfa3ea",
+    "git_branch": "main",
+    "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "bars_count": 518237,
+    "start_time": "2019-05-06T00:00:00+00:00",
+    "end_time": "2026-09-03T23:55:00+00:00",
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "n_folds": 8,
+    "purge": "real trade intervals",
+    "embargo_h_bars": 192
+  },
+  "configurations": {
+    "emas_baseline": {
+      "parameters": {
+        "target_rr": 3.0
+      },
+      "role": "baseline"
+    },
+    "emas_rr_0_4": {
+      "parameters": {
+        "target_rr": 0.4
+      },
+      "role": "candidate"
+    },
+    "emas_rr_0_3": {
+      "parameters": {
+        "target_rr": 0.3
+      },
+      "role": "candidate_edge_probe"
+    },
+    "smc_fvg_baseline": {
+      "parameters": {
+        "min_risk_pts": 8.0
+      },
+      "role": "baseline"
+    },
+    "smc_fvg_risk_5": {
+      "parameters": {
+        "min_risk_pts": 5.0
+      },
+      "role": "candidate"
+    },
+    "smc_fvg_risk_10": {
+      "parameters": {
+        "min_risk_pts": 10.0
+      },
+      "role": "candidate"
+    }
+  },
+  "blocked_configurations": {
+    "crt4h": "Exact algorithmic specification unavailable; see BLOCKERS.md"
+  },
+  "scenarios": {
+    "canonico": {
+      "commission_rt_usd": 4.0,
+      "slippage": "none"
+    },
+    "por_tramo": {
+      "commission_per_side_usd": 0.62,
+      "commission_rt_usd": 1.24,
+      "slippage": "1 tick only STOP and MARKET/time exits; LIMIT and TP do not slip"
+    },
+    "kai": {
+      "commission_per_side_usd": 0.71,
+      "commission_rt_usd": 1.42,
+      "slippage": "1 tick only crossing orders: STOP and MARKET; LIMIT and TP do not slip",
+      "documented_discrepancies_usd_rt": [
+        1.0,
+        1.34
+      ]
+    }
+  },
+  "artifacts": {
+    "emas_baseline_fold_metrics.json": {
+      "sha256": "e77f421595fb3f13fc28c5fcd1cbd41fe291237e35420e86e6f36f7587e9635f",
+      "size_bytes": 35461
+    },
+    "emas_rr_0_3_fold_metrics.json": {
+      "sha256": "295c178ecb7d581e0c18209fe199b763abb2eb0fd00d74907735589322977820",
+      "size_bytes": 35468
+    },
+    "emas_rr_0_4_fold_metrics.json": {
+      "sha256": "0d2367427eca7d8f970f4d7466e21ca124e7ce4c15e1d94de779227accd63621",
+      "size_bytes": 35469
+    },
+    "smc_fvg_baseline_fold_metrics.json": {
+      "sha256": "fd11a4b7a02205aad9bf247372cc2c82e666632de6cb18fa38240957b5805927",
+      "size_bytes": 35381
+    },
+    "smc_fvg_risk_10_fold_metrics.json": {
+      "sha256": "d5e44c3cea0d29371ead679ced790182f9efb81ec938446dd1b85f180885b2ed",
+      "size_bytes": 35389
+    },
+    "smc_fvg_risk_5_fold_metrics.json": {
+      "sha256": "27377b4d7addb5c5178868afd281dfd6f44430b5b8c1e75910dc860d9a460280",
+      "size_bytes": 35457
+    },
+    "evaluation_order.json": {
+      "sha256": "28eeac46b3ece8e3e532dd6e35c52ac656b3be9d48bbd43e886bd7588bfa1942",
+      "size_bytes": 101069
+    }
+  }
+}

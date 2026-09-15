@@ -29,6 +29,7 @@ import subprocess
 import sys
 import time
 import zipfile
+from dataclasses import replace
 from datetime import datetime, timezone
 
 import numpy as np
@@ -294,6 +295,8 @@ def evaluate_scenario(
     plan: WalkForwardPlan,
     audit_data_by_fold: dict[int, dict],
     eval_order_log: list[dict],
+    accounting_cfg: BacktestConfig | None = None,
+    entry_order_type: str = "market",
 ) -> dict:
     fold_records = []
     all_oos_trades = []
@@ -306,6 +309,51 @@ def evaluate_scenario(
         test_bars = bars[fold.test_start_idx : fold.test_end_idx]
         test_strat = create_strategy()
         test_res = run_backtest(test_bars, test_strat, cfg, calibration_bars=test_cal)
+        if accounting_cfg is not None:
+            repriced = []
+            for trade in test_res.trades:
+                remaining_qty = (
+                    trade.quantity - int(trade.quantity * cfg.partial_take_profit_fraction)
+                    if trade.exit_reason == "break_even_stop"
+                    else trade.quantity
+                )
+                slipping_qty = 0
+                if entry_order_type == "market":
+                    slipping_qty += trade.quantity
+                if trade.exit_reason in {"stop_loss", "break_even_stop", "time_exit"}:
+                    slipping_qty += remaining_qty
+                slippage_cost = accounting_cfg.slippage_points * accounting_cfg.dollar_per_point * slipping_qty
+                commission = accounting_cfg.commission_per_side * 2 * trade.quantity
+                net_pnl = trade.gross_pnl - commission - slippage_cost
+                risk_budget = trade.budgeted_risk_dollars
+                r_result = net_pnl / risk_budget if risk_budget > 0 else 0.0
+                repriced.append(replace(
+                    trade, commission=commission, slippage_cost=slippage_cost,
+                    net_pnl=net_pnl, r_result=r_result, budgeted_r=r_result,
+                    effective_r=(net_pnl / trade.effective_risk_dollars if trade.effective_risk_dollars > 0 else 0.0),
+                ))
+            equity = []
+            balance = accounting_cfg.initial_balance
+            peak_balance = balance
+            max_dd_pct = 0.0
+            for trade in repriced:
+                balance += trade.net_pnl
+                equity.append(balance)
+                peak_balance = max(peak_balance, balance)
+                max_dd_pct = max(max_dd_pct, (peak_balance - balance) / peak_balance * 100)
+            wins_r = [t.net_pnl for t in repriced if t.net_pnl > 0]
+            losses_r = [-t.net_pnl for t in repriced if t.net_pnl < 0]
+            test_res = replace(
+                test_res, config=accounting_cfg, trades=tuple(repriced),
+                net_pnl=sum(t.net_pnl for t in repriced), n_trades=len(repriced),
+                win_rate=(len(wins_r) / len(repriced) if repriced else 0.0),
+                profit_factor=(sum(wins_r) / sum(losses_r) if losses_r else float("inf")),
+                expectancy=(sum(t.net_pnl for t in repriced) / len(repriced) if repriced else 0.0),
+                max_drawdown_pct=max_dd_pct,
+                total_commission=sum(t.commission for t in repriced),
+                total_slippage_cost=sum(t.slippage_cost for t in repriced),
+                equity_curve=tuple(equity),
+            )
 
         run_t1 = datetime.now(timezone.utc).isoformat()
 
@@ -385,10 +433,16 @@ def evaluate_scenario(
     cumulative = 0.0
     peak = 0.0
     max_dd_money = 0.0
+    cumulative_r = 0.0
+    peak_r = 0.0
+    max_dd_r = 0.0
     for t in all_oos_trades:
         cumulative += t.net_pnl
         peak = max(peak, cumulative)
         max_dd_money = max(max_dd_money, peak - cumulative)
+        cumulative_r += t.r_result
+        peak_r = max(peak_r, cumulative_r)
+        max_dd_r = max(max_dd_r, peak_r - cumulative_r)
     global_max_dd_pct = (max_dd_money / cfg.initial_balance) * 100
 
     # CBB 95% Bootstrap CI
@@ -410,7 +464,7 @@ def evaluate_scenario(
     gate_ci_pos = (ci_low is not None) and (ci_low > 0)
     gate_fold_consistency = positive_folds_ratio >= 0.75
     gate_concentration = (concentration is not None) and (concentration < 60.0)
-    gate_dd = global_max_dd_pct < 5.0
+    gate_dd = global_max_dd_pct < 5.0 and max_dd_r < 12.0
     insufficient_folds = [f["fold_id"] for f in fold_records if f["evidencia_insuficiente"]]
 
     # Informative Verdict (FIX-6)
@@ -432,11 +486,11 @@ def evaluate_scenario(
     return {
         "scenario": scenario_id,
         "config": {
-            "commission_per_side": cfg.commission_per_side,
-            "slippage_points": cfg.slippage_points,
-            "time_exit_slippage_points": cfg.time_exit_slippage_points,
-            "time_exit_mode": cfg.time_exit_mode,
-            "initial_balance": cfg.initial_balance,
+            "commission_per_side": (accounting_cfg or cfg).commission_per_side,
+            "slippage_points": (accounting_cfg or cfg).slippage_points,
+            "time_exit_slippage_points": (accounting_cfg or cfg).time_exit_slippage_points,
+            "time_exit_mode": (accounting_cfg or cfg).time_exit_mode,
+            "initial_balance": (accounting_cfg or cfg).initial_balance,
         },
         "aggregate_oos": {
             "total_trades": total_trades,
@@ -446,6 +500,7 @@ def evaluate_scenario(
             "global_profit_factor": round(global_pf, 4) if global_pf != float("inf") else "inf",
             "global_win_rate": round(global_wr, 4),
             "global_max_drawdown_pct": round(global_max_dd_pct, 4),
+            "global_max_drawdown_r": round(max_dd_r, 4),
             "global_max_drawdown_money": round(max_dd_money, 2),
             "total_expiraciones": sum(f["n_expiraciones"] for f in fold_records),
             "total_commission": round(sum(f["total_commission"] for f in fold_records), 2),
@@ -453,13 +508,21 @@ def evaluate_scenario(
             "bootstrap_cbb_ci_95": [round(ci_low, 6), round(ci_high, 6)] if ci_low is not None else None,
             "positive_folds_ratio": round(positive_folds_ratio, 4),
             "max_fold_r_concentration_pct": concentration,
+            "fold_dispersion": {
+                "expectancy_r_std": round(float(np.std([f["expectancy_r"] for f in fold_records])), 6),
+                "net_r_std": round(float(np.std([f["net_r"] for f in fold_records])), 6),
+                "profit_factor_std": round(float(np.std([
+                    float(f["profit_factor"]) for f in fold_records
+                    if f["profit_factor"] != "inf"
+                ])), 6),
+            },
         },
         "gates_evaluation": {
             "expectancy_positive": gate_exp_pos,
             "bootstrap_ci_excludes_zero": gate_ci_pos,
             "fold_consistency_ge_75pct": gate_fold_consistency,
             "concentration_lt_60pct": gate_concentration,
-            "max_drawdown_lt_5pct": gate_dd,
+            "max_drawdown_lt_5pct_and_12r": gate_dd,
             "insufficient_sample_folds": insufficient_folds,
             "verdict": verdict,
             "detailed_verdict": detailed_verdict,

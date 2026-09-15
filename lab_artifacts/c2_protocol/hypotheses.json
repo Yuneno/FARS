@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "FARS Bloque C2 — búsqueda corta sobre protocolo C1",
+    "dataset_name": "databento/MNQ_M5.csv (>= 2019-05-06)",
+    "dataset_fingerprint": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+    "preregistered_at": "2026-09-15T01:36:55.397604+00:00",
+    "base_commit": "b3223636136bd9ea2bd4ded4af56e83a69dfa3ea",
+    "n_folds": 8,
+    "walk_forward_protocol": "Rolling calendar: 36m train / 6m test / 6m step; purga por intervalos reales; embargo h=192 barras M5",
+    "total_candidate_budget": 6,
+    "registered_baselines": 3,
+    "registered_candidates": 5,
+    "multiplicity_controls": {
+      "emas": {"family_size": 3, "alpha_nominal": 0.05, "bonferroni_alpha": 0.016666666666666666},
+      "smc_fvg": {"family_size": 3, "alpha_nominal": 0.05, "bonferroni_alpha": 0.016666666666666666},
+      "crt4h": {"family_size": 1, "alpha_nominal": 0.05, "bonferroni_alpha": 0.05}
+    }
+  },
+  "hypotheses": {
+    "emas_baseline_rr_3_0": {"family_id":"emas","hypothesis_id":"emas_baseline_rr_3_0","variant":"baseline","description":"EMAS baseline congelado; target_rr=3.0.","config":{"target_rr":3.0},"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}},
+    "emas_candidate_rr_0_4": {"family_id":"emas","hypothesis_id":"emas_candidate_rr_0_4","variant":"candidate_1","description":"EMAS candidata; target_rr=0.4.","config":{"target_rr":0.4},"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}},
+    "emas_candidate_rr_0_3": {"family_id":"emas","hypothesis_id":"emas_candidate_rr_0_3","variant":"candidate_2_edge_probe","description":"EMAS sonda de degeneración declarada; target_rr=0.3. Si mejora a 0.4, ninguna EMAS se promueve.","config":{"target_rr":0.3},"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}},
+    "smc_fvg_baseline_risk_8": {"family_id":"smc_fvg","hypothesis_id":"smc_fvg_baseline_risk_8","variant":"baseline","description":"SMC-FVG baseline congelado; min_risk_pts=8.0.","config":{"min_risk_pts":8.0},"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}},
+    "smc_fvg_candidate_risk_5": {"family_id":"smc_fvg","hypothesis_id":"smc_fvg_candidate_risk_5","variant":"candidate_1","description":"SMC-FVG candidata; min_risk_pts=5.0.","config":{"min_risk_pts":5.0},"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}},
+    "smc_fvg_candidate_risk_10": {"family_id":"smc_fvg","hypothesis_id":"smc_fvg_candidate_risk_10","variant":"candidate_2","description":"SMC-FVG candidata; min_risk_pts=10.0.","config":{"min_risk_pts":10.0},"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}},
+    "crt4h_baseline_absent": {"family_id":"crt4h","hypothesis_id":"crt4h_baseline_absent","variant":"baseline_absent","description":"Baseline declarado como ausente: CRT 4H no estaba portado en FARS.","config":null,"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}},
+    "crt4h_candidate_defaults": {"family_id":"crt4h","hypothesis_id":"crt4h_candidate_defaults","variant":"candidate_1","description":"CRT 4H candidata con defaults exactos declarados.","config":{"max_follow":3,"min_rr":1.5,"sl_pad_frac":0.1,"disp_mult":1.2,"max_hold_bars":96,"require_bias":1},"preregistered_at":"2026-09-15T01:36:55.397604+00:00","dataset_fingerprint":"fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96","n_folds":8,"alpha":0.05,"n_candidates_tested":0,"n_negative_results":0,"state":"preregistered","results":{}}
+  }
+}
