@@ -72,7 +72,7 @@ Fórmula cerrada (browniano con deriva, barreras simétricas): objetivo 12.85R, 
 
 **La cuenta mediana necesita ~72 trades ≈ 39 días** para pasar; en 30 días solo caben 56. **El limitante es el reloj, no el edge.**
 
-**Pregunta abierta de alto valor:** `KAI_APEX_SPEC.md` se contradice — el simulador nuevo usa 30 días de calendario, el research viejo dice que Apex NO capea el tiempo (solo `minTradingDays`). Si no capea, el pase de esta estrategia es ~68% con un solo mercado. **Requiere confirmación externa (Juanca/plataforma).**
+**RESUELTO (2026-09-15, fuente: Juanca):** **Apex SÍ capea el tiempo del challenge** (ventana de 30 días de calendario). El research viejo de Kai ("no máximo, solo minTradingDays") estaba equivocado. Consecuencia: **el reloj es el enemigo confirmado** y la frecuencia pasa a ser el criterio dominante → de ahí el re-ranking por objetivo de cuenta (sección 7).
 
 ## 5. Hallazgo nuevo: la cola de ejecución domina la quema
 
@@ -116,6 +116,27 @@ Fórmula cerrada (browniano con deriva, barreras simétricas): objetivo 12.85R, 
 | 6 | **Fase de zonas** (pools, S/R, reversiones) | Sube E[R] por operación | Auditada, sin implementar |
 | 7 | **Filtros horarios/sesión** | Sube E[R] por operación (menos trades) | Sin empezar |
 | 8 | **Política óptima por programación dinámica** | Techo exacto de la estructura | Idea |
+
+## 7. Re-ranking de configs por el OBJETIVO DE CUENTA (el cambio de criterio)
+
+C3 eligió min_risk_pts=10.0 con criterios de backtest (E[R]/PF/DD). La primera pasada de re-ranking con el motor de cuenta (modelo de trades cerrados, riesgo fijo 0.4671%, presupuesto de trades por frecuencia real de cada config) dio:
+
+| min_risk | n | t/día | E[R] | P(pase) | Quema | Bloqueadas | Sin tiempo |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| **5.0** | 5626 | **3.85** | +0.0688 | **49.3%** | 4.2% | 22.1% | 24.4% |
+| 8.0 | 3628 | 2.48 | +0.0889 | 35.2% | 3.1% | 12.3% | 49.5% |
+| 10.0 (actual) | 2842 | 1.95 | +0.0879 | 26.7% | 3.4% | 8.2% | 61.7% |
+| 15.0 | 1577 | 1.08 | +0.0923 | 9.0% | 0.9% | 4.4% | 85.7% |
+| 20.0 | 996 | 0.68 | +0.0739 | 2.5% | 1.4% | 1.7% | 94.4% |
+| 30.0 | 437 | 0.30 | +0.0932 | 0.3% | 1.6% | 1.1% | 97.0% |
+
+**El juego de la cuenta premia la frecuencia, no el edge:** las configs de mejor E[R] (15/30) son las peores en cuenta. La campeona es 5.0 (el peor E[R], la mayor frecuencia). Con el cap de 30 días confirmado por Juanca, este es EL criterio.
+
+**Tensión de marco pendiente:** Gate 5 (DD < 12R) mató a 5.0 (DD 70R) — pero el DD bruto no es el riesgo de una cuenta con floor trailing; el riesgo real es P(quema) en el motor. Hay que decidir si el gate de cuenta pasa a ser P(quema), no DD.
+
+**Estado:** verificación completa de 5.0 en el motor FULL (MAE intrabar + trailing) **hecha** (`06_verificacion_5p0_full.py`): **46.65% de pase @ 0.4671%** (vs 25.60% de la 10.0), quema 16.90%, bloqueadas 15.30%, 15.6 días. El modelo cerrado predecía 49.3% → la excursión intrabar cuesta solo ~2.6pp. El ranking sobrevive al motor completo.
+
+**Hallazgo menor (D-5):** `max_drawdown_pct` reporta excursiones post-muerte (aplica la pérdida completa del trade terminal y mide después de cortar) → p95 llegó a 551%. Es métrico de reporte; la lógica de muerte (pase/quema/bloqueo) corta correctamente en el floor y fue verificada contra los números auditados. Corregir: computar el DD solo sobre la trayectoria viva (o truncar en la terminación).
 
 ## Reglas para no contaminar el resultado
 
