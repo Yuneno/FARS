@@ -76,4 +76,4 @@ MT5 / módulo largo                    <- cuando tú avises
 
 **Reglas que no cambian:** cada bloque cierra con revisión (como A–D), commits locales, sin push hasta que tú lo digas, y cada mejora entra por el protocolo (preregistro + gates), no por la puerta de atrás.
 
-**Decisiones pendientes tuyas/Juanca (3):** ① promover `min_risk=5.0` (E2) · ② enmendar Gate 5 → P(quema) (E3) · ③ OK a los datos MYM/MGC (E7). Las ① y ② dijiste que se toman "un poco después" — quedan aquí anotadas como puntos de decisión, no como trabajo en curso.
+**Decisiones pendientes tuyas/Juanca (3):** ~~① promover `min_risk=5.0` (E2) · ② enmendar Gate 5 → P(quema) (E3) · ③ OK a los datos MYM/MGC (E7)~~ — **RESUELTAS 2026-09-15:** ① objetivo = menor fracaso con mayor pase (frontera Pareto, E2 en curso) · ② Gate 5 → higiene, aprobado e implementado · ③ MYM/MGC autorizados (E7 en curso).

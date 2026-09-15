@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "title": "E2 — Preregistro de la frontera pase/fraacaso (seleccion de pilar)",
+    "preregistered_at_utc": "2026-09-15T20:45:00+00:00",
+    "author": "Hermes",
+    "objective": "Objetivo fijado por Ricardo: MENOR FRACASO CON MAYOR PORCENTAJE DE PASE. Buscar la frontera Pareto (pase vs quema+bloqueadas) por set de config y seleccionar el pilar.",
+    "anti_leakage": "Rejilla y criterio congelados aqui ANTES de correr; no se ajusta despues de ver resultados."
+  },
+  "grid": {
+    "trade_sets": ["smc_fvg_risk_5", "smc_fvg_baseline", "smc_fvg_risk_10"],
+    "risk_pcts": [0.0030, 0.004671, 0.0060, 0.0075],
+    "policies": [
+      {"id": "fixed", "kind": "fixed", "param": 0.0, "streak_threshold": 0, "streak_factor": 1.0},
+      {"id": "buffer_k010", "kind": "buffer_prop", "param": 0.10, "streak_threshold": 0, "streak_factor": 1.0},
+      {"id": "buffer_k010_streak", "kind": "buffer_prop", "param": 0.10, "streak_threshold": 2, "streak_factor": 0.5},
+      {"id": "buffer_k025", "kind": "buffer_prop", "param": 0.25, "streak_threshold": 0, "streak_factor": 1.0}
+    ],
+    "engine": {
+      "account": "apex-25k-evaluation",
+      "trailing_mode": "intraday_event",
+      "horizon_calendar_days": 30,
+      "n_simulations": 2000,
+      "seed": 20260729
+    },
+    "metrics": ["pass_rate", "blown_rate", "blocked_rate", "timeout_rate", "median_days_to_pass"]
+  },
+  "selection_criteria": {
+    "primary": "max pass_rate sujeto a (blown_rate + blocked_rate) <= 0.15 (tope operativo de fracaso)",
+    "frontier_reported": "todos los puntos Pareto (max pase / min fracaso) por set",
+    "fallback": "si ningun punto cumple el tope, se reporta la frontera y se elige el mejor ratio pass/(1+fracaso)"
+  }
+}
