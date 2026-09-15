@@ -1,9 +1,9 @@
 {
   "metadata": {
     "title": "C2 walk-forward manifest",
-    "generated_at_utc": "2026-09-15T02:34:53.785769+00:00",
-    "git_commit": "8134f294752c967d2fd5f459dc4f23078479f177",
-    "git_branch": "bloque-c2-busqueda",
+    "generated_at_utc": "2026-09-15T20:23:09.604758+00:00",
+    "git_commit": "b10e8aec7e9aa2ad8db5120de65e9260359c7c76",
+    "git_branch": "main",
     "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]"
   },
   "dataset": {
@@ -94,36 +94,36 @@
   },
   "artifacts": {
     "crt4h_defaults_fold_metrics.json": {
-      "sha256": "11610a37c45cf8adab664dbaeeabbd83a2758c30b54b66080d91ddeaf4361d09",
-      "size_bytes": 35488
+      "sha256": "bbf3c1a42668f01f060b1985037abd6becfba2ca8ebc94994df14a58f6b68c36",
+      "size_bytes": 35484
     },
     "emas_baseline_fold_metrics.json": {
-      "sha256": "fbffa8a4927562392e08633d4bfbe4c7ff2d9ff0facec91ed74830758c42e723",
+      "sha256": "c31b814e054720b5beccd959d00d93c26b711a0b6c01e9b542135db9fe600251",
       "size_bytes": 35461
     },
     "emas_rr_0_3_fold_metrics.json": {
-      "sha256": "28bd8b1784dd14be8e3a74891647bb41318eadc973e52dfb2e80af18eced8198",
+      "sha256": "e21e90d90064b2ea45b90a96ceef0360d3945cbe86037f17cfe6488c97ed42fc",
       "size_bytes": 35468
     },
     "emas_rr_0_4_fold_metrics.json": {
-      "sha256": "f1280928c1a27a87862bc01ffa28dfecbb62ae69a5ce8e65eacd74c6a778e508",
+      "sha256": "53487fffe53ed65057b364786d73519785fa1687d4611ed44ea1fed6cb304f68",
       "size_bytes": 35469
     },
     "smc_fvg_baseline_fold_metrics.json": {
-      "sha256": "d3fde82b0319f590d6d99d304d529e426baf3ae18db7dbaf95309a964e8af050",
-      "size_bytes": 35381
+      "sha256": "8ac1f9e8d7b12f65d50ae6881e159c24ef35624861a286d02a36212eaa2401bb",
+      "size_bytes": 35371
     },
     "smc_fvg_risk_10_fold_metrics.json": {
-      "sha256": "495f9da3eafe0020a4cce4667533fc38541537e6206b67f4a7ad8d5f9dd69395",
-      "size_bytes": 35389
+      "sha256": "e3d37e8b7ae36df75aca2c5bea2bf85b178c840236e616c47c0b19fb2c96084d",
+      "size_bytes": 35388
     },
     "smc_fvg_risk_5_fold_metrics.json": {
-      "sha256": "1309c696ea786cc5d768f21b0249f8e920874b7560c4a94b5c055be065a3dda4",
-      "size_bytes": 35457
+      "sha256": "7d05ecfff2f2c28225844bf6c2a06ba6b62f054d49910842adcb0feb5fe57859",
+      "size_bytes": 35469
     },
     "evaluation_order.json": {
-      "sha256": "1c939b540411394cc4d2b16a4fff2a33c82405c28fc48848ac8a1edeb2c3a17d",
-      "size_bytes": 248325
+      "sha256": "2f2d16a1f1f373d7ceeb6d0fe94527b21c9c0928b43ba4334091c3bcc7c2fdb2",
+      "size_bytes": 339757
     }
   }
 }

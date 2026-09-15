@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "started_at_utc": "2026-09-15T03:26:11.140295+00:00",
+    "started_at_utc": "2026-09-15T20:27:13.887855+00:00",
     "implementation": "src.bootstrap.analyze_bootstrap",
     "alpha_family": 0.05,
     "unsupported_or_inconclusive_rule": "definitive FAIL",
-    "finished_at_utc": "2026-09-15T03:26:16.662616+00:00"
+    "finished_at_utc": "2026-09-15T20:27:19.189831+00:00"
   },
   "configurations": {
     "emas_baseline": {
@@ -319,13 +319,15 @@
       }
     },
     "smc_fvg_baseline": {
-      "n_oos": 3628,
-      "verdict": "FAIL",
-      "classifier_state": "unsupported_or_inconclusive",
+      "n_oos": 3624,
+      "verdict": "PASS",
+      "classifier_state": "dependent_resampling_candidate",
       "classifier_reasons": [
-        "structural_change_evidence"
+        "dependence_detected",
+        "regime_rejection_descriptive_only"
       ],
       "rejecting_tests": [
+        "ljung_box_normal_score_squared_h10",
         "regime_welch_abs_thirds"
       ],
       "alpha_family": 0.05,
@@ -334,164 +336,166 @@
         "regime_levene_level_halves": {
           "id": "regime_levene_level_halves",
           "kind": "levene",
-          "statistic": 4.4638049982724395,
-          "p_value": 0.03468846749009118
+          "statistic": 3.729883912527967,
+          "p_value": 0.05352504354236608
         },
         "regime_welch_level_halves": {
           "id": "regime_welch_level_halves",
           "kind": "welch",
-          "statistic": -0.05842368663507944,
-          "p_value": 0.9534143947566652
+          "statistic": -0.3334711632344408,
+          "p_value": 0.738797966252652
         }
       },
       "phase10_result": {
         "schema_version": "fars-1.2-bootstrap-result-v1",
         "eligibility": {
-          "state": "unsupported_or_inconclusive",
+          "state": "dependent_resampling_candidate",
           "reasons": [
-            "structural_change_evidence"
+            "dependence_detected",
+            "regime_rejection_descriptive_only"
           ],
           "rejecting_tests": [
+            "ljung_box_normal_score_squared_h10",
             "regime_welch_abs_thirds"
           ]
         },
         "diagnostics": {
-          "n": 3628,
+          "n": 3624,
           "tests": [
             {
               "id": "ljung_box_normal_score_h10",
               "kind": "ljung_box",
               "series": "normal_score",
               "lag": 10,
-              "statistic": 11.279008769087032,
+              "statistic": 12.213764394439403,
               "df": 10,
-              "p_value": 0.3361978638800228
+              "p_value": 0.27100481002738813
             },
             {
               "id": "ljung_box_normal_score_h36",
               "kind": "ljung_box",
               "series": "normal_score",
               "lag": 36,
-              "statistic": 35.60742567610624,
+              "statistic": 36.47683940383959,
               "df": 36,
-              "p_value": 0.487113884689086
+              "p_value": 0.4464902711998666
             },
             {
               "id": "ljung_box_normal_score_squared_h10",
               "kind": "ljung_box",
               "series": "normal_score_squared",
               "lag": 10,
-              "statistic": 23.48941721516464,
+              "statistic": 27.110351845284878,
               "df": 10,
-              "p_value": 0.009077318483731998
+              "p_value": 0.0025016595093487583
             },
             {
               "id": "ljung_box_normal_score_squared_h36",
               "kind": "ljung_box",
               "series": "normal_score_squared",
               "lag": 36,
-              "statistic": 40.60679597259667,
+              "statistic": 42.50490556271749,
               "df": 36,
-              "p_value": 0.27451495800563286
+              "p_value": 0.21118377891120843
             },
             {
               "id": "runs_test",
               "kind": "runs",
-              "statistic": 1.5830790127765457,
-              "runs": 1809,
-              "p_value": 0.1134034564782282
+              "statistic": 1.541536416704911,
+              "runs": 1805,
+              "p_value": 0.12318628691365903
             },
             {
               "id": "regime_welch_level_halves",
               "kind": "welch",
-              "statistic": -0.05842368663507944,
-              "p_value": 0.9534143947566652
+              "statistic": -0.3334711632344408,
+              "p_value": 0.738797966252652
             },
             {
               "id": "regime_levene_level_halves",
               "kind": "levene",
-              "statistic": 4.4638049982724395,
-              "p_value": 0.03468846749009118
+              "statistic": 3.729883912527967,
+              "p_value": 0.05352504354236608
             },
             {
               "id": "regime_welch_abs_halves",
               "kind": "welch",
-              "statistic": -2.5642124627929412,
-              "p_value": 0.010386381808870833
+              "statistic": -2.6639684026364137,
+              "p_value": 0.007756710747922848
             },
             {
               "id": "regime_levene_abs_halves",
               "kind": "levene",
-              "statistic": 0.048443366687454775,
-              "p_value": 0.8258068031795044
+              "statistic": 1.8971713017826788,
+              "p_value": 0.1684803891187849
             },
             {
               "id": "regime_welch_level_thirds",
               "kind": "welch",
-              "statistic": 0.6114154262079988,
-              "p_value": 0.5409833473443254
+              "statistic": 0.2088871010614747,
+              "p_value": 0.8345540146229922
             },
             {
               "id": "regime_levene_level_thirds",
               "kind": "levene",
-              "statistic": 8.171455280722013,
-              "p_value": 0.004291940337827954
+              "statistic": 6.809979679888369,
+              "p_value": 0.009120975866667977
             },
             {
               "id": "regime_welch_abs_thirds",
               "kind": "welch",
-              "statistic": -2.9706441467156046,
-              "p_value": 0.003009160564078982
+              "statistic": -3.009786207351081,
+              "p_value": 0.002641476731347154
             },
             {
               "id": "regime_levene_abs_thirds",
               "kind": "levene",
-              "statistic": 0.09199272410497829,
-              "p_value": 0.7616850565488963
+              "statistic": 4.899856892204439,
+              "p_value": 0.026952093197233812
             }
           ],
           "omissions": [],
           "acf": {
             "series": "r",
             "values": [
-              -0.028787378262994233,
-              0.021337979130535513,
-              -0.00026475751390085575,
-              -0.024029729396585448,
-              0.005992275270179671,
-              -0.0009376414895673282,
-              -0.004407986625644631,
-              -0.01989359490033271,
-              0.03432271034884376,
-              -0.018533260738067228,
-              -0.00705681862024433,
-              0.019848206737339315,
-              -0.0016421998821391278,
-              0.0072483445910628596,
-              -0.016665172941015487,
-              -0.0050892603418963055,
-              -0.01933545913837381,
-              -0.008106239721316024,
-              -0.009389281059543621,
-              -0.002427187413190299,
-              0.011368306609730846,
-              -0.021486086862629105,
-              0.014723261423078969,
-              0.004871220834369597,
-              -0.01571793741978271,
-              -0.0037018775760691374,
-              -0.01886598663494337,
-              0.0013401173550344923,
-              -0.0036614140478874375,
-              -0.005372107866573036,
-              -0.014375685509120797,
-              0.009869178650364307,
-              0.030184882077195427,
-              0.01775840038277986,
-              0.027102734448129964,
-              0.015919006944879185
+              -0.03303723980364147,
+              0.015171894466524843,
+              0.014272719588290373,
+              -0.02663697449216296,
+              0.005079997061080879,
+              0.00015707731980269484,
+              -0.0015926000447039866,
+              -0.027324848884156285,
+              0.03806341794746732,
+              -0.02043735753904115,
+              -0.001602756072411358,
+              0.021102729875410293,
+              -0.0025009752401647096,
+              0.016391082210755522,
+              -0.0014374105869488143,
+              -0.004520691146999146,
+              -0.02288879489479812,
+              -0.010034037888708717,
+              -0.009268093320155601,
+              -0.002778135698256465,
+              0.0026005139852478968,
+              -0.026481407673672467,
+              0.009537439334837134,
+              -0.008996657479169551,
+              -0.013449969224947999,
+              0.0028170535926176346,
+              -0.02671892384756488,
+              0.01231926808187828,
+              -0.015264924783679582,
+              -0.000781271255636905,
+              -0.007103545813058499,
+              0.0017972292038813428,
+              0.022731480914924742,
+              0.021577178149630297,
+              0.025865995670702517,
+              0.004351648902866486
             ],
-            "bound": 0.03254036590837505
+            "bound": 0.03255831921506968
           },
           "alpha_family": 0.05,
           "m": 13,
@@ -503,33 +507,75 @@
         },
         "estimands": {
           "expectancy": {
-            "status": "not_estimable",
-            "value": null,
-            "reason": "structural_change_evidence",
-            "validity": "unsupported",
-            "intervals": [],
+            "status": "estimable",
+            "value": 0.09774950331125827,
+            "reason": null,
+            "validity": "exploratory_dependent",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": 0.06462808885209713,
+                "upper": 0.13101627786975717,
+                "validity": "exploratory_dependent"
+              },
+              {
+                "method": "basic",
+                "lower": 0.06448272875275937,
+                "upper": 0.13087091777041943,
+                "validity": "exploratory_dependent"
+              }
+            ],
             "interval_omissions": [],
-            "block_length": null,
+            "block_length": {
+              "influence_series": "u_expectancy",
+              "selector_value_reported": 3.00774367066,
+              "final": 4,
+              "k": 906
+            },
             "warnings": []
           },
           "win_rate": {
-            "status": "not_estimable",
-            "value": null,
-            "reason": "structural_change_evidence",
-            "validity": "unsupported",
-            "intervals": [],
+            "status": "estimable",
+            "value": 0.5855408388520972,
+            "reason": null,
+            "validity": "exploratory_dependent",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": 0.5700883002207505,
+                "upper": 0.6020971302428256,
+                "validity": "exploratory_dependent"
+              }
+            ],
             "interval_omissions": [],
-            "block_length": null,
+            "block_length": {
+              "influence_series": "u_win_rate",
+              "selector_value_reported": 2.52454045702,
+              "final": 3,
+              "k": 1208
+            },
             "warnings": []
           },
           "std": {
-            "status": "not_estimable",
-            "value": null,
-            "reason": "structural_change_evidence",
-            "validity": "unsupported",
-            "intervals": [],
+            "status": "estimable",
+            "value": 1.031721566611983,
+            "reason": null,
+            "validity": "exploratory_dependent",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": 1.0230902399672352,
+                "upper": 1.0400570607081543,
+                "validity": "exploratory_dependent"
+              }
+            ],
             "interval_omissions": [],
-            "block_length": null,
+            "block_length": {
+              "influence_series": "u_std",
+              "selector_value_reported": 1.50053936525,
+              "final": 2,
+              "k": 1812
+            },
             "warnings": []
           }
         },
@@ -601,7 +647,7 @@
       }
     },
     "smc_fvg_risk_10": {
-      "n_oos": 2842,
+      "n_oos": 2836,
       "verdict": "PASS",
       "classifier_state": "iid_eligible",
       "classifier_reasons": [],
@@ -612,14 +658,14 @@
         "regime_levene_level_halves": {
           "id": "regime_levene_level_halves",
           "kind": "levene",
-          "statistic": 7.517063232831949,
-          "p_value": 0.006150023452406319
+          "statistic": 4.707851288442594,
+          "p_value": 0.03010799231246106
         },
         "regime_welch_level_halves": {
           "id": "regime_welch_level_halves",
           "kind": "welch",
-          "statistic": 1.0463063519330453,
-          "p_value": 0.295512283159547
+          "statistic": 0.3846036506142107,
+          "p_value": 0.7005599641163384
         }
       },
       "phase10_result": {
@@ -630,141 +676,141 @@
           "rejecting_tests": []
         },
         "diagnostics": {
-          "n": 2842,
+          "n": 2836,
           "tests": [
             {
               "id": "ljung_box_normal_score_h10",
               "kind": "ljung_box",
               "series": "normal_score",
               "lag": 10,
-              "statistic": 13.024580158572904,
+              "statistic": 12.588367857513232,
               "df": 10,
-              "p_value": 0.22230075932776414
+              "p_value": 0.24760548934901497
             },
             {
               "id": "ljung_box_normal_score_h35",
               "kind": "ljung_box",
               "series": "normal_score",
               "lag": 35,
-              "statistic": 36.085577461657216,
+              "statistic": 37.252412933431984,
               "df": 35,
-              "p_value": 0.41760689464865536
+              "p_value": 0.3657919123680292
             },
             {
               "id": "ljung_box_normal_score_squared_h10",
               "kind": "ljung_box",
               "series": "normal_score_squared",
               "lag": 10,
-              "statistic": 20.197723162522884,
+              "statistic": 21.214313342908724,
               "df": 10,
-              "p_value": 0.02743705993264468
+              "p_value": 0.019647730538402273
             },
             {
               "id": "ljung_box_normal_score_squared_h35",
               "kind": "ljung_box",
               "series": "normal_score_squared",
               "lag": 35,
-              "statistic": 41.675839147945304,
+              "statistic": 42.841327597958845,
               "df": 35,
-              "p_value": 0.2030509662058287
+              "p_value": 0.1701535976710683
             },
             {
               "id": "runs_test",
               "kind": "runs",
-              "statistic": 2.175008161845957,
-              "runs": 1436,
-              "p_value": 0.02962950476415603
+              "statistic": 2.184373890153794,
+              "runs": 1432,
+              "p_value": 0.028934785204098683
             },
             {
               "id": "regime_welch_level_halves",
               "kind": "welch",
-              "statistic": 1.0463063519330453,
-              "p_value": 0.295512283159547
+              "statistic": 0.3846036506142107,
+              "p_value": 0.7005599641163384
             },
             {
               "id": "regime_levene_level_halves",
               "kind": "levene",
-              "statistic": 7.517063232831949,
-              "p_value": 0.006150023452406319
+              "statistic": 4.707851288442594,
+              "p_value": 0.03010799231246106
             },
             {
               "id": "regime_welch_abs_halves",
               "kind": "welch",
-              "statistic": -2.6801426456311654,
-              "p_value": 0.007419380319498672
+              "statistic": -2.376198257126012,
+              "p_value": 0.017558249707033086
             },
             {
               "id": "regime_levene_abs_halves",
               "kind": "levene",
-              "statistic": 0.0996711398108768,
-              "p_value": 0.7522478342762693
+              "statistic": 3.2193735120158946,
+              "p_value": 0.0728780252612306
             },
             {
               "id": "regime_welch_level_thirds",
               "kind": "welch",
-              "statistic": 0.8932598360754448,
-              "p_value": 0.3718398017793368
+              "statistic": 0.2207806856176825,
+              "p_value": 0.8252870944821155
             },
             {
               "id": "regime_levene_level_thirds",
               "kind": "levene",
-              "statistic": 6.812004910033742,
-              "p_value": 0.009126132260204646
+              "statistic": 5.087501999182732,
+              "p_value": 0.02421293794118887
             },
             {
               "id": "regime_welch_abs_thirds",
               "kind": "welch",
-              "statistic": -2.5706356813911326,
-              "p_value": 0.010267881203454197
+              "statistic": -2.5513482570137676,
+              "p_value": 0.010809368512825634
             },
             {
               "id": "regime_levene_abs_thirds",
               "kind": "levene",
-              "statistic": 0.17202478804729043,
-              "p_value": 0.6783655705624064
+              "statistic": 4.976688840290703,
+              "p_value": 0.025808168386700935
             }
           ],
           "omissions": [],
           "acf": {
             "series": "r",
             "values": [
-              -0.028029678753098305,
-              0.033461209574305595,
-              -0.010676104277040282,
-              0.012446944239009999,
-              -0.014095568243993991,
-              0.015481193173768042,
-              -0.026700869340733523,
-              0.0021191644204017978,
-              -0.009192297567685092,
-              -0.0014818827336319333,
-              0.007710253753617827,
-              0.008950159667048901,
-              -0.016406317561058308,
-              0.020459979768914584,
-              -0.021269341346650126,
-              0.0030551433600004628,
-              -0.03138395858705302,
-              -0.01818879201760335,
-              0.007105287425034993,
-              0.005202439276194129,
-              -0.005425733730799635,
-              -0.006990879728536112,
-              0.011471673027159648,
-              0.011226705429027678,
-              0.004752825691391763,
-              0.029114327098219595,
-              -0.023908800960926888,
-              0.02226750294133104,
-              -0.011330474166500614,
-              -0.0007302021279172093,
-              -0.00846630591441242,
-              0.021214797187273572,
-              8.858267982986317e-05,
-              0.02759922361844801,
-              -0.018405409042069047
+              -0.0438870442837151,
+              0.041666248842016036,
+              0.00519133853424962,
+              0.007057141048586247,
+              -0.003621339670261801,
+              0.015759632974824737,
+              -0.0178419277139983,
+              -0.00026624177172787877,
+              -0.0024697034260209878,
+              -0.019711076246422522,
+              0.016010699437039744,
+              0.0012873107771823869,
+              -0.004024627527413701,
+              0.019973229375573838,
+              0.003766020903048602,
+              -0.007467422581209136,
+              -0.03283380386038341,
+              -0.018584123799987032,
+              0.024216245755677362,
+              0.01353933217881299,
+              -0.031149272556943282,
+              0.00299587160981508,
+              0.011566889678341305,
+              0.0012248781635428592,
+              0.006793042371195504,
+              0.010188023665037692,
+              -0.029928226561854534,
+              0.009683911113915016,
+              0.0031087217323917367,
+              0.025036667276459493,
+              0.017061276184958674,
+              0.010460748570355227,
+              0.006360481917633625,
+              0.026948080004569115,
+              -0.011534954120698944
             ],
-            "bound": 0.036765801200722315
+            "bound": 0.0368046725432453
           },
           "alpha_family": 0.05,
           "m": 13,
@@ -777,29 +823,29 @@
         "estimands": {
           "expectancy": {
             "status": "estimable",
-            "value": 0.08728847290640394,
+            "value": 0.10305774330042314,
             "reason": null,
             "validity": "conditional_on_approximate_iid",
             "intervals": [
               {
                 "method": "percentile",
-                "lower": 0.046930357494722026,
-                "upper": 0.13072825052779732,
+                "lower": 0.06384568124118478,
+                "upper": 0.13922809238363887,
                 "validity": "conditional_on_approximate_iid"
               },
               {
                 "method": "basic",
-                "lower": 0.043848695285010564,
-                "upper": 0.12764658831808587,
+                "lower": 0.06688739421720741,
+                "upper": 0.1422698053596615,
                 "validity": "conditional_on_approximate_iid"
               },
               {
                 "method": "bca",
-                "lower": 0.043118925426779836,
-                "upper": 0.12802510707610304,
+                "lower": 0.06501527422685723,
+                "upper": 0.14176667027795584,
                 "validity": "conditional_on_approximate_iid",
-                "z0": -0.03133798202142662,
-                "acceleration": -0.010689679462754492
+                "z0": 0.028830218517740373,
+                "acceleration": -0.00037647903425537164
               }
             ],
             "interval_omissions": [],
@@ -808,14 +854,14 @@
           },
           "win_rate": {
             "status": "estimable",
-            "value": 0.5862068965517241,
+            "value": 0.5874471086036671,
             "reason": null,
             "validity": "conditional_on_approximate_iid",
             "intervals": [
               {
                 "method": "percentile",
-                "lower": 0.5682617874736101,
-                "upper": 0.6038089373680506,
+                "lower": 0.5687588152327221,
+                "upper": 0.6050775740479548,
                 "validity": "conditional_on_approximate_iid"
               }
             ],
@@ -825,16 +871,16 @@
           },
           "std": {
             "status": "estimable",
-            "value": 1.1329222183765424,
+            "value": 1.024142632098517,
             "reason": null,
             "validity": "conditional_on_approximate_iid",
             "intervals": [
               {
                 "method": "studentized",
-                "lower": 1.0156649664164925,
-                "upper": 2.8775726497090286,
+                "lower": 1.01446737833543,
+                "upper": 1.0339294361034055,
                 "validity": "conditional_on_approximate_iid",
-                "se": 0.08729735221952101,
+                "se": 0.004922982758961375,
                 "replicates_valid": 2000,
                 "replicates_excluded": 0
               }
@@ -912,7 +958,7 @@
       }
     },
     "crt4h_defaults": {
-      "n_oos": 175,
+      "n_oos": 174,
       "verdict": "PASS",
       "classifier_state": "iid_eligible",
       "classifier_reasons": [],
@@ -923,14 +969,14 @@
         "regime_levene_level_halves": {
           "id": "regime_levene_level_halves",
           "kind": "levene",
-          "statistic": 0.10592923450623694,
-          "p_value": 0.745220412089282
+          "statistic": 0.0001316838128408052,
+          "p_value": 0.9908574902416728
         },
         "regime_welch_level_halves": {
           "id": "regime_welch_level_halves",
           "kind": "welch",
-          "statistic": -1.173165540928566,
-          "p_value": 0.24237616387800073
+          "statistic": -0.8387183808465251,
+          "p_value": 0.4028075943944235
         }
       },
       "phase10_result": {
@@ -941,129 +987,129 @@
           "rejecting_tests": []
         },
         "diagnostics": {
-          "n": 175,
+          "n": 174,
           "tests": [
             {
               "id": "ljung_box_normal_score_h10",
               "kind": "ljung_box",
               "series": "normal_score",
               "lag": 10,
-              "statistic": 5.144908363492977,
+              "statistic": 4.838318965833068,
               "df": 10,
-              "p_value": 0.881290031481882
+              "p_value": 0.9017133395618282
             },
             {
               "id": "ljung_box_normal_score_h23",
               "kind": "ljung_box",
               "series": "normal_score",
               "lag": 23,
-              "statistic": 14.633670278014794,
+              "statistic": 15.37490699533648,
               "df": 23,
-              "p_value": 0.907280605361489
+              "p_value": 0.8806953263747856
             },
             {
               "id": "ljung_box_normal_score_squared_h10",
               "kind": "ljung_box",
               "series": "normal_score_squared",
               "lag": 10,
-              "statistic": 5.575456423432168,
+              "statistic": 4.119644257141172,
               "df": 10,
-              "p_value": 0.8495822069721217
+              "p_value": 0.9417882264868179
             },
             {
               "id": "ljung_box_normal_score_squared_h23",
               "kind": "ljung_box",
               "series": "normal_score_squared",
               "lag": 23,
-              "statistic": 19.317797796387712,
+              "statistic": 14.967753610604825,
               "df": 23,
-              "p_value": 0.6826328565306672
+              "p_value": 0.8957855959371566
             },
             {
               "id": "runs_test",
               "kind": "runs",
-              "statistic": 1.0138203019008725,
+              "statistic": 1.041076383492491,
               "runs": 75,
-              "p_value": 0.31066850605628205
+              "p_value": 0.2978400992367354
             },
             {
               "id": "regime_welch_level_halves",
               "kind": "welch",
-              "statistic": -1.173165540928566,
-              "p_value": 0.24237616387800073
+              "statistic": -0.8387183808465251,
+              "p_value": 0.4028075943944235
             },
             {
               "id": "regime_levene_level_halves",
               "kind": "levene",
-              "statistic": 0.10592923450623694,
-              "p_value": 0.745220412089282
+              "statistic": 0.0001316838128408052,
+              "p_value": 0.9908574902416728
             },
             {
               "id": "regime_welch_abs_halves",
               "kind": "welch",
-              "statistic": -0.3717293425342467,
-              "p_value": 0.7105745750227456
+              "statistic": -0.08786002970956014,
+              "p_value": 0.9300950322376623
             },
             {
               "id": "regime_levene_abs_halves",
               "kind": "levene",
-              "statistic": 0.23268674331633843,
-              "p_value": 0.6301485283855063
+              "statistic": 0.03761511251084528,
+              "p_value": 0.8464469027701396
             },
             {
               "id": "regime_welch_level_thirds",
               "kind": "welch",
-              "statistic": -1.234104664402905,
-              "p_value": 0.21976117689798508
+              "statistic": -1.2359313480167193,
+              "p_value": 0.2190838698013621
             },
             {
               "id": "regime_levene_level_thirds",
               "kind": "levene",
-              "statistic": 0.11152372654459955,
-              "p_value": 0.7390295485871732
+              "statistic": 0.11019483615484132,
+              "p_value": 0.7405319665270571
             },
             {
               "id": "regime_welch_abs_thirds",
               "kind": "welch",
-              "statistic": -0.29114427357665357,
-              "p_value": 0.7715011701848415
+              "statistic": -0.2884608644212771,
+              "p_value": 0.7735486954773984
             },
             {
               "id": "regime_levene_abs_thirds",
               "kind": "levene",
-              "statistic": 0.06167622337764593,
-              "p_value": 0.8043127679989529
+              "statistic": 0.060303711921642446,
+              "p_value": 0.8064581034726688
             }
           ],
           "omissions": [],
           "acf": {
             "series": "r",
             "values": [
-              -0.07554504531511659,
-              0.04617651448781726,
-              -0.04198154882085786,
-              -0.06381506685038524,
-              -0.029901125674797347,
-              0.007937540537453594,
-              0.031374044672231115,
-              0.06519273285007506,
-              0.112375937022765,
-              -0.10730178560198864,
-              0.04203101924550852,
-              -0.0438465443570222,
-              -0.013446740535930589,
-              -0.033907709142667206,
-              -0.07110224496657094,
-              -0.12459689399219111,
-              -0.053091103959498204,
-              -0.030636069520728334,
-              0.060747968071142786,
-              0.02135748934710741,
-              0.01996699222512744,
-              -0.007735452045517104,
-              -0.061271544730077204
+              -0.07672961897708859,
+              0.04788053477231687,
+              -0.05285935281629383,
+              -0.05977945419667924,
+              -0.03458490178484986,
+              0.03723257716921997,
+              0.00352632736331761,
+              0.08775402075600926,
+              0.06128718182111612,
+              -0.08194471758450605,
+              0.007580020546306644,
+              -0.004912297191209349,
+              -0.03175906877505741,
+              -0.04066016559278658,
+              -0.03543553369588675,
+              -0.1490165276163477,
+              -0.01967767433911638,
+              -0.07533150865846738,
+              0.09456586588148104,
+              0.01999999562945081,
+              0.04418237665342072,
+              -0.06182644623934607,
+              -0.05956262828242451
             ],
-            "bound": 0.14816207341961707
+            "bound": 0.14858721654146506
           },
           "alpha_family": 0.05,
           "m": 13,
@@ -1076,29 +1122,29 @@
         "estimands": {
           "expectancy": {
             "status": "estimable",
-            "value": -0.14056159999999998,
+            "value": -0.13493126436781608,
             "reason": null,
             "validity": "conditional_on_approximate_iid",
             "intervals": [
               {
                 "method": "percentile",
-                "lower": -0.44498881142857133,
-                "upper": 0.1886614057142856,
+                "lower": -0.43641320114942544,
+                "upper": 0.21361191379310318,
                 "validity": "conditional_on_approximate_iid"
               },
               {
                 "method": "basic",
-                "lower": -0.4697846057142856,
-                "upper": 0.16386561142857137,
+                "lower": -0.48347444252873534,
+                "upper": 0.1665506724137933,
                 "validity": "conditional_on_approximate_iid"
               },
               {
                 "method": "bca",
-                "lower": -0.43008110002028827,
-                "upper": 0.20658195188524153,
+                "lower": -0.4207446808912124,
+                "upper": 0.2311589539939699,
                 "validity": "conditional_on_approximate_iid",
-                "z0": 0.0025066308995717666,
-                "acceleration": 0.02350732709147385
+                "z0": 0.015040336678635672,
+                "acceleration": 0.02345717922937759
               }
             ],
             "interval_omissions": [],
@@ -1107,14 +1153,14 @@
           },
           "win_rate": {
             "status": "estimable",
-            "value": 0.26857142857142857,
+            "value": 0.27011494252873564,
             "reason": null,
             "validity": "conditional_on_approximate_iid",
             "intervals": [
               {
                 "method": "percentile",
-                "lower": 0.2,
-                "upper": 0.33714285714285713,
+                "lower": 0.20114942528735633,
+                "upper": 0.3390804597701149,
                 "validity": "conditional_on_approximate_iid"
               }
             ],
@@ -1124,16 +1170,16 @@
           },
           "std": {
             "status": "estimable",
-            "value": 2.1884776084258513,
+            "value": 2.1935220873141006,
             "reason": null,
             "validity": "conditional_on_approximate_iid",
             "intervals": [
               {
                 "method": "studentized",
-                "lower": 1.7631607193559988,
-                "upper": 3.1693934251413873,
+                "lower": 1.7608188854261078,
+                "upper": 3.2059612044381804,
                 "validity": "conditional_on_approximate_iid",
-                "se": 0.2739072514516542,
+                "se": 0.274567276883111,
                 "replicates_valid": 2000,
                 "replicates_excluded": 0
               }

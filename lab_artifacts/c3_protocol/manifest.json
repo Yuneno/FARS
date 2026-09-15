@@ -1,8 +1,8 @@
 {
   "schema_version": "fars-c3-manifest-v1",
   "metadata": {
-    "started_at_utc": "2026-09-15T03:21:58.001306+00:00",
-    "generated_at_utc": "2026-09-15T03:26:16.689868+00:00",
+    "started_at_utc": "2026-09-15T20:23:10.926208+00:00",
+    "generated_at_utc": "2026-09-15T20:27:19.212808+00:00",
     "base_commit": "fcd1c467ab4860800e9732f8fb04e88b2a8c613b",
     "requested_branch": "bloque-c3-cierre",
     "actual_branch": "main",
@@ -41,59 +41,59 @@
   },
   "artifacts": {
     "lab_artifacts/c3_protocol/preregistro.json": {
-      "sha256": "9755a9c2a6a18820ed9f5a62604f4645946e986bba1a6b5d5fdd0add1d349750",
-      "size_bytes": 7371,
-      "mtime_utc": "2026-09-15T02:47:17.633338+00:00"
+      "sha256": "1d8e6a9066ef961687cf54b7fb42452f0bb2ff608f8bda1a44adbada143c0c1e",
+      "size_bytes": 7462,
+      "mtime_utc": "2026-09-15T03:27:03.860165+00:00"
     },
     "lab_artifacts/c3_protocol/cpcv_pbo.json": {
-      "sha256": "d2e563fcc4eea04e36461dd52425bc837241ba241079a6680a13ff0de203a3fe",
-      "size_bytes": 1619270,
-      "mtime_utc": "2026-09-15T03:22:22.725097+00:00"
+      "sha256": "1faf98200fc8a27a08da1ac392b798802d186124f75c28a6c37eb10825cfdf79",
+      "size_bytes": 1618778,
+      "mtime_utc": "2026-09-15T20:23:32.715053+00:00"
     },
     "lab_artifacts/c3_protocol/gate4_neighborhood.json": {
-      "sha256": "1b20363a04ec00df9ea937204399688818bc66b20eeebb05ced07f221af1f623",
-      "size_bytes": 492922,
-      "mtime_utc": "2026-09-15T03:26:11.139957+00:00"
+      "sha256": "af9a9cc7d163286f90eb64f2f173fea99f2bc9044a9ec6098e751eb39a1cafbc",
+      "size_bytes": 492913,
+      "mtime_utc": "2026-09-15T20:27:13.886782+00:00"
     },
     "lab_artifacts/c3_protocol/stress_matrix.json": {
-      "sha256": "aa5af8a9ba2c0737c3afacca8abe0b72c3c2a0a170fda14b4de189ecb7aa5ea2",
-      "size_bytes": 22544,
-      "mtime_utc": "2026-09-15T03:26:16.662765+00:00"
+      "sha256": "5bbadea4660638fd5ed8170726980d58180ba872f4581610a740fcd4143d5912",
+      "size_bytes": 22596,
+      "mtime_utc": "2026-09-15T20:27:19.189570+00:00"
     },
     "lab_artifacts/c3_protocol/gate7_structural.json": {
-      "sha256": "4b9161d4e773ad15189f7aa323321f750091fbf2856f828de56e36768727046e",
-      "size_bytes": 38730,
-      "mtime_utc": "2026-09-15T03:26:16.663766+00:00"
+      "sha256": "a4a074300d675de54d0dfe2d18220d847a19ad5148bca1ae59544fa3e98e10a5",
+      "size_bytes": 40323,
+      "mtime_utc": "2026-09-15T20:27:19.190570+00:00"
     },
     "lab_artifacts/c3_protocol/C3_SUMMARY.md": {
-      "sha256": "0d6e53d75919bcc774b5274e07562317b28a2bc524e93fdc77fa9d38a5fda59e",
-      "size_bytes": 7824,
-      "mtime_utc": "2026-09-15T03:20:18.248449+00:00"
+      "sha256": "41c83bf4382b9b4c5d9a68bfae8397a173dcbf22f653723939f69124c52ae51c",
+      "size_bytes": 7968,
+      "mtime_utc": "2026-09-15T03:27:03.852166+00:00"
     },
     "lab_artifacts/c3_protocol/BLOCKERS.md": {
-      "sha256": "7710fbb94c7ef6941608009d2391ddf456e86f670c364e8dd3af4ed19b4e7fc0",
-      "size_bytes": 3228,
-      "mtime_utc": "2026-09-15T03:18:33.966748+00:00"
+      "sha256": "bb4fd5d5e547578aac0a0c180fb2af0c8f58e0be7c38ad9d78a1653f69c774a3",
+      "size_bytes": 3295,
+      "mtime_utc": "2026-09-15T03:27:03.851166+00:00"
     },
     "lab_artifacts/run_c3_protocol.py": {
-      "sha256": "70119d515de37f3ce4ad804c8d4ccdfe961d0397fd400027f3ea5d14b3e00ca7",
-      "size_bytes": 26346,
-      "mtime_utc": "2026-09-15T03:16:10.899709+00:00"
+      "sha256": "d7a97fb93d3a59b446ded93f394f4c9592e8500bbc67503dd7401aa1c0eb96a9",
+      "size_bytes": 27002,
+      "mtime_utc": "2026-09-15T03:27:03.861165+00:00"
     },
     "src/cpcv.py": {
-      "sha256": "2b8900632839e1c7bfd2ec78e14a3c9126492a5690b8370c416b5a222b8d3a92",
-      "size_bytes": 10324,
-      "mtime_utc": "2026-09-15T02:49:35.471177+00:00"
+      "sha256": "808cfea6add06a51249f7296590fba67810b58ba47b03dda396735884997eb39",
+      "size_bytes": 10598,
+      "mtime_utc": "2026-09-15T03:27:03.861165+00:00"
     },
     "tests/test_cpcv.py": {
-      "sha256": "2e40111ee9f6d4b078d53d6c362366544fd8ec4c398cc8f06449cce4979decab",
-      "size_bytes": 2229,
-      "mtime_utc": "2026-09-15T02:49:35.583177+00:00"
+      "sha256": "0958d6c0d95f0b78dfdb2ce10725829d9a4c8239fc56268d0915fabfc2bc5734",
+      "size_bytes": 2291,
+      "mtime_utc": "2026-09-15T03:27:03.861165+00:00"
     },
     "docs/refactor/c3-eligibility.md": {
-      "sha256": "48444011d8813044f8e96d5310d285970a071c670f9cb6c2354d31e546804830",
-      "size_bytes": 9451,
-      "mtime_utc": "2026-09-15T03:03:13.482367+00:00"
+      "sha256": "248795e33f704cdefdda29476046aaa33e62a6b93509f2a0f9429892e6ca687a",
+      "size_bytes": 9598,
+      "mtime_utc": "2026-09-15T03:27:03.851166+00:00"
     }
   }
 }
