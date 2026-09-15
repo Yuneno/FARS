@@ -1,0 +1,99 @@
+{
+  "schema_version": "fars-c3-manifest-v1",
+  "metadata": {
+    "started_at_utc": "2026-09-15T03:21:58.001306+00:00",
+    "generated_at_utc": "2026-09-15T03:26:16.689868+00:00",
+    "base_commit": "fcd1c467ab4860800e9732f8fb04e88b2a8c613b",
+    "requested_branch": "bloque-c3-cierre",
+    "actual_branch": "main",
+    "python": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+    "bars_count": 518237,
+    "start_time": "2019-05-06T00:00:00+00:00",
+    "end_time": "2026-09-03T23:55:00+00:00",
+    "provenance": "unchanged C1/C2 canonical post-2019 dataset"
+  },
+  "preregistration_check": {
+    "content_timestamp": "2026-09-15T02:46:12.6864478Z",
+    "preregistration_precedes_run": true,
+    "N": 12,
+    "k": 3,
+    "amendments": []
+  },
+  "tests": {
+    "baseline_expected": {
+      "passed": 1455,
+      "skipped": 2
+    },
+    "c3_tests_added": 3,
+    "full_suite": {
+      "passed": 1458,
+      "skipped": 2,
+      "failed": 0,
+      "seconds": 246.63
+    },
+    "command": "E:/FARS-LAB/.venv-fars/Scripts/python.exe -m pytest -q -p no:cacheprovider --basetemp=E:/FARS-LAB/FARS/lab_artifacts/pytest-c3-suite-green",
+    "sandbox_temp_permission_shim": "temporary sitecustomize forced workspace tempfile root and mkdir mode 0777; deleted after run"
+  },
+  "artifacts": {
+    "lab_artifacts/c3_protocol/preregistro.json": {
+      "sha256": "9755a9c2a6a18820ed9f5a62604f4645946e986bba1a6b5d5fdd0add1d349750",
+      "size_bytes": 7371,
+      "mtime_utc": "2026-09-15T02:47:17.633338+00:00"
+    },
+    "lab_artifacts/c3_protocol/cpcv_pbo.json": {
+      "sha256": "d2e563fcc4eea04e36461dd52425bc837241ba241079a6680a13ff0de203a3fe",
+      "size_bytes": 1619270,
+      "mtime_utc": "2026-09-15T03:22:22.725097+00:00"
+    },
+    "lab_artifacts/c3_protocol/gate4_neighborhood.json": {
+      "sha256": "1b20363a04ec00df9ea937204399688818bc66b20eeebb05ced07f221af1f623",
+      "size_bytes": 492922,
+      "mtime_utc": "2026-09-15T03:26:11.139957+00:00"
+    },
+    "lab_artifacts/c3_protocol/stress_matrix.json": {
+      "sha256": "aa5af8a9ba2c0737c3afacca8abe0b72c3c2a0a170fda14b4de189ecb7aa5ea2",
+      "size_bytes": 22544,
+      "mtime_utc": "2026-09-15T03:26:16.662765+00:00"
+    },
+    "lab_artifacts/c3_protocol/gate7_structural.json": {
+      "sha256": "4b9161d4e773ad15189f7aa323321f750091fbf2856f828de56e36768727046e",
+      "size_bytes": 38730,
+      "mtime_utc": "2026-09-15T03:26:16.663766+00:00"
+    },
+    "lab_artifacts/c3_protocol/C3_SUMMARY.md": {
+      "sha256": "0d6e53d75919bcc774b5274e07562317b28a2bc524e93fdc77fa9d38a5fda59e",
+      "size_bytes": 7824,
+      "mtime_utc": "2026-09-15T03:20:18.248449+00:00"
+    },
+    "lab_artifacts/c3_protocol/BLOCKERS.md": {
+      "sha256": "7710fbb94c7ef6941608009d2391ddf456e86f670c364e8dd3af4ed19b4e7fc0",
+      "size_bytes": 3228,
+      "mtime_utc": "2026-09-15T03:18:33.966748+00:00"
+    },
+    "lab_artifacts/run_c3_protocol.py": {
+      "sha256": "70119d515de37f3ce4ad804c8d4ccdfe961d0397fd400027f3ea5d14b3e00ca7",
+      "size_bytes": 26346,
+      "mtime_utc": "2026-09-15T03:16:10.899709+00:00"
+    },
+    "src/cpcv.py": {
+      "sha256": "2b8900632839e1c7bfd2ec78e14a3c9126492a5690b8370c416b5a222b8d3a92",
+      "size_bytes": 10324,
+      "mtime_utc": "2026-09-15T02:49:35.471177+00:00"
+    },
+    "tests/test_cpcv.py": {
+      "sha256": "2e40111ee9f6d4b078d53d6c362366544fd8ec4c398cc8f06449cce4979decab",
+      "size_bytes": 2229,
+      "mtime_utc": "2026-09-15T02:49:35.583177+00:00"
+    },
+    "docs/refactor/c3-eligibility.md": {
+      "sha256": "48444011d8813044f8e96d5310d285970a071c670f9cb6c2354d31e546804830",
+      "size_bytes": 9451,
+      "mtime_utc": "2026-09-15T03:03:13.482367+00:00"
+    }
+  }
+}

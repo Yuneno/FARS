@@ -1,0 +1,91 @@
+{
+  "schema_version": "fars-c3-preregistration-v1",
+  "preregistered_at_utc": "2026-09-15T02:46:12.6864478Z",
+  "base": {
+    "requested_branch": "bloque-c3-cierre",
+    "actual_branch_at_preregistration": "main",
+    "commit": "fcd1c467ab4860800e9732f8fb04e88b2a8c613b",
+    "branch_creation_blocked_by_sandbox": true
+  },
+  "dataset": {
+    "archive": "E:/FARS-LAB/databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "filter": "timestamp >= 2019-05-06",
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+    "timezone": "timestamps as stored in canonical source; session rules use America/New_York",
+    "duplicate_handling": "unchanged from C1/C2 canonical loader",
+    "contract_rollover": "continuous MNQ series exactly as supplied in the Databento ZIP; unchanged from C1/C2"
+  },
+  "configurations": [
+    {"id": "emas_baseline", "parameters": {"target_rr": 3.0}, "role": "negative_control", "executable": true},
+    {"id": "emas_rr_0_4", "parameters": {"target_rr": 0.4}, "role": "pbo_trial", "executable": true},
+    {"id": "emas_rr_0_3", "parameters": {"target_rr": 0.3}, "role": "pbo_trial", "executable": true},
+    {"id": "smc_fvg_baseline", "parameters": {"min_risk_pts": 8.0}, "role": "primary_subject", "executable": true},
+    {"id": "smc_fvg_risk_5", "parameters": {"min_risk_pts": 5.0}, "role": "pbo_trial", "executable": true},
+    {"id": "smc_fvg_risk_10", "parameters": {"min_risk_pts": 10.0}, "role": "secondary_subject", "executable": true},
+    {"id": "crt4h_baseline_absent", "parameters": null, "role": "declared_absent_baseline", "executable": false},
+    {"id": "crt4h_defaults", "parameters": {"max_follow": 3, "min_rr": 1.5, "sl_pad_frac": 0.1, "disp_mult": 1.2, "max_hold_bars": 96, "require_bias": 1}, "role": "low_frequency_control", "executable": true}
+  ],
+  "cpcv": {
+    "N": 12,
+    "k": 3,
+    "paths": 220,
+    "groups": "contiguous chronological groups with sizes differing by at most one bar",
+    "primary_rank_metric": "mean net R (E[R])",
+    "secondary_rank_metric": "mean(R)/sample_std(R), with zero when n<2 or std=0",
+    "pbo_rule": "for each path select the highest in-sample configuration (stable id tie-break); count failure when its out-of-sample rank is strictly below the cross-sectional median rank",
+    "secondary_pbo_space": "logit of the normalized OOS rank omega=(rank-0.5)/n_configs, lambda=log(omega/(1-omega)); failure iff lambda<0",
+    "universe": ["emas_baseline", "emas_rr_0_4", "emas_rr_0_3", "smc_fvg_baseline", "smc_fvg_risk_5", "smc_fvg_risk_10", "crt4h_defaults"],
+    "purge": "remove every train trade whose closed [entry,exit] interval intersects any test-group bar interval",
+    "embargo_h_bars": 192,
+    "embargo": "remove train trades whose entry is in the 192 bars immediately following each test group",
+    "separation": "diagnostic of selection overfit and dispersion only; never an estimate of the causal walk-forward edge",
+    "max_workers": 6,
+    "fallback_if_estimated_wall_clock_exceeds_60_minutes": {"N": 10, "k": 2, "paths": 45}
+  },
+  "gate4": {
+    "protocol": "one-parameter-at-a-time around each frozen center; every listed center and +/- point is run under rolling 36m train / 6m test / 6m step with h=192 purge/embargo audit and por_tramo accounting",
+    "decision": "PASS/plateau iff every point has aggregate E[R]>0 and no point drops more than 40% relative to that subject's center E[R]; otherwise FAIL/spike",
+    "edge_rule": "report whether the maximum observed E[R] lies at a low or high boundary for any varied parameter",
+    "integer_rounding": "wait and cooldown are executor integers; +/-10% are rounded to nearest integer, half away from zero",
+    "manual_integer_parameters": {"smc_fvg.swing_w": "not perturbed", "emas.confirm_closes": "not perturbed"},
+    "subjects": {
+      "smc_fvg_baseline": {
+        "center": {"min_risk_pts": 8.0, "f": 0.5, "target_rr": 1.5, "wait": 48, "cooldown": 6},
+        "grid": {"min_risk_pts": [7.2, 8.0, 8.8], "f": [0.45, 0.5, 0.55], "target_rr": [1.35, 1.5, 1.65], "wait": [43, 48, 53], "cooldown": [5, 6, 7]}
+      },
+      "smc_fvg_risk_10": {
+        "center": {"min_risk_pts": 10.0, "f": 0.5, "target_rr": 1.5, "wait": 48, "cooldown": 6},
+        "grid": {"min_risk_pts": [9.0, 10.0, 11.0], "f": [0.45, 0.5, 0.55], "target_rr": [1.35, 1.5, 1.65], "wait": [43, 48, 53], "cooldown": [5, 6, 7]}
+      },
+      "emas_baseline": {
+        "center": {"target_rr": 3.0, "atr_mult": 2.0, "stop_min": 5.0, "stop_max": 50.0, "max_dist_atr": 0.5, "vol3_max": 1.8},
+        "grid": {"target_rr": [2.7, 3.0, 3.3], "atr_mult": [1.8, 2.0, 2.2], "stop_min": [4.5, 5.0, 5.5], "stop_max": [45.0, 50.0, 55.0], "max_dist_atr": [0.45, 0.5, 0.55], "vol3_max": [1.62, 1.8, 1.98]}
+      }
+    }
+  },
+  "stress": {
+    "scope": ["emas_baseline", "smc_fvg_baseline", "smc_fvg_risk_10", "crt4h_defaults"],
+    "base": {"id": "por_tramo", "commission_per_side_usd": 0.62, "slippage_points": 0.25, "slippage_legs": "market entries plus stop and market/time exits; LIMIT and TP do not slip"},
+    "scenarios": [
+      {"id": "cost_plus_25pct", "definition": "commission and applicable por_tramo slippage multiplied by 1.25", "justification": "cost-estimation error"},
+      {"id": "cost_plus_50pct", "definition": "commission and applicable por_tramo slippage multiplied by 1.50", "justification": "severe cost-estimation error"},
+      {"id": "all_legs_adverse_slippage", "definition": "0.25 points adverse on the complete entry quantity and complete exit quantity, including LIMIT and TP, plus base commission", "justification": "pessimistic execution bound"},
+      {"id": "limit_gap_no_fill", "definition": "for LIMIT strategies discard a trade when its fill-bar open is strictly through the limit in the favorable direction (long open<limit; short open>limit); market-entry strategies equal base", "justification": "conservative no-fill treatment for gaps through resting limits"},
+      {"id": "gap_stop_next_open", "definition": "stop exits fill at the exit-bar open when it is worse than the stop, else at stop minus/plus base adverse slippage; report gap count; this is expected to match the existing executor's gap rule", "justification": "funded-account tail loss from price gaps"},
+      {"id": "degraded_heavy_loss_cbb", "definition": "chronological R transformed as r-0.10 for r>=0 and 1.25*r-0.10 for r<0; deterministic circular block bootstrap, block_length=40 trades, B=2000, master_seed=20260914", "justification": "longer dependence blocks, degraded expectancy, and 25% heavier losses"},
+      {"id": "half_frequency", "definition": "within each fold keep chronological trade indices 0,2,4,... before concatenation", "justification": "fixed non-outcome-selected loss of one in every two setups"}
+    ]
+  },
+  "gate7": {
+    "scope": ["emas_baseline", "smc_fvg_baseline", "smc_fvg_risk_10", "crt4h_defaults"],
+    "series": "chronological por_tramo OOS R from the unchanged 8-fold C2 walk-forward",
+    "implementation": "src.bootstrap.analyze_bootstrap",
+    "B": 2000,
+    "master_seed": 20260914,
+    "alpha_family": 0.05,
+    "required_tests": ["regime_levene_level_halves", "regime_welch_level_halves"],
+    "verdict": "FAIL iff eligibility.state is unsupported_or_inconclusive; otherwise PASS, while retaining dependence warnings and all rejecting tests"
+  },
+  "amendments": []
+}

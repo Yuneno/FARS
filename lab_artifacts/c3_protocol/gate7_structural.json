@@ -1,0 +1,1214 @@
+{
+  "metadata": {
+    "started_at_utc": "2026-09-15T03:26:11.140295+00:00",
+    "implementation": "src.bootstrap.analyze_bootstrap",
+    "alpha_family": 0.05,
+    "unsupported_or_inconclusive_rule": "definitive FAIL",
+    "finished_at_utc": "2026-09-15T03:26:16.662616+00:00"
+  },
+  "configurations": {
+    "emas_baseline": {
+      "n_oos": 2823,
+      "verdict": "PASS",
+      "classifier_state": "iid_eligible",
+      "classifier_reasons": [],
+      "rejecting_tests": [],
+      "alpha_family": 0.05,
+      "alpha_b": 0.0038461538461538464,
+      "required_level_halves_tests": {
+        "regime_levene_level_halves": {
+          "id": "regime_levene_level_halves",
+          "kind": "levene",
+          "statistic": 0.3820640013115619,
+          "p_value": 0.5365505804774613
+        },
+        "regime_welch_level_halves": {
+          "id": "regime_welch_level_halves",
+          "kind": "welch",
+          "statistic": -1.0020947360326182,
+          "p_value": 0.3163838371825225
+        }
+      },
+      "phase10_result": {
+        "schema_version": "fars-1.2-bootstrap-result-v1",
+        "eligibility": {
+          "state": "iid_eligible",
+          "reasons": [],
+          "rejecting_tests": []
+        },
+        "diagnostics": {
+          "n": 2823,
+          "tests": [
+            {
+              "id": "ljung_box_normal_score_h10",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 10,
+              "statistic": 11.414916205684397,
+              "df": 10,
+              "p_value": 0.3261184386857673
+            },
+            {
+              "id": "ljung_box_normal_score_h35",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 35,
+              "statistic": 45.98854783219674,
+              "df": 35,
+              "p_value": 0.10123364717421897
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h10",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 10,
+              "statistic": 4.4326579008701605,
+              "df": 10,
+              "p_value": 0.9257259100777752
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h35",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 35,
+              "statistic": 34.66720623568744,
+              "df": 35,
+              "p_value": 0.48406721020993226
+            },
+            {
+              "id": "runs_test",
+              "kind": "runs",
+              "statistic": 0.7896064863161472,
+              "runs": 1430,
+              "p_value": 0.4297576190129634
+            },
+            {
+              "id": "regime_welch_level_halves",
+              "kind": "welch",
+              "statistic": -1.0020947360326182,
+              "p_value": 0.3163838371825225
+            },
+            {
+              "id": "regime_levene_level_halves",
+              "kind": "levene",
+              "statistic": 0.3820640013115619,
+              "p_value": 0.5365505804774613
+            },
+            {
+              "id": "regime_welch_abs_halves",
+              "kind": "welch",
+              "statistic": -0.9072002008498917,
+              "p_value": 0.3643785797909454
+            },
+            {
+              "id": "regime_levene_abs_halves",
+              "kind": "levene",
+              "statistic": 0.39593731541752847,
+              "p_value": 0.5292458414365248
+            },
+            {
+              "id": "regime_welch_level_thirds",
+              "kind": "welch",
+              "statistic": -1.88708172590187,
+              "p_value": 0.05930334836771358
+            },
+            {
+              "id": "regime_levene_level_thirds",
+              "kind": "levene",
+              "statistic": 0.42307931186479947,
+              "p_value": 0.5154839916725318
+            },
+            {
+              "id": "regime_welch_abs_thirds",
+              "kind": "welch",
+              "statistic": -0.26782804951695305,
+              "p_value": 0.7888612131978685
+            },
+            {
+              "id": "regime_levene_abs_thirds",
+              "kind": "levene",
+              "statistic": 3.0057994649768136,
+              "p_value": 0.0831309797424218
+            }
+          ],
+          "omissions": [],
+          "acf": {
+            "series": "r",
+            "values": [
+              -0.007928542208554778,
+              -0.0049517558748525614,
+              -0.016065736552273953,
+              -0.02044833465831848,
+              0.008564518022999025,
+              -0.017504452648903535,
+              0.0013718499398852025,
+              0.026746771136066192,
+              -0.011691463981124008,
+              -0.014758639739742742,
+              0.032735438581965884,
+              -0.02124565139880167,
+              -0.013285590115785095,
+              -0.012223930353546004,
+              -0.0027428012233981355,
+              -0.0029705184214542575,
+              -0.011900689894844167,
+              -0.023660527481393617,
+              0.007717206462063528,
+              -0.03015733717011175,
+              0.01208603445261247,
+              0.021735516977815037,
+              0.001604584167489503,
+              0.024478823860747,
+              -0.0202453970034234,
+              -0.007699973152308613,
+              0.04053972872672036,
+              -0.014745349820452433,
+              0.00042894396239915434,
+              0.013844753854053345,
+              0.007920051458544837,
+              -0.0005887237375503987,
+              -0.005340270520286613,
+              -0.010160265405001897,
+              0.011047853868175197
+            ],
+            "bound": 0.03688931851848254
+          },
+          "alpha_family": 0.05,
+          "m": 13,
+          "alpha_b": 0.0038461538461538464,
+          "lags": [
+            10,
+            35
+          ]
+        },
+        "estimands": {
+          "expectancy": {
+            "status": "estimable",
+            "value": 0.02010570315267444,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": -0.02252538363443146,
+                "upper": 0.06323009635139913,
+                "validity": "conditional_on_approximate_iid"
+              },
+              {
+                "method": "basic",
+                "lower": -0.02301869004605025,
+                "upper": 0.06273678993978034,
+                "validity": "conditional_on_approximate_iid"
+              },
+              {
+                "method": "bca",
+                "lower": -0.02216153600543867,
+                "upper": 0.0645817839212144,
+                "validity": "conditional_on_approximate_iid",
+                "z0": 0.012533469508069276,
+                "acceleration": 0.0019616777420251165
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "win_rate": {
+            "status": "estimable",
+            "value": 0.5246191994332271,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": 0.5054906128232377,
+                "upper": 0.5430393198724761,
+                "validity": "conditional_on_approximate_iid"
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "std": {
+            "status": "estimable",
+            "value": 1.1689275699257817,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "studentized",
+                "lower": 1.1472120452319143,
+                "upper": 1.191423553747429,
+                "validity": "conditional_on_approximate_iid",
+                "se": 0.011352727391476608,
+                "replicates_valid": 2000,
+                "replicates_excluded": 0
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          }
+        },
+        "rng": {
+          "master_entropy": 20260914,
+          "spawn_keys": [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "bit_generator": "PCG64",
+          "B": 2000,
+          "estimand_order": [
+            "expectancy",
+            "win_rate",
+            "std"
+          ]
+        },
+        "parameters": {
+          "B": 2000,
+          "confidence_level": 0.95,
+          "quantile_method": "linear",
+          "alpha_family": 0.05,
+          "min_n_diagnostics": 50,
+          "block_length_report_significant_digits": 12
+        },
+        "provenance": {
+          "source_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+          "schema_version": "1.2-phase8a",
+          "resolved_mapping": {
+            "r_result": "repriced ExecutedTrade.r_result"
+          },
+          "capabilities": {
+            "core_metrics": {
+              "available": true,
+              "reasons": []
+            },
+            "temporal_analysis": {
+              "available": true,
+              "reasons": []
+            },
+            "daily_rule_simulation": {
+              "available": true,
+              "reasons": []
+            }
+          },
+          "versions": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1",
+            "arch": "8.0.0"
+          },
+          "algorithm_version": "fars-1.2-phase10a-v6"
+        },
+        "labels": {
+          "assets": [
+            "MNQ"
+          ],
+          "strategies": [
+            "emas_baseline"
+          ]
+        },
+        "limitations": []
+      }
+    },
+    "smc_fvg_baseline": {
+      "n_oos": 3628,
+      "verdict": "FAIL",
+      "classifier_state": "unsupported_or_inconclusive",
+      "classifier_reasons": [
+        "structural_change_evidence"
+      ],
+      "rejecting_tests": [
+        "regime_welch_abs_thirds"
+      ],
+      "alpha_family": 0.05,
+      "alpha_b": 0.0038461538461538464,
+      "required_level_halves_tests": {
+        "regime_levene_level_halves": {
+          "id": "regime_levene_level_halves",
+          "kind": "levene",
+          "statistic": 4.4638049982724395,
+          "p_value": 0.03468846749009118
+        },
+        "regime_welch_level_halves": {
+          "id": "regime_welch_level_halves",
+          "kind": "welch",
+          "statistic": -0.05842368663507944,
+          "p_value": 0.9534143947566652
+        }
+      },
+      "phase10_result": {
+        "schema_version": "fars-1.2-bootstrap-result-v1",
+        "eligibility": {
+          "state": "unsupported_or_inconclusive",
+          "reasons": [
+            "structural_change_evidence"
+          ],
+          "rejecting_tests": [
+            "regime_welch_abs_thirds"
+          ]
+        },
+        "diagnostics": {
+          "n": 3628,
+          "tests": [
+            {
+              "id": "ljung_box_normal_score_h10",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 10,
+              "statistic": 11.279008769087032,
+              "df": 10,
+              "p_value": 0.3361978638800228
+            },
+            {
+              "id": "ljung_box_normal_score_h36",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 36,
+              "statistic": 35.60742567610624,
+              "df": 36,
+              "p_value": 0.487113884689086
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h10",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 10,
+              "statistic": 23.48941721516464,
+              "df": 10,
+              "p_value": 0.009077318483731998
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h36",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 36,
+              "statistic": 40.60679597259667,
+              "df": 36,
+              "p_value": 0.27451495800563286
+            },
+            {
+              "id": "runs_test",
+              "kind": "runs",
+              "statistic": 1.5830790127765457,
+              "runs": 1809,
+              "p_value": 0.1134034564782282
+            },
+            {
+              "id": "regime_welch_level_halves",
+              "kind": "welch",
+              "statistic": -0.05842368663507944,
+              "p_value": 0.9534143947566652
+            },
+            {
+              "id": "regime_levene_level_halves",
+              "kind": "levene",
+              "statistic": 4.4638049982724395,
+              "p_value": 0.03468846749009118
+            },
+            {
+              "id": "regime_welch_abs_halves",
+              "kind": "welch",
+              "statistic": -2.5642124627929412,
+              "p_value": 0.010386381808870833
+            },
+            {
+              "id": "regime_levene_abs_halves",
+              "kind": "levene",
+              "statistic": 0.048443366687454775,
+              "p_value": 0.8258068031795044
+            },
+            {
+              "id": "regime_welch_level_thirds",
+              "kind": "welch",
+              "statistic": 0.6114154262079988,
+              "p_value": 0.5409833473443254
+            },
+            {
+              "id": "regime_levene_level_thirds",
+              "kind": "levene",
+              "statistic": 8.171455280722013,
+              "p_value": 0.004291940337827954
+            },
+            {
+              "id": "regime_welch_abs_thirds",
+              "kind": "welch",
+              "statistic": -2.9706441467156046,
+              "p_value": 0.003009160564078982
+            },
+            {
+              "id": "regime_levene_abs_thirds",
+              "kind": "levene",
+              "statistic": 0.09199272410497829,
+              "p_value": 0.7616850565488963
+            }
+          ],
+          "omissions": [],
+          "acf": {
+            "series": "r",
+            "values": [
+              -0.028787378262994233,
+              0.021337979130535513,
+              -0.00026475751390085575,
+              -0.024029729396585448,
+              0.005992275270179671,
+              -0.0009376414895673282,
+              -0.004407986625644631,
+              -0.01989359490033271,
+              0.03432271034884376,
+              -0.018533260738067228,
+              -0.00705681862024433,
+              0.019848206737339315,
+              -0.0016421998821391278,
+              0.0072483445910628596,
+              -0.016665172941015487,
+              -0.0050892603418963055,
+              -0.01933545913837381,
+              -0.008106239721316024,
+              -0.009389281059543621,
+              -0.002427187413190299,
+              0.011368306609730846,
+              -0.021486086862629105,
+              0.014723261423078969,
+              0.004871220834369597,
+              -0.01571793741978271,
+              -0.0037018775760691374,
+              -0.01886598663494337,
+              0.0013401173550344923,
+              -0.0036614140478874375,
+              -0.005372107866573036,
+              -0.014375685509120797,
+              0.009869178650364307,
+              0.030184882077195427,
+              0.01775840038277986,
+              0.027102734448129964,
+              0.015919006944879185
+            ],
+            "bound": 0.03254036590837505
+          },
+          "alpha_family": 0.05,
+          "m": 13,
+          "alpha_b": 0.0038461538461538464,
+          "lags": [
+            10,
+            36
+          ]
+        },
+        "estimands": {
+          "expectancy": {
+            "status": "not_estimable",
+            "value": null,
+            "reason": "structural_change_evidence",
+            "validity": "unsupported",
+            "intervals": [],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "win_rate": {
+            "status": "not_estimable",
+            "value": null,
+            "reason": "structural_change_evidence",
+            "validity": "unsupported",
+            "intervals": [],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "std": {
+            "status": "not_estimable",
+            "value": null,
+            "reason": "structural_change_evidence",
+            "validity": "unsupported",
+            "intervals": [],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          }
+        },
+        "rng": {
+          "master_entropy": 20260914,
+          "spawn_keys": [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "bit_generator": "PCG64",
+          "B": 2000,
+          "estimand_order": [
+            "expectancy",
+            "win_rate",
+            "std"
+          ]
+        },
+        "parameters": {
+          "B": 2000,
+          "confidence_level": 0.95,
+          "quantile_method": "linear",
+          "alpha_family": 0.05,
+          "min_n_diagnostics": 50,
+          "block_length_report_significant_digits": 12
+        },
+        "provenance": {
+          "source_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+          "schema_version": "1.2-phase8a",
+          "resolved_mapping": {
+            "r_result": "repriced ExecutedTrade.r_result"
+          },
+          "capabilities": {
+            "core_metrics": {
+              "available": true,
+              "reasons": []
+            },
+            "temporal_analysis": {
+              "available": true,
+              "reasons": []
+            },
+            "daily_rule_simulation": {
+              "available": true,
+              "reasons": []
+            }
+          },
+          "versions": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1",
+            "arch": "8.0.0"
+          },
+          "algorithm_version": "fars-1.2-phase10a-v6"
+        },
+        "labels": {
+          "assets": [
+            "MNQ"
+          ],
+          "strategies": [
+            "smc_fvg_baseline"
+          ]
+        },
+        "limitations": []
+      }
+    },
+    "smc_fvg_risk_10": {
+      "n_oos": 2842,
+      "verdict": "PASS",
+      "classifier_state": "iid_eligible",
+      "classifier_reasons": [],
+      "rejecting_tests": [],
+      "alpha_family": 0.05,
+      "alpha_b": 0.0038461538461538464,
+      "required_level_halves_tests": {
+        "regime_levene_level_halves": {
+          "id": "regime_levene_level_halves",
+          "kind": "levene",
+          "statistic": 7.517063232831949,
+          "p_value": 0.006150023452406319
+        },
+        "regime_welch_level_halves": {
+          "id": "regime_welch_level_halves",
+          "kind": "welch",
+          "statistic": 1.0463063519330453,
+          "p_value": 0.295512283159547
+        }
+      },
+      "phase10_result": {
+        "schema_version": "fars-1.2-bootstrap-result-v1",
+        "eligibility": {
+          "state": "iid_eligible",
+          "reasons": [],
+          "rejecting_tests": []
+        },
+        "diagnostics": {
+          "n": 2842,
+          "tests": [
+            {
+              "id": "ljung_box_normal_score_h10",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 10,
+              "statistic": 13.024580158572904,
+              "df": 10,
+              "p_value": 0.22230075932776414
+            },
+            {
+              "id": "ljung_box_normal_score_h35",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 35,
+              "statistic": 36.085577461657216,
+              "df": 35,
+              "p_value": 0.41760689464865536
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h10",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 10,
+              "statistic": 20.197723162522884,
+              "df": 10,
+              "p_value": 0.02743705993264468
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h35",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 35,
+              "statistic": 41.675839147945304,
+              "df": 35,
+              "p_value": 0.2030509662058287
+            },
+            {
+              "id": "runs_test",
+              "kind": "runs",
+              "statistic": 2.175008161845957,
+              "runs": 1436,
+              "p_value": 0.02962950476415603
+            },
+            {
+              "id": "regime_welch_level_halves",
+              "kind": "welch",
+              "statistic": 1.0463063519330453,
+              "p_value": 0.295512283159547
+            },
+            {
+              "id": "regime_levene_level_halves",
+              "kind": "levene",
+              "statistic": 7.517063232831949,
+              "p_value": 0.006150023452406319
+            },
+            {
+              "id": "regime_welch_abs_halves",
+              "kind": "welch",
+              "statistic": -2.6801426456311654,
+              "p_value": 0.007419380319498672
+            },
+            {
+              "id": "regime_levene_abs_halves",
+              "kind": "levene",
+              "statistic": 0.0996711398108768,
+              "p_value": 0.7522478342762693
+            },
+            {
+              "id": "regime_welch_level_thirds",
+              "kind": "welch",
+              "statistic": 0.8932598360754448,
+              "p_value": 0.3718398017793368
+            },
+            {
+              "id": "regime_levene_level_thirds",
+              "kind": "levene",
+              "statistic": 6.812004910033742,
+              "p_value": 0.009126132260204646
+            },
+            {
+              "id": "regime_welch_abs_thirds",
+              "kind": "welch",
+              "statistic": -2.5706356813911326,
+              "p_value": 0.010267881203454197
+            },
+            {
+              "id": "regime_levene_abs_thirds",
+              "kind": "levene",
+              "statistic": 0.17202478804729043,
+              "p_value": 0.6783655705624064
+            }
+          ],
+          "omissions": [],
+          "acf": {
+            "series": "r",
+            "values": [
+              -0.028029678753098305,
+              0.033461209574305595,
+              -0.010676104277040282,
+              0.012446944239009999,
+              -0.014095568243993991,
+              0.015481193173768042,
+              -0.026700869340733523,
+              0.0021191644204017978,
+              -0.009192297567685092,
+              -0.0014818827336319333,
+              0.007710253753617827,
+              0.008950159667048901,
+              -0.016406317561058308,
+              0.020459979768914584,
+              -0.021269341346650126,
+              0.0030551433600004628,
+              -0.03138395858705302,
+              -0.01818879201760335,
+              0.007105287425034993,
+              0.005202439276194129,
+              -0.005425733730799635,
+              -0.006990879728536112,
+              0.011471673027159648,
+              0.011226705429027678,
+              0.004752825691391763,
+              0.029114327098219595,
+              -0.023908800960926888,
+              0.02226750294133104,
+              -0.011330474166500614,
+              -0.0007302021279172093,
+              -0.00846630591441242,
+              0.021214797187273572,
+              8.858267982986317e-05,
+              0.02759922361844801,
+              -0.018405409042069047
+            ],
+            "bound": 0.036765801200722315
+          },
+          "alpha_family": 0.05,
+          "m": 13,
+          "alpha_b": 0.0038461538461538464,
+          "lags": [
+            10,
+            35
+          ]
+        },
+        "estimands": {
+          "expectancy": {
+            "status": "estimable",
+            "value": 0.08728847290640394,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": 0.046930357494722026,
+                "upper": 0.13072825052779732,
+                "validity": "conditional_on_approximate_iid"
+              },
+              {
+                "method": "basic",
+                "lower": 0.043848695285010564,
+                "upper": 0.12764658831808587,
+                "validity": "conditional_on_approximate_iid"
+              },
+              {
+                "method": "bca",
+                "lower": 0.043118925426779836,
+                "upper": 0.12802510707610304,
+                "validity": "conditional_on_approximate_iid",
+                "z0": -0.03133798202142662,
+                "acceleration": -0.010689679462754492
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "win_rate": {
+            "status": "estimable",
+            "value": 0.5862068965517241,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": 0.5682617874736101,
+                "upper": 0.6038089373680506,
+                "validity": "conditional_on_approximate_iid"
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "std": {
+            "status": "estimable",
+            "value": 1.1329222183765424,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "studentized",
+                "lower": 1.0156649664164925,
+                "upper": 2.8775726497090286,
+                "validity": "conditional_on_approximate_iid",
+                "se": 0.08729735221952101,
+                "replicates_valid": 2000,
+                "replicates_excluded": 0
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          }
+        },
+        "rng": {
+          "master_entropy": 20260914,
+          "spawn_keys": [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "bit_generator": "PCG64",
+          "B": 2000,
+          "estimand_order": [
+            "expectancy",
+            "win_rate",
+            "std"
+          ]
+        },
+        "parameters": {
+          "B": 2000,
+          "confidence_level": 0.95,
+          "quantile_method": "linear",
+          "alpha_family": 0.05,
+          "min_n_diagnostics": 50,
+          "block_length_report_significant_digits": 12
+        },
+        "provenance": {
+          "source_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+          "schema_version": "1.2-phase8a",
+          "resolved_mapping": {
+            "r_result": "repriced ExecutedTrade.r_result"
+          },
+          "capabilities": {
+            "core_metrics": {
+              "available": true,
+              "reasons": []
+            },
+            "temporal_analysis": {
+              "available": true,
+              "reasons": []
+            },
+            "daily_rule_simulation": {
+              "available": true,
+              "reasons": []
+            }
+          },
+          "versions": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1",
+            "arch": "8.0.0"
+          },
+          "algorithm_version": "fars-1.2-phase10a-v6"
+        },
+        "labels": {
+          "assets": [
+            "MNQ"
+          ],
+          "strategies": [
+            "smc_fvg_risk_10"
+          ]
+        },
+        "limitations": []
+      }
+    },
+    "crt4h_defaults": {
+      "n_oos": 175,
+      "verdict": "PASS",
+      "classifier_state": "iid_eligible",
+      "classifier_reasons": [],
+      "rejecting_tests": [],
+      "alpha_family": 0.05,
+      "alpha_b": 0.0038461538461538464,
+      "required_level_halves_tests": {
+        "regime_levene_level_halves": {
+          "id": "regime_levene_level_halves",
+          "kind": "levene",
+          "statistic": 0.10592923450623694,
+          "p_value": 0.745220412089282
+        },
+        "regime_welch_level_halves": {
+          "id": "regime_welch_level_halves",
+          "kind": "welch",
+          "statistic": -1.173165540928566,
+          "p_value": 0.24237616387800073
+        }
+      },
+      "phase10_result": {
+        "schema_version": "fars-1.2-bootstrap-result-v1",
+        "eligibility": {
+          "state": "iid_eligible",
+          "reasons": [],
+          "rejecting_tests": []
+        },
+        "diagnostics": {
+          "n": 175,
+          "tests": [
+            {
+              "id": "ljung_box_normal_score_h10",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 10,
+              "statistic": 5.144908363492977,
+              "df": 10,
+              "p_value": 0.881290031481882
+            },
+            {
+              "id": "ljung_box_normal_score_h23",
+              "kind": "ljung_box",
+              "series": "normal_score",
+              "lag": 23,
+              "statistic": 14.633670278014794,
+              "df": 23,
+              "p_value": 0.907280605361489
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h10",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 10,
+              "statistic": 5.575456423432168,
+              "df": 10,
+              "p_value": 0.8495822069721217
+            },
+            {
+              "id": "ljung_box_normal_score_squared_h23",
+              "kind": "ljung_box",
+              "series": "normal_score_squared",
+              "lag": 23,
+              "statistic": 19.317797796387712,
+              "df": 23,
+              "p_value": 0.6826328565306672
+            },
+            {
+              "id": "runs_test",
+              "kind": "runs",
+              "statistic": 1.0138203019008725,
+              "runs": 75,
+              "p_value": 0.31066850605628205
+            },
+            {
+              "id": "regime_welch_level_halves",
+              "kind": "welch",
+              "statistic": -1.173165540928566,
+              "p_value": 0.24237616387800073
+            },
+            {
+              "id": "regime_levene_level_halves",
+              "kind": "levene",
+              "statistic": 0.10592923450623694,
+              "p_value": 0.745220412089282
+            },
+            {
+              "id": "regime_welch_abs_halves",
+              "kind": "welch",
+              "statistic": -0.3717293425342467,
+              "p_value": 0.7105745750227456
+            },
+            {
+              "id": "regime_levene_abs_halves",
+              "kind": "levene",
+              "statistic": 0.23268674331633843,
+              "p_value": 0.6301485283855063
+            },
+            {
+              "id": "regime_welch_level_thirds",
+              "kind": "welch",
+              "statistic": -1.234104664402905,
+              "p_value": 0.21976117689798508
+            },
+            {
+              "id": "regime_levene_level_thirds",
+              "kind": "levene",
+              "statistic": 0.11152372654459955,
+              "p_value": 0.7390295485871732
+            },
+            {
+              "id": "regime_welch_abs_thirds",
+              "kind": "welch",
+              "statistic": -0.29114427357665357,
+              "p_value": 0.7715011701848415
+            },
+            {
+              "id": "regime_levene_abs_thirds",
+              "kind": "levene",
+              "statistic": 0.06167622337764593,
+              "p_value": 0.8043127679989529
+            }
+          ],
+          "omissions": [],
+          "acf": {
+            "series": "r",
+            "values": [
+              -0.07554504531511659,
+              0.04617651448781726,
+              -0.04198154882085786,
+              -0.06381506685038524,
+              -0.029901125674797347,
+              0.007937540537453594,
+              0.031374044672231115,
+              0.06519273285007506,
+              0.112375937022765,
+              -0.10730178560198864,
+              0.04203101924550852,
+              -0.0438465443570222,
+              -0.013446740535930589,
+              -0.033907709142667206,
+              -0.07110224496657094,
+              -0.12459689399219111,
+              -0.053091103959498204,
+              -0.030636069520728334,
+              0.060747968071142786,
+              0.02135748934710741,
+              0.01996699222512744,
+              -0.007735452045517104,
+              -0.061271544730077204
+            ],
+            "bound": 0.14816207341961707
+          },
+          "alpha_family": 0.05,
+          "m": 13,
+          "alpha_b": 0.0038461538461538464,
+          "lags": [
+            10,
+            23
+          ]
+        },
+        "estimands": {
+          "expectancy": {
+            "status": "estimable",
+            "value": -0.14056159999999998,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": -0.44498881142857133,
+                "upper": 0.1886614057142856,
+                "validity": "conditional_on_approximate_iid"
+              },
+              {
+                "method": "basic",
+                "lower": -0.4697846057142856,
+                "upper": 0.16386561142857137,
+                "validity": "conditional_on_approximate_iid"
+              },
+              {
+                "method": "bca",
+                "lower": -0.43008110002028827,
+                "upper": 0.20658195188524153,
+                "validity": "conditional_on_approximate_iid",
+                "z0": 0.0025066308995717666,
+                "acceleration": 0.02350732709147385
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "win_rate": {
+            "status": "estimable",
+            "value": 0.26857142857142857,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "percentile",
+                "lower": 0.2,
+                "upper": 0.33714285714285713,
+                "validity": "conditional_on_approximate_iid"
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          },
+          "std": {
+            "status": "estimable",
+            "value": 2.1884776084258513,
+            "reason": null,
+            "validity": "conditional_on_approximate_iid",
+            "intervals": [
+              {
+                "method": "studentized",
+                "lower": 1.7631607193559988,
+                "upper": 3.1693934251413873,
+                "validity": "conditional_on_approximate_iid",
+                "se": 0.2739072514516542,
+                "replicates_valid": 2000,
+                "replicates_excluded": 0
+              }
+            ],
+            "interval_omissions": [],
+            "block_length": null,
+            "warnings": []
+          }
+        },
+        "rng": {
+          "master_entropy": 20260914,
+          "spawn_keys": [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "bit_generator": "PCG64",
+          "B": 2000,
+          "estimand_order": [
+            "expectancy",
+            "win_rate",
+            "std"
+          ]
+        },
+        "parameters": {
+          "B": 2000,
+          "confidence_level": 0.95,
+          "quantile_method": "linear",
+          "alpha_family": 0.05,
+          "min_n_diagnostics": 50,
+          "block_length_report_significant_digits": 12
+        },
+        "provenance": {
+          "source_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+          "schema_version": "1.2-phase8a",
+          "resolved_mapping": {
+            "r_result": "repriced ExecutedTrade.r_result"
+          },
+          "capabilities": {
+            "core_metrics": {
+              "available": true,
+              "reasons": []
+            },
+            "temporal_analysis": {
+              "available": true,
+              "reasons": []
+            },
+            "daily_rule_simulation": {
+              "available": true,
+              "reasons": []
+            }
+          },
+          "versions": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1",
+            "arch": "8.0.0"
+          },
+          "algorithm_version": "fars-1.2-phase10a-v6"
+        },
+        "labels": {
+          "assets": [
+            "MNQ"
+          ],
+          "strategies": [
+            "crt4h_defaults"
+          ]
+        },
+        "limitations": []
+      }
+    }
+  }
+}
