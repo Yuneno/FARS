@@ -25,6 +25,7 @@ from typing import Any, Mapping, Sequence
 
 import numpy as np
 
+from src.account_policy import SizingPolicy, SizingPolicyConfig
 from src.backtest.executor import ExecutedTrade
 from src.backtest.history import Bar
 from src.backtest.mae import TradeMaeResult, compute_trade_mae
@@ -47,6 +48,7 @@ class AccountEngineConfig:
     commission_per_contract_rt: float = 1.00  # $1.00 RT executable in Kai spec §7.1
     slippage_points: float = 0.25  # 1 tick per market fill
     instrument_type: str = "micro"  # "micro" (MNQ) or "mini" (NQ)
+    policy: SizingPolicyConfig | None = None  # E4: politica de apuesta (None = riesgo fijo)
 
 
 @dataclass(frozen=True)
@@ -168,7 +170,8 @@ def run_account_simulation(
     dollar_per_point = Decimal(str(config.dollar_per_point))
     starting_balance = profile.starting_balance
     safety_frac = Decimal(str(config.dd_buffer_safety_frac))
-    nominal_risk_usd = Decimal(str(config.risk_pct)) * starting_balance
+    base_risk_usd = Decimal(str(config.risk_pct)) * starting_balance
+    policy = SizingPolicy(config.policy) if config.policy is not None else None
 
     max_contracts_limit = (
         profile.operational.maximum_micros
@@ -240,6 +243,11 @@ def run_account_simulation(
             break
 
         # Desired quantity and capped quantity
+        # E4: politica de apuesta — el riesgo nominal se recalcula por trade
+        # segun el estado vivo de la cuenta (colchon, racha).
+        nominal_risk_usd = base_risk_usd if policy is None else policy.risk_usd(
+            balance=current_balance, floor=Decimal(str(current_floor)), base_risk_usd=base_risk_usd
+        )
         want_qty = max(1, int(round(float(nominal_risk_usd / unit_risk_usd))))
         executed_qty = max(1, min(want_qty, qty_max_buffer, max_contracts_limit))
 
@@ -303,6 +311,8 @@ def run_account_simulation(
                         event_status="intraday_breach",
                     )
                 )
+                if policy is not None:
+                    policy.note_result(-mae_dollars)
                 break
         else:
             intraday_equity = current_balance
@@ -339,6 +349,8 @@ def run_account_simulation(
         peak_balance = max(peak_balance, clamped)
         current_dd = peak_balance - clamped
         max_dd_dollars = max(max_dd_dollars, current_dd)
+        if policy is not None:
+            policy.note_result(realized_net)
 
         event_kind = report.primary_event.kind
         records.append(

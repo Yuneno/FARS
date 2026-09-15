@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "title": "E4 — Preregistro de politicas de apuesta",
+    "preregistered_at_utc": "2026-09-15T20:32:00+00:00",
+    "author": "Hermes",
+    "motivation": "E4 explora politicas de sizing que no tocan la senal: fixed (legacy), buffer_prop (riesgo = k x colchon) y racha (mitad de riesgo tras N perdidas). Objetivo: medir su efecto en P(pase)/quema/bloqueadas del motor de cuenta Apex 25K con los sets post-fix (E5).",
+    "anti_leakage": "La rejilla y las metricas quedan congeladas aqui ANTES de correr. No se ajusta nada despues de ver resultados."
+  },
+  "grid": {
+    "trade_sets": ["smc_fvg_risk_5", "smc_fvg_risk_10"],
+    "policies": [
+      {"id": "fixed", "kind": "fixed", "param": 0.0, "streak_threshold": 0, "streak_factor": 1.0},
+      {"id": "buffer_k010", "kind": "buffer_prop", "param": 0.10, "streak_threshold": 0, "streak_factor": 1.0},
+      {"id": "buffer_k025", "kind": "buffer_prop", "param": 0.25, "streak_threshold": 0, "streak_factor": 1.0},
+      {"id": "streak", "kind": "fixed", "param": 0.0, "streak_threshold": 2, "streak_factor": 0.5},
+      {"id": "buffer_k010_streak", "kind": "buffer_prop", "param": 0.10, "streak_threshold": 2, "streak_factor": 0.5}
+    ],
+    "engine": {
+      "account": "apex-25k-evaluation",
+      "trailing_mode": "intraday_event",
+      "horizon_calendar_days": 30,
+      "risk_pct": 0.004671,
+      "n_simulations": 2000,
+      "seed": 20260729
+    },
+    "metrics": ["pass_rate", "blown_rate", "blocked_rate", "timeout_rate", "median_days_to_pass"]
+  },
+  "evaluation_criteria": {
+    "primary": "pass_rate",
+    "secondary": "blown_rate + blocked_rate (fracaso total)",
+    "comparison_baseline": "fixed (riesgo constante, comportamiento legacy)"
+  }
+}
