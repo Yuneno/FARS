@@ -290,6 +290,69 @@ def test_pending_limit_fills_on_fvg_retracement_and_trades():
     assert result.trades[0].exit_reason == "take_profit"
 
 
+class _OneShortLimit:
+    """Fires exactly one short signal: limit 100.0, stop 103.0, target 85.0."""
+
+    def __init__(self):
+        self.fired = False
+
+    def evaluate(self, history):
+        if self.fired or not history:
+            return None
+        self.fired = True
+        return Signal("short", 100.0, 103.0, 85.0)
+
+
+def test_e5_pending_limit_gap_through_does_not_fill():
+    """E5: a bar that opens entirely beyond the limit (gap-through) never
+    negotiated the level -> the pending must NOT fill. (Old behavior: filled at
+    the stale limit and stopped at the open on the same bar, fabricating
+    losses far beyond the stop.)"""
+    bars = [
+        _bar(_min(0), 100, 101, 99, 100),
+        _bar(_min(1), 130, 140, 128, 138),  # gap-through above the short limit 100
+    ]
+    config = BacktestConfig(
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        pending_limit_entry=True,
+        pending_order_wait_bars=1,
+    )
+
+    result = run_backtest(bars, _OneShortLimit(), config)
+
+    assert result.n_trades == 0
+    assert result.unresolved_positions == 0
+
+
+def test_e5_pending_limit_fills_when_later_bar_negotiates_level():
+    """E5: after a gap-through bar, a later bar that actually trades through the
+    level fills the pending at the limit, exactly as before the fix."""
+    bars = [
+        _bar(_min(0), 100, 101, 99, 100),
+        _bar(_min(1), 130, 140, 128, 138),  # gap-through -> no fill, keeps waiting
+        _bar(_min(2), 100, 105, 95, 96),    # negotiates 100 -> fills at the limit
+    ]
+    config = BacktestConfig(
+        fixed_quantity=1,
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        pending_limit_entry=True,
+        pending_order_wait_bars=2,
+    )
+
+    result = run_backtest(bars, _OneShortLimit(), config)
+
+    assert result.n_trades == 1
+    t = result.trades[0]
+    assert t.entry_price == 100.0
+    assert t.stop_price == 103.0
+    assert t.exit_reason == "stop_loss"
+    # Same-bar stop check: bar 2 high 105 >= stop 103, open 100 <= stop -> no gap
+    # -> stop fill at 103 -> -3 points x $2/point (MNQ) = -$6 gross.
+    assert t.gross_pnl == -6.0
+
+
 def test_cooldown_rearms_from_final_closed_cooldown_bar():
     bars = [
         _bar(_min(index), 100, 102, 98, 100)

@@ -861,12 +861,14 @@ def _run_backtest_enhanced(
                     position = make_order(signal, bar, i, limit=False)
 
             if pending is not None:
-                direction = pending["direction"]
-                filled = (
-                    bar.low <= pending["entry"]
-                    if direction == "long"
-                    else bar.high >= pending["entry"]
-                )
+                # E5: a resting limit only fills when the bar actually TRADES
+                # through the level (low <= entry <= high). A bar that opens
+                # entirely beyond the level (gap-through) never negotiates it;
+                # filling at the stale limit price and checking the stop on that
+                # same bar fabricates losses that cannot occur in live execution
+                # (observed: -23.5R). Gap-through orders do not fill: they keep
+                # waiting and expire normally.
+                filled = bar.low <= pending["entry"] <= bar.high
                 if filled:
                     position = pending
                     position["entry_index"] = i
