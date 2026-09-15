@@ -62,3 +62,29 @@ Base commit: `fe295d5` (Bloque B cerrado) / `0f2fb5b` (merge Bloque A1+A2)
 > [!IMPORTANT]
 > **REGLA DE TRAZABILIDAD CANÓNICA DE FARS:**  
 > *"Todo número debe citar `archivo:línea` o artefacto; ninguno se estima de memoria."*
+
+---
+
+## 6. Plan de Cuenta — Pilar del Bloque E (E2, promovido 2026-09-15)
+
+**Contexto:** el objetivo de promoción cambió con la enmienda E3 (aprobada por
+Ricardo): los gates estadísticos (IC, folds, plateau, régimen, PBO) son la
+higiene; el riesgo de cuenta se juzga con **P(quema)+P(bloqueadas) del motor de
+cuenta** (`src/account_engine.py`), y el criterio de selección es **menor
+fracaso con mayor pase** (frontera Pareto preregistrada, `lab_artifacts/e2_protocol/`).
+
+**Pilar promovido** (frontera E2, fracaso ≤15%, max pase):
+
+| Componente | Valor | Evidencia |
+|---|---|---|
+| Estrategia | **SMC-FVG `min_risk_pts=5.0`** | E2: PASS gates post-E3 (CI +0.0467..+0.1032, folds+ 88%, PBO 0.0%, Gate 7 PASS) |
+| Política de apuesta | **`buffer_prop` k=0.10** (riesgo = 10% del colchón, acotado [0.1%, 1.5%]) | `src/account_policy.py`; E4: domina al fijo en pase Y fracaso |
+| Motor | Apex 25K, trailing intradía, 30 días | `src/account_engine.py` (post-E5/E6) |
+| **Resultado** | **P(pase) 41.60%, fracaso 13.45%** (quema 6.85% + bloqueadas 6.60%), 13.3 días | `lab_artifacts/e2_protocol/frontera.json` |
+
+**Alternativas registradas** (misma frontera): 10.0 + buffer k=0.10 (32.1% pase,
+4.25% fracaso — la conservadora) · 5.0 fija @ 0.60% (53.2% pase, 40.8% fracaso —
+la agresiva) · 5.0 + buffer k=0.10 + racha (40.3% pase, 12.25% fracaso).
+
+**Pendientes del plan:** E7 multi-mercado (MYM/MGC, en curso) · Bloque F (zonas) ·
+FARS 1.2 (11D-14) · sesión MT5.
