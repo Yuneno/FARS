@@ -102,7 +102,7 @@ Fórmula cerrada (browniano con deriva, barreras simétricas): objetivo 12.85R, 
 
 **Dos tercios de la quema son 7 trades de 2.842.** El tope al P&L no ayuda (B) porque la cuenta muere por el **MAE** — es decir, el stop no se respetó en los datos. La probabilidad de sacar ≥1 de esos 7 en 56 trades es 6.8%, que coincide con la quema observada (6.3%): **el canal de quema es, casi exactamente, "¿te tocó un trade de la cola?"**.
 
-**Verificación pendiente (bloqueada por aprobación):** comparar los precios de salida contra el OHLC real de las barras del dataset. Si la salida cae FUERA del rango de su barra → artefacto/ bug de fill; si cae dentro → evento real y la quema es legítima. **Hasta confirmarlo, la quema de D (6.3-6.6%) debe tratarse como cota superior.**
+**RESUELTO (E5, commit `a8df84c`):** causa raíz en el fill de pendientes (`executor.py`): un gap-through llenaba la orden al precio del límite que la barra jamás negoció, y el stop disparaba al open de la misma barra → pérdidas fabricadas de −2 a −23.5R. Fix: el pendiente solo llena si `low ≤ entry ≤ high` (la barra negocia el nivel); con tests de regresión (77/77). **Re-corrida post-fix:** 10.0 → n=2.836, **E[R] +0.1036** (antes +0.0879), quema intradía **6.60% → 3.13%**, pase 25.60% → 29.80%. 5.0 → n=5.617, quema 16.90% → 14.47%, pase 47.33% (el ranking aguanta). Quedan 2 trades con r < −2R (por revisar si son legítimos). **Pendiente:** re-correr las cadenas C2/C3 con el set nuevo (E[R] y σ cambiaron a favor).
 
 ## 6. Cómo más se puede mejorar (ordenado por impacto)
 
@@ -136,7 +136,7 @@ C3 eligió min_risk_pts=10.0 con criterios de backtest (E[R]/PF/DD). La primera 
 
 **Estado:** verificación completa de 5.0 en el motor FULL (MAE intrabar + trailing) **hecha** (`06_verificacion_5p0_full.py`): **46.65% de pase @ 0.4671%** (vs 25.60% de la 10.0), quema 16.90%, bloqueadas 15.30%, 15.6 días. El modelo cerrado predecía 49.3% → la excursión intrabar cuesta solo ~2.6pp. El ranking sobrevive al motor completo.
 
-**Hallazgo menor (D-5):** `max_drawdown_pct` reporta excursiones post-muerte (aplica la pérdida completa del trade terminal y mide después de cortar) → p95 llegó a 551%. Es métrico de reporte; la lógica de muerte (pase/quema/bloqueo) corta correctamente en el floor y fue verificada contra los números auditados. Corregir: computar el DD solo sobre la trayectoria viva (o truncar en la terminación).
+**Hallazgo menor (D-5), CORREGIDO (E6, commit `92c36a6`):** `max_drawdown_pct` reportaba excursiones post-muerte (aplicaba la pérdida completa del trade terminal y medía después de cortar) → p95 llegó a 551%. Fix: el balance post-trade se acota al floor vigente → DD p95 real = **5.6%** (≤ la distancia del trailing, 6%). Test de regresión en `test_account_engine.py` (7/7).
 
 ## Reglas para no contaminar el resultado
 
