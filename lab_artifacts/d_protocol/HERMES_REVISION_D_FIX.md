@@ -53,7 +53,7 @@ Las diferencias residuales (≈0.45 pp en quema) provienen de detalles que no re
 ## 5. Determinismo y suite
 
 - Re-corrida completa del protocolo por Hermes: ✅ **5 de 6 artefactos idénticos** (el `manifest.json` difiere solo porque hashea a los demás, que llevan timestamps). **Determinismo reconfirmado con el fix.**
-- Suite completa propia: conteo en curso al escribir esto (el protocolo tardó 376.9 s; la suite corre después). Se actualiza al cerrar.
+- Suite completa propia: ✅ **`1,475 passed, 2 skipped`** (0 fallos; +1 test nuevo del FIX-D1).
 
 *(Ambos se actualizan al cerrar la revisión.)*
 
