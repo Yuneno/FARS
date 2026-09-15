@@ -94,6 +94,7 @@ class SingleAccountRunResult:
     max_drawdown_dollars: float
     max_drawdown_pct: float
     records: tuple[TradeRunRecord, ...] = field(default_factory=tuple)
+    degenerate_records_skipped: int = 0  # E-minor: registros saltados (budget/qty invalidos), declarados
 
     @property
     def passed(self) -> bool:
@@ -166,6 +167,7 @@ def run_account_simulation(
 
     peak_balance = float(profile.starting_balance)
     max_dd_dollars = 0.0
+    degenerate_skipped = 0
 
     dollar_per_point = Decimal(str(config.dollar_per_point))
     starting_balance = profile.starting_balance
@@ -204,7 +206,8 @@ def run_account_simulation(
         # FIX-D1: Dimension using initial budgeted risk per contract, NOT exit stop_price!
         trade_base_qty = max(trade.quantity, 1)
         if trade.budgeted_risk_dollars <= 0.0 or trade.quantity <= 0:
-            # Degenerate record: skip and do not invent fallback
+            # Degenerate record: skip and do not invent fallback (conteo declarado)
+            degenerate_skipped += 1
             continue
 
         unit_risk_usd = Decimal(str(round(trade.budgeted_risk_dollars / trade_base_qty, 4)))
@@ -255,15 +258,18 @@ def run_account_simulation(
         mae_points = 0.0
         mae_ts = None
         if config.trailing_mode == "intraday_event":
+            mae_dollars_pc = 0.0
             if precomputed_maes and trade.trade_id in precomputed_maes:
                 mae_res = precomputed_maes[trade.trade_id]
                 mae_points = mae_res.mae_points
+                mae_dollars_pc = mae_res.mae_dollars_per_contract
                 mae_ts = mae_res.mae_timestamp
             else:
                 date_key = t_entry.strftime("%Y-%m-%d")
                 m1_bars = m1_bars_by_date.get(date_key) if m1_bars_by_date else None
                 mae_res = compute_trade_mae(trade, m1_bars=m1_bars, dollar_per_point=config.dollar_per_point)
                 mae_points = mae_res.mae_points
+                mae_dollars_pc = mae_res.mae_dollars_per_contract
                 mae_ts = mae_res.mae_timestamp
 
             if mae_ts is None:
@@ -272,8 +278,9 @@ def run_account_simulation(
                 mae_ts = mae_ts.replace(tzinfo=timezone.utc)
             mae_ts = min(max(t_entry, mae_ts), t_exit)
 
-            # Synthesize intraday equity dip
-            mae_dollars = Decimal(str(round(mae_points * config.dollar_per_point * executed_qty, 2)))
+            # Synthesize intraday equity dip. E7 multi-mercado: usar el MAE en
+            # dolares por contrato (cada trade trae el suyo; dpp ya no es global).
+            mae_dollars = Decimal(str(round(mae_dollars_pc * executed_qty, 2)))
             intraday_equity = current_balance - mae_dollars
 
             # Apply intraday event to state
@@ -408,6 +415,7 @@ def run_account_simulation(
         max_drawdown_dollars=round(max_dd_dollars, 2),
         max_drawdown_pct=round(max_dd_pct, 4),
         records=tuple(records),
+        degenerate_records_skipped=degenerate_skipped,
     )
 
 
