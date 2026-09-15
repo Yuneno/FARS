@@ -207,27 +207,6 @@ _EXPORTS = {
     "smooth_curve_gaussian": ("src.optimization", "smooth_curve_gaussian"),
     "optimize_risk_per_trade": ("src.optimization", "optimize_risk_per_trade"),
     "compute_fres_sensitivity": ("src.optimization", "compute_fres_sensitivity"),
-    "plot_risk_pass_probability": (
-        "src.visualization",
-        "plot_risk_pass_probability",
-    ),
-    "plot_risk_drawdown": ("src.visualization", "plot_risk_drawdown"),
-    "plot_final_equity_distribution": (
-        "src.visualization",
-        "plot_final_equity_distribution",
-    ),
-    "plot_max_drawdown_distribution": (
-        "src.visualization",
-        "plot_max_drawdown_distribution",
-    ),
-    "plot_losing_streak_distribution": (
-        "src.visualization",
-        "plot_losing_streak_distribution",
-    ),
-    "plot_outcome_probabilities": (
-        "src.visualization",
-        "plot_outcome_probabilities",
-    ),
 }
 
 
