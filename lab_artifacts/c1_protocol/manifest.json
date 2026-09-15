@@ -4,9 +4,9 @@
     "protocol_document": "docs/refactor/c1-eligibility.md",
     "preregistration_document": "lab_artifacts/c1_protocol/hypotheses.json",
     "evaluation_order_document": "lab_artifacts/c1_protocol/evaluation_order.json",
-    "generated_at_utc": "2026-09-14T23:45:26.077896+00:00",
-    "git_commit": "1f6ce40004c56b82ac820dbdfc5c8aba2b1bbcb4",
-    "git_branch": "bloque-c1-protocolo",
+    "generated_at_utc": "2026-09-15T20:42:10.099966+00:00",
+    "git_commit": "794e356680a095cf5fe33dfc78269112d8f37c1c",
+    "git_branch": "main",
     "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]"
   },
   "dataset": {
@@ -100,18 +100,18 @@
   },
   "artifacts": {
     "crt_tbs_fold_metrics.json": {
-      "sha256": "3ebf96a552ef2612fe00f3749f52e57817aa07ce07b9ce2f5eedc600228502cd",
-      "size_bytes": 33527,
+      "sha256": "d96e600cbf50b30982229df84f78518b97ec0d3f49b6ba3bcf5598d6b0e90e5d",
+      "size_bytes": 35856,
       "strategy_id": "crt_tbs"
     },
     "orb_fold_metrics.json": {
-      "sha256": "cb81965e8f649fa6d61f9234fc93f34ab9485d743284b28090bd16f7fec19a0c",
-      "size_bytes": 33410,
+      "sha256": "7792bfc7128394da72b49c4f61894b940e0698ad4935c01c6cfc8611e47a8446",
+      "size_bytes": 35765,
       "strategy_id": "orb"
     },
     "evaluation_order.json": {
-      "sha256": "d201f56b496d0fa295e294a1eeb854daa87d9ba5a7969a254870e5d84547c687",
-      "size_bytes": 20380,
+      "sha256": "66f4a80a0916a0bdac108c737180bd7c2e1e778405e9e9a900d6379dde62acb7",
+      "size_bytes": 20365,
       "type": "audit_log"
     }
   }

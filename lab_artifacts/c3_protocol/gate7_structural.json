@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "started_at_utc": "2026-09-15T20:27:13.887855+00:00",
+    "started_at_utc": "2026-09-15T20:47:52.499057+00:00",
     "implementation": "src.bootstrap.analyze_bootstrap",
     "alpha_family": 0.05,
     "unsupported_or_inconclusive_rule": "definitive FAIL",
-    "finished_at_utc": "2026-09-15T20:27:19.189831+00:00"
+    "finished_at_utc": "2026-09-15T20:47:57.615885+00:00"
   },
   "configurations": {
     "emas_baseline": {

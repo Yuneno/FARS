@@ -472,13 +472,17 @@ def evaluate_scenario(
     gate_ci_pos = (ci_low is not None) and (ci_low > 0)
     gate_fold_consistency = positive_folds_ratio >= 0.75
     gate_concentration = (concentration is not None) and (concentration < 60.0)
+    # ENMIENDA E3 (aprobada por Ricardo, 2026-09-15): Gate 5 (DD bruto) deja de
+    # bloquear la promocion. Sigue midiendose como HIGIENE anti-sobreajuste
+    # (detector de spikes tipo EMAS); el riesgo de cuenta se juzga con P(quema)
+    # + P(bloqueadas) del motor de cuenta (ver docs/refactor/account-objective.md).
     gate_dd = global_max_dd_pct < 5.0 and max_dd_r < 12.0
     insufficient_folds = [f["fold_id"] for f in fold_records if f["evidencia_insuficiente"]]
 
     # Informative Verdict (FIX-6)
     has_insufficient_sample = len(insufficient_folds) > 0
     all_performance_gates_pass = (
-        gate_exp_pos and gate_ci_pos and gate_fold_consistency and gate_concentration and gate_dd
+        gate_exp_pos and gate_ci_pos and gate_fold_consistency and gate_concentration
     )
 
     if has_insufficient_sample:
@@ -531,6 +535,7 @@ def evaluate_scenario(
             "fold_consistency_ge_75pct": gate_fold_consistency,
             "concentration_lt_60pct": gate_concentration,
             "max_drawdown_lt_5pct_and_12r": gate_dd,
+            "gate5_role": "hygiene_no_blocking",
             "insufficient_sample_folds": insufficient_folds,
             "verdict": verdict,
             "detailed_verdict": detailed_verdict,

@@ -25,11 +25,10 @@ equivocado produce selecciones equivocadas.
 - **Gates estadísticos** (IC excluye cero, PBO/CPCV, régimen, folds positivos):
   siguen siendo la higiene anti-sobreajuste. Una config que no pase la higiene
   **no se puntúa en cuenta**.
-- **Gate 5 (DD < 12R)**: sigue como higiene (atrapa spikes de sobreajuste).
-  **Decisión pendiente (E3):** para el plan de cuentas, el riesgo real es
-  `P(quema)` del motor; se propone que Gate 5 deje de ser bloqueador de
-  promoción y el motor sea el juez de riesgo. No se aplica hasta que
-  Ricardo/Juanca decidan.
+- **Gate 5 (DD < 12R)**: **ENMIENDA E3 APROBADA (2026-09-15)** — ya no bloquea la
+  promoción; queda como higiene anti-sobreajuste (spikes). El riesgo de cuenta
+  se juzga con **P(quema) + P(bloqueadas) del motor**, objetivo: menor fracaso
+  con mayor pase (ver `gate-amendment-e3.md`).
 - **Preregistro**: toda corrida de cuenta para promoción se preregistra (config,
   fecha, seeds) como en C2/C3.
 

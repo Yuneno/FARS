@@ -6,7 +6,7 @@
     },
     "dataset_fingerprint": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
     "n_folds": 8,
-    "updated_at_utc": "2026-09-15T20:23:06.380820+00:00"
+    "updated_at_utc": "2026-09-15T20:43:39.381216+00:00"
   },
   "scenarios": {
     "canonico": {
@@ -49,6 +49,7 @@
         "fold_consistency_ge_75pct": false,
         "concentration_lt_60pct": false,
         "max_drawdown_lt_5pct_and_12r": false,
+        "gate5_role": "hygiene_no_blocking",
         "insufficient_sample_folds": [],
         "verdict": "FAIL",
         "detailed_verdict": "FAILED_PERFORMANCE"
@@ -360,6 +361,7 @@
         "fold_consistency_ge_75pct": false,
         "concentration_lt_60pct": false,
         "max_drawdown_lt_5pct_and_12r": false,
+        "gate5_role": "hygiene_no_blocking",
         "insufficient_sample_folds": [],
         "verdict": "FAIL",
         "detailed_verdict": "FAILED_PERFORMANCE"
@@ -671,6 +673,7 @@
         "fold_consistency_ge_75pct": false,
         "concentration_lt_60pct": false,
         "max_drawdown_lt_5pct_and_12r": false,
+        "gate5_role": "hygiene_no_blocking",
         "insufficient_sample_folds": [],
         "verdict": "FAIL",
         "detailed_verdict": "FAILED_PERFORMANCE"

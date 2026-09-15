@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "started_at_utc": "2026-09-15T20:27:13.887846+00:00",
+    "started_at_utc": "2026-09-15T20:47:52.499048+00:00",
     "base": {
       "id": "por_tramo",
       "commission_per_side_usd": 0.62,
@@ -45,7 +45,7 @@
       }
     ],
     "method_note": "Fixed post-execution counterfactual repricing/filtering; signals and executor are unchanged.",
-    "finished_at_utc": "2026-09-15T20:27:19.189831+00:00"
+    "finished_at_utc": "2026-09-15T20:47:57.615885+00:00"
   },
   "configurations": {
     "emas_baseline": {

@@ -1,9 +1,9 @@
 {
   "metadata": {
     "title": "Block C1 Evaluation Order Audit Log (Anti-Leakage Sequence)",
-    "git_commit": "1f6ce40004c56b82ac820dbdfc5c8aba2b1bbcb4",
-    "git_branch": "bloque-c1-protocolo",
-    "generated_at_utc": "2026-09-14T23:45:26.071475+00:00",
+    "git_commit": "794e356680a095cf5fe33dfc78269112d8f37c1c",
+    "git_branch": "main",
+    "generated_at_utc": "2026-09-15T20:42:10.093498+00:00",
     "anti_leakage_guarantee": "Para el baseline congelado no hay seleccion ni ajuste de hiperparametros en train; la evaluacion en test es estrictamente evaluativa y el test no participo en ninguna decision de seleccion (cero fuga de informacion)."
   },
   "total_evaluations": 48,
@@ -16,8 +16,8 @@
       "test_end": "2023-01-01",
       "test_bars": 35667,
       "trades_evaluated": 5,
-      "started_at_utc": "2026-09-14T23:45:21.182278+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.272766+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.324965+00:00",
+      "finished_at_utc": "2026-09-15T20:42:05.414020+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -28,8 +28,8 @@
       "test_end": "2023-07-01",
       "test_bars": 35319,
       "trades_evaluated": 9,
-      "started_at_utc": "2026-09-14T23:45:21.273953+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.360613+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.415336+00:00",
+      "finished_at_utc": "2026-09-15T20:42:05.509455+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -40,8 +40,8 @@
       "test_end": "2024-01-01",
       "test_bars": 35370,
       "trades_evaluated": 9,
-      "started_at_utc": "2026-09-14T23:45:21.361564+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.445644+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.510557+00:00",
+      "finished_at_utc": "2026-09-15T20:42:05.601153+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -52,8 +52,8 @@
       "test_end": "2024-07-01",
       "test_bars": 35160,
       "trades_evaluated": 10,
-      "started_at_utc": "2026-09-14T23:45:21.446578+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.532057+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.602157+00:00",
+      "finished_at_utc": "2026-09-15T20:42:05.687115+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -64,8 +64,8 @@
       "test_end": "2025-01-01",
       "test_bars": 35853,
       "trades_evaluated": 8,
-      "started_at_utc": "2026-09-14T23:45:21.533069+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.619894+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.688106+00:00",
+      "finished_at_utc": "2026-09-15T20:42:05.775702+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -76,8 +76,8 @@
       "test_end": "2025-07-01",
       "test_bars": 34794,
       "trades_evaluated": 1,
-      "started_at_utc": "2026-09-14T23:45:21.620897+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.725524+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.776639+00:00",
+      "finished_at_utc": "2026-09-15T20:42:05.864247+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -88,8 +88,8 @@
       "test_end": "2026-01-01",
       "test_bars": 35724,
       "trades_evaluated": 7,
-      "started_at_utc": "2026-09-14T23:45:21.725778+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.836272+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.864482+00:00",
+      "finished_at_utc": "2026-09-15T20:42:05.950372+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -100,8 +100,8 @@
       "test_end": "2026-07-01",
       "test_bars": 35067,
       "trades_evaluated": 7,
-      "started_at_utc": "2026-09-14T23:45:21.837241+00:00",
-      "finished_at_utc": "2026-09-14T23:45:21.929288+00:00",
+      "started_at_utc": "2026-09-15T20:42:05.951335+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.034634+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -112,8 +112,8 @@
       "test_end": "2023-01-01",
       "test_bars": 35667,
       "trades_evaluated": 5,
-      "started_at_utc": "2026-09-14T23:45:21.953016+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.046508+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.055824+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.142362+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -124,8 +124,8 @@
       "test_end": "2023-07-01",
       "test_bars": 35319,
       "trades_evaluated": 9,
-      "started_at_utc": "2026-09-14T23:45:22.047613+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.151169+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.143357+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.230177+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -136,8 +136,8 @@
       "test_end": "2024-01-01",
       "test_bars": 35370,
       "trades_evaluated": 9,
-      "started_at_utc": "2026-09-14T23:45:22.152361+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.240579+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.231221+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.322127+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -148,8 +148,8 @@
       "test_end": "2024-07-01",
       "test_bars": 35160,
       "trades_evaluated": 10,
-      "started_at_utc": "2026-09-14T23:45:22.241567+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.327678+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.323045+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.407535+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -160,8 +160,8 @@
       "test_end": "2025-01-01",
       "test_bars": 35853,
       "trades_evaluated": 8,
-      "started_at_utc": "2026-09-14T23:45:22.328702+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.415180+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.408518+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.496152+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -172,8 +172,8 @@
       "test_end": "2025-07-01",
       "test_bars": 34794,
       "trades_evaluated": 1,
-      "started_at_utc": "2026-09-14T23:45:22.416242+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.501048+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.497078+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.582302+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -184,8 +184,8 @@
       "test_end": "2026-01-01",
       "test_bars": 35724,
       "trades_evaluated": 7,
-      "started_at_utc": "2026-09-14T23:45:22.501290+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.587480+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.582524+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.669326+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -196,8 +196,8 @@
       "test_end": "2026-07-01",
       "test_bars": 35067,
       "trades_evaluated": 7,
-      "started_at_utc": "2026-09-14T23:45:22.588437+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.673533+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.670247+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.754034+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -208,8 +208,8 @@
       "test_end": "2023-01-01",
       "test_bars": 35667,
       "trades_evaluated": 5,
-      "started_at_utc": "2026-09-14T23:45:22.694785+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.781858+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.775609+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.864524+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -220,8 +220,8 @@
       "test_end": "2023-07-01",
       "test_bars": 35319,
       "trades_evaluated": 9,
-      "started_at_utc": "2026-09-14T23:45:22.782756+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.869530+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.865583+00:00",
+      "finished_at_utc": "2026-09-15T20:42:06.952555+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -232,8 +232,8 @@
       "test_end": "2024-01-01",
       "test_bars": 35370,
       "trades_evaluated": 9,
-      "started_at_utc": "2026-09-14T23:45:22.870465+00:00",
-      "finished_at_utc": "2026-09-14T23:45:22.954841+00:00",
+      "started_at_utc": "2026-09-15T20:42:06.953531+00:00",
+      "finished_at_utc": "2026-09-15T20:42:07.044138+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -244,8 +244,8 @@
       "test_end": "2024-07-01",
       "test_bars": 35160,
       "trades_evaluated": 10,
-      "started_at_utc": "2026-09-14T23:45:22.955864+00:00",
-      "finished_at_utc": "2026-09-14T23:45:23.043247+00:00",
+      "started_at_utc": "2026-09-15T20:42:07.045112+00:00",
+      "finished_at_utc": "2026-09-15T20:42:07.132196+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -256,8 +256,8 @@
       "test_end": "2025-01-01",
       "test_bars": 35853,
       "trades_evaluated": 8,
-      "started_at_utc": "2026-09-14T23:45:23.044536+00:00",
-      "finished_at_utc": "2026-09-14T23:45:23.135474+00:00",
+      "started_at_utc": "2026-09-15T20:42:07.133120+00:00",
+      "finished_at_utc": "2026-09-15T20:42:07.220579+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -268,8 +268,8 @@
       "test_end": "2025-07-01",
       "test_bars": 34794,
       "trades_evaluated": 1,
-      "started_at_utc": "2026-09-14T23:45:23.136384+00:00",
-      "finished_at_utc": "2026-09-14T23:45:23.222668+00:00",
+      "started_at_utc": "2026-09-15T20:42:07.221589+00:00",
+      "finished_at_utc": "2026-09-15T20:42:07.305042+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -280,8 +280,8 @@
       "test_end": "2026-01-01",
       "test_bars": 35724,
       "trades_evaluated": 7,
-      "started_at_utc": "2026-09-14T23:45:23.222871+00:00",
-      "finished_at_utc": "2026-09-14T23:45:23.310151+00:00",
+      "started_at_utc": "2026-09-15T20:42:07.305249+00:00",
+      "finished_at_utc": "2026-09-15T20:42:07.393427+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -292,8 +292,8 @@
       "test_end": "2026-07-01",
       "test_bars": 35067,
       "trades_evaluated": 7,
-      "started_at_utc": "2026-09-14T23:45:23.311056+00:00",
-      "finished_at_utc": "2026-09-14T23:45:23.399956+00:00",
+      "started_at_utc": "2026-09-15T20:42:07.394418+00:00",
+      "finished_at_utc": "2026-09-15T20:42:07.479820+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -304,8 +304,8 @@
       "test_end": "2023-01-01",
       "test_bars": 35667,
       "trades_evaluated": 168,
-      "started_at_utc": "2026-09-14T23:45:25.237650+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.270703+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.288729+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.316098+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -316,8 +316,8 @@
       "test_end": "2023-07-01",
       "test_bars": 35319,
       "trades_evaluated": 189,
-      "started_at_utc": "2026-09-14T23:45:25.271894+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.308380+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.317379+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.346118+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -328,8 +328,8 @@
       "test_end": "2024-01-01",
       "test_bars": 35370,
       "trades_evaluated": 179,
-      "started_at_utc": "2026-09-14T23:45:25.309548+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.336867+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.347319+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.374751+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -340,8 +340,8 @@
       "test_end": "2024-07-01",
       "test_bars": 35160,
       "trades_evaluated": 178,
-      "started_at_utc": "2026-09-14T23:45:25.338021+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.365931+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.375930+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.403513+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -352,8 +352,8 @@
       "test_end": "2025-01-01",
       "test_bars": 35853,
       "trades_evaluated": 183,
-      "started_at_utc": "2026-09-14T23:45:25.367079+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.395656+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.404665+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.432728+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -364,8 +364,8 @@
       "test_end": "2025-07-01",
       "test_bars": 34794,
       "trades_evaluated": 175,
-      "started_at_utc": "2026-09-14T23:45:25.396871+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.425909+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.433896+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.462353+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -376,8 +376,8 @@
       "test_end": "2026-01-01",
       "test_bars": 35724,
       "trades_evaluated": 159,
-      "started_at_utc": "2026-09-14T23:45:25.427102+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.454494+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.463575+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.492658+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -388,8 +388,8 @@
       "test_end": "2026-07-01",
       "test_bars": 35067,
       "trades_evaluated": 156,
-      "started_at_utc": "2026-09-14T23:45:25.455556+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.482208+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.493799+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.526305+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -400,8 +400,8 @@
       "test_end": "2023-01-01",
       "test_bars": 35667,
       "trades_evaluated": 168,
-      "started_at_utc": "2026-09-14T23:45:25.516214+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.543154+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.562784+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.591309+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -412,8 +412,8 @@
       "test_end": "2023-07-01",
       "test_bars": 35319,
       "trades_evaluated": 189,
-      "started_at_utc": "2026-09-14T23:45:25.544315+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.571493+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.592628+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.620411+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -424,8 +424,8 @@
       "test_end": "2024-01-01",
       "test_bars": 35370,
       "trades_evaluated": 179,
-      "started_at_utc": "2026-09-14T23:45:25.572797+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.600600+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.621682+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.650204+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -436,8 +436,8 @@
       "test_end": "2024-07-01",
       "test_bars": 35160,
       "trades_evaluated": 178,
-      "started_at_utc": "2026-09-14T23:45:25.601819+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.629570+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.651299+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.678874+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -448,8 +448,8 @@
       "test_end": "2025-01-01",
       "test_bars": 35853,
       "trades_evaluated": 183,
-      "started_at_utc": "2026-09-14T23:45:25.630680+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.659076+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.679976+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.706974+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -460,8 +460,8 @@
       "test_end": "2025-07-01",
       "test_bars": 34794,
       "trades_evaluated": 175,
-      "started_at_utc": "2026-09-14T23:45:25.660204+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.687853+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.708075+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.734235+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -472,8 +472,8 @@
       "test_end": "2026-01-01",
       "test_bars": 35724,
       "trades_evaluated": 159,
-      "started_at_utc": "2026-09-14T23:45:25.689024+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.716752+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.735376+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.763128+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -484,8 +484,8 @@
       "test_end": "2026-07-01",
       "test_bars": 35067,
       "trades_evaluated": 156,
-      "started_at_utc": "2026-09-14T23:45:25.717878+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.745197+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.764238+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.790804+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -496,8 +496,8 @@
       "test_end": "2023-01-01",
       "test_bars": 35667,
       "trades_evaluated": 168,
-      "started_at_utc": "2026-09-14T23:45:25.780143+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.807992+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.824767+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.853116+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -508,8 +508,8 @@
       "test_end": "2023-07-01",
       "test_bars": 35319,
       "trades_evaluated": 189,
-      "started_at_utc": "2026-09-14T23:45:25.809092+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.836924+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.854265+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.883379+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -520,8 +520,8 @@
       "test_end": "2024-01-01",
       "test_bars": 35370,
       "trades_evaluated": 179,
-      "started_at_utc": "2026-09-14T23:45:25.838124+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.876583+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.884559+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.912100+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -532,8 +532,8 @@
       "test_end": "2024-07-01",
       "test_bars": 35160,
       "trades_evaluated": 178,
-      "started_at_utc": "2026-09-14T23:45:25.878417+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.913091+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.913221+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.941170+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -544,8 +544,8 @@
       "test_end": "2025-01-01",
       "test_bars": 35853,
       "trades_evaluated": 183,
-      "started_at_utc": "2026-09-14T23:45:25.914183+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.942181+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.942348+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.969630+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -556,8 +556,8 @@
       "test_end": "2025-07-01",
       "test_bars": 34794,
       "trades_evaluated": 175,
-      "started_at_utc": "2026-09-14T23:45:25.943338+00:00",
-      "finished_at_utc": "2026-09-14T23:45:25.971484+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.970734+00:00",
+      "finished_at_utc": "2026-09-15T20:42:09.997457+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -568,8 +568,8 @@
       "test_end": "2026-01-01",
       "test_bars": 35724,
       "trades_evaluated": 159,
-      "started_at_utc": "2026-09-14T23:45:25.972968+00:00",
-      "finished_at_utc": "2026-09-14T23:45:26.001146+00:00",
+      "started_at_utc": "2026-09-15T20:42:09.998535+00:00",
+      "finished_at_utc": "2026-09-15T20:42:10.025757+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     },
     {
@@ -580,8 +580,8 @@
       "test_end": "2026-07-01",
       "test_bars": 35067,
       "trades_evaluated": 156,
-      "started_at_utc": "2026-09-14T23:45:26.002313+00:00",
-      "finished_at_utc": "2026-09-14T23:45:26.030331+00:00",
+      "started_at_utc": "2026-09-15T20:42:10.026848+00:00",
+      "finished_at_utc": "2026-09-15T20:42:10.053668+00:00",
       "selection_role": "evaluative_only_frozen_baseline"
     }
   ]

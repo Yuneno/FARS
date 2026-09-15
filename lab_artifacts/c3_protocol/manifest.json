@@ -1,8 +1,8 @@
 {
   "schema_version": "fars-c3-manifest-v1",
   "metadata": {
-    "started_at_utc": "2026-09-15T20:23:10.926208+00:00",
-    "generated_at_utc": "2026-09-15T20:27:19.212808+00:00",
+    "started_at_utc": "2026-09-15T20:43:44.157227+00:00",
+    "generated_at_utc": "2026-09-15T20:47:57.634714+00:00",
     "base_commit": "fcd1c467ab4860800e9732f8fb04e88b2a8c613b",
     "requested_branch": "bloque-c3-cierre",
     "actual_branch": "main",
@@ -46,24 +46,24 @@
       "mtime_utc": "2026-09-15T03:27:03.860165+00:00"
     },
     "lab_artifacts/c3_protocol/cpcv_pbo.json": {
-      "sha256": "1faf98200fc8a27a08da1ac392b798802d186124f75c28a6c37eb10825cfdf79",
+      "sha256": "76f550d55bcaee3cbb4e990e63cd937d0a2e6e6078fb838606a1a6991b1b06f1",
       "size_bytes": 1618778,
-      "mtime_utc": "2026-09-15T20:23:32.715053+00:00"
+      "mtime_utc": "2026-09-15T20:44:09.884334+00:00"
     },
     "lab_artifacts/c3_protocol/gate4_neighborhood.json": {
-      "sha256": "af9a9cc7d163286f90eb64f2f173fea99f2bc9044a9ec6098e751eb39a1cafbc",
-      "size_bytes": 492913,
-      "mtime_utc": "2026-09-15T20:27:13.886782+00:00"
+      "sha256": "320c476375a0f2439f0c5dbffaf3346af618235238cc5ae08fabea4f2f99f76c",
+      "size_bytes": 494425,
+      "mtime_utc": "2026-09-15T20:47:52.498677+00:00"
     },
     "lab_artifacts/c3_protocol/stress_matrix.json": {
-      "sha256": "5bbadea4660638fd5ed8170726980d58180ba872f4581610a740fcd4143d5912",
+      "sha256": "8d639a8c504c2596a97937c6d04aa553e314111480c566e60735970c17030022",
       "size_bytes": 22596,
-      "mtime_utc": "2026-09-15T20:27:19.189570+00:00"
+      "mtime_utc": "2026-09-15T20:47:57.616364+00:00"
     },
     "lab_artifacts/c3_protocol/gate7_structural.json": {
-      "sha256": "a4a074300d675de54d0dfe2d18220d847a19ad5148bca1ae59544fa3e98e10a5",
+      "sha256": "6c4654d584eeb83d9b2eef684347cfbd866d34cea4c090c0358cf5bf5d65872d",
       "size_bytes": 40323,
-      "mtime_utc": "2026-09-15T20:27:19.190570+00:00"
+      "mtime_utc": "2026-09-15T20:47:57.616364+00:00"
     },
     "lab_artifacts/c3_protocol/C3_SUMMARY.md": {
       "sha256": "41c83bf4382b9b4c5d9a68bfae8397a173dcbf22f653723939f69124c52ae51c",

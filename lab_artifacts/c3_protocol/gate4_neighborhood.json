@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "started_at_utc": "2026-09-15T20:23:32.715766+00:00",
+    "started_at_utc": "2026-09-15T20:44:09.884944+00:00",
     "protocol": "one-parameter-at-a-time around each frozen center; every listed center and +/- point is run under rolling 36m train / 6m test / 6m step with h=192 purge/embargo audit and por_tramo accounting",
     "decision_rule": "PASS/plateau iff every point has aggregate E[R]>0 and no point drops more than 40% relative to that subject's center E[R]; otherwise FAIL/spike",
-    "finished_at_utc": "2026-09-15T20:27:13.884866+00:00"
+    "finished_at_utc": "2026-09-15T20:47:52.496361+00:00"
   },
   "configurations": {
     "smc_fvg_baseline": {
@@ -91,9 +91,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -415,9 +416,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -739,9 +741,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -1063,9 +1066,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -1387,9 +1391,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -1711,9 +1716,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -2035,9 +2041,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -2359,9 +2366,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -2683,9 +2691,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -3007,9 +3016,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -3331,9 +3341,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -3691,9 +3702,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -4015,9 +4027,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -4339,9 +4352,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -4663,9 +4677,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -4987,9 +5002,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -5311,9 +5327,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -5635,9 +5652,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -5959,9 +5977,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -6283,9 +6302,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -6607,9 +6627,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -6931,9 +6952,10 @@
               "fold_consistency_ge_75pct": true,
               "concentration_lt_60pct": true,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
-              "verdict": "FAIL",
-              "detailed_verdict": "FAILED_PERFORMANCE"
+              "verdict": "PASS",
+              "detailed_verdict": "PASS"
             },
             "folds": [
               {
@@ -7292,6 +7314,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -7617,6 +7640,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -7942,6 +7966,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -8267,6 +8292,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -8592,6 +8618,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -8917,6 +8944,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -9242,6 +9270,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -9567,6 +9596,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -9892,6 +9922,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -10217,6 +10248,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -10542,6 +10574,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -10867,6 +10900,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
@@ -11192,6 +11226,7 @@
               "fold_consistency_ge_75pct": false,
               "concentration_lt_60pct": false,
               "max_drawdown_lt_5pct_and_12r": false,
+              "gate5_role": "hygiene_no_blocking",
               "insufficient_sample_folds": [],
               "verdict": "FAIL",
               "detailed_verdict": "FAILED_PERFORMANCE"
