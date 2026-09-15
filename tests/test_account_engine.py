@@ -26,6 +26,7 @@ def _make_trade(
     net_pnl: float,
     direction: str = "long",
     quantity: int = 1,
+    budgeted_risk_dollars: float = 200.0,
 ) -> ExecutedTrade:
     return ExecutedTrade(
         trade_id=trade_id,
@@ -40,10 +41,10 @@ def _make_trade(
         gross_pnl=net_pnl + 2.0,
         commission=1.0,
         net_pnl=net_pnl,
-        r_result=net_pnl / 200.0,
+        r_result=net_pnl / budgeted_risk_dollars if budgeted_risk_dollars > 0 else 0.0,
         exit_reason="take_profit" if net_pnl > 0 else "stop_loss",
-        budgeted_risk_dollars=200.0,
-        effective_risk_dollars=200.0,
+        budgeted_risk_dollars=budgeted_risk_dollars,
+        effective_risk_dollars=budgeted_risk_dollars,
     )
 
 
@@ -90,13 +91,13 @@ def test_account_engine_risk_blocked_when_margin_buffer_insufficient():
     profile = apex_25k_profile()
     t0 = datetime(2026, 9, 1, 9, 30, tzinfo=timezone.utc)
 
-    # Trade 1 sizes to 1 contract with unit risk $1,450 (stop distance 725 pts * $2 = $1,450)
-    # Loss is -$1,450 -> balance drops to 23,550 (floor is 23,500, buffer is $50).
-    # Trade 2 has unit risk $100 (stop distance 50 pts * $2 = $100).
-    # 75% of buffer is $37.50. qty_max_buffer = floor(37.50 / 100) = 0 -> BLOCKED!
+    # Trade 1 has budgeted risk $1,000 (fits in buffer cap 0.75 * 1500 = $1,125 -> 1 contract).
+    # Realized loss is -$1,450 -> balance drops to 23,550 (floor 23,500, remaining buffer = $50).
+    # Trade 2 has budgeted risk $100. Buffer cap is 0.75 * 50 = $37.50.
+    # qty_max_buffer = floor(37.50 / 100) = 0 -> BLOCKED!
     trades = [
-        _make_trade("t1", t0, t0 + timedelta(minutes=10), 1000.0, 275.0, 275.0, 1500.0, net_pnl=-1450.0),
-        _make_trade("t2", t0 + timedelta(hours=1), t0 + timedelta(hours=1, minutes=10), 100.0, 110.0, 50.0, 150.0, net_pnl=500.0),
+        _make_trade("t1", t0, t0 + timedelta(minutes=10), 1000.0, 275.0, 275.0, 1500.0, net_pnl=-1450.0, budgeted_risk_dollars=1000.0),
+        _make_trade("t2", t0 + timedelta(hours=1), t0 + timedelta(hours=1, minutes=10), 100.0, 110.0, 50.0, 150.0, net_pnl=500.0, budgeted_risk_dollars=100.0),
     ]
 
     cfg = AccountEngineConfig(risk_pct=0.05, trailing_mode="closed_trade")
@@ -104,7 +105,7 @@ def test_account_engine_risk_blocked_when_margin_buffer_insufficient():
 
     assert res.status == "blocked"
     assert res.termination_reason == "risk-blocked:dd-buffer"
-    assert res.trades_executed == 1  # trade 1 blocked immediately due to wide stop
+    assert res.trades_executed == 2  # trade 1 executed, trade 2 blocked
 
 
 def test_trade_winner_that_blows_on_intraday_mae_decisive():
@@ -131,6 +132,7 @@ def test_trade_winner_that_blows_on_intraday_mae_decisive():
         target_price=110.0,
         net_pnl=400.0,
         quantity=1,
+        budgeted_risk_dollars=10.0,
     )
 
     # Precomputed MAE: during the trade, price dipped to 92.0 (8.0 points adverse excursion)
@@ -167,6 +169,81 @@ def test_trade_winner_that_blows_on_intraday_mae_decisive():
     # Under intraday trailing: it detects the dip touching the floor at 09:45 and BURNS immediately!
     assert res_intraday.status == "blown"
     assert res_intraday.termination_reason == "maximum_loss_intraday_breach"
+
+
+def test_account_engine_sizing_uses_initial_budgeted_risk_and_no_fallback():
+    """FIX-D1 Mandatory Test:
+    1. A trade with initial stop of 40 pts ($80 risk per contract, budgeted_risk_dollars=80.0)
+       whose exit stop_price moved to 10 pts (or break-even) MUST be sized with
+       round(nominal / 80), NOT round(nominal / 20) or fallback.
+    2. A trade with stop_price == entry_price uses budgeted_risk_dollars, not 10-point fallback.
+    3. Degenerate records (budgeted_risk_dollars <= 0) are skipped, not invented.
+    """
+    profile = apex_25k_profile()  # starting balance 25,000, 20 micro contracts max
+    t0 = datetime(2026, 9, 1, 9, 30, tzinfo=timezone.utc)
+
+    # Nominal risk with 0.008 (0.8%) on 25,000 = $200.
+    # Initial stop = 40 pts -> budgeted_risk_dollars = 80.0 per contract.
+    # Expected qty = round(200 / 80) = round(2.5) = 2 contracts.
+    # If it had used exit stop_price (10 pts = $20): round(200 / 20) = 10 contracts!
+    # If it had used break-even (0 pts -> old 10 pts fallback = $20): round(200 / 20) = 10 contracts!
+    trade_trailing_stop = _make_trade(
+        trade_id="t_initial_40pt",
+        entry_time=t0,
+        exit_time=t0 + timedelta(minutes=10),
+        entry_price=100.0,
+        exit_price=105.0,
+        stop_price=90.0,  # 10 pts away from entry (exit stop moved)
+        target_price=120.0,
+        net_pnl=50.0,
+        quantity=1,
+        budgeted_risk_dollars=80.0,  # 40 pts initial stop ($80)
+    )
+
+    trade_breakeven = _make_trade(
+        trade_id="t_breakeven",
+        entry_time=t0 + timedelta(hours=1),
+        exit_time=t0 + timedelta(hours=1, minutes=10),
+        entry_price=100.0,
+        exit_price=100.0,
+        stop_price=100.0,  # stop_price == entry_price (break-even exit)
+        target_price=120.0,
+        net_pnl=0.0,
+        quantity=1,
+        budgeted_risk_dollars=80.0,  # initial budgeted risk was $80
+    )
+
+    trade_degenerate = _make_trade(
+        trade_id="t_degenerate",
+        entry_time=t0 + timedelta(hours=2),
+        exit_time=t0 + timedelta(hours=2, minutes=10),
+        entry_price=100.0,
+        exit_price=105.0,
+        stop_price=100.0,
+        target_price=120.0,
+        net_pnl=50.0,
+        quantity=1,
+        budgeted_risk_dollars=0.0,  # Degenerate
+    )
+
+    cfg = AccountEngineConfig(risk_pct=0.008, trailing_mode="closed_trade")
+    res = run_account_simulation(profile, [trade_trailing_stop, trade_breakeven, trade_degenerate], cfg)
+
+    executed_records = [r for r in res.records if r.event_status != "blocked"]
+    # Exactly 2 trades executed (trade_degenerate skipped)
+    assert len(executed_records) == 2
+
+    # Trade 1: sized using initial risk ($80) -> 2 contracts (NOT 10 contracts)
+    rec1 = executed_records[0]
+    assert rec1.trade_id == "t_initial_40pt"
+    assert rec1.quantity == 2
+    assert rec1.stop_points == 40.0
+
+    # Trade 2: break-even stop_price, but sized using budgeted_risk_dollars ($80) -> 2 contracts (NOT 10 contracts)
+    rec2 = executed_records[1]
+    assert rec2.trade_id == "t_breakeven"
+    assert rec2.quantity == 2
+    assert rec2.stop_points == 40.0
 
 
 def test_multi_account_portfolio_correlation_warning():

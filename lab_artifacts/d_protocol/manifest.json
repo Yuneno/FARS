@@ -1,16 +1,16 @@
 {
   "schema_version": "fars-d-manifest-v1",
   "metadata": {
-    "started_at_utc": "2026-09-15T15:54:14.285494+00:00",
-    "finished_at_utc": "2026-09-15T15:57:57.752787+00:00",
+    "started_at_utc": "2026-09-15T17:27:42.218315+00:00",
+    "finished_at_utc": "2026-09-15T17:34:09.872253+00:00",
     "git_branch": "bloque-d-motor-cuentas",
-    "git_commit": "eb911bf8c74f1361ac98780562e2eb82b04835e9",
+    "git_commit": "114987f468d245188db78f41adaa624ba99f38c0",
     "python": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
     "status": "COMPLETED"
   },
   "preregistration_check": {
     "preregistered_at_utc": "2026-09-15T15:50:00Z",
-    "run_started_at_utc": "2026-09-15T15:54:14.285494+00:00",
+    "run_started_at_utc": "2026-09-15T17:27:42.218315+00:00",
     "preregistration_precedes_run": true,
     "n_candidates": 10,
     "account_sizes": [
@@ -19,6 +19,14 @@
       "100k",
       "150k"
     ]
+  },
+  "mae_coverage_summary": {
+    "total_trades": 2842,
+    "maes_computed": 2842,
+    "m1_causal_count": 2842,
+    "m5_fallback_count": 0,
+    "stop_bound_count": 0,
+    "m1_causal_coverage_pct": 100.0
   },
   "dataset": {
     "archive": "E:\\FARS-LAB\\databento.zip",
@@ -32,20 +40,20 @@
       "size_bytes": 2191
     },
     "lab_artifacts/d_protocol/smc_fvg_risk_10_maes.json": {
-      "sha256": "c34225196000a41f0f629d16b647656402019e04a7bad90629b5302e0bb0ae94",
-      "size_bytes": 162322
+      "sha256": "9767922c920b2e74c55a3976591e39ce5e668445468eda51596e4e15351427cc",
+      "size_bytes": 745682
     },
     "lab_artifacts/d_protocol/intraday_vs_closed_comparison.json": {
-      "sha256": "bd049dc6548e54d637c690d7f95544d1f1ea394624327476abb048d04c308eed",
-      "size_bytes": 8500
+      "sha256": "02d5d0e0a67b6185eb81be9076ae4a71f8cfeab4ef852a9d9b69947f1abf9d77",
+      "size_bytes": 11428
     },
     "lab_artifacts/d_protocol/sizing_results.json": {
-      "sha256": "71160829118d675eabea5c0cc5afae2317511b04119f2d0ff660307f44610492",
-      "size_bytes": 22837
+      "sha256": "8372462c8f412eb630329c1d458b5344ea504cfe3672b956ab0af40decfccde4",
+      "size_bytes": 25745
     },
     "lab_artifacts/d_protocol/multicuenta_portfolio.json": {
-      "sha256": "2902af97b0e213e55da61a9ed5bd7a525ad924a8581d7673fa47946264d9ca6b",
-      "size_bytes": 2203
+      "sha256": "6edf9636a818c863044887109a243b43048e4eecb5b32b417b25c577e12aec56",
+      "size_bytes": 2202
     }
   }
 }

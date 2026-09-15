@@ -14,6 +14,7 @@ Executes:
 from __future__ import annotations
 
 import csv
+import dataclasses
 import hashlib
 import io
 import json
@@ -95,7 +96,8 @@ def generate_smc_fvg_oos_trades(bars: list[Bar]) -> list[ExecutedTrade]:
         cal = bars[max(0, fold.test_start_idx - CALIBRATION_BARS_COUNT) : fold.test_start_idx]
         test_bars = bars[fold.test_start_idx : fold.test_end_idx]
         res = run_backtest(test_bars, SmcFvgStrategy(min_risk_pts=10.0), cfg, calibration_bars=cal)
-        oos_trades.extend(res.trades)
+        for t in res.trades:
+            oos_trades.append(dataclasses.replace(t, trade_id=f"fold_{fold.fold_id}_{t.trade_id}"))
     return oos_trades
 
 
@@ -199,7 +201,11 @@ def run_d3_comparison(
                 "blown_rate": mc_closed.blown_rate,
                 "blocked_rate": mc_closed.blocked_rate,
                 "timeout_rate": mc_closed.timeout_rate,
+                "trades_per_day": mc_closed.trades_per_day,
                 "median_days_to_pass": mc_closed.median_days_to_pass,
+                "p25_days_to_pass": mc_closed.p25_days_to_pass,
+                "p75_days_to_pass": mc_closed.p75_days_to_pass,
+                "median_trades_to_pass": mc_closed.median_trades_to_pass,
                 "p95_max_drawdown_pct": mc_closed.p95_max_drawdown_pct,
             },
             "intraday_mae_trailing": {
@@ -207,7 +213,11 @@ def run_d3_comparison(
                 "blown_rate": mc_intraday.blown_rate,
                 "blocked_rate": mc_intraday.blocked_rate,
                 "timeout_rate": mc_intraday.timeout_rate,
+                "trades_per_day": mc_intraday.trades_per_day,
                 "median_days_to_pass": mc_intraday.median_days_to_pass,
+                "p25_days_to_pass": mc_intraday.p25_days_to_pass,
+                "p75_days_to_pass": mc_intraday.p75_days_to_pass,
+                "median_trades_to_pass": mc_intraday.median_trades_to_pass,
                 "p95_max_drawdown_pct": mc_intraday.p95_max_drawdown_pct,
             },
             "deltas": {
@@ -267,9 +277,11 @@ def run_d4_sizing_grid(
                 "blown_rate": mc.blown_rate,
                 "blocked_rate": mc.blocked_rate,
                 "timeout_rate": mc.timeout_rate,
+                "trades_per_day": mc.trades_per_day,
                 "median_days_to_pass": mc.median_days_to_pass,
                 "p25_days_to_pass": mc.p25_days_to_pass,
                 "p75_days_to_pass": mc.p75_days_to_pass,
+                "median_trades_to_pass": mc.median_trades_to_pass,
                 "median_max_drawdown_pct": mc.median_max_drawdown_pct,
                 "p95_max_drawdown_pct": mc.p95_max_drawdown_pct,
             })
@@ -369,6 +381,16 @@ def main():
     maes = extract_m1_bars_and_compute_maes(trades, ZIP_PATH)
     print(f"Computed causal MAE for all {len(maes)} trades", flush=True)
 
+    m1_causal_count = sum(1 for m in maes.values() if m.resolution_mode == "m1_causal")
+    m5_fallback_count = sum(1 for m in maes.values() if m.resolution_mode == "m5_fallback_conservative")
+    stop_bound_count = sum(1 for m in maes.values() if m.resolution_mode == "stop_bound_conservative")
+    coverage_pct = round((m1_causal_count / len(trades)) * 100.0, 2)
+    print(
+        f"MAE resolution breakdown: m1_causal={m1_causal_count}, m5_fallback={m5_fallback_count}, "
+        f"stop_bound={stop_bound_count}, causal coverage={coverage_pct}%",
+        flush=True,
+    )
+
     # Save MAEs artifact
     maes_artifact_path = ARTIFACTS_DIR / "smc_fvg_risk_10_maes.json"
     maes_export = {
@@ -376,7 +398,11 @@ def main():
             "strategy": "smc_fvg_risk_10",
             "scenario": "por_tramo",
             "total_trades": len(trades),
-            "m1_causal_coverage_pct": 100.0,
+            "maes_computed": len(maes),
+            "m1_causal_count": m1_causal_count,
+            "m5_fallback_count": m5_fallback_count,
+            "stop_bound_count": stop_bound_count,
+            "m1_causal_coverage_pct": coverage_pct,
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         },
         "trades_mae": [
@@ -430,6 +456,14 @@ def main():
             "status": "COMPLETED",
         },
         "preregistration_check": prereg_info,
+        "mae_coverage_summary": {
+            "total_trades": len(trades),
+            "maes_computed": len(maes),
+            "m1_causal_count": m1_causal_count,
+            "m5_fallback_count": m5_fallback_count,
+            "stop_bound_count": stop_bound_count,
+            "m1_causal_coverage_pct": coverage_pct,
+        },
         "dataset": {
             "archive": str(ZIP_PATH),
             "member_m5": M5_MEMBER,

@@ -10,45 +10,45 @@
       "account_id": "port-apex-25k-evaluation-1",
       "profile_id": "apex-25k-evaluation",
       "starting_balance": 25000.0,
-      "final_balance": 26219.44,
+      "final_balance": 25942.43,
       "status": "timeout",
       "termination_reason": "trade_entry_exceeded_horizon_30d",
       "trades_executed": 54,
       "days_to_outcome": 28.57,
-      "max_drawdown_pct": 0.4575
+      "max_drawdown_pct": 0.4624
     },
     {
       "account_id": "port-apex-50k-evaluation-2",
       "profile_id": "apex-50k-evaluation",
       "starting_balance": 50000.0,
-      "final_balance": 52932.76,
+      "final_balance": 51832.8,
       "status": "timeout",
       "termination_reason": "trade_entry_exceeded_horizon_30d",
       "trades_executed": 54,
       "days_to_outcome": 28.57,
-      "max_drawdown_pct": 0.4018
+      "max_drawdown_pct": 0.5551
     },
     {
       "account_id": "port-apex-100k-evaluation-3",
       "profile_id": "apex-100k-evaluation",
       "starting_balance": 100000.0,
-      "final_balance": 105774.36,
+      "final_balance": 103658.73,
       "status": "timeout",
       "termination_reason": "trade_entry_exceeded_horizon_30d",
       "trades_executed": 54,
       "days_to_outcome": 28.57,
-      "max_drawdown_pct": 0.3917
+      "max_drawdown_pct": 0.5803
     },
     {
       "account_id": "port-apex-150k-evaluation-4",
       "profile_id": "apex-150k-evaluation",
       "starting_balance": 150000.0,
-      "final_balance": 158717.85,
+      "final_balance": 155400.35,
       "status": "timeout",
       "termination_reason": "trade_entry_exceeded_horizon_30d",
       "trades_executed": 54,
       "days_to_outcome": 28.57,
-      "max_drawdown_pct": 0.3783
+      "max_drawdown_pct": 0.5723
     }
   ],
   "summary": {

@@ -197,11 +197,18 @@ def run_account_simulation(
             break
 
         cap = safety_frac * buffer
-        stop_points = abs(trade.entry_price - trade.stop_price)
-        if stop_points <= 0.0:
-            stop_points = 10.0  # Fallback 10 points
 
-        unit_risk_usd = Decimal(str(round(stop_points * config.dollar_per_point, 4)))
+        # FIX-D1: Dimension using initial budgeted risk per contract, NOT exit stop_price!
+        trade_base_qty = max(trade.quantity, 1)
+        if trade.budgeted_risk_dollars <= 0.0 or trade.quantity <= 0:
+            # Degenerate record: skip and do not invent fallback
+            continue
+
+        unit_risk_usd = Decimal(str(round(trade.budgeted_risk_dollars / trade_base_qty, 4)))
+        if unit_risk_usd <= Decimal("0"):
+            continue
+
+        initial_stop_points = float(unit_risk_usd / dollar_per_point)
         qty_max_buffer = int(cap // unit_risk_usd)
 
         # Risk-blocked condition: if not even 1 contract fits into the safety buffer
@@ -217,7 +224,7 @@ def run_account_simulation(
                     direction=trade.direction,
                     entry_price=trade.entry_price,
                     exit_price=trade.exit_price,
-                    stop_points=stop_points,
+                    stop_points=initial_stop_points,
                     quantity=0,
                     gross_pnl=0.0,
                     net_pnl=0.0,
@@ -283,7 +290,7 @@ def run_account_simulation(
                         direction=trade.direction,
                         entry_price=trade.entry_price,
                         exit_price=trade.exit_price,
-                        stop_points=stop_points,
+                        stop_points=initial_stop_points,
                         quantity=executed_qty,
                         gross_pnl=0.0,
                         net_pnl=float(-mae_dollars),
@@ -339,7 +346,7 @@ def run_account_simulation(
                 direction=trade.direction,
                 entry_price=trade.entry_price,
                 exit_price=trade.exit_price,
-                stop_points=stop_points,
+                stop_points=initial_stop_points,
                 quantity=executed_qty,
                 gross_pnl=float(realized_gross),
                 net_pnl=float(realized_net),
@@ -397,13 +404,17 @@ class AccountMonteCarloSummary:
     trailing_mode: str
     n_simulations: int
     horizon_trades: int
+    trades_per_day: float
     pass_rate: float
     blown_rate: float
     blocked_rate: float
     timeout_rate: float
-    median_days_to_pass: float | None
+    median_days_to_pass: float | None  # in REAL calendar days
     p25_days_to_pass: float | None
     p75_days_to_pass: float | None
+    median_trades_to_pass: float | None
+    p25_trades_to_pass: float | None
+    p75_trades_to_pass: float | None
     median_max_drawdown_pct: float
     p95_max_drawdown_pct: float
     simulations_passed: int
@@ -445,6 +456,7 @@ def run_account_monte_carlo(
     timeout_count = 0
 
     pass_days: list[float] = []
+    pass_trades: list[int] = []
     max_dds_pct: list[float] = []
 
     for sim_idx in range(n_simulations):
@@ -516,7 +528,9 @@ def run_account_monte_carlo(
         max_dds_pct.append(res.max_drawdown_pct)
         if res.status == "passed":
             passed_count += 1
-            pass_days.append(res.days_to_outcome)
+            real_days = res.trades_executed / trades_per_day
+            pass_days.append(real_days)
+            pass_trades.append(res.trades_executed)
         elif res.status == "blown":
             blown_count += 1
         elif res.status == "blocked":
@@ -533,6 +547,10 @@ def run_account_monte_carlo(
     p25_days = float(np.percentile(pass_days, 25)) if pass_days else None
     p75_days = float(np.percentile(pass_days, 75)) if pass_days else None
 
+    med_trades = float(np.median(pass_trades)) if pass_trades else None
+    p25_trades = float(np.percentile(pass_trades, 25)) if pass_trades else None
+    p75_trades = float(np.percentile(pass_trades, 75)) if pass_trades else None
+
     med_dd = float(np.median(max_dds_pct)) if max_dds_pct else 0.0
     p95_dd = float(np.percentile(max_dds_pct, 95)) if max_dds_pct else 0.0
 
@@ -542,6 +560,7 @@ def run_account_monte_carlo(
         trailing_mode=config.trailing_mode,
         n_simulations=n_simulations,
         horizon_trades=horizon_trades,
+        trades_per_day=round(trades_per_day, 4),
         pass_rate=pass_rate,
         blown_rate=blown_rate,
         blocked_rate=blocked_rate,
@@ -549,6 +568,9 @@ def run_account_monte_carlo(
         median_days_to_pass=round(med_days, 2) if med_days is not None else None,
         p25_days_to_pass=round(p25_days, 2) if p25_days is not None else None,
         p75_days_to_pass=round(p75_days, 2) if p75_days is not None else None,
+        median_trades_to_pass=round(med_trades, 1) if med_trades is not None else None,
+        p25_trades_to_pass=round(p25_trades, 1) if p25_trades is not None else None,
+        p75_trades_to_pass=round(p75_trades, 1) if p75_trades is not None else None,
         median_max_drawdown_pct=round(med_dd, 2),
         p95_max_drawdown_pct=round(p95_dd, 2),
         simulations_passed=passed_count,
