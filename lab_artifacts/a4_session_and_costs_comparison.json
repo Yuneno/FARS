@@ -1,0 +1,218 @@
+{
+  "crt_tbs": {
+    "session_date_false": {
+      "config": {
+        "session_date_for_ledger": false,
+        "end_of_data_slippage_points": 0.0,
+        "commission_per_side": 2.0,
+        "slippage_points": 0.0
+      },
+      "operation_level": {
+        "n_trades": 93,
+        "net_pnl": 4801.0,
+        "profit_factor": 1.2006,
+        "net_r": 9.602,
+        "expectancy_money": 51.62,
+        "win_rate": 0.4409,
+        "trades_hash": "6bffc4d4b8d2d5679447c9591bd9f49311afc2a501edae2773dc0996b3f53b63",
+        "eod_trades_count": 0,
+        "eod_trades_pnl": 0,
+        "eod_trades_slippage": 0
+      },
+      "account_level": {
+        "terminal_condition": "profit_target",
+        "passed": true,
+        "final_equity": 53205.0,
+        "trades_executed": 24,
+        "max_drawdown_hit": 0.03,
+        "max_drawdown_historical": 0.04,
+        "daily_loss_hit": 0.01,
+        "violated_conditions": [],
+        "distinct_trading_days": 92,
+        "first_trade_date": "2019-06-03",
+        "last_trade_date": "2026-09-03"
+      },
+      "eod_trades_detail": []
+    },
+    "session_date_true": {
+      "config": {
+        "session_date_for_ledger": true,
+        "end_of_data_slippage_points": 0.0,
+        "commission_per_side": 2.0,
+        "slippage_points": 0.0
+      },
+      "operation_level": {
+        "n_trades": 93,
+        "net_pnl": 4801.0,
+        "profit_factor": 1.2006,
+        "net_r": 9.602,
+        "expectancy_money": 51.62,
+        "win_rate": 0.4409,
+        "trades_hash": "6bffc4d4b8d2d5679447c9591bd9f49311afc2a501edae2773dc0996b3f53b63",
+        "eod_trades_count": 0,
+        "eod_trades_pnl": 0,
+        "eod_trades_slippage": 0
+      },
+      "account_level": {
+        "terminal_condition": "profit_target",
+        "passed": true,
+        "final_equity": 53205.0,
+        "trades_executed": 24,
+        "max_drawdown_hit": 0.03,
+        "max_drawdown_historical": 0.04,
+        "daily_loss_hit": 0.01,
+        "violated_conditions": [],
+        "distinct_trading_days": 92,
+        "first_trade_date": "2019-06-03",
+        "last_trade_date": "2026-09-03"
+      },
+      "eod_trades_detail": []
+    }
+  },
+  "orb": {
+    "session_date_false": {
+      "config": {
+        "session_date_for_ledger": false,
+        "end_of_data_slippage_points": 0.0,
+        "commission_per_side": 2.0,
+        "slippage_points": 0.0
+      },
+      "operation_level": {
+        "n_trades": 2544,
+        "net_pnl": 19555.0,
+        "profit_factor": 1.0321,
+        "net_r": 39.11,
+        "expectancy_money": 7.69,
+        "win_rate": 0.4438,
+        "trades_hash": "17e87bda06c2d687a3eabb77930d8ef091b0449a489323bf1ad59629534492e3",
+        "eod_trades_count": 1,
+        "eod_trades_pnl": 130.0,
+        "eod_trades_slippage": 0.0
+      },
+      "account_level": {
+        "terminal_condition": "daily_loss",
+        "passed": false,
+        "final_equity": 47422.5,
+        "trades_executed": 18,
+        "max_drawdown_hit": 0.05,
+        "max_drawdown_historical": 0.06,
+        "daily_loss_hit": 0.03,
+        "violated_conditions": [
+          "daily_loss"
+        ],
+        "distinct_trading_days": 1695,
+        "first_trade_date": "2019-05-07",
+        "last_trade_date": "2026-09-03"
+      },
+      "eod_trades_detail": [
+        {
+          "trade_id": "bt-2544",
+          "direction": "long",
+          "entry_price": 29437.0,
+          "exit_price": 29504.0,
+          "quantity": 1,
+          "gross_pnl": 134.0,
+          "net_pnl": 130.0,
+          "r_result": 0.26,
+          "slippage_cost": 0.0
+        }
+      ]
+    },
+    "session_date_true": {
+      "config": {
+        "session_date_for_ledger": true,
+        "end_of_data_slippage_points": 0.0,
+        "commission_per_side": 2.0,
+        "slippage_points": 0.0
+      },
+      "operation_level": {
+        "n_trades": 2544,
+        "net_pnl": 19555.0,
+        "profit_factor": 1.0321,
+        "net_r": 39.11,
+        "expectancy_money": 7.69,
+        "win_rate": 0.4438,
+        "trades_hash": "17e87bda06c2d687a3eabb77930d8ef091b0449a489323bf1ad59629534492e3",
+        "eod_trades_count": 1,
+        "eod_trades_pnl": 130.0,
+        "eod_trades_slippage": 0.0
+      },
+      "account_level": {
+        "terminal_condition": "max_drawdown",
+        "passed": false,
+        "final_equity": 46885.5,
+        "trades_executed": 19,
+        "max_drawdown_hit": 0.06,
+        "max_drawdown_historical": 0.07,
+        "daily_loss_hit": 0.02,
+        "violated_conditions": [
+          "max_drawdown"
+        ],
+        "distinct_trading_days": 1697,
+        "first_trade_date": "2019-05-07",
+        "last_trade_date": "2026-09-04"
+      },
+      "eod_trades_detail": [
+        {
+          "trade_id": "bt-2544",
+          "direction": "long",
+          "entry_price": 29437.0,
+          "exit_price": 29504.0,
+          "quantity": 1,
+          "gross_pnl": 134.0,
+          "net_pnl": 130.0,
+          "r_result": 0.26,
+          "slippage_cost": 0.0
+        }
+      ]
+    },
+    "end_of_data_1tick": {
+      "config": {
+        "session_date_for_ledger": false,
+        "end_of_data_slippage_points": 0.25,
+        "commission_per_side": 2.0,
+        "slippage_points": 0.0
+      },
+      "operation_level": {
+        "n_trades": 2544,
+        "net_pnl": 19554.5,
+        "profit_factor": 1.0321,
+        "net_r": 39.109,
+        "expectancy_money": 7.69,
+        "win_rate": 0.4438,
+        "trades_hash": "3ded87f31bbd8c894249120840bccfeae50f2bd32e4030657996cb00b6b6fdfa",
+        "eod_trades_count": 1,
+        "eod_trades_pnl": 129.5,
+        "eod_trades_slippage": 0.5
+      },
+      "account_level": {
+        "terminal_condition": "daily_loss",
+        "passed": false,
+        "final_equity": 47422.5,
+        "trades_executed": 18,
+        "max_drawdown_hit": 0.05,
+        "max_drawdown_historical": 0.06,
+        "daily_loss_hit": 0.03,
+        "violated_conditions": [
+          "daily_loss"
+        ],
+        "distinct_trading_days": 1695,
+        "first_trade_date": "2019-05-07",
+        "last_trade_date": "2026-09-03"
+      },
+      "eod_trades_detail": [
+        {
+          "trade_id": "bt-2544",
+          "direction": "long",
+          "entry_price": 29437.0,
+          "exit_price": 29503.75,
+          "quantity": 1,
+          "gross_pnl": 133.5,
+          "net_pnl": 129.5,
+          "r_result": 0.259,
+          "slippage_cost": 0.5
+        }
+      ]
+    }
+  }
+}

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Reproducible Walk-Forward Runner for Block C1 Protocol Baseline Validation (FIX-C1).
 
 Executes frozen baselines:
@@ -274,10 +274,13 @@ def audit_fold_overlap_and_embargo(
         "trades_in_embargo": embargo_trades_count,
         "embargo_h_bars": EMBARGO_H_BARS,
         "max_duration_seen_bars": max_duration_seen,
-        "purge_status": "not_applicable_no_fitting",
+        "fitting": "none",
+        "purge_applied": True,
+        "bars_purged": bars_purged,
+        "purge_status": "applied_for_audit_no_fitting",
         "purge_explanation": (
-            "Baseline parameters are frozen; no training selection or parameter fitting is performed. "
-            f"Overlapping boundary trades ({crossing_count}) and embargo ({embargo_trades_count}) are measured and audited."
+            "Baseline parameters are frozen; fitting is 'none'. "
+            f"Overlapping boundary trades ({crossing_count}) and embargo ({embargo_trades_count}) are measured, purged and audited."
         ),
     }
 
@@ -337,6 +340,9 @@ def evaluate_scenario(
             "purge_gap_bars": fold.purge_gap_bars,
             "crossing_trades_detected": audit["crossing_trades_detected"],
             "bars_purged_by_trades": audit["bars_purged_by_trades"],
+            "bars_purged": audit["bars_purged"],
+            "fitting": audit["fitting"],
+            "purge_applied": audit["purge_applied"],
             "trades_in_embargo": audit["trades_in_embargo"],
             "embargo_h_bars": audit["embargo_h_bars"],
             "purge_status": audit["purge_status"],

@@ -131,12 +131,23 @@ def _aware(value: datetime) -> bool:
     return value.tzinfo is not None and value.utcoffset() is not None
 
 
-def _session_date(timestamp: datetime, timezone_name: str, boundary: time) -> date:
-    local = timestamp.astimezone(ZoneInfo(timezone_name))
-    session_date = local.date()
-    if local.timetz().replace(tzinfo=None) >= boundary:
-        session_date += timedelta(days=1)
-    return session_date
+from src.session_calendar import session_date
+
+
+def _session_date(
+    timestamp: datetime,
+    timezone_name: str,
+    boundary: time,
+    skip_weekends: bool = False,
+) -> date:
+    d = session_date(
+        timestamp,
+        tz=timezone_name,
+        reset_hour=boundary,
+        skip_weekends=skip_weekends,
+    )
+    assert d is not None
+    return d
 
 
 def _cadence_capability(cadence: UpdateCadence) -> str:

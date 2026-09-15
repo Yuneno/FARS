@@ -46,6 +46,24 @@ Cada corrida walk-forward debe emitir, para cada uno de los 8 folds calendaricos
 | `max_drawdown_pct` | Maximo drawdown relativo respecto al pico de cuenta | `float` (0.0 a 1.0) |
 | `n_expiraciones` | Operaciones liquidadas por salida temporal (`time_exit`) | `int` |
 
+### 2.1 Protocolo de Purga y Embargo Temporal
+
+Para prevenir cualquier forma de fuga de informacion (*data leakage*) entre particiones temporales contiguas, el protocolo define una purga por intervalos reales de operaciones y una zona de embargo (Lopez de Prado, *Advances in Financial Machine Learning*, 2018):
+
+1. **Derivacion del Horizonte de Embargo ($h = 192$ barras):**
+   - El horizonte $h$ representa la cota superior del periodo maximo de retencion (*holding period*) de cualquier operacion bajo las reglas de las estrategias operativas.
+   - En barras de temporalidad M5, una sesion regular (RTH) de 6.5 horas contiene 78 barras, mientras que una ventana de 16 horas comprende exactamente 192 barras ($16 \times 12 = 192$).
+   - Por tanto, $h = 192$ barras M5 asegura que ninguna dependencia causal o memoria de autocorrelacion de la etiqueta de un trade persista en la particion posterior.
+
+2. **Por que `trades_in_embargo = 0` en Esquemas Rolling (C1 / C2):**
+   - En un split estrictamente causal hacia adelante (*rolling calendar*), el conjunto de entrenamiento precede cronologicamente al de prueba ($Train \prec Test$).
+   - La purga de frontera elimina cualquier operacion iniciada en el entrenamiento que termine dentro o despues del inicio del test (`entry_idx < test_start_idx` y `exit_idx >= test_start_idx`), descartando sus barras del entrenamiento.
+   - El embargo post-test cubre un intervalo $[test\_end, test\_end + h]$. En rolling walk-forward no existe conjunto de entrenamiento posterior a $test\_end$ dentro del fold, por lo que el numero de operaciones de entrenamiento que caen en dicha zona es idénticamente cero (`trades_in_embargo = 0`).
+
+3. **Relevancia del Embargo en CPCV (Bloque C3):**
+   - El embargo se convierte en un mecanismo activo y decisivo en esquemas de **Validacion Cruzada Purgada y Combinatoria (CPCV)** previstos para el Bloque C3.
+   - En CPCV, multiples folds de entrenamiento se situan en el futuro respecto a particiones de prueba ($Test \prec Train$). En tales configuraciones, el sesgo autoregresivo de las etiquetas obliga a purgar obligatoriamente las primeras $h = 192$ barras del entrenamiento posterior para garantizar una separacion temporal genuina.
+
 ---
 
 ## 3. Criterios Cuantitativos de Elegibilidad (Gates de Aceptacion)

@@ -50,6 +50,7 @@ from src.backtest.intrabar import (
 from src.backtest.markets import MNQ
 from src.backtest.strategy import Strategy
 from src.engine import SimulationResult, run_simulation
+from src.session_calendar import session_date
 from src.types import FundedAccountRules, Trade
 
 
@@ -91,6 +92,8 @@ class BacktestConfig:
     time_exit_mode: str = "market"
     end_of_data_policy: str = "unresolved"  # "unresolved" or "close"
     time_exit_slippage_points: float = 0.0
+    end_of_data_slippage_points: float = 0.0
+    session_date_for_ledger: bool = False
 
     def __post_init__(self) -> None:
         if self.time_exit_mode not in {"market", "flat"}:
@@ -105,6 +108,7 @@ class BacktestConfig:
             "commission_per_side",
             "slippage_points",
             "time_exit_slippage_points",
+            "end_of_data_slippage_points",
             "profit_target_pct",
             "max_drawdown_pct",
             "daily_loss_limit_pct",
@@ -143,6 +147,7 @@ class BacktestConfig:
             "commission_per_side",
             "slippage_points",
             "time_exit_slippage_points",
+            "end_of_data_slippage_points",
         )
         for name in nonnegative_economic_fields:
             if getattr(self, name) < 0:
@@ -186,6 +191,8 @@ class BacktestConfig:
             raise ValueError(
                 "discrete_partial_contracts requires partial_take_profit_fraction > 0"
             )
+        if not isinstance(self.session_date_for_ledger, bool):
+            raise ValueError("session_date_for_ledger must be a bool")
 
 
 @dataclass(frozen=True)
@@ -485,6 +492,8 @@ def _run_backtest_legacy(
                 exit_slip_pts = 0.0 if gap else abs(exit_price - stop)
             elif reason == "time_exit" and config.time_exit_mode == "market":
                 exit_slip_pts = config.time_exit_slippage_points
+            elif reason == "end_of_data":
+                exit_slip_pts = config.end_of_data_slippage_points
             else:
                 exit_slip_pts = 0.0
             slippage_cost = (
@@ -529,7 +538,12 @@ def _run_backtest_legacy(
         direction = position["direction"]
         entry = position["entry"]
         qty = position["qty"]
-        exit_price = _round_tick(last.close, config.tick_size)
+        raw_exit_price = _round_tick(last.close, config.tick_size)
+        slip = config.end_of_data_slippage_points
+        exit_price = _round_tick(
+            raw_exit_price - slip if direction == "long" else raw_exit_price + slip,
+            config.tick_size,
+        )
         move = exit_price - entry if direction == "long" else entry - exit_price
         gross_pnl = move * config.dollar_per_point * qty
         commission = config.commission_per_side * 2 * qty
@@ -546,6 +560,7 @@ def _run_backtest_legacy(
                 if direction == "long"
                 else max(position["entry_open"] - entry, 0.0)
             )
+            exit_slip_pts = slip
             trades.append(
                 ExecutedTrade(
                     trade_id=f"bt-{len(trades) + 1}",
@@ -564,7 +579,7 @@ def _run_backtest_legacy(
                     exit_reason="end_of_data",
                     stop_risk_dollars=stop_risk_dollars,
                     slippage_cost=(
-                        entry_slip_pts * config.dollar_per_point * qty
+                        (entry_slip_pts + exit_slip_pts) * config.dollar_per_point * qty
                     ),
                     budgeted_risk_dollars=dollar_risk,
                     effective_risk_dollars=stop_risk_dollars,
@@ -784,6 +799,8 @@ def _run_backtest_enhanced(
                 exit_slip_pts = abs(fill - position["stop"]) * remaining_frac
         elif reason == "time_exit" and config.time_exit_mode == "market":
             exit_slip_pts = config.time_exit_slippage_points * remaining_frac
+        elif reason == "end_of_data":
+            exit_slip_pts = config.end_of_data_slippage_points * remaining_frac
         slippage_cost = (
             entry_slip_pts + exit_slip_pts
         ) * config.dollar_per_point * qty
@@ -979,7 +996,13 @@ def _run_backtest_enhanced(
     open_pos = None
     if position is not None:
         last = bars[-1]
-        exit_price = _round_tick(last.close, config.tick_size)
+        raw_exit_price = _round_tick(last.close, config.tick_size)
+        slip = config.end_of_data_slippage_points
+        direction = position["direction"]
+        exit_price = _round_tick(
+            raw_exit_price - slip if direction == "long" else raw_exit_price + slip,
+            config.tick_size,
+        )
         if config.end_of_data_policy == "close":
             close_position("end_of_data", exit_price, last)
         else:
@@ -1066,34 +1089,45 @@ def executed_to_core_trades(
     dollar_risk = (
         config.risk_per_trade * config.initial_balance if config is not None else None
     )
-    return [
-        Trade(
-            r_result=t.r_result,
-            trade_id=t.trade_id,
-            timestamp=t.exit_time,
-            date=t.exit_time.strftime("%Y-%m-%d"),
-            asset=symbol,
-            direction=t.direction,  # type: ignore[arg-type]
-            entry_price=t.entry_price,
-            stop_price=t.stop_price,
-            exit_price=t.exit_price,
-            strategy=strategy_name,
-            metadata={
-                "quantity": t.quantity,
-                "gross_pnl": t.gross_pnl,
-                "commission": t.commission,
-                "net_pnl": t.net_pnl,
-                "exit_reason": t.exit_reason,
-                "risk_budget_dollars": dollar_risk,
-                "stop_risk_dollars": t.stop_risk_dollars,
-                "r_vs_stop": (
-                    t.net_pnl / t.stop_risk_dollars if t.stop_risk_dollars > 0 else None
-                ),
-                "normalization": "r_result = net_pnl / (risk_per_trade * initial_balance)",
-            },
+    use_session_date = config.session_date_for_ledger if config is not None else False
+    core_trades: list[Trade] = []
+    for t in trades:
+        if use_session_date:
+            sd = session_date(t.exit_time)
+            trade_date = sd.strftime("%Y-%m-%d") if sd is not None else t.exit_time.strftime("%Y-%m-%d")
+        else:
+            trade_date = t.exit_time.strftime("%Y-%m-%d")
+        core_trades.append(
+            Trade(
+                r_result=t.r_result,
+                trade_id=t.trade_id,
+                timestamp=t.exit_time,
+                date=trade_date,
+                asset=symbol,
+                direction=t.direction,  # type: ignore[arg-type]
+                entry_price=t.entry_price,
+                stop_price=t.stop_price,
+                exit_price=t.exit_price,
+                strategy=strategy_name,
+                metadata={
+                    "quantity": t.quantity,
+                    "gross_pnl": t.gross_pnl,
+                    "commission": t.commission,
+                    "net_pnl": t.net_pnl,
+                    "exit_reason": t.exit_reason,
+                    "risk_budget_dollars": dollar_risk,
+                    "stop_risk_dollars": t.stop_risk_dollars,
+                    "r_vs_stop": (
+                        t.net_pnl / t.stop_risk_dollars if t.stop_risk_dollars > 0 else None
+                    ),
+                    "normalization": "r_result = net_pnl / (risk_per_trade * initial_balance)",
+                },
+            )
         )
-        for t in trades
-    ]
+    return core_trades
+
+
+to_engine_trades = executed_to_core_trades
 
 
 def _build_result(
@@ -1179,4 +1213,5 @@ __all__ = [
     "ExecutedTrade",
     "executed_to_core_trades",
     "run_backtest",
+    "to_engine_trades",
 ]

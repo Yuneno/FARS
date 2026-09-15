@@ -35,6 +35,8 @@ _ADDITIVE_EXECUTOR_FIELDS = {
     "time_exit_mode",
     "end_of_data_policy",
     "time_exit_slippage_points",
+    "end_of_data_slippage_points",
+    "session_date_for_ledger",
 }
 
 _ADDITIVE_RESULT_FIELDS = {
