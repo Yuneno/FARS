@@ -139,4 +139,22 @@ En cumplimiento de la fase A.6 del encargo de saneamiento y poda de deuda tecnic
 ### Modulo Pendiente de Decision del Usuario (NO retirado)
 - **`src/detectors/*`** (~250 lineas, 5 archivos, `tests/test_detectors.py` con 12 tests): Detectores JITA de P4. No tienen consumidores fuera del propio subpaquete, pero su retiro esta pendiente de decision explicita del usuario. **Se mantiene intacto** en el codebase.
 
+---
+
+## 8. Motor de Cuentas de Fondeo Real y Trailing Intradía (Bloque D)
+
+Resultados de la auditoría y ejecución formal del motor de cuentas reales de evaluación de **Apex Trader Funding** sobre la estrategia ganadora de C3 (`smc_fvg_risk_10` bajo `por_tramo`), cuantificando el sesgo del método de trades cerrados frente al trailing intradía con MAE M1 causal.
+
+- **Documentación de Especificación:** `docs/refactor/apex-profile.md`
+- **Dictamen de Elegibilidad:** `docs/refactor/d-eligibility.md`
+- **Manifiesto Criptográfico:** `lab_artifacts/d_protocol/manifest.json`
+
+| Artefacto | Ruta | Hash SHA-256 | Descripción | Clasificación |
+|---|---|---|---|:---:|
+| **Preregistro de Sizing** | `lab_artifacts/d_protocol/preregistro_sizing.json` | `4b29b9ef4cda47f6b2c5773d865d58d51cdfe7758ea6a2d4df7010b159be695d` | 10 sizings candidatos predeclarados antes de la ejecución | `verificado` |
+| **MAEs Causales M1** | `lab_artifacts/d_protocol/smc_fvg_risk_10_maes.json` | `c34225196000a41f0f629d16b647656402019e04a7bad90629b5302e0bb0ae94` | MAE exacto causal por trade (2.842 trades, 100% cobertura M1) | `verificado` |
+| **Comparativa Intradía vs Cerrados (D3)** | `lab_artifacts/d_protocol/intraday_vs_closed_comparison.json` | `bd049dc6548e54d637c690d7f95544d1f1ea394624327476abb048d04c308eed` | Cuantificación del sesgo: quema subestimada hasta 7.25x en trades cerrados | `verificado` |
+| **Rejilla Completa de Sizing (D4)** | `lab_artifacts/d_protocol/sizing_results.json` | `71160829118d675eabea5c0cc5afae2317511b04119f2d0ff660307f44610492` | Matriz de 10 sizings x 4 tamaños de cuenta en Monte Carlo (2.000 runs) | `verificado` |
+| **Portafolio Multicuenta (D5)** | `lab_artifacts/d_protocol/multicuenta_portfolio.json` | `2902af97b0e213e55da61a9ed5bd7a525ad924a8581d7673fa47946264d9ca6b` | 4 cuentas simultáneas (25k-150k) con advertencia de correlación unitaria | `verificado` |
+
 

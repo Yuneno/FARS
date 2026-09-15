@@ -1,0 +1,272 @@
+{
+  "metadata": {
+    "task": "D3 \u2014 Trailing intrad\u00eda con MAE vs Trades Cerrados",
+    "n_simulations_per_cell": 2000,
+    "master_seed": 20260729,
+    "account_evaluated": "25k (Apex Trader Funding)",
+    "benchmark_strategy": "smc_fvg_risk_10 (por_tramo)",
+    "key_takeaway": "El simulador de referencia sobreestima el pase y subestima la quema al ignorar la excursion adversa intrabar (MAE). En FARS el sesgo queda cuantificado exactamente."
+  },
+  "comparisons": [
+    {
+      "risk_pct": 0.001,
+      "risk_pct_label": "0.10%",
+      "source_hypothesis": "exploratory_minimum",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.0055,
+        "blown_rate": 0.0,
+        "blocked_rate": 0.018,
+        "timeout_rate": 0.9765,
+        "median_days_to_pass": 1.88,
+        "p95_max_drawdown_pct": 3.06
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.0055,
+        "blown_rate": 0.0005,
+        "blocked_rate": 0.018,
+        "timeout_rate": 0.976,
+        "median_days_to_pass": 1.88,
+        "p95_max_drawdown_pct": 3.06
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.0,
+        "underestimated_quema_rate_in_reference": 0.0005
+      }
+    },
+    {
+      "risk_pct": 0.001433,
+      "risk_pct_label": "0.1433%",
+      "source_hypothesis": "c3_gate5_worst_stress_cost_plus_50_dd_lt_5pct",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.1335,
+        "blown_rate": 0.0,
+        "blocked_rate": 0.0165,
+        "timeout_rate": 0.85,
+        "median_days_to_pass": 1.53,
+        "p95_max_drawdown_pct": 2.78
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.1335,
+        "blown_rate": 0.002,
+        "blocked_rate": 0.0165,
+        "timeout_rate": 0.848,
+        "median_days_to_pass": 1.53,
+        "p95_max_drawdown_pct": 2.78
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.0,
+        "underestimated_quema_rate_in_reference": 0.002
+      }
+    },
+    {
+      "risk_pct": 0.001573,
+      "risk_pct_label": "0.1573%",
+      "source_hypothesis": "c3_gate5_smc8_baseline_dd_lt_5pct",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.1345,
+        "blown_rate": 0.0025,
+        "blocked_rate": 0.0175,
+        "timeout_rate": 0.8455,
+        "median_days_to_pass": 1.42,
+        "p95_max_drawdown_pct": 3.16
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.1345,
+        "blown_rate": 0.0085,
+        "blocked_rate": 0.0165,
+        "timeout_rate": 0.8405,
+        "median_days_to_pass": 1.42,
+        "p95_max_drawdown_pct": 3.1
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.0,
+        "underestimated_quema_rate_in_reference": 0.006
+      }
+    },
+    {
+      "risk_pct": 0.001946,
+      "risk_pct_label": "0.1946%",
+      "source_hypothesis": "c3_gate5_smc10_base_dd_lt_5pct",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.13,
+        "blown_rate": 0.003,
+        "blocked_rate": 0.0185,
+        "timeout_rate": 0.8485,
+        "median_days_to_pass": 1.41,
+        "p95_max_drawdown_pct": 3.38
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.1295,
+        "blown_rate": 0.0155,
+        "blocked_rate": 0.0175,
+        "timeout_rate": 0.8375,
+        "median_days_to_pass": 1.41,
+        "p95_max_drawdown_pct": 3.3
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.0005,
+        "underestimated_quema_rate_in_reference": 0.0125
+      }
+    },
+    {
+      "risk_pct": 0.0025,
+      "risk_pct_label": "0.25%",
+      "source_hypothesis": "kai_research_funded_sim_reference_sizing",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.365,
+        "blown_rate": 0.0215,
+        "blocked_rate": 0.018,
+        "timeout_rate": 0.5955,
+        "median_days_to_pass": 1.12,
+        "p95_max_drawdown_pct": 3.46
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.3585,
+        "blown_rate": 0.05,
+        "blocked_rate": 0.018,
+        "timeout_rate": 0.5735,
+        "median_days_to_pass": 1.12,
+        "p95_max_drawdown_pct": 3.16
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.0065,
+        "underestimated_quema_rate_in_reference": 0.0285
+      }
+    },
+    {
+      "risk_pct": 0.003,
+      "risk_pct_label": "0.30%",
+      "source_hypothesis": "exploratory_midpoint",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.5905,
+        "blown_rate": 0.021,
+        "blocked_rate": 0.0175,
+        "timeout_rate": 0.371,
+        "median_days_to_pass": 0.96,
+        "p95_max_drawdown_pct": 3.59
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.5655,
+        "blown_rate": 0.075,
+        "blocked_rate": 0.017,
+        "timeout_rate": 0.3425,
+        "median_days_to_pass": 0.96,
+        "p95_max_drawdown_pct": 3.29
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.025,
+        "underestimated_quema_rate_in_reference": 0.054
+      }
+    },
+    {
+      "risk_pct": 0.003439,
+      "risk_pct_label": "0.3439%",
+      "source_hypothesis": "c3_gate5_worst_stress_cost_plus_50_dd_le_12r",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.5705,
+        "blown_rate": 0.0215,
+        "blocked_rate": 0.0205,
+        "timeout_rate": 0.3875,
+        "median_days_to_pass": 0.94,
+        "p95_max_drawdown_pct": 4.39
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.535,
+        "blown_rate": 0.108,
+        "blocked_rate": 0.018,
+        "timeout_rate": 0.339,
+        "median_days_to_pass": 0.94,
+        "p95_max_drawdown_pct": 3.87
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.0355,
+        "underestimated_quema_rate_in_reference": 0.0865
+      }
+    },
+    {
+      "risk_pct": 0.004,
+      "risk_pct_label": "0.40%",
+      "source_hypothesis": "exploratory_high",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.7205,
+        "blown_rate": 0.02,
+        "blocked_rate": 0.0235,
+        "timeout_rate": 0.236,
+        "median_days_to_pass": 0.83,
+        "p95_max_drawdown_pct": 4.57
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.6755,
+        "blown_rate": 0.1065,
+        "blocked_rate": 0.018,
+        "timeout_rate": 0.2,
+        "median_days_to_pass": 0.83,
+        "p95_max_drawdown_pct": 4.15
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.045,
+        "underestimated_quema_rate_in_reference": 0.0865
+      }
+    },
+    {
+      "risk_pct": 0.004671,
+      "risk_pct_label": "0.4671%",
+      "source_hypothesis": "c3_gate5_smc10_base_dd_le_12r",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.7875,
+        "blown_rate": 0.019,
+        "blocked_rate": 0.031,
+        "timeout_rate": 0.1625,
+        "median_days_to_pass": 0.7,
+        "p95_max_drawdown_pct": 4.95
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.7305,
+        "blown_rate": 0.1165,
+        "blocked_rate": 0.023,
+        "timeout_rate": 0.13,
+        "median_days_to_pass": 0.69,
+        "p95_max_drawdown_pct": 4.5
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.057,
+        "underestimated_quema_rate_in_reference": 0.0975
+      }
+    },
+    {
+      "risk_pct": 0.005,
+      "risk_pct_label": "0.50%",
+      "source_hypothesis": "exploratory_maximum",
+      "account_size": "25k",
+      "closed_trades_trailing": {
+        "pass_rate": 0.78,
+        "blown_rate": 0.018,
+        "blocked_rate": 0.0395,
+        "timeout_rate": 0.1625,
+        "median_days_to_pass": 0.7,
+        "p95_max_drawdown_pct": 5.39
+      },
+      "intraday_mae_trailing": {
+        "pass_rate": 0.7145,
+        "blown_rate": 0.1305,
+        "blocked_rate": 0.029,
+        "timeout_rate": 0.126,
+        "median_days_to_pass": 0.69,
+        "p95_max_drawdown_pct": 4.78
+      },
+      "deltas": {
+        "overestimated_pass_rate_in_reference": 0.0655,
+        "underestimated_quema_rate_in_reference": 0.1125
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "task": "D5 \u2014 Portafolio Multicuenta Simultaneo",
+    "evaluated_sizing": "0.1946% (C3 Gate 5 candidate)",
+    "total_accounts": 4,
+    "correlation_coefficient": 1.0
+  },
+  "accounts": [
+    {
+      "account_id": "port-apex-25k-evaluation-1",
+      "profile_id": "apex-25k-evaluation",
+      "starting_balance": 25000.0,
+      "final_balance": 26219.44,
+      "status": "timeout",
+      "termination_reason": "trade_entry_exceeded_horizon_30d",
+      "trades_executed": 54,
+      "days_to_outcome": 28.57,
+      "max_drawdown_pct": 0.4575
+    },
+    {
+      "account_id": "port-apex-50k-evaluation-2",
+      "profile_id": "apex-50k-evaluation",
+      "starting_balance": 50000.0,
+      "final_balance": 52932.76,
+      "status": "timeout",
+      "termination_reason": "trade_entry_exceeded_horizon_30d",
+      "trades_executed": 54,
+      "days_to_outcome": 28.57,
+      "max_drawdown_pct": 0.4018
+    },
+    {
+      "account_id": "port-apex-100k-evaluation-3",
+      "profile_id": "apex-100k-evaluation",
+      "starting_balance": 100000.0,
+      "final_balance": 105774.36,
+      "status": "timeout",
+      "termination_reason": "trade_entry_exceeded_horizon_30d",
+      "trades_executed": 54,
+      "days_to_outcome": 28.57,
+      "max_drawdown_pct": 0.3917
+    },
+    {
+      "account_id": "port-apex-150k-evaluation-4",
+      "profile_id": "apex-150k-evaluation",
+      "starting_balance": 150000.0,
+      "final_balance": 158717.85,
+      "status": "timeout",
+      "termination_reason": "trade_entry_exceeded_horizon_30d",
+      "trades_executed": 54,
+      "days_to_outcome": 28.57,
+      "max_drawdown_pct": 0.3783
+    }
+  ],
+  "summary": {
+    "passed_count": 0,
+    "blown_count": 0,
+    "blocked_count": 0,
+    "timeout_count": 4
+  },
+  "simultaneous_quema_risk_warning": "ADVERTENCIA DE CORRELACION UNITARIA: Las cuentas que operan la misma senal en el mismo mercado tienen correlacion de quema ~ 1.0. La diversificacion de cuentas sin diversificacion de senales NO reduce el riesgo de quema conjunta; si una quema por drawdown en la senal, todas las de igual o menor colchon queman simultaneamente."
+}

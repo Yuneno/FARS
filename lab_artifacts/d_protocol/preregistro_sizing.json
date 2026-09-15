@@ -1,0 +1,79 @@
+{
+  "schema_version": "fars-d-preregistro-sizing-v1",
+  "metadata": {
+    "preregistered_at_utc": "2026-09-15T15:50:00Z",
+    "protocol": "Block D — Apex account engine sizing & MAE trailing",
+    "strategy": "smc_fvg_risk_10",
+    "market": "MNQ",
+    "dataset": "MNQ M5 canonical post-2019 (518,237 bars, sha256 fbed6061...)",
+    "scenario": "por_tramo (comm=0.62, slip=0.25, time_slip=0.25)",
+    "monte_carlo_runs_per_cell": 2000,
+    "master_seed": 20260729,
+    "horizon_calendar_days": 30,
+    "dd_buffer_safety_fraction": 0.75
+  },
+  "candidate_grid": [
+    {
+      "index": 1,
+      "risk_pct": 0.001,
+      "risk_pct_label": "0.10%",
+      "source_hypothesis": "exploratory_minimum"
+    },
+    {
+      "index": 2,
+      "risk_pct": 0.001433,
+      "risk_pct_label": "0.1433%",
+      "source_hypothesis": "c3_gate5_worst_stress_cost_plus_50_dd_lt_5pct"
+    },
+    {
+      "index": 3,
+      "risk_pct": 0.001573,
+      "risk_pct_label": "0.1573%",
+      "source_hypothesis": "c3_gate5_smc8_baseline_dd_lt_5pct"
+    },
+    {
+      "index": 4,
+      "risk_pct": 0.001946,
+      "risk_pct_label": "0.1946%",
+      "source_hypothesis": "c3_gate5_smc10_base_dd_lt_5pct"
+    },
+    {
+      "index": 5,
+      "risk_pct": 0.0025,
+      "risk_pct_label": "0.25%",
+      "source_hypothesis": "kai_research_funded_sim_reference_sizing"
+    },
+    {
+      "index": 6,
+      "risk_pct": 0.003,
+      "risk_pct_label": "0.30%",
+      "source_hypothesis": "exploratory_midpoint"
+    },
+    {
+      "index": 7,
+      "risk_pct": 0.003439,
+      "risk_pct_label": "0.3439%",
+      "source_hypothesis": "c3_gate5_worst_stress_cost_plus_50_dd_le_12r"
+    },
+    {
+      "index": 8,
+      "risk_pct": 0.004,
+      "risk_pct_label": "0.40%",
+      "source_hypothesis": "exploratory_high"
+    },
+    {
+      "index": 9,
+      "risk_pct": 0.004671,
+      "risk_pct_label": "0.4671%",
+      "source_hypothesis": "c3_gate5_smc10_base_dd_le_12r"
+    },
+    {
+      "index": 10,
+      "risk_pct": 0.005,
+      "risk_pct_label": "0.50%",
+      "source_hypothesis": "exploratory_maximum"
+    }
+  ],
+  "account_sizes": ["25k", "50k", "100k", "150k"],
+  "evaluation_modes": ["closed_trade", "intraday_event"]
+}

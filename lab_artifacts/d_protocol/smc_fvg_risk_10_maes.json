@@ -1,0 +1,5762 @@
+{
+  "metadata": {
+    "strategy": "smc_fvg_risk_10",
+    "scenario": "por_tramo",
+    "total_trades": 2842,
+    "m1_causal_coverage_pct": 100.0,
+    "generated_at_utc": "2026-09-15T15:54:21.037849+00:00"
+  },
+  "trades_mae": [
+    {
+      "trade_id": "bt-1",
+      "mae_points": 9.0,
+      "mae_dollars_per_contract": 18.0,
+      "mae_timestamp": "2026-01-02T08:30:00+00:00",
+      "mfe_points": 33.5,
+      "m1_bars_evaluated": 41,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-2",
+      "mae_points": 14.75,
+      "mae_dollars_per_contract": 29.5,
+      "mae_timestamp": "2026-01-02T15:50:00+00:00",
+      "mfe_points": 15.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-3",
+      "mae_points": 20.5,
+      "mae_dollars_per_contract": 41.0,
+      "mae_timestamp": "2026-01-02T17:38:00+00:00",
+      "mfe_points": 19.25,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-4",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-01-05T07:13:00+00:00",
+      "mfe_points": 10.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-5",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-01-05T08:00:00+00:00",
+      "mfe_points": 25.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-6",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 29.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-7",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 10.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-8",
+      "mae_points": 14.5,
+      "mae_dollars_per_contract": 29.0,
+      "mae_timestamp": "2026-01-06T08:00:00+00:00",
+      "mfe_points": 8.75,
+      "m1_bars_evaluated": 46,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-9",
+      "mae_points": 4.5,
+      "mae_dollars_per_contract": 9.0,
+      "mae_timestamp": "2026-01-06T14:35:00+00:00",
+      "mfe_points": 26.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-10",
+      "mae_points": 6.0,
+      "mae_dollars_per_contract": 12.0,
+      "mae_timestamp": "2026-01-07T10:37:00+00:00",
+      "mfe_points": 7.75,
+      "m1_bars_evaluated": 36,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-11",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-01-07T12:45:00+00:00",
+      "mfe_points": 5.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-12",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-01-07T18:55:00+00:00",
+      "mfe_points": 12.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-13",
+      "mae_points": 9.25,
+      "mae_dollars_per_contract": 18.5,
+      "mae_timestamp": "2026-01-08T12:50:00+00:00",
+      "mfe_points": 6.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-14",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-01-08T20:43:00+00:00",
+      "mfe_points": 27.0,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-15",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 34.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-16",
+      "mae_points": 9.0,
+      "mae_dollars_per_contract": 18.0,
+      "mae_timestamp": "2026-01-12T06:05:00+00:00",
+      "mfe_points": 5.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-17",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-01-12T12:25:00+00:00",
+      "mfe_points": 12.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-18",
+      "mae_points": 15.75,
+      "mae_dollars_per_contract": 31.5,
+      "mae_timestamp": "2026-01-12T16:45:00+00:00",
+      "mfe_points": 14.75,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-19",
+      "mae_points": 12.0,
+      "mae_dollars_per_contract": 24.0,
+      "mae_timestamp": "2026-01-13T04:01:00+00:00",
+      "mfe_points": 4.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-20",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-01-13T10:33:00+00:00",
+      "mfe_points": 4.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-21",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 64.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-22",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 34.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-23",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-01-13T17:10:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-24",
+      "mae_points": 13.0,
+      "mae_dollars_per_contract": 26.0,
+      "mae_timestamp": "2026-01-14T11:43:00+00:00",
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-25",
+      "mae_points": 9.0,
+      "mae_dollars_per_contract": 18.0,
+      "mae_timestamp": "2026-01-14T13:05:00+00:00",
+      "mfe_points": 14.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-26",
+      "mae_points": 18.75,
+      "mae_dollars_per_contract": 37.5,
+      "mae_timestamp": "2026-01-14T15:40:00+00:00",
+      "mfe_points": 33.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-27",
+      "mae_points": 28.5,
+      "mae_dollars_per_contract": 57.0,
+      "mae_timestamp": "2026-01-14T17:13:00+00:00",
+      "mfe_points": 41.75,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-28",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-01-14T18:00:00+00:00",
+      "mfe_points": 12.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-29",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 23.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-30",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-01-14T23:44:00+00:00",
+      "mfe_points": 21.75,
+      "m1_bars_evaluated": 41,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-31",
+      "mae_points": 29.25,
+      "mae_dollars_per_contract": 58.5,
+      "mae_timestamp": "2026-01-15T14:30:00+00:00",
+      "mfe_points": 23.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-32",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 34.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-33",
+      "mae_points": 1.25,
+      "mae_dollars_per_contract": 2.5,
+      "mae_timestamp": "2026-01-16T07:59:00+00:00",
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-34",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-01-19T03:40:00+00:00",
+      "mfe_points": 15.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-35",
+      "mae_points": 19.75,
+      "mae_dollars_per_contract": 39.5,
+      "mae_timestamp": "2026-01-19T11:50:00+00:00",
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-36",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-01-19T13:00:00+00:00",
+      "mfe_points": 21.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-37",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 24.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-38",
+      "mae_points": 18.5,
+      "mae_dollars_per_contract": 37.0,
+      "mae_timestamp": "2026-01-19T16:29:00+00:00",
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-39",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 38.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-40",
+      "mae_points": 11.25,
+      "mae_dollars_per_contract": 22.5,
+      "mae_timestamp": "2026-01-20T02:20:00+00:00",
+      "mfe_points": 8.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-41",
+      "mae_points": 5.75,
+      "mae_dollars_per_contract": 11.5,
+      "mae_timestamp": "2026-01-20T05:54:00+00:00",
+      "mfe_points": 17.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-42",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 22.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-43",
+      "mae_points": 26.0,
+      "mae_dollars_per_contract": 52.0,
+      "mae_timestamp": "2026-01-21T00:25:00+00:00",
+      "mfe_points": 13.25,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-44",
+      "mae_points": 8.0,
+      "mae_dollars_per_contract": 16.0,
+      "mae_timestamp": "2026-01-21T05:27:00+00:00",
+      "mfe_points": 16.5,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-45",
+      "mae_points": 8.5,
+      "mae_dollars_per_contract": 17.0,
+      "mae_timestamp": "2026-01-21T07:56:00+00:00",
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-46",
+      "mae_points": 6.75,
+      "mae_dollars_per_contract": 13.5,
+      "mae_timestamp": "2026-01-21T14:00:00+00:00",
+      "mfe_points": 26.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-47",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 42.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-48",
+      "mae_points": 8.5,
+      "mae_dollars_per_contract": 17.0,
+      "mae_timestamp": "2026-01-21T18:00:00+00:00",
+      "mfe_points": 29.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-49",
+      "mae_points": 28.0,
+      "mae_dollars_per_contract": 56.0,
+      "mae_timestamp": "2026-01-21T19:05:00+00:00",
+      "mfe_points": 30.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-50",
+      "mae_points": 34.5,
+      "mae_dollars_per_contract": 69.0,
+      "mae_timestamp": "2026-01-21T20:23:00+00:00",
+      "mfe_points": 35.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-51",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-01-21T23:35:00+00:00",
+      "mfe_points": 29.5,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-52",
+      "mae_points": 10.0,
+      "mae_dollars_per_contract": 20.0,
+      "mae_timestamp": "2026-01-22T04:15:00+00:00",
+      "mfe_points": 10.25,
+      "m1_bars_evaluated": 61,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-53",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-01-22T07:25:00+00:00",
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-54",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-01-22T15:50:00+00:00",
+      "mfe_points": 26.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-55",
+      "mae_points": 6.5,
+      "mae_dollars_per_contract": 13.0,
+      "mae_timestamp": "2026-01-22T18:17:00+00:00",
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-56",
+      "mae_points": 20.5,
+      "mae_dollars_per_contract": 41.0,
+      "mae_timestamp": "2026-01-23T00:20:00+00:00",
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 71,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-57",
+      "mae_points": 13.25,
+      "mae_dollars_per_contract": 26.5,
+      "mae_timestamp": "2026-01-23T07:30:00+00:00",
+      "mfe_points": 7.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-58",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 15.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-59",
+      "mae_points": 16.0,
+      "mae_dollars_per_contract": 32.0,
+      "mae_timestamp": "2026-01-23T18:10:00+00:00",
+      "mfe_points": 39.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-60",
+      "mae_points": 15.5,
+      "mae_dollars_per_contract": 31.0,
+      "mae_timestamp": "2026-01-26T03:24:00+00:00",
+      "mfe_points": 41.75,
+      "m1_bars_evaluated": 166,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-61",
+      "mae_points": 13.5,
+      "mae_dollars_per_contract": 27.0,
+      "mae_timestamp": "2026-01-26T08:49:00+00:00",
+      "mfe_points": 14.25,
+      "m1_bars_evaluated": 41,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-62",
+      "mae_points": 8.0,
+      "mae_dollars_per_contract": 16.0,
+      "mae_timestamp": "2026-01-26T18:45:00+00:00",
+      "mfe_points": 8.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-63",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-01-27T06:12:00+00:00",
+      "mfe_points": 8.0,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-64",
+      "mae_points": 1.5,
+      "mae_dollars_per_contract": 3.0,
+      "mae_timestamp": "2026-01-27T12:22:00+00:00",
+      "mfe_points": 10.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-65",
+      "mae_points": 2.5,
+      "mae_dollars_per_contract": 5.0,
+      "mae_timestamp": "2026-01-28T06:10:00+00:00",
+      "mfe_points": 60.5,
+      "m1_bars_evaluated": 126,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-66",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-01-28T12:48:00+00:00",
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-67",
+      "mae_points": 11.25,
+      "mae_dollars_per_contract": 22.5,
+      "mae_timestamp": "2026-01-28T17:50:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-68",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 24.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-69",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 62.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-70",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-01-29T03:15:00+00:00",
+      "mfe_points": 17.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-71",
+      "mae_points": 10.0,
+      "mae_dollars_per_contract": 20.0,
+      "mae_timestamp": "2026-01-29T07:57:00+00:00",
+      "mfe_points": 8.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-72",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-01-29T13:53:00+00:00",
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-73",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 58.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-74",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-01-30T02:50:00+00:00",
+      "mfe_points": 15.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-75",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-01-30T04:25:00+00:00",
+      "mfe_points": 0.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-76",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 16.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-77",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-01-30T08:45:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-78",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 37.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-79",
+      "mae_points": 20.25,
+      "mae_dollars_per_contract": 40.5,
+      "mae_timestamp": "2026-01-30T15:35:00+00:00",
+      "mfe_points": 57.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-80",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 39.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-81",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-01-30T18:05:00+00:00",
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-82",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 32.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-83",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-01-30T20:25:00+00:00",
+      "mfe_points": 9.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-84",
+      "mae_points": 84.0,
+      "mae_dollars_per_contract": 168.0,
+      "mae_timestamp": "2026-02-02T00:22:00+00:00",
+      "mfe_points": 50.25,
+      "m1_bars_evaluated": 46,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-85",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 35.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-86",
+      "mae_points": 11.25,
+      "mae_dollars_per_contract": 22.5,
+      "mae_timestamp": "2026-02-02T09:11:00+00:00",
+      "mfe_points": 10.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-87",
+      "mae_points": 20.25,
+      "mae_dollars_per_contract": 40.5,
+      "mae_timestamp": "2026-02-02T11:14:00+00:00",
+      "mfe_points": 20.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-88",
+      "mae_points": 11.5,
+      "mae_dollars_per_contract": 23.0,
+      "mae_timestamp": "2026-02-02T21:21:00+00:00",
+      "mfe_points": 16.75,
+      "m1_bars_evaluated": 46,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-89",
+      "mae_points": 16.25,
+      "mae_dollars_per_contract": 32.5,
+      "mae_timestamp": "2026-02-03T00:10:00+00:00",
+      "mfe_points": 6.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-90",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-91",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-02-03T21:28:00+00:00",
+      "mfe_points": 18.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-92",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 19.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-93",
+      "mae_points": 3.25,
+      "mae_dollars_per_contract": 6.5,
+      "mae_timestamp": "2026-02-04T07:47:00+00:00",
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-94",
+      "mae_points": 14.5,
+      "mae_dollars_per_contract": 29.0,
+      "mae_timestamp": "2026-02-04T10:04:00+00:00",
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-95",
+      "mae_points": 21.5,
+      "mae_dollars_per_contract": 43.0,
+      "mae_timestamp": "2026-02-04T17:10:00+00:00",
+      "mfe_points": 40.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-96",
+      "mae_points": 5.5,
+      "mae_dollars_per_contract": 11.0,
+      "mae_timestamp": "2026-02-04T17:45:00+00:00",
+      "mfe_points": 31.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-97",
+      "mae_points": 77.75,
+      "mae_dollars_per_contract": 155.5,
+      "mae_timestamp": "2026-02-04T23:00:00+00:00",
+      "mfe_points": 40.0,
+      "m1_bars_evaluated": 71,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-98",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 34.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-99",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-02-05T09:45:00+00:00",
+      "mfe_points": 14.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-100",
+      "mae_points": 18.75,
+      "mae_dollars_per_contract": 37.5,
+      "mae_timestamp": "2026-02-05T10:35:00+00:00",
+      "mfe_points": 23.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-101",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 42.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-102",
+      "mae_points": 24.25,
+      "mae_dollars_per_contract": 48.5,
+      "mae_timestamp": "2026-02-05T16:34:00+00:00",
+      "mfe_points": 46.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-103",
+      "mae_points": 45.5,
+      "mae_dollars_per_contract": 91.0,
+      "mae_timestamp": "2026-02-05T17:50:00+00:00",
+      "mfe_points": 59.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-104",
+      "mae_points": 23.0,
+      "mae_dollars_per_contract": 46.0,
+      "mae_timestamp": "2026-02-05T19:30:00+00:00",
+      "mfe_points": 12.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-105",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 86.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-106",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 27.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-107",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-02-06T06:49:00+00:00",
+      "mfe_points": 26.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-108",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-02-09T05:32:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-109",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 68.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-110",
+      "mae_points": 8.5,
+      "mae_dollars_per_contract": 17.0,
+      "mae_timestamp": "2026-02-09T23:10:00+00:00",
+      "mfe_points": 6.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-111",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-02-10T01:10:00+00:00",
+      "mfe_points": 9.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-112",
+      "mae_points": 20.5,
+      "mae_dollars_per_contract": 41.0,
+      "mae_timestamp": "2026-02-10T06:10:00+00:00",
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 36,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-113",
+      "mae_points": 7.25,
+      "mae_dollars_per_contract": 14.5,
+      "mae_timestamp": "2026-02-10T07:15:00+00:00",
+      "mfe_points": 17.0,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-114",
+      "mae_points": 27.5,
+      "mae_dollars_per_contract": 55.0,
+      "mae_timestamp": "2026-02-10T11:01:00+00:00",
+      "mfe_points": 11.0,
+      "m1_bars_evaluated": 76,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-115",
+      "mae_points": 1.0,
+      "mae_dollars_per_contract": 2.0,
+      "mae_timestamp": "2026-02-10T23:10:00+00:00",
+      "mfe_points": 17.75,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-116",
+      "mae_points": 0.75,
+      "mae_dollars_per_contract": 1.5,
+      "mae_timestamp": "2026-02-11T06:25:00+00:00",
+      "mfe_points": 26.0,
+      "m1_bars_evaluated": 46,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-117",
+      "mae_points": 12.75,
+      "mae_dollars_per_contract": 25.5,
+      "mae_timestamp": "2026-02-11T08:35:00+00:00",
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-118",
+      "mae_points": 9.25,
+      "mae_dollars_per_contract": 18.5,
+      "mae_timestamp": "2026-02-11T09:47:00+00:00",
+      "mfe_points": 4.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-119",
+      "mae_points": 7.25,
+      "mae_dollars_per_contract": 14.5,
+      "mae_timestamp": "2026-02-11T13:43:00+00:00",
+      "mfe_points": 110.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-120",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 55.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-121",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 35.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-122",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 38.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-123",
+      "mae_points": 47.25,
+      "mae_dollars_per_contract": 94.5,
+      "mae_timestamp": "2026-02-12T14:30:00+00:00",
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-124",
+      "mae_points": 11.0,
+      "mae_dollars_per_contract": 22.0,
+      "mae_timestamp": "2026-02-12T20:41:00+00:00",
+      "mfe_points": 31.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-125",
+      "mae_points": 13.0,
+      "mae_dollars_per_contract": 26.0,
+      "mae_timestamp": "2026-02-12T23:55:00+00:00",
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-126",
+      "mae_points": 24.0,
+      "mae_dollars_per_contract": 48.0,
+      "mae_timestamp": "2026-02-13T01:51:00+00:00",
+      "mfe_points": 32.25,
+      "m1_bars_evaluated": 56,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-127",
+      "mae_points": 10.25,
+      "mae_dollars_per_contract": 20.5,
+      "mae_timestamp": "2026-02-13T03:04:00+00:00",
+      "mfe_points": 13.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-128",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-02-13T07:00:00+00:00",
+      "mfe_points": 28.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-129",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-130",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-131",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 41.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-132",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-02-13T14:15:00+00:00",
+      "mfe_points": 27.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-133",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 78.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-134",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-02-15T23:53:00+00:00",
+      "mfe_points": 25.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-135",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-02-16T15:52:00+00:00",
+      "mfe_points": 26.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-136",
+      "mae_points": 5.5,
+      "mae_dollars_per_contract": 11.0,
+      "mae_timestamp": "2026-02-17T01:36:00+00:00",
+      "mfe_points": 12.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-137",
+      "mae_points": 6.5,
+      "mae_dollars_per_contract": 13.0,
+      "mae_timestamp": "2026-02-17T03:22:00+00:00",
+      "mfe_points": 51.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-138",
+      "mae_points": 4.5,
+      "mae_dollars_per_contract": 9.0,
+      "mae_timestamp": "2026-02-17T07:25:00+00:00",
+      "mfe_points": 16.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-139",
+      "mae_points": 10.25,
+      "mae_dollars_per_contract": 20.5,
+      "mae_timestamp": "2026-02-17T11:37:00+00:00",
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-140",
+      "mae_points": 13.0,
+      "mae_dollars_per_contract": 26.0,
+      "mae_timestamp": "2026-02-17T12:20:00+00:00",
+      "mfe_points": 16.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-141",
+      "mae_points": 19.75,
+      "mae_dollars_per_contract": 39.5,
+      "mae_timestamp": "2026-02-17T13:33:00+00:00",
+      "mfe_points": 43.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-142",
+      "mae_points": 6.75,
+      "mae_dollars_per_contract": 13.5,
+      "mae_timestamp": "2026-02-17T16:35:00+00:00",
+      "mfe_points": 18.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-143",
+      "mae_points": 3.25,
+      "mae_dollars_per_contract": 6.5,
+      "mae_timestamp": "2026-02-17T17:50:00+00:00",
+      "mfe_points": 24.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-144",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 28.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-145",
+      "mae_points": 12.5,
+      "mae_dollars_per_contract": 25.0,
+      "mae_timestamp": "2026-02-17T23:00:00+00:00",
+      "mfe_points": 17.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-146",
+      "mae_points": 7.0,
+      "mae_dollars_per_contract": 14.0,
+      "mae_timestamp": "2026-02-17T23:40:00+00:00",
+      "mfe_points": 10.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-147",
+      "mae_points": 1.25,
+      "mae_dollars_per_contract": 2.5,
+      "mae_timestamp": "2026-02-18T08:12:00+00:00",
+      "mfe_points": 23.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-148",
+      "mae_points": 36.5,
+      "mae_dollars_per_contract": 73.0,
+      "mae_timestamp": "2026-02-18T12:30:00+00:00",
+      "mfe_points": 7.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-149",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 66.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-150",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 9.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-151",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-02-19T01:31:00+00:00",
+      "mfe_points": 9.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-152",
+      "mae_points": 13.5,
+      "mae_dollars_per_contract": 27.0,
+      "mae_timestamp": "2026-02-19T04:00:00+00:00",
+      "mfe_points": 6.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-153",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 8.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-154",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 14.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-155",
+      "mae_points": 14.5,
+      "mae_dollars_per_contract": 29.0,
+      "mae_timestamp": "2026-02-19T16:25:00+00:00",
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-156",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 31.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-157",
+      "mae_points": 11.5,
+      "mae_dollars_per_contract": 23.0,
+      "mae_timestamp": "2026-02-20T04:21:00+00:00",
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 66,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-158",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-02-20T10:03:00+00:00",
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-159",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 60.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-160",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-161",
+      "mae_points": 17.0,
+      "mae_dollars_per_contract": 34.0,
+      "mae_timestamp": "2026-02-20T17:55:00+00:00",
+      "mfe_points": 46.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-162",
+      "mae_points": 16.5,
+      "mae_dollars_per_contract": 33.0,
+      "mae_timestamp": "2026-02-23T12:07:00+00:00",
+      "mfe_points": 28.0,
+      "m1_bars_evaluated": 36,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-163",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 45.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-164",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 49.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-165",
+      "mae_points": 35.25,
+      "mae_dollars_per_contract": 70.5,
+      "mae_timestamp": "2026-02-24T12:24:00+00:00",
+      "mfe_points": 14.75,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-166",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 22.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-167",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-02-24T23:10:00+00:00",
+      "mfe_points": 2.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-168",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 33.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-169",
+      "mae_points": 5.0,
+      "mae_dollars_per_contract": 10.0,
+      "mae_timestamp": "2026-02-26T16:58:00+00:00",
+      "mfe_points": 29.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-170",
+      "mae_points": 3.5,
+      "mae_dollars_per_contract": 7.0,
+      "mae_timestamp": "2026-02-26T23:05:00+00:00",
+      "mfe_points": 29.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-171",
+      "mae_points": 32.0,
+      "mae_dollars_per_contract": 64.0,
+      "mae_timestamp": "2026-02-27T07:00:00+00:00",
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-172",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-02-27T16:50:00+00:00",
+      "mfe_points": 19.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-173",
+      "mae_points": 7.75,
+      "mae_dollars_per_contract": 15.5,
+      "mae_timestamp": "2026-02-27T17:25:00+00:00",
+      "mfe_points": 11.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-174",
+      "mae_points": 20.25,
+      "mae_dollars_per_contract": 40.5,
+      "mae_timestamp": "2026-02-27T20:50:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-175",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 8.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-176",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-03-02T02:16:00+00:00",
+      "mfe_points": 29.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-177",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-03-02T03:00:00+00:00",
+      "mfe_points": 18.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-178",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-03-02T10:40:00+00:00",
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-179",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 63.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-180",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-03-03T06:58:00+00:00",
+      "mfe_points": 15.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-181",
+      "mae_points": 5.75,
+      "mae_dollars_per_contract": 11.5,
+      "mae_timestamp": "2026-03-03T08:35:00+00:00",
+      "mfe_points": 11.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-182",
+      "mae_points": 27.5,
+      "mae_dollars_per_contract": 55.0,
+      "mae_timestamp": "2026-03-03T10:40:00+00:00",
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-183",
+      "mae_points": 6.0,
+      "mae_dollars_per_contract": 12.0,
+      "mae_timestamp": "2026-03-03T21:43:00+00:00",
+      "mfe_points": 14.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-184",
+      "mae_points": 11.5,
+      "mae_dollars_per_contract": 23.0,
+      "mae_timestamp": "2026-03-03T23:40:00+00:00",
+      "mfe_points": 7.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-185",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 38.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-186",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-03-04T02:45:00+00:00",
+      "mfe_points": 5.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-187",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 17.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-188",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 35.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-189",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 24.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-190",
+      "mae_points": 14.0,
+      "mae_dollars_per_contract": 28.0,
+      "mae_timestamp": "2026-03-05T05:42:00+00:00",
+      "mfe_points": 14.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-191",
+      "mae_points": 10.5,
+      "mae_dollars_per_contract": 21.0,
+      "mae_timestamp": "2026-03-05T06:30:00+00:00",
+      "mfe_points": 7.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-192",
+      "mae_points": 6.5,
+      "mae_dollars_per_contract": 13.0,
+      "mae_timestamp": "2026-03-05T09:35:00+00:00",
+      "mfe_points": 8.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-193",
+      "mae_points": 46.75,
+      "mae_dollars_per_contract": 93.5,
+      "mae_timestamp": "2026-03-05T14:30:00+00:00",
+      "mfe_points": 27.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-194",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 73.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-195",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-196",
+      "mae_points": 8.0,
+      "mae_dollars_per_contract": 16.0,
+      "mae_timestamp": "2026-03-06T07:53:00+00:00",
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-197",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 34.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-198",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-199",
+      "mae_points": 2.75,
+      "mae_dollars_per_contract": 5.5,
+      "mae_timestamp": "2026-03-09T00:50:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-200",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-03-09T01:55:00+00:00",
+      "mfe_points": 20.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-201",
+      "mae_points": 12.25,
+      "mae_dollars_per_contract": 24.5,
+      "mae_timestamp": "2026-03-09T18:55:00+00:00",
+      "mfe_points": 28.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-202",
+      "mae_points": 16.5,
+      "mae_dollars_per_contract": 33.0,
+      "mae_timestamp": "2026-03-10T00:14:00+00:00",
+      "mfe_points": 73.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-203",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-03-10T02:40:00+00:00",
+      "mfe_points": 4.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-204",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-205",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-03-10T07:12:00+00:00",
+      "mfe_points": 39.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-206",
+      "mae_points": 16.5,
+      "mae_dollars_per_contract": 33.0,
+      "mae_timestamp": "2026-03-10T14:05:00+00:00",
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-207",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 117.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-208",
+      "mae_points": 12.5,
+      "mae_dollars_per_contract": 25.0,
+      "mae_timestamp": "2026-03-10T23:16:00+00:00",
+      "mfe_points": 6.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-209",
+      "mae_points": 27.75,
+      "mae_dollars_per_contract": 55.5,
+      "mae_timestamp": "2026-03-11T07:05:00+00:00",
+      "mfe_points": 11.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-210",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 39.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-211",
+      "mae_points": 14.25,
+      "mae_dollars_per_contract": 28.5,
+      "mae_timestamp": "2026-03-11T11:24:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-212",
+      "mae_points": 8.5,
+      "mae_dollars_per_contract": 17.0,
+      "mae_timestamp": "2026-03-11T13:10:00+00:00",
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-213",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 63.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-214",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-215",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 36.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-216",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-217",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-03-12T08:40:00+00:00",
+      "mfe_points": 23.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-218",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 32.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-219",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 47.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-220",
+      "mae_points": 17.5,
+      "mae_dollars_per_contract": 35.0,
+      "mae_timestamp": "2026-03-12T14:25:00+00:00",
+      "mfe_points": 12.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-221",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 40.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-222",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-03-13T00:15:00+00:00",
+      "mfe_points": 11.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-223",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-03-13T05:34:00+00:00",
+      "mfe_points": 13.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-224",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 19.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-225",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 13.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-226",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-03-13T15:20:00+00:00",
+      "mfe_points": 14.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-227",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-228",
+      "mae_points": 22.5,
+      "mae_dollars_per_contract": 45.0,
+      "mae_timestamp": "2026-03-13T18:11:00+00:00",
+      "mfe_points": 22.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-229",
+      "mae_points": 4.5,
+      "mae_dollars_per_contract": 9.0,
+      "mae_timestamp": "2026-03-13T19:11:00+00:00",
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-230",
+      "mae_points": 12.25,
+      "mae_dollars_per_contract": 24.5,
+      "mae_timestamp": "2026-03-15T22:20:00+00:00",
+      "mfe_points": 4.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-231",
+      "mae_points": 9.25,
+      "mae_dollars_per_contract": 18.5,
+      "mae_timestamp": "2026-03-16T00:35:00+00:00",
+      "mfe_points": 12.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-232",
+      "mae_points": 0.75,
+      "mae_dollars_per_contract": 1.5,
+      "mae_timestamp": "2026-03-16T01:35:00+00:00",
+      "mfe_points": 17.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-233",
+      "mae_points": 11.0,
+      "mae_dollars_per_contract": 22.0,
+      "mae_timestamp": "2026-03-16T13:43:00+00:00",
+      "mfe_points": 48.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-234",
+      "mae_points": 7.0,
+      "mae_dollars_per_contract": 14.0,
+      "mae_timestamp": "2026-03-17T09:25:00+00:00",
+      "mfe_points": 11.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-235",
+      "mae_points": 15.0,
+      "mae_dollars_per_contract": 30.0,
+      "mae_timestamp": "2026-03-17T11:35:00+00:00",
+      "mfe_points": 9.25,
+      "m1_bars_evaluated": 20,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-236",
+      "mae_points": 13.75,
+      "mae_dollars_per_contract": 27.5,
+      "mae_timestamp": "2026-03-18T06:45:00+00:00",
+      "mfe_points": 7.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-237",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 29.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-238",
+      "mae_points": 12.25,
+      "mae_dollars_per_contract": 24.5,
+      "mae_timestamp": "2026-03-18T16:57:00+00:00",
+      "mfe_points": 28.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-239",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 40.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-240",
+      "mae_points": 4.75,
+      "mae_dollars_per_contract": 9.5,
+      "mae_timestamp": "2026-03-18T19:50:00+00:00",
+      "mfe_points": 22.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-241",
+      "mae_points": 8.75,
+      "mae_dollars_per_contract": 17.5,
+      "mae_timestamp": "2026-03-19T03:10:00+00:00",
+      "mfe_points": 13.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-242",
+      "mae_points": 6.0,
+      "mae_dollars_per_contract": 12.0,
+      "mae_timestamp": "2026-03-19T06:06:00+00:00",
+      "mfe_points": 16.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-243",
+      "mae_points": 0.25,
+      "mae_dollars_per_contract": 0.5,
+      "mae_timestamp": "2026-03-19T07:40:00+00:00",
+      "mfe_points": 10.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-244",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-03-19T10:50:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-245",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-03-19T11:30:00+00:00",
+      "mfe_points": 4.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-246",
+      "mae_points": 1.25,
+      "mae_dollars_per_contract": 2.5,
+      "mae_timestamp": "2026-03-19T16:15:00+00:00",
+      "mfe_points": 28.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-247",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-03-19T17:40:00+00:00",
+      "mfe_points": 24.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-248",
+      "mae_points": 29.75,
+      "mae_dollars_per_contract": 59.5,
+      "mae_timestamp": "2026-03-19T18:30:00+00:00",
+      "mfe_points": 18.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-249",
+      "mae_points": 11.0,
+      "mae_dollars_per_contract": 22.0,
+      "mae_timestamp": "2026-03-20T01:19:00+00:00",
+      "mfe_points": 12.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-250",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 36.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-251",
+      "mae_points": 19.0,
+      "mae_dollars_per_contract": 38.0,
+      "mae_timestamp": "2026-03-20T18:05:00+00:00",
+      "mfe_points": 19.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-252",
+      "mae_points": 206.0,
+      "mae_dollars_per_contract": 412.0,
+      "mae_timestamp": "2026-03-22T22:00:00+00:00",
+      "mfe_points": 0.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-253",
+      "mae_points": 40.0,
+      "mae_dollars_per_contract": 80.0,
+      "mae_timestamp": "2026-03-23T01:31:00+00:00",
+      "mfe_points": 18.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-254",
+      "mae_points": 12.75,
+      "mae_dollars_per_contract": 25.5,
+      "mae_timestamp": "2026-03-23T03:26:00+00:00",
+      "mfe_points": 18.0,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-255",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 32.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-256",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-03-23T06:53:00+00:00",
+      "mfe_points": 29.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-257",
+      "mae_points": 46.0,
+      "mae_dollars_per_contract": 92.0,
+      "mae_timestamp": "2026-03-23T07:45:00+00:00",
+      "mfe_points": 30.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-258",
+      "mae_points": 37.75,
+      "mae_dollars_per_contract": 75.5,
+      "mae_timestamp": "2026-03-23T10:50:00+00:00",
+      "mfe_points": 60.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-259",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 91.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-260",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 72.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-261",
+      "mae_points": 9.5,
+      "mae_dollars_per_contract": 19.0,
+      "mae_timestamp": "2026-03-23T20:49:00+00:00",
+      "mfe_points": 2.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-262",
+      "mae_points": 25.5,
+      "mae_dollars_per_contract": 51.0,
+      "mae_timestamp": "2026-03-23T23:30:00+00:00",
+      "mfe_points": 8.5,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-263",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-03-24T03:23:00+00:00",
+      "mfe_points": 7.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-264",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 23.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-265",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 27.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-266",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 81.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-267",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 24.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-268",
+      "mae_points": 3.5,
+      "mae_dollars_per_contract": 7.0,
+      "mae_timestamp": "2026-03-25T06:52:00+00:00",
+      "mfe_points": 34.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-269",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 49.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-270",
+      "mae_points": 7.75,
+      "mae_dollars_per_contract": 15.5,
+      "mae_timestamp": "2026-03-25T16:30:00+00:00",
+      "mfe_points": 48.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-271",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 23.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-272",
+      "mae_points": 5.75,
+      "mae_dollars_per_contract": 11.5,
+      "mae_timestamp": "2026-03-25T20:36:00+00:00",
+      "mfe_points": 2.0,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-273",
+      "mae_points": 8.5,
+      "mae_dollars_per_contract": 17.0,
+      "mae_timestamp": "2026-03-26T01:00:00+00:00",
+      "mfe_points": 6.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-274",
+      "mae_points": 31.25,
+      "mae_dollars_per_contract": 62.5,
+      "mae_timestamp": "2026-03-26T13:00:00+00:00",
+      "mfe_points": 17.75,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-275",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-03-26T22:00:00+00:00",
+      "mfe_points": 31.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-276",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-03-27T00:30:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-277",
+      "mae_points": 2.75,
+      "mae_dollars_per_contract": 5.5,
+      "mae_timestamp": "2026-03-27T05:30:00+00:00",
+      "mfe_points": 17.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-278",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-03-27T16:15:00+00:00",
+      "mfe_points": 19.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-279",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 37.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-280",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-03-27T20:40:00+00:00",
+      "mfe_points": 16.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-281",
+      "mae_points": 16.25,
+      "mae_dollars_per_contract": 32.5,
+      "mae_timestamp": "2026-03-29T22:50:00+00:00",
+      "mfe_points": 11.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-282",
+      "mae_points": 13.5,
+      "mae_dollars_per_contract": 27.0,
+      "mae_timestamp": "2026-03-30T01:11:00+00:00",
+      "mfe_points": 38.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-283",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-284",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 47.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-285",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-03-31T00:02:00+00:00",
+      "mfe_points": 35.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-286",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-287",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 93.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-288",
+      "mae_points": 8.75,
+      "mae_dollars_per_contract": 17.5,
+      "mae_timestamp": "2026-03-31T12:10:00+00:00",
+      "mfe_points": 42.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-289",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 60.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-290",
+      "mae_points": 1.25,
+      "mae_dollars_per_contract": 2.5,
+      "mae_timestamp": "2026-03-31T15:46:00+00:00",
+      "mfe_points": 53.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-291",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 28.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-292",
+      "mae_points": 13.75,
+      "mae_dollars_per_contract": 27.5,
+      "mae_timestamp": "2026-04-01T09:56:00+00:00",
+      "mfe_points": 21.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-293",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 51.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-294",
+      "mae_points": 7.0,
+      "mae_dollars_per_contract": 14.0,
+      "mae_timestamp": "2026-04-02T10:05:00+00:00",
+      "mfe_points": 20.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-295",
+      "mae_points": 14.75,
+      "mae_dollars_per_contract": 29.5,
+      "mae_timestamp": "2026-04-02T17:35:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-296",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-04-02T18:15:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-297",
+      "mae_points": 19.25,
+      "mae_dollars_per_contract": 38.5,
+      "mae_timestamp": "2026-04-02T22:20:00+00:00",
+      "mfe_points": 58.25,
+      "m1_bars_evaluated": 235,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-298",
+      "mae_points": 2.75,
+      "mae_dollars_per_contract": 5.5,
+      "mae_timestamp": "2026-04-05T22:58:00+00:00",
+      "mfe_points": 27.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-299",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-04-06T06:23:00+00:00",
+      "mfe_points": 9.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-300",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-301",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 40.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-302",
+      "mae_points": 24.5,
+      "mae_dollars_per_contract": 49.0,
+      "mae_timestamp": "2026-04-06T18:00:00+00:00",
+      "mfe_points": 18.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-303",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-04-06T22:20:00+00:00",
+      "mfe_points": 12.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-304",
+      "mae_points": 6.5,
+      "mae_dollars_per_contract": 13.0,
+      "mae_timestamp": "2026-04-07T00:35:00+00:00",
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-305",
+      "mae_points": 0.75,
+      "mae_dollars_per_contract": 1.5,
+      "mae_timestamp": "2026-04-07T10:45:00+00:00",
+      "mfe_points": 27.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-306",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 76.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-307",
+      "mae_points": 68.75,
+      "mae_dollars_per_contract": 137.5,
+      "mae_timestamp": "2026-04-07T15:15:00+00:00",
+      "mfe_points": 49.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-308",
+      "mae_points": 32.0,
+      "mae_dollars_per_contract": 64.0,
+      "mae_timestamp": "2026-04-07T18:11:00+00:00",
+      "mfe_points": 32.25,
+      "m1_bars_evaluated": 41,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-309",
+      "mae_points": 5.5,
+      "mae_dollars_per_contract": 11.0,
+      "mae_timestamp": "2026-04-07T19:26:00+00:00",
+      "mfe_points": 146.0,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-310",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 104.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-311",
+      "mae_points": 0.25,
+      "mae_dollars_per_contract": 0.5,
+      "mae_timestamp": "2026-04-08T18:13:00+00:00",
+      "mfe_points": 17.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-312",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-04-08T22:20:00+00:00",
+      "mfe_points": 20.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-313",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-04-09T08:00:00+00:00",
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-314",
+      "mae_points": 0.25,
+      "mae_dollars_per_contract": 0.5,
+      "mae_timestamp": "2026-04-09T13:55:00+00:00",
+      "mfe_points": 15.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-315",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 22.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-316",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-04-10T10:05:00+00:00",
+      "mfe_points": 1.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-317",
+      "mae_points": 6.75,
+      "mae_dollars_per_contract": 13.5,
+      "mae_timestamp": "2026-04-10T12:37:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-318",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 40.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-319",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 14.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-320",
+      "mae_points": 8.75,
+      "mae_dollars_per_contract": 17.5,
+      "mae_timestamp": "2026-04-10T18:15:00+00:00",
+      "mfe_points": 10.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-321",
+      "mae_points": 316.25,
+      "mae_dollars_per_contract": 632.5,
+      "mae_timestamp": "2026-04-13T14:00:00+00:00",
+      "mfe_points": 86.0,
+      "m1_bars_evaluated": 951,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-322",
+      "mae_points": 10.0,
+      "mae_dollars_per_contract": 20.0,
+      "mae_timestamp": "2026-04-14T01:00:00+00:00",
+      "mfe_points": 4.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-323",
+      "mae_points": 8.0,
+      "mae_dollars_per_contract": 16.0,
+      "mae_timestamp": "2026-04-14T02:25:00+00:00",
+      "mfe_points": 7.5,
+      "m1_bars_evaluated": 51,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-324",
+      "mae_points": 4.25,
+      "mae_dollars_per_contract": 8.5,
+      "mae_timestamp": "2026-04-14T10:19:00+00:00",
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-325",
+      "mae_points": 8.75,
+      "mae_dollars_per_contract": 17.5,
+      "mae_timestamp": "2026-04-15T03:32:00+00:00",
+      "mfe_points": 7.5,
+      "m1_bars_evaluated": 51,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-326",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-04-15T06:00:00+00:00",
+      "mfe_points": 22.25,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-327",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-04-15T10:51:00+00:00",
+      "mfe_points": 26.0,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-328",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 33.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-329",
+      "mae_points": 12.0,
+      "mae_dollars_per_contract": 24.0,
+      "mae_timestamp": "2026-04-15T15:56:00+00:00",
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-330",
+      "mae_points": 9.25,
+      "mae_dollars_per_contract": 18.5,
+      "mae_timestamp": "2026-04-16T03:19:00+00:00",
+      "mfe_points": 3.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-331",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-04-16T07:25:00+00:00",
+      "mfe_points": 10.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-332",
+      "mae_points": 7.0,
+      "mae_dollars_per_contract": 14.0,
+      "mae_timestamp": "2026-04-16T11:25:00+00:00",
+      "mfe_points": 11.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-333",
+      "mae_points": 20.25,
+      "mae_dollars_per_contract": 40.5,
+      "mae_timestamp": "2026-04-17T00:05:00+00:00",
+      "mfe_points": 6.5,
+      "m1_bars_evaluated": 41,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-334",
+      "mae_points": 12.5,
+      "mae_dollars_per_contract": 25.0,
+      "mae_timestamp": "2026-04-17T12:22:00+00:00",
+      "mfe_points": 42.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-335",
+      "mae_points": 22.25,
+      "mae_dollars_per_contract": 44.5,
+      "mae_timestamp": "2026-04-17T13:20:00+00:00",
+      "mfe_points": 30.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-336",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 27.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-337",
+      "mae_points": 23.0,
+      "mae_dollars_per_contract": 46.0,
+      "mae_timestamp": "2026-04-17T14:55:00+00:00",
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-338",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-04-17T16:42:00+00:00",
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-339",
+      "mae_points": 9.25,
+      "mae_dollars_per_contract": 18.5,
+      "mae_timestamp": "2026-04-17T17:59:00+00:00",
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-340",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-04-19T23:01:00+00:00",
+      "mfe_points": 9.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-341",
+      "mae_points": 9.0,
+      "mae_dollars_per_contract": 18.0,
+      "mae_timestamp": "2026-04-20T04:35:00+00:00",
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 36,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-342",
+      "mae_points": 11.0,
+      "mae_dollars_per_contract": 22.0,
+      "mae_timestamp": "2026-04-20T06:04:00+00:00",
+      "mfe_points": 16.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-343",
+      "mae_points": 4.75,
+      "mae_dollars_per_contract": 9.5,
+      "mae_timestamp": "2026-04-20T12:56:00+00:00",
+      "mfe_points": 17.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-344",
+      "mae_points": 6.5,
+      "mae_dollars_per_contract": 13.0,
+      "mae_timestamp": "2026-04-20T23:56:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 131,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-345",
+      "mae_points": 10.0,
+      "mae_dollars_per_contract": 20.0,
+      "mae_timestamp": "2026-04-21T09:50:00+00:00",
+      "mfe_points": 5.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-346",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 30.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-347",
+      "mae_points": 28.25,
+      "mae_dollars_per_contract": 56.5,
+      "mae_timestamp": "2026-04-21T17:55:00+00:00",
+      "mfe_points": 24.5,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-348",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-349",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 21.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-350",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-04-22T19:00:00+00:00",
+      "mfe_points": 26.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-351",
+      "mae_points": 21.75,
+      "mae_dollars_per_contract": 43.5,
+      "mae_timestamp": "2026-04-22T20:18:00+00:00",
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-352",
+      "mae_points": 4.75,
+      "mae_dollars_per_contract": 9.5,
+      "mae_timestamp": "2026-04-23T12:45:00+00:00",
+      "mfe_points": 55.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-353",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 26.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-354",
+      "mae_points": 13.25,
+      "mae_dollars_per_contract": 26.5,
+      "mae_timestamp": "2026-04-23T15:54:00+00:00",
+      "mfe_points": 19.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-355",
+      "mae_points": 4.25,
+      "mae_dollars_per_contract": 8.5,
+      "mae_timestamp": "2026-04-24T07:16:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-356",
+      "mae_points": 25.75,
+      "mae_dollars_per_contract": 51.5,
+      "mae_timestamp": "2026-04-24T13:30:00+00:00",
+      "mfe_points": 21.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-357",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-358",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-04-24T20:04:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-359",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 22.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-360",
+      "mae_points": 38.0,
+      "mae_dollars_per_contract": 76.0,
+      "mae_timestamp": "2026-04-28T01:50:00+00:00",
+      "mfe_points": 15.75,
+      "m1_bars_evaluated": 86,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-361",
+      "mae_points": 8.5,
+      "mae_dollars_per_contract": 17.0,
+      "mae_timestamp": "2026-04-28T04:10:00+00:00",
+      "mfe_points": 8.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-362",
+      "mae_points": 9.25,
+      "mae_dollars_per_contract": 18.5,
+      "mae_timestamp": "2026-04-28T14:45:00+00:00",
+      "mfe_points": 80.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-363",
+      "mae_points": 25.5,
+      "mae_dollars_per_contract": 51.0,
+      "mae_timestamp": "2026-04-28T16:50:00+00:00",
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-364",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-04-29T01:53:00+00:00",
+      "mfe_points": 12.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-365",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 12.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-366",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-04-29T10:43:00+00:00",
+      "mfe_points": 16.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-367",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 50.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-368",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-04-29T15:20:00+00:00",
+      "mfe_points": 34.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-369",
+      "mae_points": 1.5,
+      "mae_dollars_per_contract": 3.0,
+      "mae_timestamp": "2026-04-29T17:34:00+00:00",
+      "mfe_points": 23.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-370",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 36.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-371",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-04-29T22:00:00+00:00",
+      "mfe_points": 30.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-372",
+      "mae_points": 63.75,
+      "mae_dollars_per_contract": 127.5,
+      "mae_timestamp": "2026-04-30T02:30:00+00:00",
+      "mfe_points": 35.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-373",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-374",
+      "mae_points": 0.75,
+      "mae_dollars_per_contract": 1.5,
+      "mae_timestamp": "2026-04-30T08:35:00+00:00",
+      "mfe_points": 16.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-375",
+      "mae_points": 42.0,
+      "mae_dollars_per_contract": 84.0,
+      "mae_timestamp": "2026-04-30T10:52:00+00:00",
+      "mfe_points": 63.5,
+      "m1_bars_evaluated": 106,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-376",
+      "mae_points": 19.0,
+      "mae_dollars_per_contract": 38.0,
+      "mae_timestamp": "2026-04-30T12:44:00+00:00",
+      "mfe_points": 22.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-377",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 42.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-378",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 12.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-379",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 9.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-380",
+      "mae_points": 15.5,
+      "mae_dollars_per_contract": 31.0,
+      "mae_timestamp": "2026-05-01T13:05:00+00:00",
+      "mfe_points": 8.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-381",
+      "mae_points": 55.5,
+      "mae_dollars_per_contract": 111.0,
+      "mae_timestamp": "2026-05-01T15:30:00+00:00",
+      "mfe_points": 49.5,
+      "m1_bars_evaluated": 51,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-382",
+      "mae_points": 8.75,
+      "mae_dollars_per_contract": 17.5,
+      "mae_timestamp": "2026-05-01T16:20:00+00:00",
+      "mfe_points": 23.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-383",
+      "mae_points": 8.75,
+      "mae_dollars_per_contract": 17.5,
+      "mae_timestamp": "2026-05-01T19:09:00+00:00",
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-384",
+      "mae_points": 79.5,
+      "mae_dollars_per_contract": 159.0,
+      "mae_timestamp": "2026-05-03T22:00:00+00:00",
+      "mfe_points": 0.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-385",
+      "mae_points": 6.5,
+      "mae_dollars_per_contract": 13.0,
+      "mae_timestamp": "2026-05-03T23:39:00+00:00",
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-386",
+      "mae_points": 11.5,
+      "mae_dollars_per_contract": 23.0,
+      "mae_timestamp": "2026-05-04T00:28:00+00:00",
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-387",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-05-04T03:01:00+00:00",
+      "mfe_points": 16.25,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-388",
+      "mae_points": 22.75,
+      "mae_dollars_per_contract": 45.5,
+      "mae_timestamp": "2026-05-04T08:30:00+00:00",
+      "mfe_points": 19.25,
+      "m1_bars_evaluated": 61,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-389",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 56.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-390",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-05-04T15:26:00+00:00",
+      "mfe_points": 92.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-391",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 40.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-392",
+      "mae_points": 24.25,
+      "mae_dollars_per_contract": 48.5,
+      "mae_timestamp": "2026-05-04T22:50:00+00:00",
+      "mfe_points": 7.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-393",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-05-05T01:00:00+00:00",
+      "mfe_points": 5.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-394",
+      "mae_points": 0.25,
+      "mae_dollars_per_contract": 0.5,
+      "mae_timestamp": "2026-05-05T11:18:00+00:00",
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-395",
+      "mae_points": 10.75,
+      "mae_dollars_per_contract": 21.5,
+      "mae_timestamp": "2026-05-05T20:50:00+00:00",
+      "mfe_points": 72.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-396",
+      "mae_points": 73.5,
+      "mae_dollars_per_contract": 147.0,
+      "mae_timestamp": "2026-05-06T00:15:00+00:00",
+      "mfe_points": 19.5,
+      "m1_bars_evaluated": 76,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-397",
+      "mae_points": 18.25,
+      "mae_dollars_per_contract": 36.5,
+      "mae_timestamp": "2026-05-06T07:45:00+00:00",
+      "mfe_points": 15.75,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-398",
+      "mae_points": 20.75,
+      "mae_dollars_per_contract": 41.5,
+      "mae_timestamp": "2026-05-06T09:15:00+00:00",
+      "mfe_points": 19.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-399",
+      "mae_points": 12.0,
+      "mae_dollars_per_contract": 24.0,
+      "mae_timestamp": "2026-05-06T14:25:00+00:00",
+      "mfe_points": 12.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-400",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 29.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-401",
+      "mae_points": 25.5,
+      "mae_dollars_per_contract": 51.0,
+      "mae_timestamp": "2026-05-07T02:30:00+00:00",
+      "mfe_points": 11.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-402",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-05-07T09:28:00+00:00",
+      "mfe_points": 14.5,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-403",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 7.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-404",
+      "mae_points": 0.75,
+      "mae_dollars_per_contract": 1.5,
+      "mae_timestamp": "2026-05-07T16:40:00+00:00",
+      "mfe_points": 19.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-405",
+      "mae_points": 18.0,
+      "mae_dollars_per_contract": 36.0,
+      "mae_timestamp": "2026-05-07T18:10:00+00:00",
+      "mfe_points": 49.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-406",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 72.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-407",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-05-08T13:40:00+00:00",
+      "mfe_points": 101.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-408",
+      "mae_points": 10.25,
+      "mae_dollars_per_contract": 20.5,
+      "mae_timestamp": "2026-05-08T17:52:00+00:00",
+      "mfe_points": 40.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-409",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-410",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 33.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-411",
+      "mae_points": 11.25,
+      "mae_dollars_per_contract": 22.5,
+      "mae_timestamp": "2026-05-11T01:31:00+00:00",
+      "mfe_points": 12.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-412",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 22.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-413",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-05-11T12:00:00+00:00",
+      "mfe_points": 14.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-414",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 36.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-415",
+      "mae_points": 66.0,
+      "mae_dollars_per_contract": 132.0,
+      "mae_timestamp": "2026-05-11T14:45:00+00:00",
+      "mfe_points": 16.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-416",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 36.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-417",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 25.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-418",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 16.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-419",
+      "mae_points": 3.5,
+      "mae_dollars_per_contract": 7.0,
+      "mae_timestamp": "2026-05-12T08:39:00+00:00",
+      "mfe_points": 33.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-420",
+      "mae_points": 21.75,
+      "mae_dollars_per_contract": 43.5,
+      "mae_timestamp": "2026-05-12T11:10:00+00:00",
+      "mfe_points": 14.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-421",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-05-12T12:10:00+00:00",
+      "mfe_points": 8.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-422",
+      "mae_points": 53.0,
+      "mae_dollars_per_contract": 106.0,
+      "mae_timestamp": "2026-05-12T13:30:00+00:00",
+      "mfe_points": 28.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-423",
+      "mae_points": 18.0,
+      "mae_dollars_per_contract": 36.0,
+      "mae_timestamp": "2026-05-12T14:25:00+00:00",
+      "mfe_points": 23.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-424",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 68.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-425",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-426",
+      "mae_points": 12.75,
+      "mae_dollars_per_contract": 25.5,
+      "mae_timestamp": "2026-05-13T00:30:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-427",
+      "mae_points": 1.0,
+      "mae_dollars_per_contract": 2.0,
+      "mae_timestamp": "2026-05-13T07:50:00+00:00",
+      "mfe_points": 31.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-428",
+      "mae_points": 2.75,
+      "mae_dollars_per_contract": 5.5,
+      "mae_timestamp": "2026-05-13T09:49:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-429",
+      "mae_points": 20.75,
+      "mae_dollars_per_contract": 41.5,
+      "mae_timestamp": "2026-05-13T13:30:00+00:00",
+      "mfe_points": 16.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-430",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-05-13T14:32:00+00:00",
+      "mfe_points": 52.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-431",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-432",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-05-14T03:28:00+00:00",
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-433",
+      "mae_points": 6.0,
+      "mae_dollars_per_contract": 12.0,
+      "mae_timestamp": "2026-05-14T09:02:00+00:00",
+      "mfe_points": 40.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-434",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-435",
+      "mae_points": 22.25,
+      "mae_dollars_per_contract": 44.5,
+      "mae_timestamp": "2026-05-14T11:39:00+00:00",
+      "mfe_points": 5.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-436",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-05-14T14:59:00+00:00",
+      "mfe_points": 43.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-437",
+      "mae_points": 26.75,
+      "mae_dollars_per_contract": 53.5,
+      "mae_timestamp": "2026-05-14T18:00:00+00:00",
+      "mfe_points": 9.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-438",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-439",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-440",
+      "mae_points": 12.75,
+      "mae_dollars_per_contract": 25.5,
+      "mae_timestamp": "2026-05-15T00:35:00+00:00",
+      "mfe_points": 12.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-441",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 45.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-442",
+      "mae_points": 17.5,
+      "mae_dollars_per_contract": 35.0,
+      "mae_timestamp": "2026-05-15T14:55:00+00:00",
+      "mfe_points": 18.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-443",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-05-15T16:03:00+00:00",
+      "mfe_points": 36.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-444",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-05-17T23:35:00+00:00",
+      "mfe_points": 11.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-445",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-05-18T02:16:00+00:00",
+      "mfe_points": 26.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-446",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 18.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-447",
+      "mae_points": 27.0,
+      "mae_dollars_per_contract": 54.0,
+      "mae_timestamp": "2026-05-18T04:55:00+00:00",
+      "mfe_points": 4.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-448",
+      "mae_points": 11.25,
+      "mae_dollars_per_contract": 22.5,
+      "mae_timestamp": "2026-05-18T07:25:00+00:00",
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-449",
+      "mae_points": 12.5,
+      "mae_dollars_per_contract": 25.0,
+      "mae_timestamp": "2026-05-18T08:17:00+00:00",
+      "mfe_points": 57.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-450",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 53.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-451",
+      "mae_points": 10.25,
+      "mae_dollars_per_contract": 20.5,
+      "mae_timestamp": "2026-05-18T12:05:00+00:00",
+      "mfe_points": 26.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-452",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 40.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-453",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 41.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-454",
+      "mae_points": 48.75,
+      "mae_dollars_per_contract": 97.5,
+      "mae_timestamp": "2026-05-18T18:03:00+00:00",
+      "mfe_points": 43.0,
+      "m1_bars_evaluated": 66,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-455",
+      "mae_points": 36.75,
+      "mae_dollars_per_contract": 73.5,
+      "mae_timestamp": "2026-05-18T19:25:00+00:00",
+      "mfe_points": 63.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-456",
+      "mae_points": 3.5,
+      "mae_dollars_per_contract": 7.0,
+      "mae_timestamp": "2026-05-19T01:55:00+00:00",
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-457",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-05-19T03:15:00+00:00",
+      "mfe_points": 19.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-458",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 28.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-459",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 37.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-460",
+      "mae_points": 13.75,
+      "mae_dollars_per_contract": 27.5,
+      "mae_timestamp": "2026-05-19T12:35:00+00:00",
+      "mfe_points": 6.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-461",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-05-19T13:15:00+00:00",
+      "mfe_points": 66.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-462",
+      "mae_points": 5.75,
+      "mae_dollars_per_contract": 11.5,
+      "mae_timestamp": "2026-05-19T15:04:00+00:00",
+      "mfe_points": 52.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-463",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 32.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-464",
+      "mae_points": 20.25,
+      "mae_dollars_per_contract": 40.5,
+      "mae_timestamp": "2026-05-19T19:00:00+00:00",
+      "mfe_points": 16.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-465",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 32.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-466",
+      "mae_points": 2.75,
+      "mae_dollars_per_contract": 5.5,
+      "mae_timestamp": "2026-05-20T01:10:00+00:00",
+      "mfe_points": 25.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-467",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 44.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-468",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 23.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-469",
+      "mae_points": 1.0,
+      "mae_dollars_per_contract": 2.0,
+      "mae_timestamp": "2026-05-20T13:07:00+00:00",
+      "mfe_points": 13.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-470",
+      "mae_points": 3.25,
+      "mae_dollars_per_contract": 6.5,
+      "mae_timestamp": "2026-05-20T14:00:00+00:00",
+      "mfe_points": 24.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-471",
+      "mae_points": 3.25,
+      "mae_dollars_per_contract": 6.5,
+      "mae_timestamp": "2026-05-20T19:27:00+00:00",
+      "mfe_points": 16.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-472",
+      "mae_points": 36.25,
+      "mae_dollars_per_contract": 72.5,
+      "mae_timestamp": "2026-05-21T08:05:00+00:00",
+      "mfe_points": 24.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-473",
+      "mae_points": 7.5,
+      "mae_dollars_per_contract": 15.0,
+      "mae_timestamp": "2026-05-21T10:38:00+00:00",
+      "mfe_points": 97.0,
+      "m1_bars_evaluated": 46,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-474",
+      "mae_points": 43.75,
+      "mae_dollars_per_contract": 87.5,
+      "mae_timestamp": "2026-05-21T14:30:00+00:00",
+      "mfe_points": 51.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-475",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 12.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-476",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-477",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-05-22T10:00:00+00:00",
+      "mfe_points": 10.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-478",
+      "mae_points": 1.0,
+      "mae_dollars_per_contract": 2.0,
+      "mae_timestamp": "2026-05-25T08:10:00+00:00",
+      "mfe_points": 4.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-479",
+      "mae_points": 1.0,
+      "mae_dollars_per_contract": 2.0,
+      "mae_timestamp": "2026-05-25T12:53:00+00:00",
+      "mfe_points": 17.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-480",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 37.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-481",
+      "mae_points": 24.5,
+      "mae_dollars_per_contract": 49.0,
+      "mae_timestamp": "2026-05-25T22:30:00+00:00",
+      "mfe_points": 1.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-482",
+      "mae_points": 12.5,
+      "mae_dollars_per_contract": 25.0,
+      "mae_timestamp": "2026-05-26T00:00:00+00:00",
+      "mfe_points": 17.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-483",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-484",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 31.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-485",
+      "mae_points": 11.5,
+      "mae_dollars_per_contract": 23.0,
+      "mae_timestamp": "2026-05-26T17:40:00+00:00",
+      "mfe_points": 3.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-486",
+      "mae_points": 7.25,
+      "mae_dollars_per_contract": 14.5,
+      "mae_timestamp": "2026-05-26T20:50:00+00:00",
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-487",
+      "mae_points": 29.0,
+      "mae_dollars_per_contract": 58.0,
+      "mae_timestamp": "2026-05-27T00:30:00+00:00",
+      "mfe_points": 18.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-488",
+      "mae_points": 52.25,
+      "mae_dollars_per_contract": 104.5,
+      "mae_timestamp": "2026-05-27T14:40:00+00:00",
+      "mfe_points": 35.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-489",
+      "mae_points": 8.0,
+      "mae_dollars_per_contract": 16.0,
+      "mae_timestamp": "2026-05-27T15:25:00+00:00",
+      "mfe_points": 8.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-490",
+      "mae_points": 7.75,
+      "mae_dollars_per_contract": 15.5,
+      "mae_timestamp": "2026-05-27T18:20:00+00:00",
+      "mfe_points": 17.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-491",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 23.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-492",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 28.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-493",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 49.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-494",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-05-28T19:50:00+00:00",
+      "mfe_points": 14.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-495",
+      "mae_points": 1.5,
+      "mae_dollars_per_contract": 3.0,
+      "mae_timestamp": "2026-05-29T10:00:00+00:00",
+      "mfe_points": 6.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-496",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-05-29T11:13:00+00:00",
+      "mfe_points": 14.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-497",
+      "mae_points": 2.5,
+      "mae_dollars_per_contract": 5.0,
+      "mae_timestamp": "2026-05-29T13:19:00+00:00",
+      "mfe_points": 20.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-498",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-05-29T15:05:00+00:00",
+      "mfe_points": 29.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-499",
+      "mae_points": 2.5,
+      "mae_dollars_per_contract": 5.0,
+      "mae_timestamp": "2026-05-29T16:30:00+00:00",
+      "mfe_points": 7.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-500",
+      "mae_points": 25.75,
+      "mae_dollars_per_contract": 51.5,
+      "mae_timestamp": "2026-05-29T18:45:00+00:00",
+      "mfe_points": 26.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-501",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-05-29T20:19:00+00:00",
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-502",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-05-31T22:21:00+00:00",
+      "mfe_points": 28.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-503",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-06-01T11:35:00+00:00",
+      "mfe_points": 7.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-504",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 88.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-505",
+      "mae_points": 1.5,
+      "mae_dollars_per_contract": 3.0,
+      "mae_timestamp": "2026-06-02T03:57:00+00:00",
+      "mfe_points": 20.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-506",
+      "mae_points": 20.0,
+      "mae_dollars_per_contract": 40.0,
+      "mae_timestamp": "2026-06-02T10:27:00+00:00",
+      "mfe_points": 17.75,
+      "m1_bars_evaluated": 41,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-507",
+      "mae_points": 6.0,
+      "mae_dollars_per_contract": 12.0,
+      "mae_timestamp": "2026-06-02T11:48:00+00:00",
+      "mfe_points": 7.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-508",
+      "mae_points": 37.75,
+      "mae_dollars_per_contract": 75.5,
+      "mae_timestamp": "2026-06-02T13:30:00+00:00",
+      "mfe_points": 32.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-509",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 24.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-510",
+      "mae_points": 16.5,
+      "mae_dollars_per_contract": 33.0,
+      "mae_timestamp": "2026-06-02T18:35:00+00:00",
+      "mfe_points": 11.75,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-511",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 22.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-512",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-06-03T07:24:00+00:00",
+      "mfe_points": 16.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-513",
+      "mae_points": 2.5,
+      "mae_dollars_per_contract": 5.0,
+      "mae_timestamp": "2026-06-03T09:15:00+00:00",
+      "mfe_points": 19.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-514",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-06-03T10:21:00+00:00",
+      "mfe_points": 18.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-515",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-06-03T19:50:00+00:00",
+      "mfe_points": 20.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-516",
+      "mae_points": 4.75,
+      "mae_dollars_per_contract": 9.5,
+      "mae_timestamp": "2026-06-04T01:30:00+00:00",
+      "mfe_points": 7.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-517",
+      "mae_points": 29.75,
+      "mae_dollars_per_contract": 59.5,
+      "mae_timestamp": "2026-06-04T02:45:00+00:00",
+      "mfe_points": 19.25,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-518",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 11.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-519",
+      "mae_points": 15.75,
+      "mae_dollars_per_contract": 31.5,
+      "mae_timestamp": "2026-06-04T11:50:00+00:00",
+      "mfe_points": 7.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-520",
+      "mae_points": 11.25,
+      "mae_dollars_per_contract": 22.5,
+      "mae_timestamp": "2026-06-04T14:21:00+00:00",
+      "mfe_points": 68.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-521",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 36.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-522",
+      "mae_points": 8.25,
+      "mae_dollars_per_contract": 16.5,
+      "mae_timestamp": "2026-06-05T05:24:00+00:00",
+      "mfe_points": 15.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-523",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 38.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-524",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 48.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-525",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 31.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-526",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 137.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-527",
+      "mae_points": 32.25,
+      "mae_dollars_per_contract": 64.5,
+      "mae_timestamp": "2026-06-08T06:40:00+00:00",
+      "mfe_points": 8.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-528",
+      "mae_points": 20.0,
+      "mae_dollars_per_contract": 40.0,
+      "mae_timestamp": "2026-06-08T07:37:00+00:00",
+      "mfe_points": 24.0,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-529",
+      "mae_points": 21.5,
+      "mae_dollars_per_contract": 43.0,
+      "mae_timestamp": "2026-06-08T11:01:00+00:00",
+      "mfe_points": 97.5,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-530",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 131.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-531",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 31.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-532",
+      "mae_points": 18.0,
+      "mae_dollars_per_contract": 36.0,
+      "mae_timestamp": "2026-06-09T00:00:00+00:00",
+      "mfe_points": 36.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-533",
+      "mae_points": 52.0,
+      "mae_dollars_per_contract": 104.0,
+      "mae_timestamp": "2026-06-09T07:25:00+00:00",
+      "mfe_points": 18.75,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-534",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 75.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-535",
+      "mae_points": 5.0,
+      "mae_dollars_per_contract": 10.0,
+      "mae_timestamp": "2026-06-09T11:24:00+00:00",
+      "mfe_points": 19.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-536",
+      "mae_points": 34.5,
+      "mae_dollars_per_contract": 69.0,
+      "mae_timestamp": "2026-06-09T12:45:00+00:00",
+      "mfe_points": 8.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-537",
+      "mae_points": 47.75,
+      "mae_dollars_per_contract": 95.5,
+      "mae_timestamp": "2026-06-09T23:37:00+00:00",
+      "mfe_points": 132.0,
+      "m1_bars_evaluated": 91,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-538",
+      "mae_points": 4.5,
+      "mae_dollars_per_contract": 9.0,
+      "mae_timestamp": "2026-06-10T03:20:00+00:00",
+      "mfe_points": 17.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-539",
+      "mae_points": 7.0,
+      "mae_dollars_per_contract": 14.0,
+      "mae_timestamp": "2026-06-10T08:10:00+00:00",
+      "mfe_points": 9.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-540",
+      "mae_points": 32.75,
+      "mae_dollars_per_contract": 65.5,
+      "mae_timestamp": "2026-06-10T08:51:00+00:00",
+      "mfe_points": 103.0,
+      "m1_bars_evaluated": 26,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-541",
+      "mae_points": 37.0,
+      "mae_dollars_per_contract": 74.0,
+      "mae_timestamp": "2026-06-10T11:22:00+00:00",
+      "mfe_points": 104.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-542",
+      "mae_points": 12.0,
+      "mae_dollars_per_contract": 24.0,
+      "mae_timestamp": "2026-06-10T15:30:00+00:00",
+      "mfe_points": 49.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-543",
+      "mae_points": 28.5,
+      "mae_dollars_per_contract": 57.0,
+      "mae_timestamp": "2026-06-10T18:35:00+00:00",
+      "mfe_points": 30.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-544",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 38.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-545",
+      "mae_points": 11.75,
+      "mae_dollars_per_contract": 23.5,
+      "mae_timestamp": "2026-06-10T23:20:00+00:00",
+      "mfe_points": 53.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-546",
+      "mae_points": 8.0,
+      "mae_dollars_per_contract": 16.0,
+      "mae_timestamp": "2026-06-11T11:30:00+00:00",
+      "mfe_points": 30.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-547",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 170.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-548",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 128.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-549",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 63.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-550",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 81.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-551",
+      "mae_points": 31.0,
+      "mae_dollars_per_contract": 62.0,
+      "mae_timestamp": "2026-06-11T18:56:00+00:00",
+      "mfe_points": 52.5,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-552",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 52.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-553",
+      "mae_points": 14.5,
+      "mae_dollars_per_contract": 29.0,
+      "mae_timestamp": "2026-06-12T08:54:00+00:00",
+      "mfe_points": 24.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-554",
+      "mae_points": 0.5,
+      "mae_dollars_per_contract": 1.0,
+      "mae_timestamp": "2026-06-12T12:10:00+00:00",
+      "mfe_points": 42.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-555",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 27.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-556",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 80.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-557",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 72.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-558",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 35.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-559",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 22.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-560",
+      "mae_points": 29.25,
+      "mae_dollars_per_contract": 58.5,
+      "mae_timestamp": "2026-06-15T23:29:00+00:00",
+      "mfe_points": 22.75,
+      "m1_bars_evaluated": 54,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-561",
+      "mae_points": 8.75,
+      "mae_dollars_per_contract": 17.5,
+      "mae_timestamp": "2026-06-16T01:04:00+00:00",
+      "mfe_points": 32.75,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-562",
+      "mae_points": 5.75,
+      "mae_dollars_per_contract": 11.5,
+      "mae_timestamp": "2026-06-16T05:47:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-563",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 11.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-564",
+      "mae_points": 15.25,
+      "mae_dollars_per_contract": 30.5,
+      "mae_timestamp": "2026-06-16T09:15:00+00:00",
+      "mfe_points": 10.25,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-565",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 7.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-566",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 31.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-567",
+      "mae_points": 1.75,
+      "mae_dollars_per_contract": 3.5,
+      "mae_timestamp": "2026-06-16T15:35:00+00:00",
+      "mfe_points": 19.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-568",
+      "mae_points": 30.75,
+      "mae_dollars_per_contract": 61.5,
+      "mae_timestamp": "2026-06-16T16:51:00+00:00",
+      "mfe_points": 42.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-569",
+      "mae_points": 41.75,
+      "mae_dollars_per_contract": 83.5,
+      "mae_timestamp": "2026-06-16T19:25:00+00:00",
+      "mfe_points": 7.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-570",
+      "mae_points": 300.0,
+      "mae_dollars_per_contract": 600.0,
+      "mae_timestamp": "2026-06-17T00:00:00+00:00",
+      "mfe_points": 0.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-571",
+      "mae_points": 6.25,
+      "mae_dollars_per_contract": 12.5,
+      "mae_timestamp": "2026-06-17T04:41:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-572",
+      "mae_points": 13.0,
+      "mae_dollars_per_contract": 26.0,
+      "mae_timestamp": "2026-06-17T05:55:00+00:00",
+      "mfe_points": 3.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-573",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 30.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-574",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 59.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-575",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-06-17T17:30:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-576",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 109.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-577",
+      "mae_points": 74.75,
+      "mae_dollars_per_contract": 149.5,
+      "mae_timestamp": "2026-06-17T20:00:00+00:00",
+      "mfe_points": 67.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-578",
+      "mae_points": 7.25,
+      "mae_dollars_per_contract": 14.5,
+      "mae_timestamp": "2026-06-18T01:18:00+00:00",
+      "mfe_points": 31.0,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-579",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 18.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-580",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-06-18T03:20:00+00:00",
+      "mfe_points": 7.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-581",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-582",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-06-18T11:00:00+00:00",
+      "mfe_points": 16.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-583",
+      "mae_points": 37.0,
+      "mae_dollars_per_contract": 74.0,
+      "mae_timestamp": "2026-06-18T13:53:00+00:00",
+      "mfe_points": 66.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-584",
+      "mae_points": 1.25,
+      "mae_dollars_per_contract": 2.5,
+      "mae_timestamp": "2026-06-18T14:35:00+00:00",
+      "mfe_points": 23.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-585",
+      "mae_points": 2.25,
+      "mae_dollars_per_contract": 4.5,
+      "mae_timestamp": "2026-06-18T23:23:00+00:00",
+      "mfe_points": 27.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-586",
+      "mae_points": 1.5,
+      "mae_dollars_per_contract": 3.0,
+      "mae_timestamp": "2026-06-19T07:00:00+00:00",
+      "mfe_points": 20.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-587",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 24.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-588",
+      "mae_points": 10.25,
+      "mae_dollars_per_contract": 20.5,
+      "mae_timestamp": "2026-06-22T00:07:00+00:00",
+      "mfe_points": 51.25,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-589",
+      "mae_points": 13.25,
+      "mae_dollars_per_contract": 26.5,
+      "mae_timestamp": "2026-06-22T04:10:00+00:00",
+      "mfe_points": 46.0,
+      "m1_bars_evaluated": 41,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-590",
+      "mae_points": 22.0,
+      "mae_dollars_per_contract": 44.0,
+      "mae_timestamp": "2026-06-22T10:31:00+00:00",
+      "mfe_points": 16.75,
+      "m1_bars_evaluated": 11,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-591",
+      "mae_points": 16.0,
+      "mae_dollars_per_contract": 32.0,
+      "mae_timestamp": "2026-06-22T11:10:00+00:00",
+      "mfe_points": 15.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-592",
+      "mae_points": 5.5,
+      "mae_dollars_per_contract": 11.0,
+      "mae_timestamp": "2026-06-22T12:46:00+00:00",
+      "mfe_points": 68.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-593",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 36.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-594",
+      "mae_points": 16.25,
+      "mae_dollars_per_contract": 32.5,
+      "mae_timestamp": "2026-06-23T11:01:00+00:00",
+      "mfe_points": 38.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-595",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 96.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-596",
+      "mae_points": 21.75,
+      "mae_dollars_per_contract": 43.5,
+      "mae_timestamp": "2026-06-23T17:10:00+00:00",
+      "mfe_points": 9.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-597",
+      "mae_points": 7.75,
+      "mae_dollars_per_contract": 15.5,
+      "mae_timestamp": "2026-06-23T22:30:00+00:00",
+      "mfe_points": 59.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-598",
+      "mae_points": 37.25,
+      "mae_dollars_per_contract": 74.5,
+      "mae_timestamp": "2026-06-23T23:15:00+00:00",
+      "mfe_points": 24.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-599",
+      "mae_points": 4.75,
+      "mae_dollars_per_contract": 9.5,
+      "mae_timestamp": "2026-06-24T01:00:00+00:00",
+      "mfe_points": 33.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-600",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 66.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-601",
+      "mae_points": 4.0,
+      "mae_dollars_per_contract": 8.0,
+      "mae_timestamp": "2026-06-24T04:10:00+00:00",
+      "mfe_points": 7.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-602",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 41.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-603",
+      "mae_points": 11.5,
+      "mae_dollars_per_contract": 23.0,
+      "mae_timestamp": "2026-06-24T11:00:00+00:00",
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-604",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 190.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-605",
+      "mae_points": 15.0,
+      "mae_dollars_per_contract": 30.0,
+      "mae_timestamp": "2026-06-24T15:18:00+00:00",
+      "mfe_points": 44.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-606",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 61.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-607",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 23.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-608",
+      "mae_points": 3.25,
+      "mae_dollars_per_contract": 6.5,
+      "mae_timestamp": "2026-06-25T02:20:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-609",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 11.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-610",
+      "mae_points": 12.5,
+      "mae_dollars_per_contract": 25.0,
+      "mae_timestamp": "2026-06-25T13:30:00+00:00",
+      "mfe_points": 72.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-611",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 66.25,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-612",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 64.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-613",
+      "mae_points": 32.25,
+      "mae_dollars_per_contract": 64.5,
+      "mae_timestamp": "2026-06-25T22:00:00+00:00",
+      "mfe_points": 13.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-614",
+      "mae_points": 50.5,
+      "mae_dollars_per_contract": 101.0,
+      "mae_timestamp": "2026-06-25T23:50:00+00:00",
+      "mfe_points": 30.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-615",
+      "mae_points": 16.25,
+      "mae_dollars_per_contract": 32.5,
+      "mae_timestamp": "2026-06-26T04:30:00+00:00",
+      "mfe_points": 13.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-616",
+      "mae_points": 16.25,
+      "mae_dollars_per_contract": 32.5,
+      "mae_timestamp": "2026-06-26T05:50:00+00:00",
+      "mfe_points": 4.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-617",
+      "mae_points": 22.5,
+      "mae_dollars_per_contract": 45.0,
+      "mae_timestamp": "2026-06-26T07:15:00+00:00",
+      "mfe_points": 33.25,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-618",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 34.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-619",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 39.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-620",
+      "mae_points": 3.0,
+      "mae_dollars_per_contract": 6.0,
+      "mae_timestamp": "2026-06-26T13:30:00+00:00",
+      "mfe_points": 67.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-621",
+      "mae_points": 5.25,
+      "mae_dollars_per_contract": 10.5,
+      "mae_timestamp": "2026-06-26T15:15:00+00:00",
+      "mfe_points": 32.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-622",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 20.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-623",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 51.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-624",
+      "mae_points": 12.25,
+      "mae_dollars_per_contract": 24.5,
+      "mae_timestamp": "2026-06-26T18:55:00+00:00",
+      "mfe_points": 14.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-625",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 188.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-626",
+      "mae_points": 28.75,
+      "mae_dollars_per_contract": 57.5,
+      "mae_timestamp": "2026-06-29T00:00:00+00:00",
+      "mfe_points": 33.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-627",
+      "mae_points": 10.5,
+      "mae_dollars_per_contract": 21.0,
+      "mae_timestamp": "2026-06-29T02:00:00+00:00",
+      "mfe_points": 45.0,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-628",
+      "mae_points": 19.5,
+      "mae_dollars_per_contract": 39.0,
+      "mae_timestamp": "2026-06-29T03:20:00+00:00",
+      "mfe_points": 15.5,
+      "m1_bars_evaluated": 21,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-629",
+      "mae_points": 1.5,
+      "mae_dollars_per_contract": 3.0,
+      "mae_timestamp": "2026-06-29T05:50:00+00:00",
+      "mfe_points": 12.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-630",
+      "mae_points": 2.5,
+      "mae_dollars_per_contract": 5.0,
+      "mae_timestamp": "2026-06-29T07:45:00+00:00",
+      "mfe_points": 6.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-631",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 124.75,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-632",
+      "mae_points": 21.0,
+      "mae_dollars_per_contract": 42.0,
+      "mae_timestamp": "2026-06-29T14:34:00+00:00",
+      "mfe_points": 105.75,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-633",
+      "mae_points": 2.0,
+      "mae_dollars_per_contract": 4.0,
+      "mae_timestamp": "2026-06-29T19:00:00+00:00",
+      "mfe_points": 18.5,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-634",
+      "mae_points": 9.75,
+      "mae_dollars_per_contract": 19.5,
+      "mae_timestamp": "2026-06-29T22:51:00+00:00",
+      "mfe_points": 10.5,
+      "m1_bars_evaluated": 16,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-635",
+      "mae_points": 36.25,
+      "mae_dollars_per_contract": 72.5,
+      "mae_timestamp": "2026-06-30T02:05:00+00:00",
+      "mfe_points": 10.25,
+      "m1_bars_evaluated": 31,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-636",
+      "mae_points": 0.0,
+      "mae_dollars_per_contract": 0.0,
+      "mae_timestamp": null,
+      "mfe_points": 16.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-637",
+      "mae_points": 12.5,
+      "mae_dollars_per_contract": 25.0,
+      "mae_timestamp": "2026-06-30T08:55:00+00:00",
+      "mfe_points": 31.0,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-638",
+      "mae_points": 21.0,
+      "mae_dollars_per_contract": 42.0,
+      "mae_timestamp": "2026-06-30T12:00:00+00:00",
+      "mfe_points": 12.5,
+      "m1_bars_evaluated": 6,
+      "resolution_mode": "m1_causal"
+    },
+    {
+      "trade_id": "bt-639",
+      "mae_points": 12.25,
+      "mae_dollars_per_contract": 24.5,
+      "mae_timestamp": "2026-06-30T22:00:00+00:00",
+      "mfe_points": 21.0,
+      "m1_bars_evaluated": 1,
+      "resolution_mode": "m1_causal"
+    }
+  ]
+}

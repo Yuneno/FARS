@@ -1,0 +1,51 @@
+{
+  "schema_version": "fars-d-manifest-v1",
+  "metadata": {
+    "started_at_utc": "2026-09-15T15:54:14.285494+00:00",
+    "finished_at_utc": "2026-09-15T15:57:57.752787+00:00",
+    "git_branch": "bloque-d-motor-cuentas",
+    "git_commit": "eb911bf8c74f1361ac98780562e2eb82b04835e9",
+    "python": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "status": "COMPLETED"
+  },
+  "preregistration_check": {
+    "preregistered_at_utc": "2026-09-15T15:50:00Z",
+    "run_started_at_utc": "2026-09-15T15:54:14.285494+00:00",
+    "preregistration_precedes_run": true,
+    "n_candidates": 10,
+    "account_sizes": [
+      "25k",
+      "50k",
+      "100k",
+      "150k"
+    ]
+  },
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
+    "member_m5": "databento/MNQ_M5.csv",
+    "sha256_m5": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+    "bars_count": 518237
+  },
+  "artifacts": {
+    "lab_artifacts/d_protocol/preregistro_sizing.json": {
+      "sha256": "4b29b9ef4cda47f6b2c5773d865d58d51cdfe7758ea6a2d4df7010b159be695d",
+      "size_bytes": 2191
+    },
+    "lab_artifacts/d_protocol/smc_fvg_risk_10_maes.json": {
+      "sha256": "c34225196000a41f0f629d16b647656402019e04a7bad90629b5302e0bb0ae94",
+      "size_bytes": 162322
+    },
+    "lab_artifacts/d_protocol/intraday_vs_closed_comparison.json": {
+      "sha256": "bd049dc6548e54d637c690d7f95544d1f1ea394624327476abb048d04c308eed",
+      "size_bytes": 8500
+    },
+    "lab_artifacts/d_protocol/sizing_results.json": {
+      "sha256": "71160829118d675eabea5c0cc5afae2317511b04119f2d0ff660307f44610492",
+      "size_bytes": 22837
+    },
+    "lab_artifacts/d_protocol/multicuenta_portfolio.json": {
+      "sha256": "2902af97b0e213e55da61a9ed5bd7a525ad924a8581d7673fa47946264d9ca6b",
+      "size_bytes": 2203
+    }
+  }
+}
