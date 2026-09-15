@@ -1,16 +1,16 @@
 {
   "schema_version": "fars-d-manifest-v1",
   "metadata": {
-    "started_at_utc": "2026-09-15T17:27:42.218315+00:00",
-    "finished_at_utc": "2026-09-15T17:34:09.872253+00:00",
+    "started_at_utc": "2026-09-15T18:52:31.997408+00:00",
+    "finished_at_utc": "2026-09-15T18:58:52.885747+00:00",
     "git_branch": "bloque-d-motor-cuentas",
-    "git_commit": "114987f468d245188db78f41adaa624ba99f38c0",
+    "git_commit": "bd3e3a456737550f72db44d49de6ada574df9dfa",
     "python": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
     "status": "COMPLETED"
   },
   "preregistration_check": {
     "preregistered_at_utc": "2026-09-15T15:50:00Z",
-    "run_started_at_utc": "2026-09-15T17:27:42.218315+00:00",
+    "run_started_at_utc": "2026-09-15T18:52:31.997408+00:00",
     "preregistration_precedes_run": true,
     "n_candidates": 10,
     "account_sizes": [
@@ -40,7 +40,7 @@
       "size_bytes": 2191
     },
     "lab_artifacts/d_protocol/smc_fvg_risk_10_maes.json": {
-      "sha256": "9767922c920b2e74c55a3976591e39ce5e668445468eda51596e4e15351427cc",
+      "sha256": "5430787a4b8dd1965fd0fbc6f865b6a2e4f1fa2358fbd57f1d2b79eada7438aa",
       "size_bytes": 745682
     },
     "lab_artifacts/d_protocol/intraday_vs_closed_comparison.json": {
