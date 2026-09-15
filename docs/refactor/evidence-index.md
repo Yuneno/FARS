@@ -106,13 +106,13 @@ Conclusiones clave:
 
 ## 5. Registro de Deuda Tecnica — Bloque D (A3.4 / Fuera de Alcance)
 
-- **Ubicacion:** `src/account_sim.py:243`
+- **Ubicacion Original:** `src/account_sim.py:243` (modulo retirado en fase A.6).
 - **Defecto Identificado:**
   ```python
   final_status = "PASSED_SIMULATION" if target_reached else "PASSED_SIMULATION"
   ```
-- **Analisis:** Ambas ramas del operador ternario asignan `"PASSED_SIMULATION"`, ignorando la condicion booleana `target_reached` cuando no hay violacion de drawdown o perdida diaria.
-- **Accion / Estado:** **Fuera de alcance del Bloque A.3.** Corresponde a la maquina de estados de evaluacion y financiamiento del **Bloque D**. Se registra aqui formalmente para preservar trazabilidad y garantizar su correccion durante el Bloque D sin modificar el comportamiento del simulador en esta etapa.
+- **Analisis:** Ambas ramas del operador ternario asignaban `"PASSED_SIMULATION"`, ignorando la condicion booleana `target_reached` cuando no hay violacion de drawdown o perdida diaria.
+- **Accion / Estado:** **Modulo retirado en auditoria de poda A.6 (`fix/a6-poda`).** La maquina de estados de evaluacion y financiamiento valida y mantenida para el **Bloque D** reside en `src/funded_rules_v2.py`.
 
 ---
 
@@ -122,4 +122,21 @@ Conclusiones clave:
 |---|---|---|---|---|
 | **Slippage Salida Temporal** | `lab_artifacts/a3/time_exit_slippage.json` | `fix/a3-hallazgos` | Impacto de 0.0 vs 0.25 pts en CRT-TBS y ORB, distribucion de cantidad, friction_R, delta por pata reconciliado | `6cc4acf0bdcd12e145265028cff668683e71bed611cca4fb7911b0254f9cc0d0` |
 | **Auditoria Intrabarra M1 (A3.3)** | `lab_artifacts/intrabar_canonical_audit.json` | `fix/a3-hallazgos` | Tasas de ambiguedad etiquetadas (`ambiguous_pct_of_all_bars` y `ambiguous_pct_of_bars_in_position`), `bars_in_position` | `4d772416a0eb8b98de425835f954154498e1b4b2b1cb9a8da06a288d962c262d` |
+
+---
+
+## 7. Modulos Retirados por Poda (Auditoria A.6)
+
+En cumplimiento de la fase A.6 del encargo de saneamiento y poda de deuda tecnica, se verifico la ausencia de consumidores mediante auditoria estricta de imports (`grep -rn`) en todo el codebase (`src/`, `tests/`, `lab_artifacts/`) y se procedio a retirar los 4 modulos huerfanos y sus suites dedicadas:
+
+| Modulo Retirado | Test Dedicado Retirado | Tests | Lineas | Fecha | Motivo de Retiro | Estado | Rama / Commit |
+|---|---|:---:|:---:|:---:|---|:---:|:---:|
+| `src/account_sim.py` | `tests/test_account_sim.py` | 13 | 277 | 2026-09-14 | Simulador de cuentas de evaluacion redundante pre-Fase 11; logica canonica migrada a `session_calendar` y `funded_rules_v2`. Cero consumidores en `src/`. | `retirado` | `fix/a6-poda` |
+| `src/backtest/metalabel.py` | `tests/test_backtest_metalabel.py` | 8 | 150 | 2026-09-14 | Clasificador Random Forest para meta-labeling con AUC 0.52 (sin edge ni predictibilidad estadistica) sobre AMD+CRT retirada. Documentado en `docs/refactor/metalabel-result.md`. | `retirado` | `fix/a6-poda` |
+| `src/visualization.py` | `tests/test_visualization.py` | 8 | 321 | 2026-09-14 | Graficos Matplotlib generados en Fase 7, sin consumidores en pipeline activo de backtest ni CLI. | `retirado` | `fix/a6-poda` |
+| `src/fills.py` | `tests/test_fills.py` | 30 | 363 | 2026-09-14 | Perfiles de ejecucion legacy sustituidos integramente por costes y slippage parametrizables en `BacktestConfig` (`src/backtest/executor.py`). | `retirado` | `fix/a6-poda` |
+
+### Modulo Pendiente de Decision del Usuario (NO retirado)
+- **`src/detectors/*`** (~250 lineas, 5 archivos, `tests/test_detectors.py` con 12 tests): Detectores JITA de P4. No tienen consumidores fuera del propio subpaquete, pero su retiro esta pendiente de decision explicita del usuario. **Se mantiene intacto** en el codebase.
+
 

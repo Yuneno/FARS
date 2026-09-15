@@ -7,7 +7,6 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from src.account_sim import get_session_date
 from src.backtest.executor import (
     BacktestConfig,
     ExecutedTrade,
@@ -104,29 +103,7 @@ def test_session_calendar_edge_cases():
 
 
 # =============================================================================
-# 2. Site 1 delegation tests: src.account_sim.get_session_date
-# =============================================================================
-
-def test_site1_account_sim_delegation():
-    """get_session_date in account_sim delegates faithfully to session_date."""
-    # Friday 17:00 NY -> Monday
-    res_fri = get_session_date("2026-09-04T17:00:00-04:00")
-    assert res_fri == "2026-09-07"
-
-    # Weekend -> Monday
-    res_sat = get_session_date("2026-09-05T12:00:00-04:00")
-    assert res_sat == "2026-09-07"
-
-    # 23:00 UTC Wed -> Thursday
-    res_utc = get_session_date("2026-07-15T23:00:00Z")
-    assert res_utc == "2026-07-16"
-
-    # None input
-    assert get_session_date(None) is None
-
-
-# =============================================================================
-# 3. Site 2 delegation tests: src.funded_rules_v2._session_date
+# 2. Site 2 delegation tests: src.funded_rules_v2._session_date
 # =============================================================================
 
 def test_site2_funded_rules_v2_delegation():
