@@ -48,6 +48,28 @@ def _make_trade(
     )
 
 
+def test_d5_max_drawdown_never_exceeds_floor_on_pierce_through():
+    """D-5: a terminal trade that pierces far below the floor must not inflate
+    max_drawdown_pct with post-mortem excursions (observed: p95 llego a 551%)."""
+    profile = apex_25k_profile()
+    t0 = datetime(2026, 9, 1, 9, 30, tzinfo=timezone.utc)
+
+    # One killer trade: realized loss -$20,000 pierces far below the trailing floor.
+    trades = [
+        _make_trade("t_killer", t0, t0 + timedelta(minutes=10), 100.0, 60.0, 95.0, 110.0,
+                    net_pnl=-20000.0, budgeted_risk_dollars=500.0),
+    ]
+
+    cfg = AccountEngineConfig(risk_pct=0.02, trailing_mode="closed_trade")
+    res = run_account_simulation(profile, trades, cfg)
+
+    assert res.status == "blown"
+    # La cuenta muere EN el floor: el DD real nunca puede exceder la distancia del
+    # trailing ($1,500 = 6%). Antes del fix este numero era ~80% (pierce-through).
+    assert res.max_drawdown_dollars <= 1500.0 + 1.0
+    assert res.max_drawdown_pct <= 6.5
+
+
 def test_account_engine_pass_on_profit_target():
     """Account reaches +$1,500 target and passes without breaches."""
     profile = apex_25k_profile()

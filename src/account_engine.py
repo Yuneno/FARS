@@ -330,10 +330,14 @@ def run_account_simulation(
         )
         report = state.apply(trade_input)
 
-        # Track peak and drawdown
+        # Track peak and drawdown. A live account terminates AT its floor, so the
+        # post-trade balance is clamped at the pre-trade floor: pierce-through
+        # excursions of a terminal trade are post-mortem artifacts, not drawdown
+        # the account ever experienced (hallazgo D-5: p95 llego a 551%).
         bal_float = float(new_balance)
-        peak_balance = max(peak_balance, bal_float)
-        current_dd = peak_balance - bal_float
+        clamped = max(bal_float, float(current_floor))
+        peak_balance = max(peak_balance, clamped)
+        current_dd = peak_balance - clamped
         max_dd_dollars = max(max_dd_dollars, current_dd)
 
         event_kind = report.primary_event.kind
