@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "title": "Account-objective ranking (E1)",
+    "ran_at_utc": "2026-09-15T20:22:22.556914+00:00",
+    "model": "closed-trade trailing (cota optimista; la campeona se re-verifica con MAE intrabar)",
+    "account": "Apex 25K, target $1,500, trailing DD $1,500, lock +$100, 30 dias calendario",
+    "risk_pct": 0.004671,
+    "sims": 1500,
+    "seed": 20260729,
+    "engine_version": "post-E5 (fill de pendientes corregido)"
+  },
+  "ranking": [
+    {
+      "n_trades": 5617,
+      "trades_per_day": 3.847,
+      "e_r": 0.0765,
+      "sigma_r": 1.1,
+      "win_rate_pct": 57.97,
+      "pass_pct": 48.07,
+      "blown_pct": 2.87,
+      "blocked_pct": 23.73,
+      "timeout_pct": 25.33,
+      "min_risk_pts": 5.0
+    },
+    {
+      "n_trades": 3624,
+      "trades_per_day": 2.482,
+      "e_r": 0.0984,
+      "sigma_r": 1.0318,
+      "win_rate_pct": 58.55,
+      "pass_pct": 35.8,
+      "blown_pct": 1.6,
+      "blocked_pct": 10.27,
+      "timeout_pct": 52.33,
+      "min_risk_pts": 8.0
+    },
+    {
+      "n_trades": 2836,
+      "trades_per_day": 1.942,
+      "e_r": 0.1036,
+      "sigma_r": 1.0242,
+      "win_rate_pct": 58.74,
+      "pass_pct": 29.8,
+      "blown_pct": 1.2,
+      "blocked_pct": 7.87,
+      "timeout_pct": 61.13,
+      "min_risk_pts": 10.0
+    },
+    {
+      "n_trades": 1576,
+      "trades_per_day": 1.079,
+      "e_r": 0.0971,
+      "sigma_r": 1.0187,
+      "win_rate_pct": 58.12,
+      "pass_pct": 8.13,
+      "blown_pct": 1.0,
+      "blocked_pct": 4.8,
+      "timeout_pct": 86.07,
+      "min_risk_pts": 15.0
+    },
+    {
+      "n_trades": 995,
+      "trades_per_day": 0.682,
+      "e_r": 0.075,
+      "sigma_r": 1.0109,
+      "win_rate_pct": 57.29,
+      "pass_pct": 3.2,
+      "blown_pct": 1.47,
+      "blocked_pct": 1.87,
+      "timeout_pct": 93.47,
+      "min_risk_pts": 20.0
+    },
+    {
+      "n_trades": 436,
+      "trades_per_day": 0.3,
+      "e_r": 0.0956,
+      "sigma_r": 1.0385,
+      "win_rate_pct": 56.42,
+      "pass_pct": 0.33,
+      "blown_pct": 1.0,
+      "blocked_pct": 1.67,
+      "timeout_pct": 97.0,
+      "min_risk_pts": 30.0
+    }
+  ]
+}
