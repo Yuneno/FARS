@@ -1,0 +1,194 @@
+{
+  "metadata": {
+    "title": "Preregistro Normativo — Bloque Z5 Bridge de Zonas a Backtests",
+    "created_at_utc": "2026-09-16T22:50:30Z",
+    "git_commit_base": "dcaef24411fde38217642fc3ec07b9cc14032949",
+    "git_branch": "bloque-z5-bridge",
+    "status": "FROZEN_BEFORE_EXPERIMENTS",
+    "anti_leakage_policy": "Filtros fijados estrictamente antes de cualquier corrida. Prohibido ajuste de umbrales a posteriori."
+  },
+  "dataset": {
+    "archive": "E:/FARS-LAB/databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "symbol": "MNQ",
+    "timeframe": "5m"
+  },
+  "subjects": {
+    "smc_fvg": {
+      "strategy_class": "SmcFvgStrategy",
+      "parameters": {
+        "min_risk_pts": 8.0,
+        "wait": 1,
+        "f": 0.5,
+        "target_rr": 2.0
+      },
+      "config_factory": "smc_fvg_config",
+      "entry_order_type": "limit"
+    },
+    "amd_crt": {
+      "strategy_class": "AmdCrtStrategy",
+      "parameters": {
+        "median_lookback_days": 20,
+        "min_weekday_samples": 3,
+        "atr_period": 14,
+        "sl_atr_mult": 2.0,
+        "tp_atr_ratio": 2.0
+      },
+      "config_factory": "amd_crt_config",
+      "entry_order_type": "market"
+    }
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge_gap_bars": 0,
+    "warmup_bars": 500,
+    "embargo_h_bars": 192
+  },
+  "cost_scenarios": {
+    "canonico": {
+      "commission_per_side": 2.0,
+      "slippage_points": 0.0,
+      "time_exit_slippage_points": 0.0
+    },
+    "por_tramo": {
+      "commission_per_side": 0.62,
+      "slippage_points": 0.25,
+      "time_exit_slippage_points": 0.25
+    },
+    "kai": {
+      "commission_per_side": 0.71,
+      "slippage_points": 0.25,
+      "time_exit_slippage_points": 0.25
+    }
+  },
+  "arms": [
+    {
+      "arm_id": "baseline",
+      "role": "baseline",
+      "description": "Estrategia directa sin puente ni zonas",
+      "filter_name": "none",
+      "parameters": {}
+    },
+    {
+      "arm_id": "wrapper_trivial",
+      "role": "anti_fraud_control",
+      "description": "Estrategia decorada con filtro trivial (siempre True). Debe coincidir bit a bit con baseline.",
+      "filter_name": "always_true",
+      "parameters": {}
+    },
+    {
+      "arm_id": "inside_prev_day_range",
+      "role": "single_feature",
+      "description": "Filtra entradas para operar únicamente si el precio está dentro del rango del día anterior",
+      "filter_name": "inside_prev_day_range",
+      "parameters": {
+        "required_value": true
+      }
+    },
+    {
+      "arm_id": "prev_day_range_position",
+      "role": "single_feature",
+      "description": "Filtro de régimen premium/discount: Longs solo en discount (pos < 0.5), Shorts solo en premium (pos >= 0.5)",
+      "filter_name": "prev_day_range_position",
+      "parameters": {
+        "threshold": 0.5
+      }
+    },
+    {
+      "arm_id": "distance_to_overnight_low_atr_le_1",
+      "role": "single_feature",
+      "description": "Longs sólo cuando el precio está a <= 1.0 ATR del Overnight Low",
+      "filter_name": "distance_to_overnight_low_atr",
+      "parameters": {
+        "max_atr": 1.0,
+        "direction": "long"
+      }
+    },
+    {
+      "arm_id": "distance_to_overnight_high_atr_le_1",
+      "role": "single_feature",
+      "description": "Shorts sólo cuando el precio está a <= 1.0 ATR del Overnight High",
+      "filter_name": "distance_to_overnight_high_atr",
+      "parameters": {
+        "max_atr": 1.0,
+        "direction": "short"
+      }
+    },
+    {
+      "arm_id": "overnight_swept_prev_day_low",
+      "role": "single_feature",
+      "description": "Longs sólo si durante el overnight se barrió el Prev Day Low (acumulación/falsa ruptura)",
+      "filter_name": "overnight_swept_prev_day_low",
+      "parameters": {
+        "direction": "long"
+      }
+    },
+    {
+      "arm_id": "overnight_swept_prev_day_high",
+      "role": "single_feature",
+      "description": "Shorts sólo si durante el overnight se barrió el Prev Day High (distribución/falsa ruptura)",
+      "filter_name": "overnight_swept_prev_day_high",
+      "parameters": {
+        "direction": "short"
+      }
+    },
+    {
+      "arm_id": "distance_to_sellside_liquidity_atr_le_1",
+      "role": "single_feature",
+      "description": "Longs sólo cuando la distancia a sellside liquidity es <= 1.0 ATR",
+      "filter_name": "distance_to_sellside_liquidity_atr",
+      "parameters": {
+        "max_atr": 1.0,
+        "direction": "long"
+      }
+    },
+    {
+      "arm_id": "distance_to_buyside_liquidity_atr_le_1",
+      "role": "single_feature",
+      "description": "Shorts sólo cuando la distancia a buyside liquidity es <= 1.0 ATR",
+      "filter_name": "distance_to_buyside_liquidity_atr",
+      "parameters": {
+        "max_atr": 1.0,
+        "direction": "short"
+      }
+    },
+    {
+      "arm_id": "inside_fvg",
+      "role": "single_feature",
+      "description": "Entrada ocurre dentro de un FVG alineado con la dirección (bullish para long, bearish para short)",
+      "filter_name": "inside_fvg",
+      "parameters": {}
+    },
+    {
+      "arm_id": "liquidity_swept",
+      "role": "single_feature",
+      "description": "Entrada ocurre cuando liquidity_swept es True en el contexto",
+      "filter_name": "liquidity_swept",
+      "parameters": {}
+    },
+    {
+      "arm_id": "fvg_liquidity_overlap",
+      "role": "single_feature",
+      "description": "Entrada ocurre cuando existe confluencia geométrica entre FVG y pool de liquidez",
+      "filter_name": "fvg_liquidity_overlap",
+      "parameters": {}
+    },
+    {
+      "arm_id": "combo_pdr_and_on_sweep",
+      "role": "combination",
+      "description": "Confluencia de rango diario y barrido overnight: inside_prev_day_range Y overnight_swept alineado",
+      "filter_name": "combo_pdr_and_on_sweep",
+      "parameters": {}
+    },
+    {
+      "arm_id": "combo_fvg_and_liquidity",
+      "role": "combination",
+      "description": "Confluencia clásica SMC: inside_fvg Y liquidity_swept",
+      "filter_name": "combo_fvg_and_liquidity",
+      "parameters": {}
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "metadata": {
+    "title": "Manifest de Experimentos Z5",
+    "generated_at_utc": "2026-09-16T23:36:32.663947+00:00",
+    "git_commit": "dcaef24411fde38217642fc3ec07b9cc14032949",
+    "git_branch": "bloque-z5-bridge",
+    "scenario": "canonico",
+    "preregistro_sha256": "7c49ffa7344e2a541b50f9642e0179c4361778ed44134bcd6652278c483d7209"
+  },
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "bars_count": 518237,
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
+  },
+  "artifacts": {
+    "amd_crt_baseline_fold_metrics.json": {
+      "sha256": "80b44c19ea4e4228ae253b2dd7bfe646bca665dc2d35a59f7a5132baa2549d90",
+      "size_bytes": 219219
+    },
+    "amd_crt_combo_fvg_and_liquidity_fold_metrics.json": {
+      "sha256": "c1be0fb3584f489dec74a66cd542d83b7ef4b2c22970442c74241a75da1dd461",
+      "size_bytes": 35984
+    },
+    "amd_crt_combo_pdr_and_on_sweep_fold_metrics.json": {
+      "sha256": "509890aa65139de80c7ab6c42f5ee79dbc74f74c71d2f47d6553691826daa071",
+      "size_bytes": 78759
+    },
+    "amd_crt_distance_to_buyside_liquidity_atr_le_1_fold_metrics.json": {
+      "sha256": "cf8d13a4fe60e2aed8c64ff661e51b03c760c0f9ab5c503d79075a1fcc511f72",
+      "size_bytes": 107230
+    },
+    "amd_crt_distance_to_overnight_high_atr_le_1_fold_metrics.json": {
+      "sha256": "0d663d581e7bbe2c121213f5116c38979779422aafe5bbe38d3345f7446b0249",
+      "size_bytes": 107228
+    },
+    "amd_crt_distance_to_overnight_low_atr_le_1_fold_metrics.json": {
+      "sha256": "6b8ead90c53134dccec5548331d863298cd9ca394918b1c72a01af6b7924d5d7",
+      "size_bytes": 115252
+    },
+    "amd_crt_distance_to_sellside_liquidity_atr_le_1_fold_metrics.json": {
+      "sha256": "354253b53b41a74190b86a41521111c8d8b68520334eede6ca8eaf913623dfeb",
+      "size_bytes": 115258
+    },
+    "amd_crt_fvg_liquidity_overlap_fold_metrics.json": {
+      "sha256": "0e619710a11467dc22f6b26f31d8fc99899cd3fa026c2f7972276146afa995f3",
+      "size_bytes": 219275
+    },
+    "amd_crt_inside_fvg_fold_metrics.json": {
+      "sha256": "14f561bb7bc74452773b094ddd19a9d9dce78fd21ef7079618f57a7f97ddf3d5",
+      "size_bytes": 67786
+    },
+    "amd_crt_inside_prev_day_range_fold_metrics.json": {
+      "sha256": "585beed5807f39c3a4f8dc8133e1365aed6e44a8f52e5bd90a235aca600a0322",
+      "size_bytes": 197439
+    },
+    "amd_crt_liquidity_swept_fold_metrics.json": {
+      "sha256": "3ba5b77642fbc52e30d5356904311515a706f7ca4948d277b1ee5a9ef24d9c26",
+      "size_bytes": 101060
+    },
+    "amd_crt_overnight_swept_prev_day_high_fold_metrics.json": {
+      "sha256": "5c106bd490c1837ff19a5bb8d9ea91b20153734fa5854e67cdc50160c3863ac4",
+      "size_bytes": 164096
+    },
+    "amd_crt_overnight_swept_prev_day_low_fold_metrics.json": {
+      "sha256": "da0352ea8288ec8ff64f177da1f0f32a58564227287630652f5c1c49d7cf83e4",
+      "size_bytes": 151134
+    },
+    "amd_crt_prev_day_range_position_fold_metrics.json": {
+      "sha256": "56053bdbfb0141490a1b17ea0efa522252adff1ce270f50801a002b03f434b75",
+      "size_bytes": 151638
+    },
+    "amd_crt_wrapper_trivial_fold_metrics.json": {
+      "sha256": "66b3a027a9523ab053ea10202cb9d366511056e1afea284e16e7e068068c5998",
+      "size_bytes": 219281
+    },
+    "smc_fvg_baseline_fold_metrics.json": {
+      "sha256": "ec86a2e8319062c6fda110412dc87d62c571b966ddc32af29655fece8f1d1f2e",
+      "size_bytes": 1889973
+    },
+    "smc_fvg_combo_fvg_and_liquidity_fold_metrics.json": {
+      "sha256": "389f567ea289c42e388fdb1ce160109999a6372eb01879eb163d4170118bcf5b",
+      "size_bytes": 297197
+    },
+    "smc_fvg_combo_pdr_and_on_sweep_fold_metrics.json": {
+      "sha256": "22ff611ef6fb7ac3605e81564318fa437d984d604a18071007582a6bb273d846",
+      "size_bytes": 196157
+    },
+    "smc_fvg_distance_to_buyside_liquidity_atr_le_1_fold_metrics.json": {
+      "sha256": "e909d5b3cbc36f99a8f6995308230c3dd1e3ab272955c51a34fc11e19633c34d",
+      "size_bytes": 1060813
+    },
+    "smc_fvg_distance_to_overnight_high_atr_le_1_fold_metrics.json": {
+      "sha256": "90ccb0807d674990eb724229ef2645cde2843797edf042ff50fd4f1b18823ae8",
+      "size_bytes": 1060811
+    },
+    "smc_fvg_distance_to_overnight_low_atr_le_1_fold_metrics.json": {
+      "sha256": "4101c7673fe42c842ef3336be84bcd5164581db00b9b3aac2750f3c742d3b208",
+      "size_bytes": 970713
+    },
+    "smc_fvg_distance_to_sellside_liquidity_atr_le_1_fold_metrics.json": {
+      "sha256": "17878d29badff274d1d4e3e13ce61bba3a10530cc4b95442da41851e7d808ee3",
+      "size_bytes": 970719
+    },
+    "smc_fvg_fvg_liquidity_overlap_fold_metrics.json": {
+      "sha256": "95fa5dcdbe900d32a0aac672c66e0c4764aa38e4f007395710020e318dae61d9",
+      "size_bytes": 1886870
+    },
+    "smc_fvg_inside_fvg_fold_metrics.json": {
+      "sha256": "d18326c07c1a5d3510578203cfd073d814a44ab88dc910135f5af6ca52a16a25",
+      "size_bytes": 604666
+    },
+    "smc_fvg_inside_prev_day_range_fold_metrics.json": {
+      "sha256": "ea0b3325cce676cfb6d713e302c910529ad86222c3d0d387a25a1af366ab3992",
+      "size_bytes": 1196865
+    },
+    "smc_fvg_liquidity_swept_fold_metrics.json": {
+      "sha256": "4d29045d74b252c6c327b7ee43c3fd1f910de162d35d14a7fff3c1c273af6fcc",
+      "size_bytes": 870188
+    },
+    "smc_fvg_overnight_swept_prev_day_high_fold_metrics.json": {
+      "sha256": "a2cb086b9e89572479af32234b8cf1ba3eecd18dfe4659ea98e300fe44da033c",
+      "size_bytes": 1211155
+    },
+    "smc_fvg_overnight_swept_prev_day_low_fold_metrics.json": {
+      "sha256": "5a03408697d5ba4b59ba5910ac434f393c185231ef580ca3499c50026fb1d785",
+      "size_bytes": 1105411
+    },
+    "smc_fvg_prev_day_range_position_fold_metrics.json": {
+      "sha256": "f2d538e0861c029c6cdcb879c1cac1911b5fbdfc44d9396caf5ee62542f0dd9f",
+      "size_bytes": 743402
+    },
+    "smc_fvg_wrapper_trivial_fold_metrics.json": {
+      "sha256": "1e7e15c74932478ce8140371a7308e411f06ee01ece04906fd202c2a8a3767b8",
+      "size_bytes": 1890035
+    }
+  }
+}
