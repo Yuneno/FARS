@@ -1,0 +1,103 @@
+{
+  "protocol": "FARS Reversal V1 / C1 desde el dia 1",
+  "preregistered_at_utc": "2026-09-16T22:43:51.6010401Z",
+  "base_commit": "dcaef24411fde38217642fc3ec07b9cc14032949",
+  "branch": "bloque-v1-reversion",
+  "status": "frozen_before_first_result_run",
+  "scope": {
+    "market": "MNQ",
+    "timeframe": "M5",
+    "closed_bars_only": true,
+    "m1_refinement": false,
+    "promotion_allowed": false
+  },
+  "primary_configuration": {
+    "entry_mode": "limit",
+    "disp_mult": 1.2,
+    "displacement_definition": "current M5 high-low range >= disp_mult * mean high-low range of the 20 preceding closed M5 bars; same declared calculation used by crt4h",
+    "sl_buffer_pts": 1.0,
+    "wait": 48,
+    "max_hold_bars": 96,
+    "use_cisd": true,
+    "cisd_lookback": 10,
+    "use_ote": false,
+    "ote_ratios": [0.62, 0.705],
+    "equilibrium_ratio": 0.5,
+    "pivot_left": 3,
+    "pivot_right": 3,
+    "fvg_min_gap_pct": 0.001,
+    "session_pools": true,
+    "target": "nearest active opposite-side liquidity/session pool beyond entry",
+    "stop": "far extreme of swept pool/sweep bar plus sl_buffer_pts",
+    "pending_limit_invalidation": "close back through the structure level before fill"
+  },
+  "frozen_variants": [
+    {
+      "id": "baseline_without_optional_filters",
+      "use_cisd": false,
+      "use_ote": false,
+      "entry_mode": "limit"
+    },
+    {
+      "id": "cisd_only_primary",
+      "use_cisd": true,
+      "use_ote": false,
+      "entry_mode": "limit"
+    },
+    {
+      "id": "ote_only",
+      "use_cisd": false,
+      "use_ote": true,
+      "entry_mode": "limit"
+    },
+    {
+      "id": "cisd_plus_ote",
+      "use_cisd": true,
+      "use_ote": true,
+      "entry_mode": "limit"
+    },
+    {
+      "id": "market_neighbor",
+      "use_cisd": true,
+      "use_ote": false,
+      "entry_mode": "market"
+    }
+  ],
+  "walk_forward": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge": "real trade intervals at fold boundaries",
+    "embargo_h_bars": 192,
+    "selection": "none; all configurations are frozen and test windows are evaluative only"
+  },
+  "cost_scenarios_in_order": [
+    {
+      "id": "c1_canonical",
+      "commission_per_side_usd": 2.0,
+      "slippage_points": 0.0
+    },
+    {
+      "id": "c2_segment_realistic",
+      "commission_per_side_usd": 0.62,
+      "slippage_points": 0.25,
+      "slippage_scope": "STOP and MARKET/time exits; LIMIT and TP do not slip"
+    },
+    {
+      "id": "c2_kai",
+      "commission_per_side_usd": 0.71,
+      "slippage_points": 0.25,
+      "slippage_scope": "crossing orders only; LIMIT and TP do not slip"
+    }
+  ],
+  "reported_metrics": [
+    "trade_count",
+    "expectancy_r",
+    "profit_factor",
+    "bootstrap_cbb_95pct_interval_for_expectancy_r",
+    "positive_folds",
+    "fold_count"
+  ],
+  "reading_criterion": "Report E[R] and PF together for baseline, each individual optional filter, their combination, and the declared market-entry neighbor. Any incomplete run or fold with inadequate observations is evidencia_insuficiente. No configuration is promoted by this protocol."
+}

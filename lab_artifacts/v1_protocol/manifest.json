@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "title": "Reversal V1 protocol readiness manifest",
+    "generated_at_utc": "2026-09-16T22:53:45.8313898Z",
+    "git_commit": "dcaef24411fde38217642fc3ec07b9cc14032949",
+    "git_branch": "bloque-v1-reversion",
+    "execution_status": "not_run_compute_budget",
+    "verdict": "no-evaluable",
+    "promotion": "none"
+  },
+  "preregistration": {
+    "path": "lab_artifacts/v1_protocol/preregistro.json",
+    "preregistered_at_utc": "2026-09-16T22:43:51.6010401Z",
+    "sha256": "cf234430e815958ea2a8b018e2900e53715246d6584d411e6cdf5d47958d6117"
+  },
+  "dataset_probe": {
+    "archive": "E:/FARS-LAB/databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "bars_count": 518237,
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge": "real trade intervals",
+    "embargo_h_bars": 192
+  },
+  "benchmark": {
+    "bars": 5000,
+    "elapsed_seconds": 5.05,
+    "configuration": "cisd_only_primary / limit",
+    "full_protocol_estimate": "at least 5-6 hours; ZoneEngine growth may make it longer",
+    "decision": "Do not truncate folds or scenarios. Leave the complete incremental runner ready."
+  },
+  "results": {
+    "v1_fold_metrics.json": "absent_by_design: no complete protocol run was performed",
+    "expectancy_r": null,
+    "profit_factor": null
+  },
+  "runner": "lab_artifacts/run_v1_protocol.py",
+  "blockers": "lab_artifacts/v1_protocol/BLOCKERS.md"
+}
