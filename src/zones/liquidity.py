@@ -89,6 +89,9 @@ class LiquidityClusterer:
         self.tolerance, self.min_touches, self.lookback_bars = tolerance, min_touches, lookback_bars
         self._pivots: list[ConfirmedPivot] = []
         self._zones: dict[str, Zone] = {}
+        # Cache de IDs deterministas (mismo anchor -> mismo id): evita recomputar
+        # json.dumps + sha256 en cada reconstruccion del clusterer.
+        self._id_cache: dict[tuple, str] = {}
 
     def add(self, pivot: ConfirmedPivot, bar_index: int) -> None:
         self._pivots.append(pivot)
@@ -102,10 +105,20 @@ class LiquidityClusterer:
             pivot_list = [p for p in self._pivots if p.level in cl]
             pivot_list.sort(key=lambda p: p.index)
             anchor = (pivot_list[0].index, pivot_list[0].level)
-            zone_id = make_zone_id("liquidity", self.symbol, self.timeframe,
-                                   direction, pivot_list[0].timestamp, anchor)
+            id_key = (direction, pivot_list[0].timestamp.isoformat(), anchor)
+            zone_id = self._id_cache.get(id_key)
+            if zone_id is None:
+                zone_id = make_zone_id("liquidity", self.symbol, self.timeframe,
+                                       direction, pivot_list[0].timestamp, anchor)
+                self._id_cache[id_key] = zone_id
             lo, hi = min(cl) - self.tolerance, max(cl) + self.tolerance
             prev = self._zones.get(zone_id)
+            src_ids = tuple(p.index for p in pivot_list)
+            if prev is not None and (prev.lower, prev.upper, prev.source_bar_ids) == (lo, hi, src_ids):
+                # Mismo anclaje, mismos bounds y mismos pivotes: la zona no cambio.
+                # Se reutiliza el objeto (equivalencia bit a bit, sin reconstruir).
+                rebuilt[zone_id] = prev
+                continue
             pattern_time = pivot_list[0].timestamp  # primera evidencia (<= available_at siempre)
             if prev is None:
                 available_at = pivot_list[-1].timestamp  # min_touches-esimo confirmado
@@ -148,6 +161,13 @@ def transition_liquidity(
         lo, hi, cl = bar["low"], bar["high"], bar["close"]
     else:
         lo, hi, cl = bar.low, bar.high, bar.close
+    # Fast path (equivalencia bit a bit): sin contacto con la banda, sin cruce del
+    # extremo lejano por el cierre y sin caducidad que evaluar, la transicion devuelve
+    # la MISMA zona — se evita reconstruirla (y su validacion) en cada barra.
+    if max_age_bars is None and not (
+        cl > zone.upper if zone.direction == "long" else cl < zone.lower
+    ) and (lo > zone.upper or hi < zone.lower):
+        return zone
     in_zone = lo <= zone.upper and hi >= zone.lower
     new_state, touches = zone.state, zone.touches
     if in_zone:

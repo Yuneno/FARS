@@ -89,6 +89,19 @@ def transition_fvg(
         raise ValueError(f"mitigation invalida: {mitigation}")
 
     lo, hi, cl = _fld(bar, "low"), _fld(bar, "high"), _fld(bar, "close")
+    # Fast path (equivalencia bit a bit): si la barra no entra en la zona y el cierre
+    # no puede disparar mitigacion por precio (midpoint/close_through), el resultado de
+    # la transicion es la MISMA zona — se devuelve el objeto sin reconstruirlo.
+    # (full_fill y wick_touch exigen entrada en la zona; neutral no mitiga por cierre.)
+    if max_age_bars is None:
+        if zone.direction == "long":
+            close_mitigates = cl < zone.midpoint
+        elif zone.direction == "short":
+            close_mitigates = cl > zone.midpoint
+        else:
+            close_mitigates = False
+        if not close_mitigates and (lo > zone.upper or hi < zone.lower):
+            return zone
     in_zone = lo <= zone.upper and hi >= zone.lower
     new_state, touches = zone.state, zone.touches
 
