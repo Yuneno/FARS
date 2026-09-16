@@ -19,6 +19,8 @@ from src.backtest.executor import BacktestConfig
 from src.backtest.history import Bar
 from src.backtest.markets import MNQ, MarketSpec
 from src.backtest.strategy import Signal
+from src.detectors.pivots import confirmed_swing
+from src.detectors.structure import evaluate_structure
 
 DEFAULT_FRACTION = 0.5
 DEFAULT_SWING_W = 5
@@ -111,14 +113,12 @@ class SmcFvgStrategy:
         return self._seen - 1
 
     def _update_pivots(self, t: int) -> None:
-        w = self.swing_w
-        i = t - w
-        if i - w < 0:
-            return
-        if self._high[i] == max(self._high[i - w : i + w + 1]):
-            self._sh_p, self._sh_i = self._high[i], i
-        if self._low[i] == min(self._low[i - w : i + w + 1]):
-            self._sl_p, self._sl_i = self._low[i], i
+        # Bloque F paso 1: pivotes canonicos (una sola fuente de verdad).
+        hi, lo = confirmed_swing(self._high, self._low, t, self.swing_w)
+        if hi is not None:
+            self._sh_p, self._sh_i = hi.level, hi.index
+        if lo is not None:
+            self._sl_p, self._sl_i = lo.level, lo.index
 
     def _structure_and_signal(self, t: int, *, emit: bool) -> Signal | None:
         # The reference gates the whole structure/FVG block on both most-recent
@@ -126,24 +126,10 @@ class SmcFvgStrategy:
         # structure changes until that side is confirmed again.
         if self._sh_p is None or self._sl_p is None:
             return None
-        bullish_break = (
-            self._sl_i is not None
-            and self._sh_i is not None
-            and self._close[t] > self._sh_p
-            and self._sl_i < self._sh_i
+        # Bloque F paso 2: BOS/CHoCH canonico (una sola fuente de verdad).
+        self._trend, self._sh_p, self._sl_p, _ = evaluate_structure(
+            self._close[t], self._sh_p, self._sl_p, self._sh_i, self._sl_i, self._trend
         )
-        bearish_break = (
-            self._sh_i is not None
-            and self._sl_i is not None
-            and self._close[t] < self._sl_p
-            and self._sh_i < self._sl_i
-        )
-        if bullish_break:
-            self._trend = 1
-            self._sh_p = None
-        elif bearish_break:
-            self._trend = -1
-            self._sl_p = None
         if not emit or self._pending_active or t < 3:
             return None
 

@@ -6,26 +6,20 @@ available_at includes confirmation bars.
 from __future__ import annotations
 from datetime import datetime
 from src.detectors.events import DiagnosticEvent
+from src.detectors.pivots import find_swings
 
 def _find_swing_highs(bars: list[dict], left: int = 3, right: int = 3) -> list[tuple[int, float]]:
-    results = []
-    for i in range(left, len(bars) - right):
-        h = bars[i]["high"]
-        is_high = all(bars[i-j]["high"] <= h for j in range(1, left+1)) and \
-                  all(bars[i+j]["high"] <= h for j in range(1, right+1))
-        if is_high:
-            results.append((i, h))
-    return results
+    # Bloque F paso 1: pivotes canonicos (una sola fuente de verdad).
+    highs = [b["high"] for b in bars]
+    lows = [b["low"] for b in bars]
+    h_pivots, _ = find_swings(highs, lows, left, right)
+    return [(p.index, p.level) for p in h_pivots]
 
 def _find_swing_lows(bars: list[dict], left: int = 3, right: int = 3) -> list[tuple[int, float]]:
-    results = []
-    for i in range(left, len(bars) - right):
-        l = bars[i]["low"]
-        is_low = all(bars[i-j]["low"] >= l for j in range(1, left+1)) and \
-                 all(bars[i+j]["low"] >= l for j in range(1, right+1))
-        if is_low:
-            results.append((i, l))
-    return results
+    highs = [b["high"] for b in bars]
+    lows = [b["low"] for b in bars]
+    _, l_pivots = find_swings(highs, lows, left, right)
+    return [(p.index, p.level) for p in l_pivots]
 
 def detect_sweeps(
     bars: list[dict],
