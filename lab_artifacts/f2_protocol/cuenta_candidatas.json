@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "title": "Carril 2b cuenta",
+    "ran_at_utc": "2026-09-16T03:58:58.813006+00:00"
+  },
+  "rows": [
+    {
+      "mgc_min_risk": 2.0,
+      "pool": "MGC_solo",
+      "policy": "fixed",
+      "pass": 0.136,
+      "blown": 0.084,
+      "blocked": 0.026,
+      "timeout": 0.754,
+      "days": 23.28,
+      "tpd": 1.3316
+    },
+    {
+      "mgc_min_risk": 2.0,
+      "pool": "MGC_solo",
+      "policy": "buffer_prop",
+      "pass": 0.184,
+      "blown": 0.0415,
+      "blocked": 0.008,
+      "timeout": 0.7665,
+      "days": 19.9,
+      "tpd": 1.3316
+    },
+    {
+      "mgc_min_risk": 2.0,
+      "pool": "MNQ5+MGC",
+      "policy": "fixed",
+      "pass": 0.5615,
+      "blown": 0.2,
+      "blocked": 0.1495,
+      "timeout": 0.089,
+      "days": 13.15,
+      "tpd": 5.1713
+    },
+    {
+      "mgc_min_risk": 2.0,
+      "pool": "MNQ5+MGC",
+      "policy": "buffer_prop",
+      "pass": 0.528,
+      "blown": 0.107,
+      "blocked": 0.083,
+      "timeout": 0.282,
+      "days": 11.41,
+      "tpd": 5.1713
+    },
+    {
+      "mgc_min_risk": 3.0,
+      "pool": "MGC_solo",
+      "policy": "fixed",
+      "pass": 0.0585,
+      "blown": 0.0055,
+      "blocked": 0.0075,
+      "timeout": 0.9285,
+      "days": 24.44,
+      "tpd": 0.7775
+    },
+    {
+      "mgc_min_risk": 3.0,
+      "pool": "MGC_solo",
+      "policy": "buffer_prop",
+      "pass": 0.1185,
+      "blown": 0.0005,
+      "blocked": 0.005,
+      "timeout": 0.876,
+      "days": 23.15,
+      "tpd": 0.7775
+    },
+    {
+      "mgc_min_risk": 3.0,
+      "pool": "MNQ5+MGC",
+      "policy": "fixed",
+      "pass": 0.567,
+      "blown": 0.1385,
+      "blocked": 0.1675,
+      "timeout": 0.127,
+      "days": 13.64,
+      "tpd": 4.6173
+    },
+    {
+      "mgc_min_risk": 3.0,
+      "pool": "MNQ5+MGC",
+      "policy": "buffer_prop",
+      "pass": 0.5305,
+      "blown": 0.073,
+      "blocked": 0.0905,
+      "timeout": 0.306,
+      "days": 11.91,
+      "tpd": 4.6173
+    }
+  ]
+}

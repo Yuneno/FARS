@@ -1,0 +1,26 @@
+{
+  "frozen_sources_unchanged": true,
+  "preregistered_before_execution": true,
+  "markets": {
+    "MYM": {
+      "ledger_reconciled": true,
+      "CBB_reproduced_exactly": true,
+      "unique_trade_ids": true,
+      "verdict_consistent": true
+    },
+    "MNQ": {
+      "ledger_reconciled": true,
+      "CBB_reproduced_exactly": true,
+      "unique_trade_ids": true,
+      "verdict_consistent": true
+    },
+    "MGC": {
+      "ledger_reconciled": true,
+      "CBB_reproduced_exactly": true,
+      "unique_trade_ids": true,
+      "verdict_consistent": true
+    }
+  },
+  "MNQ_all_maes_m1_causal": 1755,
+  "account_probabilities_sum_to_one": true
+}

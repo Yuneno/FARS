@@ -1,0 +1,101 @@
+{
+  "created_at_utc": "2026-09-16T03:52:08.029990+00:00",
+  "branch": "main",
+  "commit": "0792dab9e9d5880d1eaac8e632742d8857ad8af2",
+  "source_sha256": {
+    "C:\\Users\\yo\\Documents\\GitHub\\kai-backtesting\\src\\kai_bt\\strategies\\strat_smc_ob_signal.py": "5ed605819e8c9d35b88d595ef7dc0821795b042d8cac87141a51bf87a4b531a9",
+    "C:\\Users\\yo\\Documents\\GitHub\\kai-backtesting\\src\\kai_bt\\strategies\\strat_smc.py": "c35ee4849dfa30f5571bdd44b8dd11c68ff80bf761598893edb904197830a3ec",
+    "C:\\Users\\yo\\Documents\\GitHub\\kai-backtesting\\src\\kai_bt\\live\\live_smc_bridge.py": "e6ee2b4fb6276425567a8feae8290ba8dce7bc42d498e0becea0d63cd2aac27c",
+    "E:\\FARS-LAB\\FARS\\src\\backtest\\smc_ob.py": "85967b27b7506f140feda521d157a434a2137b4eb437e92c73928eb5a7b9f7d8",
+    "E:\\FARS-LAB\\FARS\\lab_artifacts\\smcob_protocol\\run_smcob_multimercado.py": "d99ddfd1c1af5670d82b2c6ffb715a5fa42c2ab8ba086573459d4b2a09da933a",
+    "E:\\FARS-LAB\\FARS\\lab_artifacts\\e7_protocol\\run_e7_multimercado.py": "ac2b15424ce16e90a512d3ed3d81d93c935ceb2b2761f75b160f75074f79ff9c"
+  },
+  "grid": {
+    "markets": [
+      "MYM",
+      "MNQ",
+      "MGC"
+    ],
+    "configurations": {
+      "kai_defaults": {
+        "swing_w": 10,
+        "target_rr": 3.0,
+        "choch_only": true,
+        "ob_lookback": 60,
+        "f": 0.5,
+        "wait": 36,
+        "cooldown": 0,
+        "min_risk_pts": 0.0
+      }
+    },
+    "scenarios": [
+      "por_tramo"
+    ]
+  },
+  "selection": "strat_smc.DEFAULTS; NOT bridge FROZEN target_rr=2.0. No tuning after OOS.",
+  "walk_forward": {
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "calibration_bars": 500,
+    "fitting": false,
+    "purge": "No fitted train labels; calibration strictly precedes OOS. Reset per fold; unresolved end positions reported and excluded, as C2."
+  },
+  "execution": {
+    "initial_balance": 50000.0,
+    "risk_per_trade": 0.01,
+    "discrete_partials": true,
+    "signal_session_filter": "none, matching Kai; MarketSpec passed for all markets",
+    "fill": "FARS E5 pending LIMIT; M5 stop-first; prices rounded to market tick",
+    "costs": "C2 reference path commission=2/side, zero slip; reprice net at .62/side plus .25 points*dpp on STOP/BE/MARKET remaining contracts; LIMIT/TP no slip",
+    "r_denominator": "budgeted_risk_dollars, as C2; effective R additionally reported"
+  },
+  "metrics": [
+    "n",
+    "WR",
+    "E[R]",
+    "PF_dollars",
+    "DD_R",
+    "DD_dollars",
+    "CBB_CI95",
+    "positive_folds"
+  ],
+  "bootstrap": {
+    "method": "existing C1 CircularBlockBootstrap percentile",
+    "reps": 2000,
+    "seed": 42,
+    "block_size": "max(2,min(20,int(n**(1/3))))"
+  },
+  "blocking_gates": {
+    "expectancy": ">0",
+    "CI95_lower": ">0",
+    "positive_folds": ">=.75",
+    "C2_concentration": "<60% of total net R",
+    "C2_min_trades_each_fold": 15
+  },
+  "gate5": "DD<5% and DD<12R: hygiene only, does not block",
+  "data": {
+    "MNQ": "E:\\FARS-LAB\\databento.zip::databento/MNQ_M5.csv",
+    "MYM": "D:/fars move/FARS/MYM_M5.csv",
+    "MGC": "D:/fars move/FARS/MGC_M5.csv",
+    "cut": "2019-05-06 UTC",
+    "loaders": "reuse C1 MNQ and E7 MYM/MGC unchanged",
+    "duplicates": "E7 discards timestamps <= previous retained; MNQ input validated strictly increasing",
+    "rollover": "use supplied OHLC unadjusted by this runner; source continuous-contract/roll policy undocumented; no canonical promotion"
+  },
+  "account": {
+    "conditional": "only if market passes all C2 blocking gates",
+    "profile": "Apex25k intraday_event",
+    "horizon_calendar_days": 30,
+    "seed": 20260729,
+    "n_simulations": 2000,
+    "risk_pct": 0.004671,
+    "policies": [
+      "fixed",
+      "buffer_prop k=.10"
+    ],
+    "pools": "approved OB market alone; MNQ OB + each approved non-MNQ OB market, sorted chronologically",
+    "mae": "MNQ existing extract_m1_bars_and_compute_maes; MYM/MGC E7 build_maes",
+    "limitation": "Existing account MC resamples individual trades IID, not joint days/blocks. This is a model score, not proof of independence or diversification."
+  }
+}
