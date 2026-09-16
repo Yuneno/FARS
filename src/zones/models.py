@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Literal
 
-ZoneType = Literal["fvg", "liquidity", "support", "resistance", "volume_void"]
+ZoneType = Literal["fvg", "liquidity", "support", "resistance", "volume_void", "session_level"]
 ZoneState = Literal["active", "touched", "partial", "swept", "mitigated", "broken", "expired"]
 ZoneDirection = Literal["long", "short", "neutral"]
 

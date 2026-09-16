@@ -17,10 +17,12 @@ import math
 from datetime import datetime
 from typing import Any, Sequence
 
+from src.backtest.markets import get_market_spec
 from src.detectors.pivots import find_swings
 from src.zones.fvg import DEFAULT_MITIGATION, fvg_zones_from_bars, transition_fvg
 from src.zones.liquidity import ConfirmedPivot, LiquidityClusterer, transition_liquidity
 from src.zones.models import Zone
+from src.zones.session_levels import SessionLevelsBuilder
 
 
 def _fld(bar: Any, name: str) -> float:
@@ -66,16 +68,38 @@ class ZoneEngine:
         liquidity_lookback_bars: int = 4000,
         max_age_bars: int | None = None,
         atr_series: Sequence[float] | None = None,
+        session_pools: bool = False,
+        session_tick_tolerance: int = 4,
+        session_atr_tolerance: float = 0.10,
+        d20_sessions: int = 20,
     ) -> None:
         self.symbol, self.timeframe = symbol, timeframe
         self.tick_size, self.pivot_left, self.pivot_right = tick_size, pivot_left, pivot_right
         self.min_gap_pct, self.fvg_mitigation = min_gap_pct, fvg_mitigation
         self.max_age_bars = max_age_bars
+        self.session_pools = session_pools
+        self.session_tick_tolerance = session_tick_tolerance
+        self.session_atr_tolerance = session_atr_tolerance
+        self.d20_sessions = d20_sessions
+
         self._atr_series = list(atr_series) if atr_series is not None else None
         self._liquidity_cfg = dict(min_touches=liquidity_min_touches,
                                    tick_tolerance=liquidity_tick_tol,
                                    atr_tolerance=liquidity_atr_tol,
                                    lookback_bars=liquidity_lookback_bars)
+
+        self._session_builder: SessionLevelsBuilder | None = None
+        if self.session_pools:
+            market_spec = get_market_spec(self.symbol)
+            self._session_builder = SessionLevelsBuilder(
+                symbol=self.symbol,
+                timeframe=self.timeframe,
+                market_spec=market_spec,
+                tick_size=self.tick_size,
+                tick_tolerance=self.session_tick_tolerance,
+                atr_tolerance=self.session_atr_tolerance,
+                d20_sessions=self.d20_sessions,
+            )
 
         self._high: list[float] = []
         self._low: list[float] = []
@@ -103,6 +127,13 @@ class ZoneEngine:
         atr = self._atr_series[-1] if self._atr_series else self.tick_size * 10
         return liquidity_tolerance(self.tick_size, atr, self._liquidity_cfg["tick_tolerance"],
                                    self._liquidity_cfg["atr_tolerance"])
+
+    def _get_atr(self, i: int) -> float | None:
+        if self._atr_series:
+            if i < len(self._atr_series):
+                return self._atr_series[i]
+            return self._atr_series[-1]
+        return None
 
     # ---------------------------------------------------------------- update
     def update(self, history: Sequence[Any]) -> None:
@@ -150,6 +181,18 @@ class ZoneEngine:
                     piv = ConfirmedPivot(j, p.level, "low", i, self._ts[j])
                     self._clusterers["eql"].add(piv, i)
                     self._clusterers["sellside"].add(piv, i)
+
+        # 2b. Anclajes de sesión (Z3-b)
+        if self._session_builder is not None:
+            curr_atr = self._get_atr(i)
+            new_s_zones, retired_s_zones = self._session_builder.on_bar(bar, i, curr_atr)
+            for rz in retired_s_zones:
+                self._all_zones[rz.zone_id] = rz
+                if rz.zone_id in self._zones:
+                    del self._zones[rz.zone_id]
+            for sz in new_s_zones:
+                self._zones[sz.zone_id] = sz
+                self._all_zones[sz.zone_id] = sz
 
         # 3. Lifecycle con la barra cerrada — solo zonas disponibles ANTES de i
         new_zones: dict[str, Zone] = {}
@@ -262,7 +305,58 @@ class ZoneEngine:
         if all_z:
             nearest_type = min(all_z, key=lambda z: _zone_dist(price, z)).zone_type
 
-        return {
+        # Features de sesión (Z3-b, 16 keys; None si session_pools=False o sin evidencia)
+        d_pdh_pts = None
+        d_pdh_atr = None
+        d_pdl_pts = None
+        d_pdl_atr = None
+        d_d20h_pts = None
+        d_d20h_atr = None
+        d_d20l_pts = None
+        d_d20l_atr = None
+        d_onh_pts = None
+        d_onh_atr = None
+        d_onl_pts = None
+        d_onl_atr = None
+        inside_pdr = None
+        pdr_pos = None
+        on_swept_pdh = None
+        on_swept_pdl = None
+
+        if self._session_builder is not None:
+            def _zone_dist_pair(z: Zone | None) -> tuple[float | None, float | None]:
+                if z is None:
+                    return None, None
+                live_z = self._all_zones.get(z.zone_id, z)
+                d = round(_zone_dist(price, live_z), 4)
+                d_a = round(d / atr, 4) if (atr is not None and atr > 0) else None
+                return d, d_a
+
+            pdh_z = self._session_builder.get_current_zone("prev_day_high")
+            pdl_z = self._session_builder.get_current_zone("prev_day_low")
+            d20h_z = self._session_builder.get_current_zone("d20_high")
+            d20l_z = self._session_builder.get_current_zone("d20_low")
+            onh_z = self._session_builder.get_current_zone("overnight_high")
+            onl_z = self._session_builder.get_current_zone("overnight_low")
+
+            d_pdh_pts, d_pdh_atr = _zone_dist_pair(pdh_z)
+            d_pdl_pts, d_pdl_atr = _zone_dist_pair(pdl_z)
+            d_d20h_pts, d_d20h_atr = _zone_dist_pair(d20h_z)
+            d_d20l_pts, d_d20l_atr = _zone_dist_pair(d20l_z)
+            d_onh_pts, d_onh_atr = _zone_dist_pair(onh_z)
+            d_onl_pts, d_onl_atr = _zone_dist_pair(onl_z)
+
+            if pdh_z is not None and pdl_z is not None:
+                inside_pdr = bool(pdl_z.midpoint <= price <= pdh_z.midpoint)
+                rng = pdh_z.midpoint - pdl_z.midpoint
+                if rng > 0:
+                    pos = (price - pdl_z.midpoint) / rng
+                    pdr_pos = round(max(0.0, min(1.0, pos)), 4)
+
+            on_swept_pdh = self._session_builder.overnight_swept_pdh
+            on_swept_pdl = self._session_builder.overnight_swept_pdl
+
+        out = {
             "inside_bullish_fvg": inside_bull,
             "inside_bearish_fvg": inside_bear,
             "fvg_age_bars": fvg_age,
@@ -281,6 +375,28 @@ class ZoneEngine:
             "zone_overlap_count": overlap_pairs,
             "nearest_zone_type": nearest_type,
         }
+
+        if self.session_pools:
+            out.update({
+                "distance_to_prev_day_high_pts": d_pdh_pts,
+                "distance_to_prev_day_high_atr": d_pdh_atr,
+                "distance_to_prev_day_low_pts": d_pdl_pts,
+                "distance_to_prev_day_low_atr": d_pdl_atr,
+                "distance_to_d20_high_pts": d_d20h_pts,
+                "distance_to_d20_high_atr": d_d20h_atr,
+                "distance_to_d20_low_pts": d_d20l_pts,
+                "distance_to_d20_low_atr": d_d20l_atr,
+                "distance_to_overnight_high_pts": d_onh_pts,
+                "distance_to_overnight_high_atr": d_onh_atr,
+                "distance_to_overnight_low_pts": d_onl_pts,
+                "distance_to_overnight_low_atr": d_onl_atr,
+                "inside_prev_day_range": inside_pdr,
+                "prev_day_range_position": pdr_pos,
+                "overnight_swept_prev_day_high": on_swept_pdh,
+                "overnight_swept_prev_day_low": on_swept_pdl,
+            })
+
+        return out
 
     @property
     def n_zones(self) -> int:

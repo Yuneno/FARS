@@ -7,7 +7,7 @@ Los estados futuros pueden evolucionar con barras futuras (permitido por la
 spec); la geometria y la existencia NO.
 """
 import random
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
 
@@ -145,3 +145,53 @@ def test_serialization_roundtrip_zones():
     eng.update(bars)
     for z in eng.all_zones():
         assert z.to_dict()["zone_id"] == z.zone_id
+
+
+def test_zone_engine_rejects_unknown_market_when_session_pools_true():
+    with pytest.raises(ValueError, match="unknown market"):
+        ZoneEngine(symbol="UNKNOWN_XYZ", timeframe="M5", session_pools=True)
+
+
+def test_zone_engine_active_and_nearest_queries_with_session_level():
+    d1 = date(2024, 1, 8)
+    d2 = date(2024, 1, 9)
+    from zoneinfo import ZoneInfo
+    ny = ZoneInfo("America/New_York")
+    bars = [
+        {"open": 100, "high": 105, "low": 95, "close": 100, "timestamp": datetime(2024, 1, 8, 9, 30, tzinfo=ny).isoformat()},
+        {"open": 100, "high": 102, "low": 98, "close": 101, "timestamp": datetime(2024, 1, 8, 15, 55, tzinfo=ny).isoformat()},
+        {"open": 101, "high": 103, "low": 100, "close": 102, "timestamp": datetime(2024, 1, 8, 18, 0, tzinfo=ny).isoformat()},
+    ]
+    eng = ZoneEngine(symbol="MNQ", timeframe="M5", session_pools=True)
+    eng.update(bars)
+
+    sl_active = eng.active_zones(zone_type="session_level")
+    assert len(sl_active) == 2  # PDH, PDL
+    nearest_sl = eng.nearest_zones(104.0, zone_type="session_level", limit=1)
+    assert len(nearest_sl) == 1
+    assert nearest_sl[0].zone_type == "session_level"
+    assert nearest_sl[0].metadata["anchor_type"] == "prev_day_high"
+
+
+def test_zone_engine_context_with_session_pools_true():
+    bars = make_bars(80)
+    eng = ZoneEngine(symbol="MNQ", timeframe="M5", session_pools=True)
+    eng.update(bars)
+    ctx = eng.context(100.0, atr=1.5)
+    # Debe tener las 17 keys base + las 16 keys de sesión = 33 keys
+    assert len(ctx) == 33
+    session_keys = {
+        "distance_to_prev_day_high_pts", "distance_to_prev_day_high_atr",
+        "distance_to_prev_day_low_pts", "distance_to_prev_day_low_atr",
+        "distance_to_d20_high_pts", "distance_to_d20_high_atr",
+        "distance_to_d20_low_pts", "distance_to_d20_low_atr",
+        "distance_to_overnight_high_pts", "distance_to_overnight_high_atr",
+        "distance_to_overnight_low_pts", "distance_to_overnight_low_atr",
+        "inside_prev_day_range", "prev_day_range_position",
+        "overnight_swept_prev_day_high", "overnight_swept_prev_day_low",
+    }
+    assert session_keys.issubset(set(ctx))
+    for k in session_keys:
+        v = ctx[k]
+        assert v is None or isinstance(v, (bool, int, float, str))
+

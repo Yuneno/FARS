@@ -142,7 +142,7 @@ def transition_liquidity(
     max_age_bars: int | None = None,
 ) -> Zone:
     """touched -> swept | broken, con determinismo causal. (bar = barra cerrada)."""
-    if zone.is_terminal() or zone.zone_type != "liquidity":
+    if zone.is_terminal() or zone.zone_type not in ("liquidity", "session_level"):
         return zone
     if isinstance(bar, dict):
         lo, hi, cl = bar["low"], bar["high"], bar["close"]
