@@ -20,6 +20,7 @@ por mí) y los experimentos corrieron con preregistro previo. **Un hallazgo de a
 | 5 | Nada de estrategias/executor/riesgo | Diffstat: sólo `src/backtest/zone_bridge.py` (nuevo) + `tests/test_zone_bridge.py` (nuevo) + `lab_artifacts/z5_protocol/*` | ✅ |
 | 6 | Preregistro con umbrales fijados | Preregistro declara arms y umbrales antes de correr; ningún umbral se movió después | ✅ |
 | 7 | Sin push / sin dependencias | Verificado | ✅ |
+| 8 | Suite completa | Corrida por el revisor: **`1571 passed, 2 skipped`** = 1563 (main) + 8 tests nuevos del bridge | ✅ |
 
 **Cobertura de tests del bridge (8)**: protocolo, paridad trivial bit a bit, filtro bloqueante con
 registro de rechazos, una actualización por barra (append-only), causalidad del log, 17 keys con
