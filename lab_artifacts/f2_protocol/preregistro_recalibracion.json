@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "title": "Carril 2 — Preregistro del estudio de recalibracion SMC-FVG por mercado",
+    "preregistered_at_utc": "2026-09-15T21:10:00+00:00",
+    "author": "Hermes",
+    "objective": "Medir si un ajuste de min_risk_pts por mercado revivia MYM o mejora MGC/MNQ (idea de Ricardo: ajustar la formula segun el mercado).",
+    "design": "SCREENING exploratorio, no promocion: cada config se evalua OOS en walk-forward 36/6/6 (8 folds, por_tramo). Un config que pase aqui es CANDIDATA para su propia validacion preregistrada (C2-style) — no se promueve desde este estudio.",
+    "multiplicity": "24 celdas (3 mercados x 8 configs) -> a alpha=0.05 se esperan ~1.2 falsos positivos. Se reporta tambien el umbral Bonferroni (0.05/24 = 0.00208) y se marca que configs lo sobreviven.",
+    "anti_leakage": "Rejilla congelada aqui ANTES de correr; no se ajusta nada despues de ver resultados."
+  },
+  "grid": {
+    "markets": ["MNQ", "MYM", "MGC"],
+    "min_risk_pts_ladder": [2.0, 3.0, 5.0, 8.0, 10.0, 15.0, 20.0, 30.0],
+    "target_rr": 1.5,
+    "costs": "por_tramo: comision 0.62/pata + slippage 0.25 pts x dpp del mercado",
+    "data": {
+      "MNQ": "canonico databento.zip (2019-05-06+)",
+      "MYM_MGC": "D:\\fars move\\FARS\\{MYM,MGC}_M5.csv con corte 2019-05-06"
+    },
+    "bootstrap": "CBB circular por trade, bloque 10, B=2000, CI 95%",
+    "seed": 20260729
+  },
+  "evaluation_criteria": {
+    "edge": "E[R] > 0 Y CI excluye cero Y folds positivos >= 75%",
+    "survives_bonferroni": "CI excluye cero al nivel 0.00208 (marca la robustez a multiplicidad)",
+    "account_score": "solo para candidatas que pasen screening: motor Apex 25K intraday, 0.4671%, politicas fixed y buffer k=0.10"
+  }
+}
