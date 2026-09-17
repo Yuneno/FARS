@@ -1,0 +1,42 @@
+{
+  "market": "MGC",
+  "checked_at_utc": "2026-09-17T15:40:09.131877+00:00",
+  "entries": {
+    "e1_ts_d1": {
+      "base_trades": 2284,
+      "wrapper_trades": 2284,
+      "base_sha256": "5ef1bd0ccc06fb8a9dcb2e3a10a51abfd5710a1f06f3eeb5c85635b8ef69050b",
+      "wrapper_sha256": "5ef1bd0ccc06fb8a9dcb2e3a10a51abfd5710a1f06f3eeb5c85635b8ef69050b",
+      "is_bit_for_bit_identical": true
+    },
+    "e2_ts_d20": {
+      "base_trades": 442,
+      "wrapper_trades": 442,
+      "base_sha256": "0b73292f63090b5779ebe4244fd8f08c340ca4f454ddb2252b6c71a2dd3e3ccc",
+      "wrapper_sha256": "0b73292f63090b5779ebe4244fd8f08c340ca4f454ddb2252b6c71a2dd3e3ccc",
+      "is_bit_for_bit_identical": true
+    },
+    "e3_mom_break": {
+      "base_trades": 664,
+      "wrapper_trades": 664,
+      "base_sha256": "7fe811e91f0b787d0d0db90b463ff390f5ac8583a3b54dc471d000a9a21dd2cd",
+      "wrapper_sha256": "7fe811e91f0b787d0d0db90b463ff390f5ac8583a3b54dc471d000a9a21dd2cd",
+      "is_bit_for_bit_identical": true
+    },
+    "e4_mr_level": {
+      "base_trades": 3406,
+      "wrapper_trades": 3406,
+      "base_sha256": "5a8a05fb6ae13135a485a59b1bf66e784a2fc80bead4a415fee6c9fa750485a6",
+      "wrapper_sha256": "5a8a05fb6ae13135a485a59b1bf66e784a2fc80bead4a415fee6c9fa750485a6",
+      "is_bit_for_bit_identical": true
+    },
+    "e5_vol_break": {
+      "base_trades": 3161,
+      "wrapper_trades": 3161,
+      "base_sha256": "eb47d43f0306e0fbba06f294f5bce78beb138beeb6d0f3f7bc7f72782b98c551",
+      "wrapper_sha256": "eb47d43f0306e0fbba06f294f5bce78beb138beeb6d0f3f7bc7f72782b98c551",
+      "is_bit_for_bit_identical": true
+    }
+  },
+  "all_identical": true
+}
