@@ -1,0 +1,34 @@
+{
+  "MNQ": {
+    "market": "MNQ",
+    "audited_bars": 500,
+    "decisions_audited": 14,
+    "checks_performed": 14,
+    "causality_violations": 0,
+    "is_causal_sound": true
+  },
+  "MES": {
+    "market": "MES",
+    "audited_bars": 500,
+    "decisions_audited": 20,
+    "checks_performed": 20,
+    "causality_violations": 0,
+    "is_causal_sound": true
+  },
+  "MYM": {
+    "market": "MYM",
+    "audited_bars": 500,
+    "decisions_audited": 15,
+    "checks_performed": 15,
+    "causality_violations": 0,
+    "is_causal_sound": true
+  },
+  "MGC": {
+    "market": "MGC",
+    "audited_bars": 500,
+    "decisions_audited": 10,
+    "checks_performed": 10,
+    "causality_violations": 0,
+    "is_causal_sound": true
+  }
+}

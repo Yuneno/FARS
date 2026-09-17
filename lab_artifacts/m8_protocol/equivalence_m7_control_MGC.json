@@ -1,0 +1,28 @@
+{
+  "market": "MGC",
+  "checked_at_utc": "2026-09-17T13:49:47.782857+00:00",
+  "scenarios": {
+    "canonico": {
+      "m8_control_trades": 186,
+      "m7_baseline_trades": 186,
+      "m8_control_sha256": "8f0d5ca9b43f704864c40ae69982ba77034aaf0ea89f3fea4540c2acb142706b",
+      "m7_baseline_sha256": "8f0d5ca9b43f704864c40ae69982ba77034aaf0ea89f3fea4540c2acb142706b",
+      "is_bit_for_bit_identical": true
+    },
+    "canonico_mas_1tick": {
+      "m8_control_trades": 186,
+      "m7_baseline_trades": 186,
+      "m8_control_sha256": "2ca0c1a4090119d7f113e6b2892b2e35d1aa73febe83a5ae8dce2ce2bdcf0035",
+      "m7_baseline_sha256": "2ca0c1a4090119d7f113e6b2892b2e35d1aa73febe83a5ae8dce2ce2bdcf0035",
+      "is_bit_for_bit_identical": true
+    },
+    "realista": {
+      "m8_control_trades": 186,
+      "m7_baseline_trades": 186,
+      "m8_control_sha256": "0fe5e1cec579a043f32d6be60838401569bcc539011cae6c1bbddfa7b71bc9a2",
+      "m7_baseline_sha256": "0fe5e1cec579a043f32d6be60838401569bcc539011cae6c1bbddfa7b71bc9a2",
+      "is_bit_for_bit_identical": true
+    }
+  },
+  "all_scenarios_identical": true
+}

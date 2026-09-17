@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "protocol_version": "C1",
+    "block_id": "M8",
+    "experiment_id": "exp_12_08_riesgo_atr_multimarket",
+    "title": "M8 — Riesgo Normalizado por Volatilidad ATR(14) y Re-Medición Multi-Mercado (MNQ, MES, MYM, MGC)",
+    "description": "Normalización por volatilidad del umbral de riesgo mínimo (min_risk_atr = k * ATR(14)) para corregir el defecto metodológico medido en M7 (BLOCKERS.md §2: min_risk_pts=8.0 producía asimetría de $16 MNQ / $40 MES / $4 MYM / $80 MGC). Re-evaluación causal de las hipótesis de la spec §12 #5 (OTE band [0.62, 0.705]), #6 (premium/discount 0.5) y #7 (sesgo D1 Kai) sobre el brazo de referencia declarado k=0.5.",
+    "preregistered_at_utc": "2026-09-17T13:48:00Z",
+    "git_branch": "bloque-m8-riesgo-atr",
+    "git_commit": "4520aab5eb41db1cd1adf7a04ab6dcbe44bcc12e",
+    "runtime": "Python 3.13.15 (.venv-fars)",
+    "rules": {
+      "no_post_hoc_tuning": true,
+      "declared_reference_arm": "atr_k050",
+      "frozen_parameters": true,
+      "cbb_bootstrap_reps": 2000,
+      "embargo_bars_h": 192,
+      "max_workers": 4
+    }
+  },
+  "hypotheses": {
+    "H1_atr_normalization": "La normalización de riesgo por volatilidad min_risk_atr = 0.5 * ATR(14) en barras M5 cerradas homogeneiza el tamaño muestral y la exposición monetaria entre MNQ, MES, MYM y MGC frente a los 8.0 puntos fijos de M7.",
+    "H2_atr_k100_sensitivity": "Un umbral de riesgo más estricto min_risk_atr = 1.0 * ATR(14) reduce la frecuencia de operaciones aumentando la significancia de los impulsos capturados, medido como brazo de sensibilidad independiente sin optimización a posteriori.",
+    "H3_ote_band_on_k050": "Bajo una escala de volatilidad normalizada (k=0.5), el filtro de retroceso en banda OTE [0.62, 0.705] evalúa si el edge hipotetizado por §12 #5 sobrevive fuera de muestra o si su rechazo en M7 fue artefacto del colapso muestral.",
+    "H4_trend_kai_on_k050": "Bajo una escala normalizada (k=0.5), el filtro de sesgo diario D1 de Kai (strat_rangos.py) evalúa si la alineación direccional causal mejora E[R] y PF netos tras costes (§12 #7).",
+    "H5_premium_discount_on_k050": "Bajo una escala normalizada (k=0.5), el filtro de premium/discount 0.5 (src/zones/fibonacci.py) sobre el rango de impulso swing causal evalúa si comprar en descuento y vender en prima genera expectativa positiva tras costes (§12 #6).",
+    "H0_anti_fraud_control": "El wrapper pasante trivial wrapper_trivial aplicado sobre el brazo de referencia atr_k050 produce una secuencia de trades 100% idéntica bit-a-bit (mismo hash SHA256 de trades serializados).",
+    "H0_m7_control_continuity": "El brazo de control control_m7 (min_risk_pts=8.0) reproduce exactamente la secuencia de trades de M7 baseline bit-a-bit, asegurando comparabilidad metodológica."
+  },
+  "subject_strategy": {
+    "name": "SMC-FVG",
+    "source_module": "src/backtest/smc_fvg.py",
+    "parameters": {
+      "wait": 48,
+      "target_rr": 2.0,
+      "f": 0.5,
+      "swing_w": 5,
+      "cooldown": 6,
+      "log_decisions": false
+    },
+    "execution_config": {
+      "pending_limit_entry": true,
+      "pending_order_wait_bars": 48,
+      "move_stop_to_break_even": true,
+      "partial_take_profit_fraction": 0.5,
+      "cooldown_bars": 6,
+      "discrete_partial_contracts": false
+    }
+  },
+  "normalization_convention": {
+    "indicator": "Wilder ATR(14) causal point-in-time sobre barras M5 cerradas (available_at <= t)",
+    "true_range_formula": "TR_t = max(H_t - L_t, |H_t - C_{t-1}|, |L_t - C_{t-1}|) con TR_0 = H_0 - L_0",
+    "wilder_recurrence": "ATR_t = ATR_{t-1} + (TR_t - ATR_{t-1}) / 14 con ATR_0 = TR_0",
+    "warmup_bars": 500,
+    "declared_k_values": [0.5, 1.0],
+    "declared_reference_arm": "atr_k050 (k = 0.5)",
+    "risk_threshold_rule": "risk >= k * ATR(14)_t"
+  },
+  "markets": {
+    "MNQ": {
+      "symbol": "MNQ",
+      "exchange": "CME",
+      "data_file": "databento/MNQ_M5.csv",
+      "tick_size": 0.25,
+      "dollar_per_point": 2.0,
+      "friction_points": 2.0,
+      "friction_status": "validated_reference"
+    },
+    "MES": {
+      "symbol": "MES",
+      "exchange": "CME",
+      "data_file": "databento/MES_M5.csv",
+      "tick_size": 0.25,
+      "dollar_per_point": 5.0,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    },
+    "MYM": {
+      "symbol": "MYM",
+      "exchange": "CBOT",
+      "data_file": "databento/MYM_M5.csv",
+      "tick_size": 1.0,
+      "dollar_per_point": 0.5,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    },
+    "MGC": {
+      "symbol": "MGC",
+      "exchange": "COMEX",
+      "data_file": "databento/MGC_M5.csv",
+      "tick_size": 0.1,
+      "dollar_per_point": 10.0,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    }
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "folds_count": 8,
+    "start_date": "2019-05-06",
+    "test_period_start": "2022-07-01",
+    "test_period_end": "2026-07-01",
+    "warmup_calibration_bars": 500,
+    "embargo_bars_h": 192,
+    "purge_by_trade_intervals": true
+  },
+  "cost_scenarios": {
+    "canonico": {
+      "description": "Comisión estándar $4.00 RT, sin slippage",
+      "commission_per_side": 2.0,
+      "slippage_ticks": 0.0
+    },
+    "canonico_mas_1tick": {
+      "description": "Comisión estándar $4.00 RT + 1 tick adverso en patas de mercado/stop",
+      "commission_per_side": 2.0,
+      "slippage_ticks": 1.0
+    },
+    "realista": {
+      "description": "Escenario canónico del bloque: Comisión por tramo $1.24 RT ($0.62/lado) + 1 tick adverso en patas de mercado/stop (límite y TP sin slippage)",
+      "commission_per_side": 0.62,
+      "slippage_ticks": 1.0
+    }
+  },
+  "arms": [
+    {
+      "arm_id": "control_m7",
+      "filter_name": "none",
+      "min_risk_mode": "points_fixed",
+      "min_risk_value": 8.0,
+      "description": "Baseline SMC-FVG con min_risk_pts=8.0 (régimen canónico de M7, para delta de escala vs filtro)"
+    },
+    {
+      "arm_id": "atr_k050",
+      "filter_name": "none",
+      "min_risk_mode": "atr_normalized",
+      "k_atr": 0.5,
+      "description": "SMC-FVG con min_risk_atr = 0.5 * ATR(14) causal. Brazo de referencia declarado para todas las combinaciones."
+    },
+    {
+      "arm_id": "atr_k100",
+      "filter_name": "none",
+      "min_risk_mode": "atr_normalized",
+      "k_atr": 1.0,
+      "description": "SMC-FVG con min_risk_atr = 1.0 * ATR(14) causal. Sensibilidad independiente declarada antes de medir."
+    },
+    {
+      "arm_id": "atr_k050_ote_band",
+      "filter_name": "ote_band",
+      "min_risk_mode": "atr_normalized",
+      "k_atr": 0.5,
+      "parameters": {
+        "min_retrace": 0.62,
+        "max_retrace": 0.705
+      },
+      "description": "Brazo de referencia declarado (k=0.5) + banda OTE [0.62, 0.705] sobre el impulso swing causal (responde §12 #5 con escala normalizada)."
+    },
+    {
+      "arm_id": "atr_k050_trend_kai",
+      "filter_name": "trend_kai",
+      "min_risk_mode": "atr_normalized",
+      "k_atr": 0.5,
+      "parameters": {},
+      "description": "Brazo de referencia declarado (k=0.5) + alineación estricta con el sesgo diario D1 de Kai (responde §12 #7 con escala normalizada)."
+    },
+    {
+      "arm_id": "atr_k050_premium_discount",
+      "filter_name": "premium_discount_05",
+      "min_risk_mode": "atr_normalized",
+      "k_atr": 0.5,
+      "parameters": {
+        "ratio": 0.5
+      },
+      "description": "Brazo de referencia declarado (k=0.5) + condición premium/discount 0.5 (src/zones/fibonacci.py) sobre el impulso swing causal (responde §12 #6)."
+    },
+    {
+      "arm_id": "wrapper_trivial",
+      "filter_name": "always_true",
+      "min_risk_mode": "atr_normalized",
+      "k_atr": 0.5,
+      "parameters": {},
+      "description": "Control anti-fraude: decorador sobre el brazo de referencia declarado atr_k050 con filtro pasante siempre True (debe ser 100% bit-a-bit idéntico a atr_k050)."
+    }
+  ],
+  "reading_criteria": {
+    "reporting_format": "Se reporta E[R] y PF juntos para cada celda, con n, netR, drawdown e IC95 CBB bootstrap.",
+    "statistical_threshold": "Si el IC95 incluye cero o la delta vs atr_k050 no cruza el IC95 bootstrap de la diferencia, se declara ausencia de edge significativo.",
+    "sample_attrition_rule": "Si un filtro recorta drásticamente el número de trades y eleva PF, se audita si se debe a reducción de exposición o mejora real del edge por trade.",
+    "promotion_policy": "Ningún arm se promueve a ejecución en vivo; se reportan límites y techos matemáticos con honestidad."
+  }
+}
