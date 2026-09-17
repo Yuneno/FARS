@@ -666,22 +666,35 @@ def parse_args():
     parser.add_argument("--poll-interval", type=float, default=15.0)
     parser.add_argument("--duration-seconds", type=float, default=None)
     parser.add_argument("--until-close", action="store_true")
-    parser.add_argument("--ghost-balance", type=float, default=50000.0)
+    parser.add_argument("--ghost-balance", type=float, default=None)
+    parser.add_argument("--ghost-profile", choices=["50k", "100k", "150k"], default="50k")
     return parser.parse_args()
+
+
+# S2 GHOST — perfiles DECLARADOS del Trading Combine de Topstep (fuente: help.topstep.com, 2026-09-17):
+#   50K  -> objetivo $3.000 (6 %), MLL $2.000 (4 % trailing), DLL opcional $1.000 (2 %)
+#   100K -> objetivo $6.000 (6 %), MLL $3.000 (3 % trailing), DLL opcional $2.000 (2 %)
+#   150K -> objetivo $9.000 (6 %), MLL $4.500 (3 % trailing), DLL opcional $3.000 (2 %)
+GHOST_PROFILES: dict[str, dict[str, float]] = {
+    "50k": {"balance": 50000.0, "target_pct": 0.06, "mll_pct": 0.04, "dll_pct": 0.02},
+    "100k": {"balance": 100000.0, "target_pct": 0.06, "mll_pct": 0.03, "dll_pct": 0.02},
+    "150k": {"balance": 150000.0, "target_pct": 0.06, "mll_pct": 0.03, "dll_pct": 0.02},
+}
 
 
 def main():
     args = parse_args()
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # S2 GHOST — reglas DECLARADAS del Trading Combine 50K de Topstep (fuente: help.topstep.com):
-    #   profit target $3.000 = 6 % · Maximum Loss Limit $2.000 = 4 % trailing · Daily Loss Limit opcional $1.000 = 2 %
-    #   snapshot sintetico: balance = 50.000, peak = 50.000 (el broker NO alimenta el motor).
+    # S2 GHOST — reglas DECLARADAS del Trading Combine elegido (help.topstep.com). El motor consume un
+    # estado de cuenta SINTETICO; el broker NO alimenta el motor. Ver GHOST_PROFILES arriba.
+    profile = GHOST_PROFILES[args.ghost_profile]
+    ghost_balance = float(args.ghost_balance if args.ghost_balance else profile["balance"])
     rules = FundedAccountRules(
-        initial_balance=50000.0,
-        profit_target_pct=0.06,
-        max_drawdown_pct=0.04,
-        daily_loss_limit_pct=0.02,
+        initial_balance=ghost_balance,
+        profit_target_pct=profile["target_pct"],
+        max_drawdown_pct=profile["mll_pct"],
+        daily_loss_limit_pct=profile["dll_pct"],
         risk_per_trade=0.005,
         drawdown_mode="trailing",
     )
@@ -724,7 +737,7 @@ def main():
                 session_mgr,
                 poll_interval_seconds=args.poll_interval,
                 max_duration_seconds=args.duration_seconds,
-                ghost_balance=args.ghost_balance,
+                ghost_balance=ghost_balance,
             )
         )
         metrics_file = S1_DIR / "metrics_live.json"
