@@ -13,9 +13,9 @@
 | Liquidity pools + EQH/EQL (paso 5 / Z3) | falta de verdad (EQH/EQL es NUEVO en ambos repos) | ✅ HECHO — `src/zones/liquidity.py` |
 | ZoneEngine incremental (paso 6 / Z4) | falta de verdad | ✅ HECHO — `src/zones/engine.py` |
 | Fibonacci/OTE + premium/discount (paso 7) | reutilizable (helpers puros) | ✅ HECHO — `src/zones/fibonacci.py` (ratios 0.50/0.62/0.705 preregistrados, NO optimos) |
-| Prev-day/D20/overnight pools | falta de verdad | ⏳ Z3-b pendiente (requiere `src/session_calendar.py`) |
-| S/R con ancho (paso 9 / Z6) | falta de verdad | ⏳ pendiente (despues del core) |
-| Reversion V1 (paso 8) | estrategia nueva opt-in | ⏳ pendiente — entra a protocolo C1 desde el dia 1 |
+| Prev-day/D20/overnight pools | falta de verdad | ✅ HECHO — `src/zones/session_levels.py` (Z3-b, `cae7424`; revisión en `f_protocol/HERMES_REVISION_Z3B.md`) |
+| S/R con ancho (paso 9 / Z6) | falta de verdad | ⏳ pendiente (despues del core) — unico test 10.x sin cubrir |
+| Reversion V1 (paso 8) | estrategia nueva opt-in | ❌ **FAIL en los 3 escenarios de coste (7/7 configs) → ARCHIVADA** — rama `bloque-v1-reversion` (tag `v1-reversion-archivado`), veredicto y repro en `lab_artifacts/v1_protocol/ARCHIVADO.md`. Nada se promueve; reabrir solo con preregistro nuevo |
 | Order blocks como zona | reutilizable (extraer de SMC-OB) | ⏳ pendiente — el port SMC-OB de Codex ya esta; extraer OB como zona con paridad |
 | Volume voids (paso 10 / Z7) | solo referencia | ⏳ solo con hipotesis nueva preregistrada (Kai ya descarto variantes) |
 
@@ -45,12 +45,21 @@
 
 ## Lo que sigue (orden del md de GPT)
 
-1. Z3-b: pools prev-day/D20/overnight con `session_calendar` (canonico).
-2. Z5: bridge de investigacion — exponer features a backtests (baseline vs filtro vs confluencia) sin alterar estrategias.
-3. Reversion V1 (paso 8) — estrategia opt-in sobre detectores consolidados, protocolo C1 desde el dia 1.
-4. Z6: S/R determinista + order blocks como zona (paridad con SMC-OB).
-5. Z7: volume voids — solo con hipotesis nueva preregistrada.
+1. ~~Z3-b: pools prev-day/D20/overnight con `session_calendar` (canonico).~~ ✅ hecho (`cae7424`).
+2. ~~Z5: bridge de investigacion — exponer features a backtests~~ ✅ hecho y **cerrado con los 3 escenarios de coste** (`26e458f`).
+3. ~~Reversion V1 (paso 8)~~ ❌ **medida y ARCHIVADA** (FAIL 7/7 en los 3 escenarios; rama `bloque-v1-reversion`, tag `v1-reversion-archivado`).
+4. **Z6: S/R determinista + order blocks como zona (paridad con SMC-OB)** ← siguiente.
+5. **Z7: volume voids** — solo con hipotesis nueva preregistrada (hoy no existe).
+
+> Estado completo y pendientes por linea (incluidas FARS 1.2 fases 11D–14 y los gates de autonomia):
+> `E:\FARS-LAB\FARS_ESTADO_Y_PENDIENTES_2026-09-17.md`.
 
 ## Experimentos pendientes (seccion 12 del md 1)
 
-Los 8 experimentos (AMD+CRT cerca de pool, sweep+FVG vs FVG, OTE 0.62/0.705 fuera de muestra, etc.) se corren cuando exista Z5 — cada uno reporta baseline/feature/combinacion por separado, con costes reales.
+**Cubiertos por Z5** (`lab_artifacts/z5_protocol/RESULTADOS.md`, 30 arms × 3 escenarios): #1 (AMD+CRT cerca
+de pool), #2 (sweep+FVG vs FVG solo), #4 (distancia ATR a liquidez) y #8 (walk-forward con purga/embargo,
+bootstrap y costes). Ninguna delta cruza el IC95; nada se promueve.
+
+**Siguen abiertos:** #3 (FVG + S/R — necesita Z6), #5 (OTE 0.62/0.705 fuera de muestra: en V1 `ote_only`
+quedo con n=6, muestra inutil → hace falta diseno nuevo), #6 (premium/discount tras costes, mismo caso) y
+#7 (filtro OTE + tendencia de Kai en MNQ/MYM/MGC/MES: nunca corrido, requiere decision de alcance).
