@@ -27,7 +27,7 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 | **S1** | sesión sombra en vivo (TopstepX) | ✅ mergeado (`1a8f80a`); 2 señales, 2 vetos fail-closed, 0 órdenes; `s1_protocol/HERMES_REVISION_S1.md` |
 | **RT-0 … RT-8** | pipeline realtime: bus, replay, riesgo fail-closed, aceptación | ✅ DONE (ver `AUTONOMY_ROADMAP.md`) |
 | **Fases 1.0–10B** | Core estadístico + bootstrap | ✅ mergeado |
-| **Fases 11A–11C** (`agent/phases-night`) | datos de cuenta, reglas de fondeo, paths probabilísticos | ✅ **mergeado hoy** (`b0f5e0b`) con los fixes de la ronda 2 y sus dos informes de auditoría |
+| **Fases 11A–11C** (`agent/phases-night`) | datos de cuenta, reglas de fondeo, paths probabilísticos | ✅ **mergeado hoy** (`b0f5e0b`) con los fixes de la ronda 2 y sus dos informes de auditoría · **suite post-merge: 1580 passed, 2 skipped** ✓ |
 
 ## 2. ABIERTOS (con nombre y siguiente paso)
 
