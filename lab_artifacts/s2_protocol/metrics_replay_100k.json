@@ -1,7 +1,7 @@
 {
   "mode": "replay",
   "origin": "replay",
-  "uptime_seconds": 1.9,
+  "uptime_seconds": 1.8,
   "bars_received": 300,
   "signals_generated": 11,
   "decisions_total": 11,
@@ -18,7 +18,7 @@
       "duration_minutes": 65.0
     }
   ],
-  "latency_median_ms": 1246771511.98,
+  "latency_median_ms": 1246768422.24,
   "live_execution_enabled": false,
-  "reconstructed_events_count": 1380
+  "reconstructed_events_count": 1035
 }
