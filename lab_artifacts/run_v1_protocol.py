@@ -164,6 +164,7 @@ def _worker_audit_fold(task: dict[str, Any]) -> dict[str, Any]:
         test_end_idx=fd["test_end_idx"],
         train_bars=fd["train_bars"],
         test_bars=fd["test_bars"],
+        warmup_bars=fd["warmup_bars"],
         purge_gap_bars=fd["purge_gap_bars"],
     )
     cfg = _execution_config(params, canonical_costs)
@@ -725,6 +726,7 @@ def main() -> None:
                     "test_end_idx": f.test_end_idx,
                     "train_bars": f.train_bars,
                     "test_bars": f.test_bars,
+                    "warmup_bars": f.warmup_bars,
                     "purge_gap_bars": f.purge_gap_bars,
                 }
                 for f in plan.folds
