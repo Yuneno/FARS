@@ -1,0 +1,19 @@
+{
+  "mode": "live",
+  "origin": "live",
+  "uptime_seconds": 13375.1,
+  "bars_received": 68,
+  "signals_generated": 2,
+  "decisions_total": 2,
+  "risk_approvals": 0,
+  "risk_denials": 2,
+  "denial_reasons": {
+    "DRAWDOWN_BUFFER_TOO_LOW": 2
+  },
+  "orders_submitted": 0,
+  "execution_reports": 0,
+  "data_gaps_count": 0,
+  "data_gaps": [],
+  "latency_median_ms": 311586.59,
+  "live_execution_enabled": false
+}
