@@ -60,8 +60,16 @@
 de pool), #2 (sweep+FVG vs FVG solo), #4 (distancia ATR a liquidez) y #8 (walk-forward con purga/embargo,
 bootstrap y costes). Ninguna delta cruza el IC95; nada se promueve.
 
-**Siguen abiertos:** #3 (FVG + S/R — necesita Z6, que ya está: **requiere preregistro nuevo**), #5 (OTE
-0.62/0.705 fuera de muestra) y #6 (premium/discount tras costes) — **medidos en M7 con escala de riesgo
-rota** (`min_risk_pts` fijo, ver `lab_artifacts/m7_protocol/BLOCKERS.md` §2) → **se re-miden en M8** con
-`min_risk_atr` declarado. **#7 (filtro OTE + tendencia de Kai en MNQ/MYM/MGC/MES): ✅ MEDIDO en M7** —
-rechazado en los 4 mercados (revisión en `lab_artifacts/m7_protocol/HERMES_REVISION_M7.md`).
+**Siguen abiertos:** solo **#3 (FVG + S/R)** — es el último experimento de la spec sin medir; ya tiene el
+material (Z6) y **necesita preregistro nuevo**.
+
+**Medidos y rechazados:** #5 (OTE 0.62/0.705/banda), #6 (premium/discount) y #7 (OTE + tendencia de Kai en
+MNQ/MYM/MGC/MES) — medidos en M7 con escala rota y **re-medidos en M8 con riesgo normalizado**
+(`min_risk_atr = k × ATR(14)`, k=0.5 declarado), con ~5.000 trades por mercado: **los tres rechazados**
+(revisiones en `lab_artifacts/m7_protocol/HERMES_REVISION_M7.md` y `lab_artifacts/m8_protocol/HERMES_REVISION_M8.md`).
+Hallazgos de M8: el "edge" de MGC del M7 era artefacto de escala (n=186 → n=5.358, E[R] −0,036) y el
+baseline MNQ deja de excluir el cero al normalizar (IC95 [−0,0001, +0,0624]).
+
+> **Convención adoptada:** todo umbral de riesgo multi-mercado se expresa **normalizado por ATR(14)** con
+> `k` declarado en el preregistro; los umbrales en puntos nominales quedan prohibidos salvo justificación
+> explícita.
