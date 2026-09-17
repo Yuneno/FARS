@@ -1,0 +1,30 @@
+{
+  "market": "MES",
+  "checked_at_utc": "2026-09-17T13:49:47.469696+00:00",
+  "reference_arm": "atr_k050",
+  "wrapper_arm": "wrapper_trivial",
+  "scenarios": {
+    "canonico": {
+      "reference_trades_count": 5560,
+      "wrapper_trades_count": 5560,
+      "reference_sha256": "cab98791ff9359faed56625c92dc9412ea87c35dfa37f8a193766e347c4cf054",
+      "wrapper_sha256": "cab98791ff9359faed56625c92dc9412ea87c35dfa37f8a193766e347c4cf054",
+      "is_bit_for_bit_identical": true
+    },
+    "canonico_mas_1tick": {
+      "reference_trades_count": 5560,
+      "wrapper_trades_count": 5560,
+      "reference_sha256": "eb8e610a8658aa3221d93a7f31c3bca8d5c737d8fc6cd5ce3798f3fab98f77bf",
+      "wrapper_sha256": "eb8e610a8658aa3221d93a7f31c3bca8d5c737d8fc6cd5ce3798f3fab98f77bf",
+      "is_bit_for_bit_identical": true
+    },
+    "realista": {
+      "reference_trades_count": 5560,
+      "wrapper_trades_count": 5560,
+      "reference_sha256": "d9275c0153c993d73846367cb677e06ae05bd27335fabc2ed310dadf8e360db4",
+      "wrapper_sha256": "d9275c0153c993d73846367cb677e06ae05bd27335fabc2ed310dadf8e360db4",
+      "is_bit_for_bit_identical": true
+    }
+  },
+  "all_scenarios_identical": true
+}

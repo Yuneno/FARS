@@ -1,0 +1,28 @@
+{
+  "market": "MES",
+  "checked_at_utc": "2026-09-17T13:49:47.575782+00:00",
+  "scenarios": {
+    "canonico": {
+      "m8_control_trades": 295,
+      "m7_baseline_trades": 295,
+      "m8_control_sha256": "adce0170f23674e8542abb1e01acabd11ce7a022e9a8f7c289bd52722e5bd660",
+      "m7_baseline_sha256": "adce0170f23674e8542abb1e01acabd11ce7a022e9a8f7c289bd52722e5bd660",
+      "is_bit_for_bit_identical": true
+    },
+    "canonico_mas_1tick": {
+      "m8_control_trades": 295,
+      "m7_baseline_trades": 295,
+      "m8_control_sha256": "3f340da55805eaa797da72ac150c708a57d9b67a27eaf38219178e4bad332f32",
+      "m7_baseline_sha256": "3f340da55805eaa797da72ac150c708a57d9b67a27eaf38219178e4bad332f32",
+      "is_bit_for_bit_identical": true
+    },
+    "realista": {
+      "m8_control_trades": 295,
+      "m7_baseline_trades": 295,
+      "m8_control_sha256": "1373c21d911b921198a6da096006756f9bc893f27cf373d9e16c6858995c1389",
+      "m7_baseline_sha256": "1373c21d911b921198a6da096006756f9bc893f27cf373d9e16c6858995c1389",
+      "is_bit_for_bit_identical": true
+    }
+  },
+  "all_scenarios_identical": true
+}
