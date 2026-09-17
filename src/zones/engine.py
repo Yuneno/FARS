@@ -5,9 +5,8 @@ igual que ``SmcFvgStrategy``). Replay incremental y backtest producen las
 mismas zonas por construccion: cada barra nueva solo puede crear/actualizar
 zonas con ``available_at`` >= su propio cierre.
 
-V1 expone FVG + liquidity (EQH/EQL/buyside/sellside). S/R, volume voids y
-anclas de sesion (prev-day/D20/overnight) son Z3-b/Z6/Z7: las features
-correspondientes devuelven None explicitamente (nunca se fingen).
+Expone FVG, liquidity, S/R y order blocks. Volume voids (Z7) y las features
+de Fibonacci que requieren un rango causal siguen en ``None``.
 
 Features crudas, sin score magico (spec seccion 8): cada componente visible.
 """
@@ -21,7 +20,9 @@ from src.backtest.markets import get_market_spec
 from src.detectors.pivots import find_swings
 from src.zones.fvg import DEFAULT_MITIGATION, fvg_zones_from_bars, transition_fvg
 from src.zones.liquidity import ConfirmedPivot, LiquidityClusterer, transition_liquidity
+from src.zones.levels import SrPivot, SupportResistanceClusterer, transition_sr
 from src.zones.models import Zone
+from src.zones.order_blocks import OrderBlockBuilder
 from src.zones.session_levels import SessionLevelsBuilder
 
 
@@ -113,6 +114,16 @@ class ZoneEngine:
         self._clusterers: dict[str, LiquidityClusterer] = {}
         for ztype in ("eqh", "buyside", "eql", "sellside"):
             self._clusterers[ztype] = self._make_clusterer(ztype)
+        self._sr_clusterers = {
+            side: SupportResistanceClusterer(
+                symbol=self.symbol, timeframe=self.timeframe, side=side,
+                tolerance=self._current_tolerance(),
+                min_samples=self._liquidity_cfg["min_touches"],
+                lookback_bars=self._liquidity_cfg["lookback_bars"],
+            )
+            for side in ("high", "low")
+        }
+        self._ob_builder = OrderBlockBuilder(symbol=self.symbol, timeframe=self.timeframe)
 
     def _make_clusterer(self, ztype: str) -> LiquidityClusterer:
         side = "high" if ztype in ("eqh", "buyside") else "low"
@@ -155,6 +166,11 @@ class ZoneEngine:
         self._ts.append(_ts(bar))
         self._last_sig = _bar_sig(bar)
 
+        # 0. Order blocks: misma barra de disponibilidad y geometria que SMC-OB.
+        for z in self._ob_builder.on_bar(bar, i):
+            self._zones[z.zone_id] = z
+            self._all_zones[z.zone_id] = z
+
         # 1. FVG (barra 3 cerrada): reutiliza el detector consolidado
         if i >= 2:
             for z in fvg_zones_from_bars(history[i - 2:i + 1], symbol=self.symbol,
@@ -176,11 +192,19 @@ class ZoneEngine:
                     piv = ConfirmedPivot(j, p.level, "high", i, self._ts[j])
                     self._clusterers["eqh"].add(piv, i)
                     self._clusterers["buyside"].add(piv, i)
+                    self._sr_clusterers["high"].add(SrPivot(
+                        j, p.level, self._low[j], self._high[j], "high", i,
+                        self._ts[j], self._ts[i],
+                    ), i)
             for p in ls:
                 if p.index == self.pivot_left:
                     piv = ConfirmedPivot(j, p.level, "low", i, self._ts[j])
                     self._clusterers["eql"].add(piv, i)
                     self._clusterers["sellside"].add(piv, i)
+                    self._sr_clusterers["low"].add(SrPivot(
+                        j, p.level, self._low[j], self._high[j], "low", i,
+                        self._ts[j], self._ts[i],
+                    ), i)
 
         # 2b. Anclajes de sesión (Z3-b)
         if self._session_builder is not None:
@@ -208,6 +232,8 @@ class ZoneEngine:
                                     max_age_bars=self.max_age_bars)
                 self._fvg_since[zid][0] = min(self._fvg_since[zid][0], lo)
                 self._fvg_since[zid][1] = max(self._fvg_since[zid][1], hi)
+            elif z.zone_type in ("support", "resistance"):
+                nz = transition_sr(z, bar)
             else:
                 nz = transition_liquidity(z, bar, i, max_age_bars=self.max_age_bars)
             self._all_zones[zid] = nz
@@ -238,6 +264,28 @@ class ZoneEngine:
                     self._zones[zid] = merged
                     self._all_zones[zid] = merged
 
+        # 5. Sincronizar S/R despues del lifecycle, preservando estado y nacimiento.
+        for clusterer in self._sr_clusterers.values():
+            for z in clusterer.zones():
+                zid = z.zone_id
+                live = self._zones.get(zid)
+                if live is None:
+                    if z.metadata["available_bar_index"] <= i:
+                        self._zones[zid] = z
+                        self._all_zones[zid] = z
+                else:
+                    merged = Zone(
+                        zone_id=live.zone_id, zone_type=live.zone_type,
+                        symbol=live.symbol, timeframe=live.timeframe,
+                        lower=z.lower, upper=z.upper, midpoint=z.midpoint,
+                        direction=live.direction, pattern_time=live.pattern_time,
+                        available_at=live.available_at, state=live.state,
+                        touches=live.touches, strength=z.strength,
+                        source_bar_ids=z.source_bar_ids, metadata=z.metadata,
+                    )
+                    self._zones[zid] = merged
+                    self._all_zones[zid] = merged
+
     # ---------------------------------------------------------------- queries
     def active_zones(self, *, zone_type: str | None = None, direction: str | None = None) -> tuple[Zone, ...]:
         out = [z for z in self._zones.values() if not z.is_terminal()]
@@ -255,6 +303,10 @@ class ZoneEngine:
     def context(self, price: float, *, atr: float | None = None) -> dict:
         fvgs = self.active_zones(zone_type="fvg")
         liqs = self.active_zones(zone_type="liquidity")
+        sr_zones = [
+            *self.active_zones(zone_type="support"),
+            *self.active_zones(zone_type="resistance"),
+        ]
         buy = [z for z in liqs if z.direction == "long"]
         sell = [z for z in liqs if z.direction == "short"]
 
@@ -291,6 +343,12 @@ class ZoneEngine:
         nearest_liq = min(liqs, key=lambda z: _zone_dist(price, z)) if liqs else None
         touched = nearest_liq.touches if nearest_liq else None
         swept = bool(nearest_liq.state == "swept") if nearest_liq else None
+        inside_sr = [z for z in sr_zones if z.lower <= price <= z.upper]
+        inside_sr_zone = bool(inside_sr)
+        support_inside = [z for z in inside_sr if z.zone_type == "support"]
+        support_strength = (
+            max(z.strength for z in support_inside) if support_inside else None
+        )
 
         overlap_pairs = 0
         fvg_liq_overlap = False
@@ -367,8 +425,8 @@ class ZoneEngine:
             "distance_to_sellside_liquidity_atr": round(dsell / atr, 4) if (dsell is not None and atr) else None,
             "liquidity_touch_count": touched,
             "liquidity_swept": swept,
-            "inside_sr_zone": None,        # Z6
-            "support_zone_strength": None,  # Z6
+            "inside_sr_zone": inside_sr_zone,
+            "support_zone_strength": support_strength,
             "inside_ote_zone": None,        # reversio n V1 (paso 8 de la spec)
             "premium_discount_state": None,  # requiere rango causal (reversio n V1)
             "fvg_liquidity_overlap": fvg_liq_overlap,

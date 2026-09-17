@@ -1,0 +1,23 @@
+{
+  "artifact_payload_sha256": "acac4b8e29ad7dd0906690d3ebb32fdca4ae5dd43f39e7c2a928505530dbe8f1",
+  "bars": 518237,
+  "causality_violations": 0,
+  "contract_rollover": "canonical continuous MNQ member; no transformation in Z6",
+  "data_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+  "dataset_filter": "timestamp >= 2019-05-06 (canonical C1 convention)",
+  "duplicate_handling": "none; filtered rows consumed in archive order",
+  "end": "2026-09-03T23:55:00+00:00",
+  "ob_extracted_zones": 7053,
+  "ob_only_extracted": 0,
+  "ob_only_port": 0,
+  "ob_parity_differences": 0,
+  "ob_port_zones": 7053,
+  "protocol": "Z6 S/R + order blocks",
+  "source": "E:\\FARS-LAB\\databento.zip::databento/MNQ_M5.csv",
+  "sr_resistance_zones": 26990,
+  "sr_support_zones": 26410,
+  "sr_tolerance": 1.0,
+  "sr_unique_zones": 53400,
+  "start": "2019-05-06T00:00:00+00:00",
+  "timezone": "UTC (source timestamps)"
+}
