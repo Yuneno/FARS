@@ -51,8 +51,8 @@ PREREGISTRO_PATH = ARTIFACTS / "preregistro.json"
 
 SCENARIOS = {
     "canonico": dict(commission_per_side=2.0, slippage_points=0.0, time_exit_slippage_points=0.0),
-    "por_tramo": dict(commission_per_side=0.62, slippage_points=0.25, time_exit_slippage_points=0.25),
-    "kai": dict(commission_per_side=0.71, slippage_points=0.25, time_exit_slippage_points=0.25),
+    "canonico_mas_1tick": dict(commission_per_side=2.0, slippage_points=0.25, time_exit_slippage_points=0.25),
+    "por_tramo_realista": dict(commission_per_side=0.62, slippage_points=0.25, time_exit_slippage_points=0.25),
 }
 
 
@@ -283,7 +283,8 @@ def run_experiments(scenario_name: str = "canonico", max_folds: int | None = Non
                 "folds": arm_data["folds"],
             }
 
-            out_file = ARTIFACTS / f"{subj_name}_{arm_id}_fold_metrics.json"
+            scenario_suffix = "" if scenario_name == "canonico" else f"_{scenario_name}"
+            out_file = ARTIFACTS / f"{subj_name}_{arm_id}{scenario_suffix}_fold_metrics.json"
             out_file.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
             summary_table_rows.append({

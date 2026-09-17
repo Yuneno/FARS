@@ -1,11 +1,13 @@
 {
   "metadata": {
     "title": "Manifest de Experimentos Z5",
-    "generated_at_utc": "2026-09-16T23:36:32.663947+00:00",
-    "git_commit": "dcaef24411fde38217642fc3ec07b9cc14032949",
-    "git_branch": "bloque-z5-bridge",
-    "scenario": "canonico",
-    "preregistro_sha256": "7c49ffa7344e2a541b50f9642e0179c4361778ed44134bcd6652278c483d7209"
+    "generated_at_utc": "2026-09-17T01:32:35.812432+00:00",
+    "git_commit": "4549399e972db0fabc7aa521f2d4c3f935f7a6df",
+    "git_branch": "bloque-z5-escenarios",
+    "scenarios": ["canonico", "canonico_mas_1tick", "por_tramo_realista"],
+    "execution_status": "run_all_scenarios",
+    "coverage_note": "30 arms x 8 folds x 3 escenarios; los 2 escenarios nuevos por repriciado con equivalencia bit a bit verificada (equivalence_*.json). Corrida interrumpida por SIGTERM durante el cierre del reporte; artefactos completos. Reporte y verificacion: RESULTADOS.md + HERMES_REVISION_Z5_ESCENARIOS.md",
+    "preregistro_sha256": "8f8e08ba3166b086cbf6cbb104c7232c558b1bc47d20957fbe57310bec9f75ea"
   },
   "dataset": {
     "archive": "E:\\FARS-LAB\\databento.zip",
@@ -14,125 +16,365 @@
     "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
   },
   "artifacts": {
+    "amd_crt_baseline_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "5476e4c16d8611e34b86e47e95e09b68cc9e4636a492aa47fdc63dfec2dfd64e",
+      "size_bytes": 219350
+    },
     "amd_crt_baseline_fold_metrics.json": {
-      "sha256": "80b44c19ea4e4228ae253b2dd7bfe646bca665dc2d35a59f7a5132baa2549d90",
-      "size_bytes": 219219
+      "sha256": "398f8658d6ff77e72bc9c67ace77f6ab175fadc446f9e7a7bf780832f1c21793",
+      "size_bytes": 220843
+    },
+    "amd_crt_baseline_por_tramo_realista_fold_metrics.json": {
+      "sha256": "20006c4f1549b2879cc970c9d1ef44c11aeb72a3c35798d9c93d6a193405ecf5",
+      "size_bytes": 221029
+    },
+    "amd_crt_combo_fvg_and_liquidity_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "9c1cca265a0e622158bcdf0c531ac081b583f69eef562b774df0f253c5fd686d",
+      "size_bytes": 36108
     },
     "amd_crt_combo_fvg_and_liquidity_fold_metrics.json": {
-      "sha256": "c1be0fb3584f489dec74a66cd542d83b7ef4b2c22970442c74241a75da1dd461",
-      "size_bytes": 35984
+      "sha256": "caf62dae1350de4e36144b95480962ecca2fc85a88ec1c9ab6b04b841fd6ab4e",
+      "size_bytes": 36238
+    },
+    "amd_crt_combo_fvg_and_liquidity_por_tramo_realista_fold_metrics.json": {
+      "sha256": "da3012d03145303a6f2605f534277168b7746363fed333bbfc1473f90f9a39e0",
+      "size_bytes": 36370
+    },
+    "amd_crt_combo_pdr_and_on_sweep_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "ac1090b6a30aa1fd22adce3b301ab76da7777dffa49275b5b64d0d7cf3a37e1f",
+      "size_bytes": 78885
     },
     "amd_crt_combo_pdr_and_on_sweep_fold_metrics.json": {
-      "sha256": "509890aa65139de80c7ab6c42f5ee79dbc74f74c71d2f47d6553691826daa071",
-      "size_bytes": 78759
+      "sha256": "57f8f9b602ad59178c460f0645cc6a6caaf020d55bc75a654eb0f0c8e0efc92a",
+      "size_bytes": 79342
+    },
+    "amd_crt_combo_pdr_and_on_sweep_por_tramo_realista_fold_metrics.json": {
+      "sha256": "8561ac0b654871ccfb90327fbd03f7a6811831cc3f652eb2cb8c527634799ca8",
+      "size_bytes": 79471
+    },
+    "amd_crt_distance_to_buyside_liquidity_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "3798cfe5bed7cda4d4765cc6ebea5aac77e90e5f3192b78dd5028f715503c0ed",
+      "size_bytes": 107364
     },
     "amd_crt_distance_to_buyside_liquidity_atr_le_1_fold_metrics.json": {
-      "sha256": "cf8d13a4fe60e2aed8c64ff661e51b03c760c0f9ab5c503d79075a1fcc511f72",
-      "size_bytes": 107230
+      "sha256": "813c56c5806cb5749f61312c7c7d7650e8d9328c9bb5929789ac6d7a2f7da486",
+      "size_bytes": 107998
+    },
+    "amd_crt_distance_to_buyside_liquidity_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "32c27aad27dce39bd3bffcd14f1aa7ca34016a206d52a3c185a0cfdcd912e606",
+      "size_bytes": 108167
+    },
+    "amd_crt_distance_to_overnight_high_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "add96a5e175a3a38d1d45801d7d418d7586a496e95cbe257af456a45cac710a0",
+      "size_bytes": 107362
     },
     "amd_crt_distance_to_overnight_high_atr_le_1_fold_metrics.json": {
-      "sha256": "0d663d581e7bbe2c121213f5116c38979779422aafe5bbe38d3345f7446b0249",
-      "size_bytes": 107228
+      "sha256": "a264bd41a3b51b3f1094e350a7a8cde2208af0498f326ba1996fa540abe16f2d",
+      "size_bytes": 107996
+    },
+    "amd_crt_distance_to_overnight_high_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "85d7052ee04118e7989f7fc44717722c77256479276b3e97882b55765899f4aa",
+      "size_bytes": 108165
+    },
+    "amd_crt_distance_to_overnight_low_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "e6a5557b36edf39a58c0eb171c44253004964aa7c428f7fb0e5df2b3341ded1c",
+      "size_bytes": 115381
     },
     "amd_crt_distance_to_overnight_low_atr_le_1_fold_metrics.json": {
-      "sha256": "6b8ead90c53134dccec5548331d863298cd9ca394918b1c72a01af6b7924d5d7",
-      "size_bytes": 115252
+      "sha256": "9bc99c1969bd976e8dedb8b3167ff7483a505ae13da75e32a0ebcc3d95569105",
+      "size_bytes": 116124
+    },
+    "amd_crt_distance_to_overnight_low_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "b59492fd13963ffbadf1f1e113dbe28976732e976d2587dcd3801031ea8dd09d",
+      "size_bytes": 116252
+    },
+    "amd_crt_distance_to_sellside_liquidity_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "e64e8f3dedb9a4c7f1374439d84d3868ce23fedab24578cfafaa44c15632d27f",
+      "size_bytes": 115387
     },
     "amd_crt_distance_to_sellside_liquidity_atr_le_1_fold_metrics.json": {
-      "sha256": "354253b53b41a74190b86a41521111c8d8b68520334eede6ca8eaf913623dfeb",
-      "size_bytes": 115258
+      "sha256": "44b9f4ad48ca078d5edca03effaab62930e6a4098ffdd8fd19755163d9087332",
+      "size_bytes": 116130
+    },
+    "amd_crt_distance_to_sellside_liquidity_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "491ec19bfa1fdd3889eb50eee56883baa4c87013e72426efb8fea138fa57f883",
+      "size_bytes": 116258
+    },
+    "amd_crt_fvg_liquidity_overlap_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "4fb85f98f49a929210b83d7f175d430c0e651e2963d560356b88876520002989",
+      "size_bytes": 219406
     },
     "amd_crt_fvg_liquidity_overlap_fold_metrics.json": {
-      "sha256": "0e619710a11467dc22f6b26f31d8fc99899cd3fa026c2f7972276146afa995f3",
-      "size_bytes": 219275
+      "sha256": "e4349b63e70e1422651b15c05ccd89f1aef656c3c270c27f0589560c6a83b260",
+      "size_bytes": 220899
+    },
+    "amd_crt_fvg_liquidity_overlap_por_tramo_realista_fold_metrics.json": {
+      "sha256": "b5293ddf72ea84f80bac8a05b071412b56258ee3a0fd68b38539c30f3a662137",
+      "size_bytes": 221085
+    },
+    "amd_crt_inside_fvg_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "17174be91cdd3fa9666c18184dc1f4c4747b9e9f9051470811f6d436394088dc",
+      "size_bytes": 67911
     },
     "amd_crt_inside_fvg_fold_metrics.json": {
-      "sha256": "14f561bb7bc74452773b094ddd19a9d9dce78fd21ef7079618f57a7f97ddf3d5",
-      "size_bytes": 67786
+      "sha256": "b17526ed69022056b0a2ff853a8af059985c601087cdb9dee0c8966bc24b808e",
+      "size_bytes": 68272
+    },
+    "amd_crt_inside_fvg_por_tramo_realista_fold_metrics.json": {
+      "sha256": "13aa03a12db693e65d408e676f5c1edeccab550269abe803b8bbd92b0572503c",
+      "size_bytes": 68421
+    },
+    "amd_crt_inside_prev_day_range_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "d26d0bc7253579dc5cf064901b6f235fd0512f3e3b3e55f703bd72ebfaafa31f",
+      "size_bytes": 197569
     },
     "amd_crt_inside_prev_day_range_fold_metrics.json": {
-      "sha256": "585beed5807f39c3a4f8dc8133e1365aed6e44a8f52e5bd90a235aca600a0322",
-      "size_bytes": 197439
+      "sha256": "c9131b6b7216c860771224977ead52bbc9ee35bbf685eaa0812556eb0c302af5",
+      "size_bytes": 198904
+    },
+    "amd_crt_inside_prev_day_range_por_tramo_realista_fold_metrics.json": {
+      "sha256": "e4f0c299b1b1ce2c5255af90500bfbf7256f8e53695a8c33379d0fd237060f57",
+      "size_bytes": 199078
+    },
+    "amd_crt_liquidity_swept_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "b682180f7e2876107ed48dc56d0808421f1cca093f8a6e30558042d2642c1871",
+      "size_bytes": 101179
     },
     "amd_crt_liquidity_swept_fold_metrics.json": {
-      "sha256": "3ba5b77642fbc52e30d5356904311515a706f7ca4948d277b1ee5a9ef24d9c26",
-      "size_bytes": 101060
+      "sha256": "2a0d3b290610397fd84fbd43af51a276ce823f9089bcde9bdfb572844da45ae9",
+      "size_bytes": 101764
+    },
+    "amd_crt_liquidity_swept_por_tramo_realista_fold_metrics.json": {
+      "sha256": "48c03926a1021aaa72f5c8e390ebc1b065bcee237119d44d1dcc1a3d3cfb752e",
+      "size_bytes": 101943
+    },
+    "amd_crt_overnight_swept_prev_day_high_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "26691db46f89ca5910b433b52259d757edfc1a1af1e468916f4bd89cf33c4dcc",
+      "size_bytes": 164229
     },
     "amd_crt_overnight_swept_prev_day_high_fold_metrics.json": {
-      "sha256": "5c106bd490c1837ff19a5bb8d9ea91b20153734fa5854e67cdc50160c3863ac4",
-      "size_bytes": 164096
+      "sha256": "6d060985d49a3b1c004c1d1ad67596e2bd677f0a3cdf50790b668c4ffaf332a3",
+      "size_bytes": 165282
+    },
+    "amd_crt_overnight_swept_prev_day_high_por_tramo_realista_fold_metrics.json": {
+      "sha256": "079f495286061478d9a9dfc3e22fc113f7b3aa7a5571ae6c4e5fb565043adf64",
+      "size_bytes": 165472
+    },
+    "amd_crt_overnight_swept_prev_day_low_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "ce0ae64846aa34d71894c670b948432291da09202abb35c64af6eeba34f52936",
+      "size_bytes": 151262
     },
     "amd_crt_overnight_swept_prev_day_low_fold_metrics.json": {
-      "sha256": "da0352ea8288ec8ff64f177da1f0f32a58564227287630652f5c1c49d7cf83e4",
-      "size_bytes": 151134
+      "sha256": "5f0737d2eecdae59792c939d30a6cf42aee3825559d0416e684581edc105abb3",
+      "size_bytes": 152291
+    },
+    "amd_crt_overnight_swept_prev_day_low_por_tramo_realista_fold_metrics.json": {
+      "sha256": "6a3ba68b4fa425c6cde5bec03879f2234e4d3c3b8faf25ec5eaaf31ddfa2206d",
+      "size_bytes": 152423
+    },
+    "amd_crt_prev_day_range_position_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "73c895e09f19f97fe0a92ccd669ece0397f4f2a6622e40df0087bd6ad39f8bc1",
+      "size_bytes": 151761
     },
     "amd_crt_prev_day_range_position_fold_metrics.json": {
-      "sha256": "56053bdbfb0141490a1b17ea0efa522252adff1ce270f50801a002b03f434b75",
-      "size_bytes": 151638
+      "sha256": "ecd8e4fc3074b707ec22f14d50822d851addd4456b1e37aa8879c984a697d019",
+      "size_bytes": 152757
+    },
+    "amd_crt_prev_day_range_position_por_tramo_realista_fold_metrics.json": {
+      "sha256": "9ed41e86f9d76a349924d726889e3e44a932003360679af564ce97b96e788604",
+      "size_bytes": 152919
+    },
+    "amd_crt_wrapper_trivial_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "decb7f04750d657fddeb56abe095df176b697c43a45c442ae782ebb95006f1a5",
+      "size_bytes": 219412
     },
     "amd_crt_wrapper_trivial_fold_metrics.json": {
-      "sha256": "66b3a027a9523ab053ea10202cb9d366511056e1afea284e16e7e068068c5998",
-      "size_bytes": 219281
+      "sha256": "c2863e7763710e599cbafb6d9dc7405568e0abb9ec56f6cdda1c0037529e9125",
+      "size_bytes": 220905
+    },
+    "amd_crt_wrapper_trivial_por_tramo_realista_fold_metrics.json": {
+      "sha256": "872d83fa96b08c530001c2809dd9b0150b61f32f72622c3f522ec2cf6b67c73b",
+      "size_bytes": 221091
+    },
+    "smc_fvg_baseline_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "86fc2558f66229828f57465f9eb314ffcedb6f46508fc35137c862c8add9f96a",
+      "size_bytes": 1890165
     },
     "smc_fvg_baseline_fold_metrics.json": {
-      "sha256": "ec86a2e8319062c6fda110412dc87d62c571b966ddc32af29655fece8f1d1f2e",
-      "size_bytes": 1889973
+      "sha256": "8071251317733ee97106f70609200e9f8e50711853cd8b36b0ddaa41729c7469",
+      "size_bytes": 1900671
+    },
+    "smc_fvg_baseline_por_tramo_realista_fold_metrics.json": {
+      "sha256": "d43e59d36b1a73cdcb0843f5f854f3fb7328d7a56048946e004893ccbaec6e90",
+      "size_bytes": 1900717
+    },
+    "smc_fvg_combo_fvg_and_liquidity_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "c4c55307b67faa641e8b48e57a8a1625475d9edca61e73bb0a4922747cffa7b5",
+      "size_bytes": 297305
     },
     "smc_fvg_combo_fvg_and_liquidity_fold_metrics.json": {
-      "sha256": "389f567ea289c42e388fdb1ce160109999a6372eb01879eb163d4170118bcf5b",
-      "size_bytes": 297197
+      "sha256": "49780383303872efb342babec13fe1cdfa496343ba739a34c185484116cfabea",
+      "size_bytes": 298840
+    },
+    "smc_fvg_combo_fvg_and_liquidity_por_tramo_realista_fold_metrics.json": {
+      "sha256": "d0aa41ceab33d0a4b259ff41b500c90377c366c49ac19a267e99c2728b9adfe5",
+      "size_bytes": 298988
+    },
+    "smc_fvg_combo_pdr_and_on_sweep_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "48d53ed9570646f91f70a33924884b39c422b5687023dc2abe394461de96a01b",
+      "size_bytes": 196268
     },
     "smc_fvg_combo_pdr_and_on_sweep_fold_metrics.json": {
-      "sha256": "22ff611ef6fb7ac3605e81564318fa437d984d604a18071007582a6bb273d846",
-      "size_bytes": 196157
+      "sha256": "77a08fa028cc9de92109380391f3ee263dc0a9cc8423c760caf48cefe472ce32",
+      "size_bytes": 197269
+    },
+    "smc_fvg_combo_pdr_and_on_sweep_por_tramo_realista_fold_metrics.json": {
+      "sha256": "625a26bdae9d4ad38b7fc2c06096c6fa0a0eba5420ec9aa74208aa4d5d7ce85b",
+      "size_bytes": 197375
+    },
+    "smc_fvg_distance_to_buyside_liquidity_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "2d3c95626cb3da324188f5d931367668fc0243becce09c0879cb5ca13519eabc",
+      "size_bytes": 1061032
     },
     "smc_fvg_distance_to_buyside_liquidity_atr_le_1_fold_metrics.json": {
-      "sha256": "e909d5b3cbc36f99a8f6995308230c3dd1e3ab272955c51a34fc11e19633c34d",
-      "size_bytes": 1060813
+      "sha256": "1142cff3076e978c818212428be008083f101207d86c158edf74288b7b786f5c",
+      "size_bytes": 1066777
+    },
+    "smc_fvg_distance_to_buyside_liquidity_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "7cb100c5d170684c9838f3dc04a6ee8b8e4fe3e4472d021cd06aec3c61f9b7bf",
+      "size_bytes": 1066837
+    },
+    "smc_fvg_distance_to_overnight_high_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "5bb96ca61d254de2c4cc6dfff6d02ec0a0b81eea2347394a8033d369226e31bb",
+      "size_bytes": 1061030
     },
     "smc_fvg_distance_to_overnight_high_atr_le_1_fold_metrics.json": {
-      "sha256": "90ccb0807d674990eb724229ef2645cde2843797edf042ff50fd4f1b18823ae8",
-      "size_bytes": 1060811
+      "sha256": "3a754e99caca49fe87c59fcba5610a9bfc32a230031b674b19fc6815ae4f129b",
+      "size_bytes": 1066775
+    },
+    "smc_fvg_distance_to_overnight_high_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "c9e62b0b9018c38e0465a5cbea3dfb487245d1535f51d1a103e901f14908a011",
+      "size_bytes": 1066835
+    },
+    "smc_fvg_distance_to_overnight_low_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "ba1a0fa0f0b1b0535a4fb4a40c7079e5832686861f2a87b10d004dadd7815eec",
+      "size_bytes": 970810
     },
     "smc_fvg_distance_to_overnight_low_atr_le_1_fold_metrics.json": {
-      "sha256": "4101c7673fe42c842ef3336be84bcd5164581db00b9b3aac2750f3c742d3b208",
-      "size_bytes": 970713
+      "sha256": "3f100a876b8b5ce5341125ec522281302ef65e87fceaa16f501b31ea28fe1dad",
+      "size_bytes": 976294
+    },
+    "smc_fvg_distance_to_overnight_low_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "5041581e77331dec7f5394b6e8e2cc40a15373b0cdbc7fe2966e7875f48c6ae9",
+      "size_bytes": 976360
+    },
+    "smc_fvg_distance_to_sellside_liquidity_atr_le_1_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "e4ab5af208d1547f6efe0f65d91a50d63e0b37869f263c147dcfd3c419bb13b0",
+      "size_bytes": 970816
     },
     "smc_fvg_distance_to_sellside_liquidity_atr_le_1_fold_metrics.json": {
-      "sha256": "17878d29badff274d1d4e3e13ce61bba3a10530cc4b95442da41851e7d808ee3",
-      "size_bytes": 970719
+      "sha256": "a530f9ac22ee7f8ee7d93de594963169042f4e9b5fa557e7ec990b3611f291c7",
+      "size_bytes": 976300
+    },
+    "smc_fvg_distance_to_sellside_liquidity_atr_le_1_por_tramo_realista_fold_metrics.json": {
+      "sha256": "6492c9e26219e09e6f807ee1cb507bedf699037544403f45fbcceeb5c0626e04",
+      "size_bytes": 976366
+    },
+    "smc_fvg_fvg_liquidity_overlap_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "12c9397b5ca3962e1109a0534a77565c01ef584e068c1e5e77b6f4b14ff2965e",
+      "size_bytes": 1887062
     },
     "smc_fvg_fvg_liquidity_overlap_fold_metrics.json": {
-      "sha256": "95fa5dcdbe900d32a0aac672c66e0c4764aa38e4f007395710020e318dae61d9",
-      "size_bytes": 1886870
+      "sha256": "e512232210a23f3693135cb22432860d461103f75a6741650afd58e2f7013274",
+      "size_bytes": 1897560
+    },
+    "smc_fvg_fvg_liquidity_overlap_por_tramo_realista_fold_metrics.json": {
+      "sha256": "b32b69989c544bb5236d42ec8d826c6ed6c2bc37d6af36579f79b3c71f97acd9",
+      "size_bytes": 1897603
+    },
+    "smc_fvg_inside_fvg_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "ad82397cc1638a5834f2a69495d42d7fe88475814c441c4d13dd29c83f08be82",
+      "size_bytes": 604792
     },
     "smc_fvg_inside_fvg_fold_metrics.json": {
-      "sha256": "d18326c07c1a5d3510578203cfd073d814a44ab88dc910135f5af6ca52a16a25",
-      "size_bytes": 604666
+      "sha256": "4b0484865b4c4ccd0ea01a3560c887223234f5d2a42b1857534c0d3279916953",
+      "size_bytes": 608136
+    },
+    "smc_fvg_inside_fvg_por_tramo_realista_fold_metrics.json": {
+      "sha256": "f8d281a6eac2ffcc1ce33fbb43db84bb1504c6e56b2d4d1a399c367806e41cc1",
+      "size_bytes": 608228
+    },
+    "smc_fvg_inside_prev_day_range_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "6430c8b1febaaee81a50c7af0b5236ca33a4be647219140f8d34a521650c6279",
+      "size_bytes": 1197031
     },
     "smc_fvg_inside_prev_day_range_fold_metrics.json": {
-      "sha256": "ea0b3325cce676cfb6d713e302c910529ad86222c3d0d387a25a1af366ab3992",
-      "size_bytes": 1196865
+      "sha256": "de521918c46df8a1e7cde0eddf627919b7a0183e4fa0231b2c60902f73dd19dc",
+      "size_bytes": 1203602
+    },
+    "smc_fvg_inside_prev_day_range_por_tramo_realista_fold_metrics.json": {
+      "sha256": "e07de2aa4be690ca16be39d0d0ca36d95fbdc4feffb1b60d2f8b0e1b7d4ca4cc",
+      "size_bytes": 1203670
+    },
+    "smc_fvg_liquidity_swept_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "baa60c1e2bf5c2cd99336894749e02af5702b3ef2bdf3b2f178feeb150e80e2d",
+      "size_bytes": 870276
     },
     "smc_fvg_liquidity_swept_fold_metrics.json": {
-      "sha256": "4d29045d74b252c6c327b7ee43c3fd1f910de162d35d14a7fff3c1c273af6fcc",
-      "size_bytes": 870188
+      "sha256": "e9ccf81da007e1d8a1e69ccba65f06ed148b068394b9551f5b49833387c0e187",
+      "size_bytes": 874942
+    },
+    "smc_fvg_liquidity_swept_por_tramo_realista_fold_metrics.json": {
+      "sha256": "c3706644ef21b1f5750f77b42d3b7f1ce18bf9856f44333dc70164107d5389fe",
+      "size_bytes": 875125
+    },
+    "smc_fvg_overnight_swept_prev_day_high_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "8c412de31f827d92ec31be60f2c6e2562c2b715280202ed33c0feb1cff602b38",
+      "size_bytes": 1211365
     },
     "smc_fvg_overnight_swept_prev_day_high_fold_metrics.json": {
-      "sha256": "a2cb086b9e89572479af32234b8cf1ba3eecd18dfe4659ea98e300fe44da033c",
-      "size_bytes": 1211155
+      "sha256": "6eb68033134d5fa11c72614a5c56a5f79aa683beeb9543da18eb47600214bb60",
+      "size_bytes": 1217992
+    },
+    "smc_fvg_overnight_swept_prev_day_high_por_tramo_realista_fold_metrics.json": {
+      "sha256": "f8a8a9be36917dcdefbb6528328ae4d4cc99c753723527f1e9733496fe67013a",
+      "size_bytes": 1218054
+    },
+    "smc_fvg_overnight_swept_prev_day_low_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "0f05545c4f7da7d8e9996c78b4b05beaace4163b1e2f271247099c231daee60d",
+      "size_bytes": 1105526
     },
     "smc_fvg_overnight_swept_prev_day_low_fold_metrics.json": {
-      "sha256": "5a03408697d5ba4b59ba5910ac434f393c185231ef580ca3499c50026fb1d785",
-      "size_bytes": 1105411
+      "sha256": "e5cba82311c714eb33afea2109537b704b45f14c4ceeab4a3969a0e9ad5ee514",
+      "size_bytes": 1111767
+    },
+    "smc_fvg_overnight_swept_prev_day_low_por_tramo_realista_fold_metrics.json": {
+      "sha256": "c0fd6dc1e70df9b2ab14acd4a42b33fdb406be5314d86bd88b9eb2f53f43308a",
+      "size_bytes": 1111823
+    },
+    "smc_fvg_prev_day_range_position_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "fb1588757bf3969d37fa10bccb04426ef6065fdfb9df1b6d67b9e224093578e6",
+      "size_bytes": 743521
     },
     "smc_fvg_prev_day_range_position_fold_metrics.json": {
-      "sha256": "f2d538e0861c029c6cdcb879c1cac1911b5fbdfc44d9396caf5ee62542f0dd9f",
-      "size_bytes": 743402
+      "sha256": "6699c45f5f8e59ec42f4af845dcee4132aa9189d913f909808b96e5cc7321021",
+      "size_bytes": 747599
+    },
+    "smc_fvg_prev_day_range_position_por_tramo_realista_fold_metrics.json": {
+      "sha256": "2c899fdf2cc8e8b656c7828f6b8218cefd68e40f6574f297724be19f4f14972f",
+      "size_bytes": 747682
+    },
+    "smc_fvg_wrapper_trivial_canonico_mas_1tick_fold_metrics.json": {
+      "sha256": "fb522f3c15db8b75ba8f32de904fd8c4e80296ae06a2a580517c9cee1c697516",
+      "size_bytes": 1890227
     },
     "smc_fvg_wrapper_trivial_fold_metrics.json": {
-      "sha256": "1e7e15c74932478ce8140371a7308e411f06ee01ece04906fd202c2a8a3767b8",
-      "size_bytes": 1890035
+      "sha256": "e9228f64ee81b56c8eb037c22742ff3c6003d8564df2c27e83469ac5a13fc779",
+      "size_bytes": 1900733
+    },
+    "smc_fvg_wrapper_trivial_por_tramo_realista_fold_metrics.json": {
+      "sha256": "96751b2658a0fa11b768f12d0b6d2dce61a56077455c3d2bf4b6636ffaf53653",
+      "size_bytes": 1900779
     }
   }
 }

@@ -1,74 +1,93 @@
-# RESULTADOS DE EXPERIMENTOS — BLOQUE Z5
+# RESULTADOS DE EXPERIMENTOS — BLOQUE Z5 (los 3 escenarios de coste)
 
-**Fecha:** 2026-09-16 23:36:32 UTC  
-**Escenario de Coste:** `canonico`  
-**Principio Normativo:** *«Esto mide features, NO promueve estrategias ni afirma rentabilidad»*.  
+**Fecha:** 2026-09-17 · **Escenarios de coste:** `canonico` · `canonico_mas_1tick` · `por_tramo_realista`
+**Datos:** MNQ M5 canónico, 518.237 barras · 8 folds calendario con purga y embargo `h=192`
+**Principio normativo:** *«Esto mide features, NO promueve estrategias ni afirma rentabilidad»*.
+
+> **Nota de cierre:** la corrida de los 3 escenarios la ejecutó Codex y **fue interrumpida (SIGTERM) durante
+> la reescritura de este reporte**; los 90 artefactos quedaron completos en disco. Este documento los cubre
+> íntegros y su contenido fue **re-verificado por Hermes** (`HERMES_REVISION_Z5_ESCENARIOS.md`).
+> La tabla, los PASS anti-fraude y la equivalencia de repriciado son recomputación independiente.
 
 ---
 
-## 1. Verificación Anti-Fraude: Paridad Bit a Bit
+## 1. Verificación anti-fraude — paridad bit a bit (los 3 escenarios)
 
-Para cada sujeto, el `wrapper_trivial` (filtro que retorna incondicionalmente `True`) debe generar
-una secuencia de trades 100% idéntica al `baseline` sin el puente. Verificado mediante SHA256 de trades JSON.
+`wrapper_trivial` (filtro siempre `True`) vs `baseline` sin puente: comparación profunda de
+`aggregated_metrics`, `folds` y **trades**, en los tres escenarios.
 
-| Sujeto | Hash Baseline | Hash Wrapper Trivial | Estado |
+| Sujeto | `canonico` | `canonico_mas_1tick` | `por_tramo_realista` |
 |---|---|---|---|
-| `amd_crt` | `ffc88f813a5c82d6` | `ffc88f813a5c82d6` | ✅ PASS (Bit a Bit) |
-| `smc_fvg` | `3a65e6103536d843` | `3a65e6103536d843` | ✅ PASS (Bit a Bit) |
+| `smc_fvg` (n=3.583) | ✅ PASS | ✅ PASS | ✅ PASS |
+| `amd_crt` (n=415) | ✅ PASS | ✅ PASS | ✅ PASS |
 
----
+## 2. El trade-set NO depende del coste (verificado)
 
-## 2. Tabla Comparativa de Arms (Base y Arms Lado a Lado)
+El número de trades es idéntico en los 3 escenarios para cada arm (la columna `n` coincide), y la
+comparación de identidad de trades del arm `amd_crt_baseline` entre escenarios da **idéntico**. Cambian
+los fills y el net R (slippage), no las decisiones. Es lo que habilita el repriciado.
 
-| Sujeto | Arm | Rol | N Trades | E[R] | PF | IC95 | Folds+ | Δ E[R] | Δ PF |
-|---|---|---|---|---|---|---|---|---|---|
-| `smc_fvg` | `baseline` | baseline | 3583 | -0.0094 | 0.9804 | [-0.0451, 0.0252] | 4/8 | +0.0000 | +0.0000 |
-| `smc_fvg` | `wrapper_trivial` | anti_fraud_control | 3583 | -0.0094 | 0.9804 | [-0.0451, 0.0252] | 4/8 | +0.0000 | +0.0000 |
-| `smc_fvg` | `inside_prev_day_range` | single_feature | 2267 | -0.0254 | 0.9475 | [-0.0675, 0.0162] | 2/8 | -0.0160 | -0.0330 |
-| `smc_fvg` | `prev_day_range_position` | single_feature | 1406 | -0.0194 | 0.9594 | [-0.0744, 0.0308] | 4/8 | -0.0100 | -0.0210 |
-| `smc_fvg` | `distance_to_overnight_low_atr_le_1` | single_feature | 1836 | -0.0032 | 0.9932 | [-0.0516, 0.0447] | 4/8 | +0.0062 | +0.0128 |
-| `smc_fvg` | `distance_to_overnight_high_atr_le_1` | single_feature | 2011 | -0.0100 | 0.9795 | [-0.0591, 0.0355] | 4/8 | -0.0006 | -0.0010 |
-| `smc_fvg` | `overnight_swept_prev_day_low` | single_feature | 2092 | 0.0009 | 1.0018 | [-0.0424, 0.0442] | 4/8 | +0.0103 | +0.0214 |
-| `smc_fvg` | `overnight_swept_prev_day_high` | single_feature | 2296 | -0.0142 | 0.9707 | [-0.0555, 0.0255] | 4/8 | -0.0048 | -0.0097 |
-| `smc_fvg` | `distance_to_sellside_liquidity_atr_le_1` | single_feature | 1836 | -0.0032 | 0.9932 | [-0.0516, 0.0447] | 4/8 | +0.0062 | +0.0128 |
-| `smc_fvg` | `distance_to_buyside_liquidity_atr_le_1` | single_feature | 2011 | -0.0100 | 0.9795 | [-0.0591, 0.0355] | 4/8 | -0.0006 | -0.0010 |
-| `smc_fvg` | `inside_fvg` | single_feature | 1143 | -0.0355 | 0.9273 | [-0.0993, 0.0282] | 3/8 | -0.0261 | -0.0531 |
-| `smc_fvg` | `liquidity_swept` | single_feature | 1647 | -0.0258 | 0.9476 | [-0.0752, 0.0242] | 2/8 | -0.0164 | -0.0328 |
-| `smc_fvg` | `fvg_liquidity_overlap` | single_feature | 3577 | -0.0090 | 0.9813 | [-0.0453, 0.0252] | 4/8 | +0.0004 | +0.0009 |
-| `smc_fvg` | `combo_pdr_and_on_sweep` | combination | 367 | -0.0611 | 0.8801 | [-0.1753, 0.049] | 3/8 | -0.0517 | -0.1004 |
-| `smc_fvg` | `combo_fvg_and_liquidity` | combination | 559 | -0.0838 | 0.8350 | [-0.1653, -0.0001] | 3/8 | -0.0744 | -0.1454 |
-| `amd_crt` | `baseline` | baseline | 415 | -0.0022 | 0.9775 | [-0.0244, 0.0198] | 4/8 | +0.0000 | +0.0000 |
-| `amd_crt` | `wrapper_trivial` | anti_fraud_control | 415 | -0.0022 | 0.9775 | [-0.0244, 0.0198] | 4/8 | +0.0000 | +0.0000 |
-| `amd_crt` | `inside_prev_day_range` | single_feature | 373 | -0.0019 | 0.9810 | [-0.0233, 0.0219] | 4/8 | +0.0003 | +0.0036 |
-| `amd_crt` | `prev_day_range_position` | single_feature | 285 | -0.0079 | 0.9197 | [-0.0327, 0.0188] | 4/8 | -0.0057 | -0.0577 |
-| `amd_crt` | `distance_to_overnight_low_atr_le_1` | single_feature | 215 | -0.0107 | 0.8930 | [-0.0402, 0.0184] | 3/8 | -0.0085 | -0.0845 |
-| `amd_crt` | `distance_to_overnight_high_atr_le_1` | single_feature | 200 | 0.0069 | 1.0724 | [-0.0239, 0.0405] | 5/8 | +0.0091 | +0.0949 |
-| `amd_crt` | `overnight_swept_prev_day_low` | single_feature | 284 | -0.0076 | 0.9230 | [-0.0317, 0.0178] | 4/8 | -0.0054 | -0.0545 |
-| `amd_crt` | `overnight_swept_prev_day_high` | single_feature | 309 | 0.0021 | 1.0216 | [-0.0227, 0.0269] | 5/8 | +0.0043 | +0.0441 |
-| `amd_crt` | `distance_to_sellside_liquidity_atr_le_1` | single_feature | 215 | -0.0107 | 0.8930 | [-0.0402, 0.0184] | 3/8 | -0.0085 | -0.0845 |
-| `amd_crt` | `distance_to_buyside_liquidity_atr_le_1` | single_feature | 200 | 0.0069 | 1.0724 | [-0.0239, 0.0405] | 5/8 | +0.0091 | +0.0949 |
-| `amd_crt` | `inside_fvg` | single_feature | 124 | 0.0181 | 1.1971 | [-0.0227, 0.0623] | 3/8 | +0.0203 | +0.2197 |
-| `amd_crt` | `liquidity_swept` | single_feature | 188 | 0.0052 | 1.0579 | [-0.0261, 0.0369] | 5/8 | +0.0074 | +0.0805 |
-| `amd_crt` | `fvg_liquidity_overlap` | single_feature | 415 | -0.0022 | 0.9775 | [-0.0244, 0.0198] | 4/8 | +0.0000 | +0.0000 |
-| `amd_crt` | `combo_pdr_and_on_sweep` | combination | 145 | -0.0033 | 0.9668 | [-0.0407, 0.0347] | 3/8 | -0.0011 | -0.0107 |
-| `amd_crt` | `combo_fvg_and_liquidity` | combination | 63 | 0.0177 | 1.2073 | [-0.0367, 0.0741] | 2/8 | +0.0199 | +0.2299 |
+## 3. Equivalencia del atajo de repriciado
 
----
+`equivalence_amd_crt_baseline_por_tramo_realista_repriced.json` vs `equivalence_..._full_run.json`:
+**net R por trade idénticos** (415/415). El atajo es válido; no se usó como sustituto de una corrida sin
+comprobarlo.
 
-## 3. Análisis Objetivo y Hallazgos por Feature
+## 4. Tabla completa (E[R] / PF · n entre paréntesis cuando difiere)
 
-### 3.1. Features que no cambian nada (o tienen impacto nulo)
-- Aquellas donde `N Trades` y métricas se mantienen prácticamente idénticas al baseline indican
-  que la condición se cumple en casi todas las barras evaluadas (p. ej. si el precio casi siempre
-  está dentro del rango o si la distancia al nivel excede holgadamente el umbral).
+### SMC-FVG
 
-### 3.2. Features que reducen trades sin mover E[R]
-- Filtros selectivos que reducen el volumen de operaciones a la mitad o más sin generar una mejora
-  estadísticamente significativa en E[R] o PF. Reducen el Sharpe/Calmar total del sistema.
+| Arm | canonico ($4 RT) | +1 tick | realista ($1.24 RT +1t) |
+|---|---:|---:|---:|
+| `baseline` / `wrapper_trivial` | −0,0094 / 0,980 | −0,0204 / 0,958 | **+0,0897 / 1,203** (7/8) |
+| `overnight_swept_prev_day_low` | +0,0009 / 1,002 | −0,0099 / 0,980 | **+0,0976 / 1,223** |
+| `distance_to_sellside_liquidity_atr_le_1` | −0,0032 / 0,993 | −0,0140 / 0,971 | +0,0943 / 1,216 |
+| `fvg_liquidity_overlap` | −0,0090 / 0,981 | −0,0200 / 0,959 | +0,0901 / 1,204 |
+| `distance_to_buyside_liquidity_atr_le_1` | −0,0100 / 0,980 | −0,0211 / 0,957 | +0,0896 / 1,200 |
+| `overnight_swept_prev_day_high` | −0,0142 / 0,971 | −0,0252 / 0,949 | +0,0841 / 1,188 |
+| `prev_day_range_position` | −0,0194 / 0,959 | −0,0307 / 0,937 | +0,0815 / 1,185 |
+| `liquidity_swept` | −0,0258 / 0,948 | −0,0372 / 0,926 | +0,0749 / 1,165 |
+| `inside_prev_day_range` | −0,0254 / 0,948 | −0,0369 / 0,925 | +0,0747 / 1,168 |
+| `inside_fvg` | −0,0355 / 0,927 | −0,0467 / 0,906 | +0,0625 / 1,139 |
+| `combo_pdr_and_on_sweep` | −0,0611 / 0,880 | −0,0711 / 0,863 | +0,0247 / 1,052 |
+| `combo_fvg_and_liquidity` | −0,0838 / 0,835 | −0,0958 / 0,815 | +0,0170 / 1,036 |
 
-### 3.3. Features con variación en E[R] o PF
-- Se analizan estrictamente bajo el prisma de la pregunta de investigación Z5: ¿alguna feature
-  por sí sola paga el peaje de filtrado? La evidencia muestra que ningún arm individual produce
-  un milagro estadístico; la confluencia selectiva debe interpretarse con cautela y nunca como
-  afirmación de rentabilidad garantizada.
+### AMD+CRT
 
+| Arm | canonico | +1 tick | realista |
+|---|---:|---:|---:|
+| `baseline` / `wrapper_trivial` | −0,0022 / 0,978 | −0,0034 / 0,966 | +0,0021 / 1,022 |
+| `inside_fvg` (124) | +0,0181 / 1,197 | +0,0169 / 1,183 | **+0,0224 / 1,251** |
+| `combo_fvg_and_liquidity` (63) | +0,0177 / 1,207 | +0,0165 / 1,191 | +0,0220 / 1,264 |
+| `distance_to_buyside_liquidity_atr_le_1` (200) | +0,0069 / 1,072 | +0,0057 / 1,059 | +0,0112 / 1,120 |
+| `liquidity_swept` (188) | +0,0052 / 1,058 | +0,0040 / 1,044 | +0,0095 / 1,109 |
+| `overnight_swept_prev_day_high` (309) | +0,0021 / 1,022 | +0,0009 / 1,009 | +0,0065 / 1,067 |
+| `inside_prev_day_range` (373) | −0,0019 / 0,981 | −0,0030 / 0,969 | +0,0025 / 1,026 |
+| `fvg_liquidity_overlap` (415) | −0,0022 / 0,978 | −0,0034 / 0,966 | +0,0021 / 1,022 |
+| `combo_pdr_and_on_sweep` (145) | −0,0033 / 0,967 | −0,0045 / 0,955 | +0,0011 / 1,011 |
+| `prev_day_range_position` (285) | −0,0079 / 0,920 | −0,0091 / 0,908 | −0,0036 / 0,963 |
+| `overnight_swept_prev_day_low` (284) | −0,0076 / 0,923 | −0,0088 / 0,912 | −0,0033 / 0,966 |
+| `distance_to_sellside_liquidity_atr_le_1` (215) | −0,0107 / 0,893 | −0,0119 / 0,882 | −0,0063 / 0,935 |
+
+## 5. Lectura honesta
+
+1. **El modelo de coste decide el signo del baseline.** SMC-FVG: −0,0204 con el escenario más duro
+   ($4 RT + 1 tick) → **+0,0897 (PF 1,203, 7/8 folds positivos)** con el realista. Cualquier veredicto
+   leído con un solo escenario es un veredicto **sobre el coste**, no sobre las zonas.
+   Cross-validación: ese +0,0897 coincide con el **+0,0882** medido para la misma config en el bloque C2.
+2. **Las deltas por feature son estables en los tres escenarios** (mismo signo y tamaño similar) — es lo
+   único que sobrevive al ruido: `overnight_swept_prev_day_low` (+0,008 sobre baseline en realista) y
+   `distance_to_sellside_liquidity ≤1 ATR` (+0,005) en SMC-FVG; `inside_fvg` (**+0,020**, PF 1,25),
+   `distance_to_buyside_liquidity ≤1 ATR` (+0,009) y `liquidity_swept` (+0,007) en AMD+CRT.
+3. **Los combos son peores que sus singles** en SMC-FVG (+0,017 / +0,025 vs +0,09 del baseline): la
+   confluencia no paga en esta primera tanda.
+4. **Ninguna delta cruza el IC95** y los arms «mejores» recortan trades a la mitad: parte del efecto es
+   **menos exposición**, no más edge. **Nada se promueve.**
+
+## 6. Cobertura declarada
+
+- **Corrido:** 3 escenarios × 30 arms (15 por sujeto) × 8 folds completos con purga y embargo. 90 artefactos.
+- **No corrido:** nada pendiente en este complemento. `Z6`/`Z7` siguen fuera de alcance (sus features son `None`).
+- **Repriciado**: usado para los 2 escenarios nuevos, con prueba de equivalencia bit a bit (sección 3).
+- **Ficheros**: `*_fold_metrics.json` (uno por arm × escenario), `equivalence_*.json`, `manifest.json` (hashes
+  de todos los artefactos y del dataset).
