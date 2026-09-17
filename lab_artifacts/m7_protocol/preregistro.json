@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "protocol_version": "C1",
+    "block_id": "M7",
+    "experiment_id": "exp_12_07_ote_kai_multimarket",
+    "title": "M7 — Filtro OTE y Sesgo D1 de Kai Multi-Mercado (MNQ, MYM, MGC, MES)",
+    "description": "Evaluación out-of-sample causal de los filtros OTE (0.62, 0.705, banda [0.62, 0.705]) y sesgo direccional D1 de Kai sobre la estrategia SMC-FVG a través de cuatro mercados de futuros CME/COMEX.",
+    "preregistered_at_utc": "2026-09-17T13:05:00Z",
+    "git_branch": "bloque-m7-ote-multimercado",
+    "git_commit": "e5d8a30",
+    "runtime": "Python 3.13.15 (.venv-fars)",
+    "rules": {
+      "no_post_hoc_tuning": true,
+      "frozen_parameters": true,
+      "cbb_bootstrap_reps": 2000,
+      "embargo_bars_h": 192,
+      "max_workers": 4
+    }
+  },
+  "hypotheses": {
+    "H1_ote_062": "El filtro de retroceso OTE >= 0.62 sobre el impulso causal incrementa E[R] y PF netos frente al baseline tras costes.",
+    "H2_ote_0705": "El filtro de retroceso OTE >= 0.705 sobre el impulso causal incrementa E[R] y PF netos frente al baseline tras costes.",
+    "H3_ote_band": "El filtro de retroceso delimitado a la banda OTE [0.62, 0.705] incrementa la calidad del trade y ratio ganancia/drawdown frente a retrocesos no acotados.",
+    "H4_trend_kai": "El filtro de alineación con el sesgo diario D1 de Kai (sweeps de rango D1 previo cerrados causalmente) reduce trades contra-tendencia y mejora la expectativa neta.",
+    "H5_ote_band_plus_trend": "La confluencia de banda OTE [0.62, 0.705] y sesgo D1 produce un edge estadísticamente superior al baseline y a cada feature por separado.",
+    "H0_anti_fraud_control": "El wrapper pasante trivial wrapper_trivial debe producir una secuencia de trades 100% idéntica bit-a-bit al baseline (mismo hash SHA256 de trades serializados)."
+  },
+  "subject_strategy": {
+    "name": "SMC-FVG",
+    "source_module": "src/backtest/smc_fvg.py",
+    "parameters": {
+      "min_risk_pts": 8.0,
+      "wait": 48,
+      "target_rr": 2.0,
+      "f": 0.5,
+      "swing_w": 5,
+      "cooldown": 6,
+      "log_decisions": true
+    },
+    "execution_config": {
+      "pending_limit_entry": true,
+      "pending_order_wait_bars": 48,
+      "move_stop_to_break_even": true,
+      "partial_take_profit_fraction": 0.5,
+      "cooldown_bars": 6,
+      "discrete_partial_contracts": false
+    }
+  },
+  "markets": {
+    "MNQ": {
+      "symbol": "MNQ",
+      "exchange": "CME",
+      "data_file": "databento/MNQ_M5.csv",
+      "tick_size": 0.25,
+      "dollar_per_point": 2.0,
+      "friction_points": 2.0,
+      "friction_status": "validated_reference"
+    },
+    "MES": {
+      "symbol": "MES",
+      "exchange": "CME",
+      "data_file": "databento/MES_M5.csv",
+      "tick_size": 0.25,
+      "dollar_per_point": 5.0,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    },
+    "MYM": {
+      "symbol": "MYM",
+      "exchange": "CBOT",
+      "data_file": "databento/MYM_M5.csv",
+      "tick_size": 1.0,
+      "dollar_per_point": 0.5,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    },
+    "MGC": {
+      "symbol": "MGC",
+      "exchange": "COMEX",
+      "data_file": "databento/MGC_M5.csv",
+      "tick_size": 0.1,
+      "dollar_per_point": 10.0,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    }
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "folds_count": 8,
+    "start_date": "2019-05-06",
+    "test_period_start": "2022-07-01",
+    "test_period_end": "2026-07-01",
+    "warmup_calibration_bars": 500,
+    "embargo_bars_h": 192,
+    "purge_by_trade_intervals": true
+  },
+  "cost_scenarios": {
+    "canonico": {
+      "description": "Comisión estándar $4.00 RT, sin slippage",
+      "commission_per_side": 2.0,
+      "slippage_ticks": 0.0
+    },
+    "canonico_mas_1tick": {
+      "description": "Comisión estándar $4.00 RT + 1 tick adverso en patas de mercado/stop",
+      "commission_per_side": 2.0,
+      "slippage_ticks": 1.0
+    },
+    "realista": {
+      "description": "Escenario canónico del bloque: Comisión por tramo $1.24 RT ($0.62/lado) + 1 tick adverso en patas de mercado/stop (límite y TP sin slippage)",
+      "commission_per_side": 0.62,
+      "slippage_ticks": 1.0
+    }
+  },
+  "arms": [
+    {
+      "arm_id": "baseline",
+      "filter_name": "none",
+      "description": "SMC-FVG sin filtro de investigación (referencia idéntica)"
+    },
+    {
+      "arm_id": "ote_062",
+      "filter_name": "ote_ratio",
+      "parameters": {
+        "min_retrace": 0.62,
+        "max_retrace": 1.0
+      },
+      "description": "Entrada solo si el precio retrocede al menos al nivel 0.62 del rango de impulso causal"
+    },
+    {
+      "arm_id": "ote_0705",
+      "filter_name": "ote_ratio",
+      "parameters": {
+        "min_retrace": 0.705,
+        "max_retrace": 1.0
+      },
+      "description": "Entrada solo si el precio retrocede al menos al nivel 0.705 del rango de impulso causal"
+    },
+    {
+      "arm_id": "ote_band",
+      "filter_name": "ote_band",
+      "parameters": {
+        "min_retrace": 0.62,
+        "max_retrace": 0.705
+      },
+      "description": "Entrada solo si el precio está dentro de la banda OTE [0.62, 0.705] del rango de impulso causal"
+    },
+    {
+      "arm_id": "trend_kai",
+      "filter_name": "trend_kai",
+      "parameters": {},
+      "description": "Alineación estricta con el sesgo direccional D1 de Kai (sweeps de vela D1 previa cerrados causalmente)"
+    },
+    {
+      "arm_id": "ote_band_plus_trend",
+      "filter_name": "combo_ote_band_and_trend_kai",
+      "parameters": {
+        "min_retrace": 0.62,
+        "max_retrace": 0.705
+      },
+      "description": "Confluencia obligatoria de banda OTE [0.62, 0.705] y alineación con sesgo D1 de Kai"
+    },
+    {
+      "arm_id": "wrapper_trivial",
+      "filter_name": "always_true",
+      "parameters": {},
+      "description": "Control anti-fraude: decorador que evalúa filtro pasante siempre True (debe ser bit a bit idéntico a baseline)"
+    }
+  ],
+  "reading_criteria": {
+    "reporting_format": "Se reporta baseline / feature individual / combinación con trade count, E[R], PF, WR, netR, drawdown e IC95 CBB bootstrap.",
+    "statistical_threshold": "Si el IC95 incluye cero o la delta vs baseline no cruza el IC95 bootstrap de la diferencia, se declara ausencia de edge significativo.",
+    "sample_attrition_rule": "Si un filtro recorta drásticamente el número de trades y eleva PF, se audita si se debe a reducción de exposición o mejora real del edge por trade.",
+    "promotion_policy": "Ningún arm se promueve a ejecución en vivo; se reportan límites y techos matemáticos con honestidad."
+  }
+}

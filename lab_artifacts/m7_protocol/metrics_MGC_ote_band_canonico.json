@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "market": "MGC",
+    "arm_id": "ote_band",
+    "scenario": "canonico",
+    "ran_at_utc": "2026-09-17T13:07:22.578519+00:00"
+  },
+  "aggregate": {
+    "n_trades": 1,
+    "mean_er": -0.86,
+    "profit_factor": 0.0,
+    "win_rate": 0.0,
+    "net_r": -0.86,
+    "net_pnl": -430.0,
+    "max_drawdown_r": 0.0,
+    "positive_folds": 0,
+    "total_folds": 8,
+    "positive_folds_ratio": 0.0,
+    "cbb_bootstrap_ci95": null,
+    "trades_sha256": "5648a0b190399e7b9d35c7d04d02ef06294b84123266ef7bbb44fdd4c845a147"
+  },
+  "folds": [
+    {
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35471,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 34775,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35423,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35112,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35791,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34871,
+      "n_trades": 1,
+      "mean_er": -0.86,
+      "profit_factor": 0.0,
+      "net_pnl": -430.0,
+      "win_rate": 0.0,
+      "trades": [
+        {
+          "trade_id": "bt-1",
+          "direction": "short",
+          "entry_time": "2025-04-23T00:45:00+00:00",
+          "exit_time": "2025-04-23T01:00:00+00:00",
+          "entry_price": 3367.8,
+          "exit_price": 3388.9,
+          "stop_price": 3388.9,
+          "target_price": 3325.5,
+          "quantity": 2,
+          "gross_pnl": -422.0,
+          "commission": 8.0,
+          "net_pnl": -430.0,
+          "r_result": -0.86,
+          "exit_reason": "stop_loss"
+        }
+      ]
+    },
+    {
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35769,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 34871,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    }
+  ]
+}

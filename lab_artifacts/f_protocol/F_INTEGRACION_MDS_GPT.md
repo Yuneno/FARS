@@ -14,9 +14,9 @@
 | ZoneEngine incremental (paso 6 / Z4) | falta de verdad | ✅ HECHO — `src/zones/engine.py` |
 | Fibonacci/OTE + premium/discount (paso 7) | reutilizable (helpers puros) | ✅ HECHO — `src/zones/fibonacci.py` (ratios 0.50/0.62/0.705 preregistrados, NO optimos) |
 | Prev-day/D20/overnight pools | falta de verdad | ✅ HECHO — `src/zones/session_levels.py` (Z3-b, `cae7424`; revisión en `f_protocol/HERMES_REVISION_Z3B.md`) |
-| S/R con ancho (paso 9 / Z6) | falta de verdad | ⏳ pendiente (despues del core) — unico test 10.x sin cubrir |
+| S/R con ancho (paso 9 / Z6) | falta de verdad | ✅ HECHO — `src/zones/levels.py` + `src/zones/order_blocks.py` (rama `bloque-z6-sr-ob`, `43af742`; paridad OB bit a bit 0 diferencias en 7053 zonas, 53.400 zonas S/R, 0 violaciones de causalidad, suite 1575 passed; informe en `lab_artifacts/z6_protocol/`) |
 | Reversion V1 (paso 8) | estrategia nueva opt-in | ❌ **FAIL en los 3 escenarios de coste (7/7 configs) → ARCHIVADA** — rama `bloque-v1-reversion` (tag `v1-reversion-archivado`), veredicto y repro en `lab_artifacts/v1_protocol/ARCHIVADO.md`. Nada se promueve; reabrir solo con preregistro nuevo |
-| Order blocks como zona | reutilizable (extraer de SMC-OB) | ⏳ pendiente — el port SMC-OB de Codex ya esta; extraer OB como zona con paridad |
+| Order blocks como zona | reutilizable (extraer de SMC-OB) | ✅ HECHO — `src/zones/order_blocks.py` con paridad bit a bit contra el port (`43af742`, mismo commit de Z6) |
 | Volume voids (paso 10 / Z7) | solo referencia | ⏳ solo con hipotesis nueva preregistrada (Kai ya descarto variantes) |
 
 ## Decisiones de diseno tomadas (documentadas en el codigo)
