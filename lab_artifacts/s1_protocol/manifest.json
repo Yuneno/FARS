@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "title": "Manifest del Bloque S1 — Sesión DEMO Sombra Live",
+    "protocol": "S1",
+    "generated_at_utc": "2026-09-17T20:01:06.419849+00:00"
+  },
+  "artifacts_sha256": {
+    "BLOCKERS.md": "0bbde4b8993add8c75c0ca4f81e894b933ddde50d5cbb7fed15d0cd7bf496a36",
+    "INFORME.md": "77efa51721b5dee252f0111b6575c19ed5e892d7295dc55a42ed6f83768cdc40",
+    "logs/session_live.jsonl": "01a3add586b7aa29e4861751d500a32ccdffaf1de3f885ba86bf412c1731bce4",
+    "logs/session_replay.jsonl": "f3b6bcf55317371541d4b873a7991f5c03000c5bda19386cb6734f32ae9edf4a",
+    "metrics_live.json": "a8c8e5537e998b5899b962a6111c9f5e08bc60624f63d8812f97eb3fe9362c22",
+    "metrics_replay.json": "f75e4cc27777b02fb871cd3daec3931963c877afe2dec5f685de5ac184df5d35",
+    "preregistro.json": "68eeba2ab400ed0a2c1aede5d8bb5a1fbb0ddf1614ba4921e330138d93e5fd70",
+    "session_runner.py": "3976613b3968ee22e675a7771f77d394b02fbe5e83f6dd14562abe21e140d429"
+  }
+}

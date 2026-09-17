@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "title": "Preregistro de Sesión Demo / Sombra en Vivo — Bloque S1",
+    "experiment": "sesion_demo_sombra_live",
+    "protocol": "S1",
+    "created_at_utc": "2026-09-17T16:15:00Z",
+    "status": "CONGELADO_ANTES_DE_FASE_2"
+  },
+  "session_window": {
+    "date": "2026-09-17",
+    "start_utc": "2026-09-17T16:15:00Z",
+    "end_utc": "2026-09-17T20:00:00Z",
+    "market_close_et": "16:00:00",
+    "target_duration_hours": 3.75
+  },
+  "account": {
+    "account_id": 27240143,
+    "account_name": "1.5KCHCR-LABS004-V2-673085-56165949",
+    "simulated": true,
+    "mode": "READ_ONLY",
+    "execution_allowed": false,
+    "live_execution_enabled": false
+  },
+  "market": {
+    "symbol": "MNQ",
+    "contract_id": "CON.F.US.MNQ.Z26",
+    "contract_name": "MNQZ6",
+    "tick_size": 0.25,
+    "tick_value": 0.5,
+    "timeframe": "M5 (unit=2, unit_number=5)"
+  },
+  "strategy": {
+    "name": "smc_fvg_atr_k050",
+    "class": "M8FilteredStrategy",
+    "arm_id": "atr_k050",
+    "atr_period": 14,
+    "k_atr": 0.5,
+    "f": 0.5,
+    "swing_w": 5,
+    "target_rr": 2.0,
+    "wait": 48,
+    "cooldown": 6
+  },
+  "risk_engine": {
+    "class": "AccountAwareRiskEngine",
+    "fail_closed": true,
+    "rules": {
+      "initial_balance": 1500.0,
+      "max_drawdown_pct": 0.10,
+      "daily_loss_limit_pct": 0.05,
+      "profit_target_pct": 0.06,
+      "risk_per_trade": 0.01,
+      "drawdown_mode": "trailing"
+    }
+  },
+  "execution": {
+    "adapter": "PaperExecutionAdapter",
+    "fills": "simulated_paper",
+    "live_orders_prohibited": true
+  },
+  "metrics_declared": {
+    "primary_metrics": [
+      "barras_esperadas_vs_recibidas",
+      "huecos_de_datos_detectados",
+      "numero_de_intenciones_estrategia",
+      "numero_y_motivos_de_vetos_motor_riesgo",
+      "latencia_mediana_cierre_a_decision",
+      "uptime_porcentaje"
+    ],
+    "explicitly_excluded": [
+      "rentabilidad_edge_pnl (una sesión de una tarde no tiene significancia estadística de edge)"
+    ]
+  },
+  "acceptance_criteria": {
+    "min_window_coverage_pct": 80.0,
+    "min_evaluated_intents": 1,
+    "max_authorizations_with_unknown_state": 0,
+    "reconstructible_jsonl_log": true
+  },
+  "abort_criteria": [
+    "Fallo en verificación de credenciales",
+    "Cuenta seleccionada no es simulada (simulated != true)",
+    "Huecos de datos > 10 minutos sin recuperación",
+    "Cualquier intento de envío, modificación o cancelación de orden live"
+  ],
+  "kill_switch": {
+    "sentinel_file": "lab_artifacts/s1_protocol/KILL_SWITCH",
+    "signal_support": ["SIGINT", "SIGTERM", "keyboard_interrupt"]
+  }
+}
