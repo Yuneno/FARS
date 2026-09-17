@@ -1,8 +1,8 @@
 {
   "metadata": {
     "title": "Reversal V1 protocol manifest",
-    "generated_at_utc": "2026-09-17T05:38:58.574700+00:00",
-    "git_commit": "0b4501e87cde0fc407669651bb30188db1c2c521",
+    "generated_at_utc": "2026-09-17T05:47:31.287478+00:00",
+    "git_commit": "6edfa54e8bf7d7b069438a3f846c3722841d78af",
     "git_branch": "bloque-v1-reversion",
     "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
     "execution_status": "run"
@@ -48,12 +48,12 @@
       "size_bytes": 2733
     },
     "v1_fold_metrics.json": {
-      "sha256": "6d591cc0cf578648a468d65c98f89c5694166f9cb1c61e80497dee86484d7c3e",
-      "size_bytes": 183925
+      "sha256": "9b910144e951bedd8f61903dac25fc359e534ce82da5a6bfdc560cdc2afc7f74",
+      "size_bytes": 274730
     },
     "evaluation_order.json": {
-      "sha256": "73fa76e26b51f8f2a34eff55d477027dfaa218fcf0ffc65689178ef8412d556c",
-      "size_bytes": 72800
+      "sha256": "f0c09fa3598c10a71342a673ce74a625947458d2fd33f4eb6157b873ec0fdc90",
+      "size_bytes": 108536
     },
     "determinism_sequential.json": {
       "sha256": "e7a011e2315261a7c8283e1963850db40a9bfa5db33186c972dd68d4675dbcb1",

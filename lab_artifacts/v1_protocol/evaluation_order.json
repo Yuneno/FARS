@@ -2163,6 +2163,1086 @@
         "target_mode": "session_level",
         "min_target_r": 1.0
       }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35667,
+      "trades_evaluated": 31,
+      "started_at_utc": "2026-09-17T05:39:12.878527+00:00",
+      "finished_at_utc": "2026-09-17T05:40:10.260662+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 35319,
+      "trades_evaluated": 23,
+      "started_at_utc": "2026-09-17T05:39:12.916351+00:00",
+      "finished_at_utc": "2026-09-17T05:40:12.295991+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35370,
+      "trades_evaluated": 13,
+      "started_at_utc": "2026-09-17T05:39:12.961501+00:00",
+      "finished_at_utc": "2026-09-17T05:40:07.876832+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35160,
+      "trades_evaluated": 12,
+      "started_at_utc": "2026-09-17T05:39:12.977444+00:00",
+      "finished_at_utc": "2026-09-17T05:40:07.437704+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35853,
+      "trades_evaluated": 21,
+      "started_at_utc": "2026-09-17T05:39:12.994086+00:00",
+      "finished_at_utc": "2026-09-17T05:40:05.631906+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34794,
+      "trades_evaluated": 20,
+      "started_at_utc": "2026-09-17T05:39:13.012169+00:00",
+      "finished_at_utc": "2026-09-17T05:40:02.408996+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35724,
+      "trades_evaluated": 23,
+      "started_at_utc": "2026-09-17T05:40:02.413712+00:00",
+      "finished_at_utc": "2026-09-17T05:40:52.422423+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "baseline_without_optional_filters",
+      "scenario": "c2_kai",
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 35067,
+      "trades_evaluated": 26,
+      "started_at_utc": "2026-09-17T05:40:05.636750+00:00",
+      "finished_at_utc": "2026-09-17T05:40:49.416176+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "baseline_without_optional_filters",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35667,
+      "trades_evaluated": 20,
+      "started_at_utc": "2026-09-17T05:40:07.442514+00:00",
+      "finished_at_utc": "2026-09-17T05:41:01.167475+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 35319,
+      "trades_evaluated": 11,
+      "started_at_utc": "2026-09-17T05:40:07.881745+00:00",
+      "finished_at_utc": "2026-09-17T05:41:05.186627+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35370,
+      "trades_evaluated": 10,
+      "started_at_utc": "2026-09-17T05:40:10.265567+00:00",
+      "finished_at_utc": "2026-09-17T05:41:01.862554+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35160,
+      "trades_evaluated": 7,
+      "started_at_utc": "2026-09-17T05:40:12.300557+00:00",
+      "finished_at_utc": "2026-09-17T05:41:04.379116+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35853,
+      "trades_evaluated": 9,
+      "started_at_utc": "2026-09-17T05:40:49.421919+00:00",
+      "finished_at_utc": "2026-09-17T05:41:40.381788+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34794,
+      "trades_evaluated": 11,
+      "started_at_utc": "2026-09-17T05:40:52.427000+00:00",
+      "finished_at_utc": "2026-09-17T05:41:38.995705+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35724,
+      "trades_evaluated": 10,
+      "started_at_utc": "2026-09-17T05:41:01.172566+00:00",
+      "finished_at_utc": "2026-09-17T05:41:50.449614+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_only_primary",
+      "scenario": "c2_kai",
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 35067,
+      "trades_evaluated": 10,
+      "started_at_utc": "2026-09-17T05:41:01.867192+00:00",
+      "finished_at_utc": "2026-09-17T05:41:45.311253+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_only_primary",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35667,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:41:04.383669+00:00",
+      "finished_at_utc": "2026-09-17T05:41:58.494475+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 35319,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:41:05.191292+00:00",
+      "finished_at_utc": "2026-09-17T05:42:02.281644+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35370,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:41:39.000049+00:00",
+      "finished_at_utc": "2026-09-17T05:42:30.983192+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35160,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:41:40.386268+00:00",
+      "finished_at_utc": "2026-09-17T05:42:32.925036+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35853,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:41:45.315557+00:00",
+      "finished_at_utc": "2026-09-17T05:42:35.596297+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34794,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:41:50.454290+00:00",
+      "finished_at_utc": "2026-09-17T05:42:36.572347+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35724,
+      "trades_evaluated": 2,
+      "started_at_utc": "2026-09-17T05:41:58.498474+00:00",
+      "finished_at_utc": "2026-09-17T05:42:47.873826+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "ote_only",
+      "scenario": "c2_kai",
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 35067,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:42:02.286067+00:00",
+      "finished_at_utc": "2026-09-17T05:42:45.657286+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "ote_only",
+      "frozen_parameters": {
+        "use_cisd": false,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35667,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:42:30.987225+00:00",
+      "finished_at_utc": "2026-09-17T05:43:25.137849+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 35319,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:42:32.928720+00:00",
+      "finished_at_utc": "2026-09-17T05:43:29.735659+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35370,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:42:35.600076+00:00",
+      "finished_at_utc": "2026-09-17T05:43:27.707264+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35160,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:42:36.576605+00:00",
+      "finished_at_utc": "2026-09-17T05:43:28.865901+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35853,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:42:45.660675+00:00",
+      "finished_at_utc": "2026-09-17T05:43:35.614662+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34794,
+      "trades_evaluated": 0,
+      "started_at_utc": "2026-09-17T05:42:47.877539+00:00",
+      "finished_at_utc": "2026-09-17T05:43:33.828866+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35724,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:43:25.143078+00:00",
+      "finished_at_utc": "2026-09-17T05:44:14.465620+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "cisd_plus_ote",
+      "scenario": "c2_kai",
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 35067,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:43:27.711396+00:00",
+      "finished_at_utc": "2026-09-17T05:44:11.318280+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "cisd_plus_ote",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": true,
+        "entry_mode": "limit",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35667,
+      "trades_evaluated": 14,
+      "started_at_utc": "2026-09-17T05:43:28.869531+00:00",
+      "finished_at_utc": "2026-09-17T05:44:22.142881+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 35319,
+      "trades_evaluated": 4,
+      "started_at_utc": "2026-09-17T05:43:29.739516+00:00",
+      "finished_at_utc": "2026-09-17T05:44:26.716521+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35370,
+      "trades_evaluated": 2,
+      "started_at_utc": "2026-09-17T05:43:33.832120+00:00",
+      "finished_at_utc": "2026-09-17T05:44:25.103619+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35160,
+      "trades_evaluated": 1,
+      "started_at_utc": "2026-09-17T05:43:35.618045+00:00",
+      "finished_at_utc": "2026-09-17T05:44:27.859822+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35853,
+      "trades_evaluated": 6,
+      "started_at_utc": "2026-09-17T05:44:11.321771+00:00",
+      "finished_at_utc": "2026-09-17T05:45:01.210786+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34794,
+      "trades_evaluated": 8,
+      "started_at_utc": "2026-09-17T05:44:14.469237+00:00",
+      "finished_at_utc": "2026-09-17T05:45:00.791458+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35724,
+      "trades_evaluated": 5,
+      "started_at_utc": "2026-09-17T05:44:22.147853+00:00",
+      "finished_at_utc": "2026-09-17T05:45:10.951002+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "market_neighbor",
+      "scenario": "c2_kai",
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 35067,
+      "trades_evaluated": 4,
+      "started_at_utc": "2026-09-17T05:44:25.107571+00:00",
+      "finished_at_utc": "2026-09-17T05:45:08.553456+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "market_neighbor",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "market",
+        "target_mode": "nearest_pool"
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35667,
+      "trades_evaluated": 17,
+      "started_at_utc": "2026-09-17T05:44:26.721186+00:00",
+      "finished_at_utc": "2026-09-17T05:45:21.324648+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 35319,
+      "trades_evaluated": 10,
+      "started_at_utc": "2026-09-17T05:44:27.863441+00:00",
+      "finished_at_utc": "2026-09-17T05:45:24.237188+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35370,
+      "trades_evaluated": 9,
+      "started_at_utc": "2026-09-17T05:45:00.795759+00:00",
+      "finished_at_utc": "2026-09-17T05:45:52.476005+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35160,
+      "trades_evaluated": 7,
+      "started_at_utc": "2026-09-17T05:45:01.216218+00:00",
+      "finished_at_utc": "2026-09-17T05:45:54.093403+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35853,
+      "trades_evaluated": 9,
+      "started_at_utc": "2026-09-17T05:45:08.557457+00:00",
+      "finished_at_utc": "2026-09-17T05:45:57.952353+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34794,
+      "trades_evaluated": 12,
+      "started_at_utc": "2026-09-17T05:45:10.955615+00:00",
+      "finished_at_utc": "2026-09-17T05:45:56.682663+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35724,
+      "trades_evaluated": 9,
+      "started_at_utc": "2026-09-17T05:45:21.329334+00:00",
+      "finished_at_utc": "2026-09-17T05:46:11.416886+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_major_pool",
+      "scenario": "c2_kai",
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 35067,
+      "trades_evaluated": 10,
+      "started_at_utc": "2026-09-17T05:45:24.241964+00:00",
+      "finished_at_utc": "2026-09-17T05:46:07.919865+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_major_pool",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "major_pool",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35667,
+      "trades_evaluated": 20,
+      "started_at_utc": "2026-09-17T05:45:52.482521+00:00",
+      "finished_at_utc": "2026-09-17T05:46:46.619003+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 35319,
+      "trades_evaluated": 11,
+      "started_at_utc": "2026-09-17T05:45:54.098109+00:00",
+      "finished_at_utc": "2026-09-17T05:46:50.913114+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35370,
+      "trades_evaluated": 10,
+      "started_at_utc": "2026-09-17T05:45:56.686992+00:00",
+      "finished_at_utc": "2026-09-17T05:46:47.455510+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35160,
+      "trades_evaluated": 7,
+      "started_at_utc": "2026-09-17T05:45:57.958734+00:00",
+      "finished_at_utc": "2026-09-17T05:46:50.411467+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35853,
+      "trades_evaluated": 9,
+      "started_at_utc": "2026-09-17T05:46:07.923934+00:00",
+      "finished_at_utc": "2026-09-17T05:46:57.142038+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34794,
+      "trades_evaluated": 12,
+      "started_at_utc": "2026-09-17T05:46:11.422294+00:00",
+      "finished_at_utc": "2026-09-17T05:46:57.243875+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35724,
+      "trades_evaluated": 9,
+      "started_at_utc": "2026-09-17T05:46:46.623856+00:00",
+      "finished_at_utc": "2026-09-17T05:47:31.151752+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
+    },
+    {
+      "strategy_id": "target_session_level",
+      "scenario": "c2_kai",
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 35067,
+      "trades_evaluated": 10,
+      "started_at_utc": "2026-09-17T05:46:47.460231+00:00",
+      "finished_at_utc": "2026-09-17T05:47:26.372188+00:00",
+      "selection_role": "evaluative_only_frozen_baseline",
+      "configuration_id": "target_session_level",
+      "frozen_parameters": {
+        "use_cisd": true,
+        "use_ote": false,
+        "entry_mode": "limit",
+        "target_mode": "session_level",
+        "min_target_r": 1.0
+      }
     }
   ]
 }
