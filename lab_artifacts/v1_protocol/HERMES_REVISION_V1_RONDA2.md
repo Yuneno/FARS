@@ -50,7 +50,25 @@ honestidad del encargo.
 `FAIL` en los gates.** Es una muestra minúscula y no decide nada; pero avisa de que V1 no está para
 festejos y que la corrida completa es la que tiene que hablar.
 
-## 4. Estado del repo
+## 5. CORRECCIÓN POSTERIOR (ejecución real del runner)
+
+**El runner NO era ejecutable cuando se entregó.** Al lanzarlo por primera vez (2026-09-17 02:14 UTC) petó
+de inmediato:
+
+```text
+TypeError: Fold.__init__() missing 1 required positional argument: 'warmup_bars'
+```
+
+El worker de auditoría (`_worker_audit_fold`) reconstruía el `Fold` desde un dict **sin `warmup_bars`**,
+que es campo obligatorio en `src/hypothesis_registry.py:122`. El `not_run_compute_budget` ocultaba el
+defecto: nadie lo había ejecutado nunca.
+
+**Arreglado por Hermes** (commit `4651dae`): se añade `warmup_bars` al dict de folds y a la construcción
+del `Fold`. Corrida relanzada y en marcha. Lección para el bloque: **un runner "listo" que nunca se ha
+ejecutado no está listo** — la verificación mínima es un `--help` honesto, no un manifest.
+
+
+## 6. Estado del repo
 
 - `4ac9041` en `bloque-v1-reversion` (worktree), **sin push**; `main` en `43e2c27`.
 - Pendiente al mergear V1 a `main`: **es un merge normal (no `--ff-only`)** y hay que re-verificar el
