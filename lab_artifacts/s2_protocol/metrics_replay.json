@@ -1,0 +1,24 @@
+{
+  "mode": "replay",
+  "origin": "replay",
+  "uptime_seconds": 1.8,
+  "bars_received": 300,
+  "signals_generated": 11,
+  "decisions_total": 11,
+  "risk_approvals": 11,
+  "risk_denials": 0,
+  "denial_reasons": {},
+  "orders_submitted": 11,
+  "execution_reports": 11,
+  "data_gaps_count": 1,
+  "data_gaps": [
+    {
+      "from": "2026-09-03T20:55:00+00:00",
+      "to": "2026-09-03T22:00:00+00:00",
+      "duration_minutes": 65.0
+    }
+  ],
+  "latency_median_ms": 1244892437.9,
+  "live_execution_enabled": false,
+  "reconstructed_events_count": 345
+}

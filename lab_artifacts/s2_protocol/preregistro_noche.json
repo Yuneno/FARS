@@ -1,0 +1,30 @@
+{
+  "protocol": "S2-noche (prueba rápida de fontanería, construida por Hermes)",
+  "fecha": "2026-09-17",
+  "por_que": "Cerrar el hueco de S1: con la cuenta challenge quemada el motor vetaba todo y nunca se ejercitó el tramo aprobación → fill. Aquí se usa una CUENTA FANTASMA (estado sintético declarado) manteniendo datos de mercado REALES en solo lectura.",
+  "estado_de_cuenta_sintetico": {
+    "balance_inicial": 50000.0,
+    "peak_inicial": 50000.0,
+    "nota": "El motor de riesgo consume ESTE estado, no el del broker. El snapshot del broker sigue registrándose en el log como referencia."
+  },
+  "reglas_declaradas": {
+    "fuente": "help.topstep.com — Trading Combine Parameters / Maximum Loss Limit (consultado 2026-09-17)",
+    "perfil": "Trading Combine 50K",
+    "profit_target": "6 % ($3.000)",
+    "maximum_loss_limit": "4 % ($2.000, trailing)",
+    "daily_loss_limit": "2 % ($1.000, opcional)",
+    "max_position": "5 minis / 50 micros (declarado; aquí se usa el sizing por defecto del motor)",
+    "drawdown_mode": "trailing"
+  },
+  "ventana": "arranque 2026-09-17 ~16:16 ET, duración máxima declarada 12.600 s (3 h 30 min) → fin ~19:46 ET",
+  "que_cuenta_como_prueba": [
+    "el pipeline corre contra datos reales sin huecos",
+    "si hay señal: aprobación del motor + fill paper registrados",
+    "0 órdenes enviadas al broker"
+  ],
+  "limitaciones_declaradas": [
+    "Los fills son NUESTROS (PaperExecutionAdapter), no del broker — eso lo aporta RT-9 en la cuenta Practice.",
+    "El estado de cuenta no evoluciona con los fills en esta versión rápida (equity/peak estáticos); la curva evolutiva queda para el bloque S2 de Gemini.",
+    "Ventana nocturna: SMC-FVG genera ~3-4 señales/día, así que es probable que 0 señales — la prueba viva con señales es la sesión RTH."
+  ]
+}
