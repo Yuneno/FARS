@@ -60,6 +60,8 @@
 de pool), #2 (sweep+FVG vs FVG solo), #4 (distancia ATR a liquidez) y #8 (walk-forward con purga/embargo,
 bootstrap y costes). Ninguna delta cruza el IC95; nada se promueve.
 
-**Siguen abiertos:** #3 (FVG + S/R — necesita Z6), #5 (OTE 0.62/0.705 fuera de muestra: en V1 `ote_only`
-quedo con n=6, muestra inutil → hace falta diseno nuevo), #6 (premium/discount tras costes, mismo caso) y
-#7 (filtro OTE + tendencia de Kai en MNQ/MYM/MGC/MES: nunca corrido, requiere decision de alcance).
+**Siguen abiertos:** #3 (FVG + S/R — necesita Z6, que ya está: **requiere preregistro nuevo**), #5 (OTE
+0.62/0.705 fuera de muestra) y #6 (premium/discount tras costes) — **medidos en M7 con escala de riesgo
+rota** (`min_risk_pts` fijo, ver `lab_artifacts/m7_protocol/BLOCKERS.md` §2) → **se re-miden en M8** con
+`min_risk_atr` declarado. **#7 (filtro OTE + tendencia de Kai en MNQ/MYM/MGC/MES): ✅ MEDIDO en M7** —
+rechazado en los 4 mercados (revisión en `lab_artifacts/m7_protocol/HERMES_REVISION_M7.md`).
