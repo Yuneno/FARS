@@ -43,11 +43,29 @@ Folds del baseline: −2,77 · −7,85 · +1,51 · −0,28 · +5,34 · +10,41 ·
    el borde del FVG). El estilo «Kai» pierde.
 5. Los filtros combinados dejan 3-6 trades: **muestras inútiles**, no evidencia.
 
-## 3. Sesgos y límites declarados
+## 3. Los dos escenarios de coste (mismo trade-set, sólo cambia el coste)
 
-- **Un solo escenario** (el más duro). Con la lección del bloque Z5 — el modelo de coste decide el signo
-  del baseline — el escenario realista (`c2_segment_realistic`) puede mover el baseline a positivo
-  pequeño. **En ejecución** al escribir esto.
+| Config | n | `canonico` ($4 RT) | `c2_segment_realistic` ($1.24 RT + 1t) | Veredicto |
+|---|---:|---:|---:|---|
+| **`baseline_without_optional_filters`** | 169 | −0,0061 / PF 0,979 | **+0,0620 / PF 1,245** (WR 71,6 %, folds+ 0,62, IC [−0,095, +0,259]) | FAIL (1/5) |
+| `market_neighbor` | 44 | −0,0365 / PF 0,847 | −0,0237 / PF 0,899 | FAIL |
+| `cisd_only_primary` | 88 | −0,0461 / PF 0,819 | +0,0077 / PF 1,034 | FAIL |
+| `ote_only` | 6 | −0,0528 | −0,0047 | muestra inútil |
+| `cisd_plus_ote` | 3 | −0,7167 | −0,6701 | muestra inútil |
+| `target_major_pool` | 83 | −0,1267 | (ver artefacto) | FAIL |
+| `target_session_level` | 88 | −0,1579 | (ver artefacto) | FAIL |
+
+**Otra vez el mismo patrón que Z5**: el modelo de coste decide el signo del baseline (≈0 con el duro,
+**+0,062 con el realista**), y **sigue sin pasar gates** — el IC95 cruza cero con 169 trades. La parte
+cualitativa, en cambio, es **estable entre escenarios**: el baseline simple gana a todas las variantes
+(CISD, OTE, target mayor, target de sesión, entrada a mercado) en los dos modelos.
+
+## 4. Sesgos y límites declarados
+
+
+- **Escenarios**: `canonico` y `c2_segment_realistic` corridos; `c2_kai` en ejecución al escribir esto.
+  La parte cualitativa (baseline simple > variantes) es estable en los dos; la cuantitativa depende del
+  coste, como en Z5.
 - 169 trades en 4 años: muestra que no permite afirmar casi nada; los IC95 son enormes en todos los casos.
 - El runner consumió 3 h 15 min (los audits sobre `train+test` son el 90 %). Con `--workers 8` se
   ganaría ~15 %; el techo físico son 6 núcleos (el i5-12600K tiene 6C/12T, no 12 núcleos).

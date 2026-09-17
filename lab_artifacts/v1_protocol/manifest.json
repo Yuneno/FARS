@@ -1,35 +1,19 @@
 {
   "metadata": {
-    "title": "Reversal V1 protocol readiness manifest (Ronda 2)",
-    "generated_at_utc": "2026-09-17T01:18:00.000000Z",
-    "git_commit": "6659a673f2f5baf7f7aadfea89f6f232fc2b131e",
+    "title": "Reversal V1 protocol manifest",
+    "generated_at_utc": "2026-09-17T05:38:58.574700+00:00",
+    "git_commit": "0b4501e87cde0fc407669651bb30188db1c2c521",
     "git_branch": "bloque-v1-reversion",
-    "execution_status": "not_run_compute_budget",
-    "verdict": "no-evaluable",
-    "promotion": "none"
+    "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "execution_status": "run"
   },
-  "preregistration": {
-    "path": "lab_artifacts/v1_protocol/preregistro.json",
-    "preregistered_at_utc": "2026-09-16T22:43:51.6010401Z",
-    "sha256": "cf234430e815958ea2a8b018e2900e53715246d6584d411e6cdf5d47958d6117"
-  },
-  "amendment_1": {
-    "path": "lab_artifacts/v1_protocol/preregistro_enmienda_1.json",
-    "amended_at_utc": "2026-09-17T00:08:15.000000Z",
-    "sha256": "efb32b453843a12251212f92164e824c7f4d8c49e35eecc64120d678cefb98b6",
-    "primary_preservation": "nearest_pool remains primary baseline; major_pool and session_level measured side-by-side without promotion"
-  },
-  "dataset_probe": {
-    "archive": "E:/FARS-LAB/databento.zip",
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
     "member": "databento/MNQ_M5.csv",
     "bars_count": 518237,
+    "start_time": "2019-05-06T00:00:00+00:00",
+    "end_time": "2026-09-03T23:55:00+00:00",
     "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
-  },
-  "hardware_and_workers": {
-    "logical_cores": 12,
-    "max_workers_default": 6,
-    "multiprocessing_context": "spawn",
-    "thread_limits": "OMP/OPENBLAS/MKL=1"
   },
   "walk_forward_plan": {
     "type": "calendar_rolling",
@@ -54,41 +38,30 @@
     "target_major_pool",
     "target_session_level"
   ],
-  "benchmark_throughput": {
-    "1_worker_bars_per_sec": 550.0,
-    "4_workers_bars_per_sec": 1130.5,
-    "6_workers_bars_per_sec": 1436.7,
-    "8_workers_bars_per_sec": 1662.8
-  },
-  "determinism_proof_t1": {
-    "folds_tested": [0, 1],
-    "configuration": "cisd_only_primary",
-    "scenario": "c1_canonical",
-    "sequential_elapsed_seconds": 167.23,
-    "parallel_elapsed_seconds": 73.22,
-    "speedup": 2.28,
-    "trades_evaluated": 31,
-    "bit_for_bit_match": true,
-    "artifacts": {
-      "sequential": {
-        "path": "lab_artifacts/v1_protocol/determinism_sequential.json",
-        "sha256": "e7a011e2315261a7c8283e1963850db40a9bfa5db33186c972dd68d4675dbcb1"
-      },
-      "parallel": {
-        "path": "lab_artifacts/v1_protocol/determinism_parallel.json",
-        "sha256": "a991421422801eafd43f4d01ba01fcd4e8a4e3fc4840b203dbd73677af5ddcae"
-      }
+  "artifacts": {
+    "preregistro.json": {
+      "sha256": "cf234430e815958ea2a8b018e2900e53715246d6584d411e6cdf5d47958d6117",
+      "size_bytes": 3129
+    },
+    "preregistro_enmienda_1.json": {
+      "sha256": "efb32b453843a12251212f92164e824c7f4d8c49e35eecc64120d678cefb98b6",
+      "size_bytes": 2733
+    },
+    "v1_fold_metrics.json": {
+      "sha256": "6d591cc0cf578648a468d65c98f89c5694166f9cb1c61e80497dee86484d7c3e",
+      "size_bytes": 183925
+    },
+    "evaluation_order.json": {
+      "sha256": "73fa76e26b51f8f2a34eff55d477027dfaa218fcf0ffc65689178ef8412d556c",
+      "size_bytes": 72800
+    },
+    "determinism_sequential.json": {
+      "sha256": "e7a011e2315261a7c8283e1963850db40a9bfa5db33186c972dd68d4675dbcb1",
+      "size_bytes": 17203
+    },
+    "determinism_parallel.json": {
+      "sha256": "a991421422801eafd43f4d01ba01fcd4e8a4e3fc4840b203dbd73677af5ddcae",
+      "size_bytes": 17200
     }
-  },
-  "compute_budget_analysis": {
-    "test_windows_bars": 1997352,
-    "test_windows_wall_time_minutes_6workers": 23.2,
-    "audit_bars_train_plus_test": 13840456,
-    "audit_wall_time_minutes_6workers": 160.5,
-    "full_protocol_estimated_minutes_6workers": 230.1,
-    "target_session_limit_minutes": 60,
-    "reason_for_not_running_full_protocol": "Full 8-fold audit of 36m train+test (13.8M bars backtested across 7 configurations) requires ~3.84 wall-clock hours, exceeding 60-min session budget. Truncating folds or fabricating metrics is strictly prohibited by §1 and §4 honesty rule."
-  },
-  "runner": "lab_artifacts/run_v1_protocol.py",
-  "blockers": "lab_artifacts/v1_protocol/BLOCKERS.md"
+  }
 }
