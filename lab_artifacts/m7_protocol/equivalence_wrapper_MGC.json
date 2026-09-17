@@ -1,0 +1,28 @@
+{
+  "market": "MGC",
+  "checked_at_utc": "2026-09-17T13:07:28.133241+00:00",
+  "scenarios": {
+    "canonico": {
+      "baseline_trades_count": 186,
+      "trivial_trades_count": 186,
+      "baseline_sha256": "8f0d5ca9b43f704864c40ae69982ba77034aaf0ea89f3fea4540c2acb142706b",
+      "trivial_sha256": "8f0d5ca9b43f704864c40ae69982ba77034aaf0ea89f3fea4540c2acb142706b",
+      "is_bit_for_bit_identical": true
+    },
+    "canonico_mas_1tick": {
+      "baseline_trades_count": 186,
+      "trivial_trades_count": 186,
+      "baseline_sha256": "2ca0c1a4090119d7f113e6b2892b2e35d1aa73febe83a5ae8dce2ce2bdcf0035",
+      "trivial_sha256": "2ca0c1a4090119d7f113e6b2892b2e35d1aa73febe83a5ae8dce2ce2bdcf0035",
+      "is_bit_for_bit_identical": true
+    },
+    "realista": {
+      "baseline_trades_count": 186,
+      "trivial_trades_count": 186,
+      "baseline_sha256": "0fe5e1cec579a043f32d6be60838401569bcc539011cae6c1bbddfa7b71bc9a2",
+      "trivial_sha256": "0fe5e1cec579a043f32d6be60838401569bcc539011cae6c1bbddfa7b71bc9a2",
+      "is_bit_for_bit_identical": true
+    }
+  },
+  "all_scenarios_identical": true
+}

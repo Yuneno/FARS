@@ -1,0 +1,238 @@
+{
+  "metadata": {
+    "market": "MGC",
+    "arm_id": "ote_062",
+    "scenario": "canonico",
+    "ran_at_utc": "2026-09-17T13:07:19.664272+00:00"
+  },
+  "aggregate": {
+    "n_trades": 7,
+    "mean_er": 0.4501,
+    "profit_factor": 2.6077,
+    "win_rate": 0.7143,
+    "net_r": 3.151,
+    "net_pnl": 1575.5,
+    "max_drawdown_r": 1.1,
+    "positive_folds": 2,
+    "total_folds": 8,
+    "positive_folds_ratio": 0.25,
+    "cbb_bootstrap_ci95": [
+      -0.278,
+      1.2713
+    ],
+    "trades_sha256": "054a568ad482d5295a78e53a24e99c076b11d7434e5223067004e7d6171a8553"
+  },
+  "folds": [
+    {
+      "fold_id": 0,
+      "test_start": "2022-07-01",
+      "test_end": "2023-01-01",
+      "test_bars": 35471,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 1,
+      "test_start": "2023-01-01",
+      "test_end": "2023-07-01",
+      "test_bars": 34775,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 2,
+      "test_start": "2023-07-01",
+      "test_end": "2024-01-01",
+      "test_bars": 35423,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 3,
+      "test_start": "2024-01-01",
+      "test_end": "2024-07-01",
+      "test_bars": 35112,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 4,
+      "test_start": "2024-07-01",
+      "test_end": "2025-01-01",
+      "test_bars": 35791,
+      "n_trades": 0,
+      "mean_er": 0.0,
+      "profit_factor": 0.0,
+      "net_pnl": 0,
+      "win_rate": 0.0,
+      "trades": []
+    },
+    {
+      "fold_id": 5,
+      "test_start": "2025-01-01",
+      "test_end": "2025-07-01",
+      "test_bars": 34871,
+      "n_trades": 2,
+      "mean_er": -0.2515,
+      "profit_factor": 0.4151,
+      "net_pnl": -251.5,
+      "win_rate": 0.5,
+      "trades": [
+        {
+          "trade_id": "bt-1",
+          "direction": "short",
+          "entry_time": "2025-04-06T22:10:00+00:00",
+          "exit_time": "2025-04-06T22:15:00+00:00",
+          "entry_price": 3040.9,
+          "exit_price": 3034.55,
+          "stop_price": 3040.9,
+          "target_price": 3010.3,
+          "quantity": 3,
+          "gross_pnl": 190.5,
+          "commission": 12.0,
+          "net_pnl": 178.5,
+          "r_result": 0.357,
+          "exit_reason": "break_even_stop"
+        },
+        {
+          "trade_id": "bt-2",
+          "direction": "short",
+          "entry_time": "2025-04-23T00:45:00+00:00",
+          "exit_time": "2025-04-23T01:00:00+00:00",
+          "entry_price": 3367.8,
+          "exit_price": 3388.9,
+          "stop_price": 3388.9,
+          "target_price": 3325.5,
+          "quantity": 2,
+          "gross_pnl": -422.0,
+          "commission": 8.0,
+          "net_pnl": -430.0,
+          "r_result": -0.86,
+          "exit_reason": "stop_loss"
+        }
+      ]
+    },
+    {
+      "fold_id": 6,
+      "test_start": "2025-07-01",
+      "test_end": "2026-01-01",
+      "test_bars": 35769,
+      "n_trades": 1,
+      "mean_er": 0.465,
+      "profit_factor": 999.0,
+      "net_pnl": 232.5,
+      "win_rate": 1.0,
+      "trades": [
+        {
+          "trade_id": "bt-1",
+          "direction": "short",
+          "entry_time": "2025-08-08T13:10:00+00:00",
+          "exit_time": "2025-08-08T13:40:00+00:00",
+          "entry_price": 3488.8,
+          "exit_price": 3483.75,
+          "stop_price": 3488.8,
+          "target_price": 3468.5,
+          "quantity": 5,
+          "gross_pnl": 252.5,
+          "commission": 20.0,
+          "net_pnl": 232.5,
+          "r_result": 0.465,
+          "exit_reason": "break_even_stop"
+        }
+      ]
+    },
+    {
+      "fold_id": 7,
+      "test_start": "2026-01-01",
+      "test_end": "2026-07-01",
+      "test_bars": 34871,
+      "n_trades": 4,
+      "mean_er": 0.7973,
+      "profit_factor": 3.8991,
+      "net_pnl": 1594.5,
+      "win_rate": 0.75,
+      "trades": [
+        {
+          "trade_id": "bt-1",
+          "direction": "long",
+          "entry_time": "2026-01-30T07:15:00+00:00",
+          "exit_time": "2026-01-30T07:20:00+00:00",
+          "entry_price": 5194.700000000001,
+          "exit_price": 5208.35,
+          "stop_price": 5194.700000000001,
+          "target_price": 5212.900000000001,
+          "quantity": 5,
+          "gross_pnl": 682.5,
+          "commission": 20.0,
+          "net_pnl": 662.5,
+          "r_result": 1.325,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-2",
+          "direction": "long",
+          "entry_time": "2026-02-03T10:00:00+00:00",
+          "exit_time": "2026-02-03T10:10:00+00:00",
+          "entry_price": 4935.200000000001,
+          "exit_price": 4947.800000000001,
+          "stop_price": 4935.200000000001,
+          "target_price": 4952.0,
+          "quantity": 6,
+          "gross_pnl": 756.0,
+          "commission": 24.0,
+          "net_pnl": 732.0,
+          "r_result": 1.464,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-3",
+          "direction": "short",
+          "entry_time": "2026-03-20T08:40:00+00:00",
+          "exit_time": "2026-03-20T08:50:00+00:00",
+          "entry_price": 4710.7,
+          "exit_price": 4695.299999999999,
+          "stop_price": 4710.7,
+          "target_price": 4690.2,
+          "quantity": 5,
+          "gross_pnl": 770.0,
+          "commission": 20.0,
+          "net_pnl": 750.0,
+          "r_result": 1.5,
+          "exit_reason": "take_profit"
+        },
+        {
+          "trade_id": "bt-4",
+          "direction": "long",
+          "entry_time": "2026-06-25T02:30:00+00:00",
+          "exit_time": "2026-06-25T03:10:00+00:00",
+          "entry_price": 3996.5,
+          "exit_price": 3985.9,
+          "stop_price": 3985.9,
+          "target_price": 4017.7000000000003,
+          "quantity": 5,
+          "gross_pnl": -530.0,
+          "commission": 20.0,
+          "net_pnl": -550.0,
+          "r_result": -1.1,
+          "exit_reason": "stop_loss"
+        }
+      ]
+    }
+  ]
+}
