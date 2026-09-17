@@ -1,16 +1,18 @@
-# HERMES REVISION — Reversión V1 · corrida del protocolo C1 (escenario `c1_canonical`)
+# HERMES REVISION — Reversión V1 · corrida del protocolo C1 (3 escenarios de coste)
 
-**Fecha:** 2026-09-17 (01:29 local) · **Revisor:** Hermes · **Ejecutado por:** Hermes (runner de Gemini, arreglado)
-**Duración real:** 11.730 s = **3 h 15 min** (vs ~53 min estimados por el implementador)
-**Artefacto:** `lab_artifacts/v1_protocol/v1_fold_metrics.json` · manifest `execution_status = run`, commit `45e2391`
+**Fecha:** 2026-09-17 (01:29–01:47 local) · **Revisor:** Hermes · **Ejecutado por:** Hermes (runner de Gemini, arreglado)
+**Duración real:** `c1_canonical` 11.730 s = **3 h 15 min** (vs ~53 min estimados por el implementador) · `c2_segment_realistic` 506,2 s · `c2_kai` 502,9 s
+**Artefacto:** `lab_artifacts/v1_protocol/v1_fold_metrics.json` (3/3 escenarios) · manifest `execution_status = run`, commit `6edfa54` · artefacto commiteado en `ddb3489`
 
 ## Veredicto
 
-**Reversión V1 NO PASA en el escenario más duro** (`canonico`: $4.00 RT, 0 slippage). Las **7
-configuraciones** fallan los gates. Nada se promueve. Y lo más informativo no es el FAIL, es **qué lo
-empeora**.
+**Reversión V1 NO PASA en ninguno de los tres escenarios de coste.** Las **7 configuraciones** fallan los
+gates en los tres. Nada se promueve. Y lo más informativo no es el FAIL, es **qué lo empeora** y el hecho
+de que **el baseline solo queda positivo cuando el coste se ablanda**, sin cruzar gates ni ahí.
 
 ## 1. Resultado completo (8 folds, purga + embargo `h=192`, MNQ M5 canónico)
+
+### `c1_canonical` ($4,00 RT, 0 slippage)
 
 | Config | n | E[R] | PF | WR | netR | folds+ | IC95 | Gates |
 |---|---:|---:|---:|---:|---:|---:|---|---|
@@ -43,38 +45,49 @@ Folds del baseline: −2,77 · −7,85 · +1,51 · −0,28 · +5,34 · +10,41 ·
    el borde del FVG). El estilo «Kai» pierde.
 5. Los filtros combinados dejan 3-6 trades: **muestras inútiles**, no evidencia.
 
-## 3. Los dos escenarios de coste (mismo trade-set, sólo cambia el coste)
+## 3. Los tres escenarios de coste (mismo trade-set, sólo cambia el coste)
 
-| Config | n | `canonico` ($4 RT) | `c2_segment_realistic` ($1.24 RT + 1t) | Veredicto |
-|---|---:|---:|---:|---|
-| **`baseline_without_optional_filters`** | 169 | −0,0061 / PF 0,979 | **+0,0620 / PF 1,245** (WR 71,6 %, folds+ 0,62, IC [−0,095, +0,259]) | FAIL (1/5) |
-| `market_neighbor` | 44 | −0,0365 / PF 0,847 | −0,0237 / PF 0,899 | FAIL |
-| `cisd_only_primary` | 88 | −0,0461 / PF 0,819 | +0,0077 / PF 1,034 | FAIL |
-| `ote_only` | 6 | −0,0528 | −0,0047 | muestra inútil |
-| `cisd_plus_ote` | 3 | −0,7167 | −0,6701 | muestra inútil |
-| `target_major_pool` | 83 | −0,1267 | (ver artefacto) | FAIL |
-| `target_session_level` | 88 | −0,1579 | (ver artefacto) | FAIL |
+| Config | n | `canonico` ($4,00 RT) | `c2_segment_realistic` ($1,24 RT + 1t) | `c2_kai` ($1,42 RT + 1t) | Veredicto |
+|---|---:|---:|---:|---:|---|
+| **`baseline_without_optional_filters`** | 169 | −0,0061 / PF 0,979 | **+0,0620 / PF 1,245** (WR 71,6 %, folds+ 0,62, IC [−0,095, +0,259]) | **+0,0570 / PF 1,222** (WR 71,6 %, folds+ 0,62, IC [−0,101, +0,255]) | FAIL (0/5 · 1/5 · 1/5) |
+| `cisd_only_primary` | 88 | −0,0461 / PF 0,819 | +0,0077 / PF 1,034 | +0,0039 / PF 1,017 | FAIL (0/5 · 1/5 · 1/5) |
+| `market_neighbor` | 44 | −0,0365 / PF 0,847 | −0,0237 / PF 0,899 | −0,0248 / PF 0,895 | FAIL (1/5 · 1/5 · 1/5) |
+| `ote_only` | 6 | −0,0528 | −0,0047 | −0,0081 | muestra inútil (1/5) |
+| `cisd_plus_ote` | 3 | −0,7167 | −0,6701 | −0,6737 | muestra inútil (1/5) |
+| `target_major_pool` | 83 | −0,1267 / PF 0,809 | −0,0763 / PF 0,876 | −0,0803 / PF 0,871 | FAIL (0/5 · 0/5 · 0/5) |
+| `target_session_level` | 88 | −0,1579 / PF 0,746 | −0,1092 / PF 0,812 | −0,1130 / PF 0,806 | FAIL (0/5 · 0/5 · 0/5) |
 
 **Otra vez el mismo patrón que Z5**: el modelo de coste decide el signo del baseline (≈0 con el duro,
-**+0,062 con el realista**), y **sigue sin pasar gates** — el IC95 cruza cero con 169 trades. La parte
-cualitativa, en cambio, es **estable entre escenarios**: el baseline simple gana a todas las variantes
-(CISD, OTE, target mayor, target de sesión, entrada a mercado) en los dos modelos.
+**+0,056…+0,062 con los realistas**), y **sigue sin pasar gates** — el IC95 cruza cero con 169 trades en
+los tres escenarios. La parte cualitativa, en cambio, es **estable en los tres**: el baseline simple gana
+a todas las variantes (CISD, OTE, target mayor, target de sesión, entrada a mercado).
+
+**Los dos escenarios realistas convergen casi al decimal** (`+0,0620` vs `+0,0570`; PF 1,245 vs 1,222):
+solo difieren en la comisión (0,62 vs 0,71 por lado). Conclusión útil: la sensibilidad real está entre
+**canónico y realista**, no entre los dos realistas — los folds del baseline en `c2_kai`
+(−0,35 · −4,10 · +1,83 · +0,08 · +6,02 · +11,15 · +0,78 · −5,77) son los de `c2_segment_realistic`
+desplazados por la comisión, no otra muestra.
 
 ## 4. Sesgos y límites declarados
 
+- **Escenarios**: los **3/3** corridos y cerrados (`canonico` 3 h 15 min, `c2_segment_realistic` 8,4 min,
+  `c2_kai` 8,4 min). Los dos realistas comparten trade-set y difieren casi sólo en comisión → no son
+  evidencia independiente entre sí; funcionan como chequeo de robustez del signo, no como dos muestras.
+- **Muestra**: 169 trades en 4 años; ningún IC95 excluye cero. El baseline "positivo" del escenario
+  realista (`+0,062`) está **dentro** del ruido ([−0,095, +0,259]) y con `folds+` 0,62 < 0,75.
+- **Datos de gates**: `insufficient_sample_folds = [2, 3]` en todas las configuraciones; `gate5`
+  (drawdown) está declarado `hygiene_no_blocking`.
+- **El runner consumió 3 h 15 min** en el escenario canónico (los audits sobre `train+test` son el 90 %).
+  Con `--workers 8` se ganaría ~15 %; el techo físico son 6 núcleos (el i5-12600K tiene 6C/12T).
+- **Reproducibilidad**: determinismo secuencial vs paralelo ya verificado en ronda 2 (0 diferencias);
+  el artefacto con los 3 escenarios está commiteado, sin push.
 
-- **Escenarios**: `canonico` y `c2_segment_realistic` corridos; `c2_kai` en ejecución al escribir esto.
-  La parte cualitativa (baseline simple > variantes) es estable en los dos; la cuantitativa depende del
-  coste, como en Z5.
-- 169 trades en 4 años: muestra que no permite afirmar casi nada; los IC95 son enormes en todos los casos.
-- El runner consumió 3 h 15 min (los audits sobre `train+test` son el 90 %). Con `--workers 8` se
-  ganaría ~15 %; el techo físico son 6 núcleos (el i5-12600K tiene 6C/12T, no 12 núcleos).
+## 5. Qué sigue
 
-## 4. Qué sigue
-
-1. Cerrar el veredicto con el escenario realista (en curso).
-2. **No promover V1.** Si el realista lo deja positivo, sigue sin cruzar gates con esta muestra: la
-   decisión sería «archivar V1 con su veredicto honesto» o repensar la composición (p. ej. target
-   intermedio declarado entre nearest y major, o entrada límite con `wait` mayor).
+1. ~~Cerrar el veredicto con el escenario realista~~ **hecho**: tabla de los 3 escenarios completa arriba.
+2. **No promover V1.** Decisión de Ricardo pendiente entre: (a) **archivar V1 con su veredicto honesto**
+   (FAIL en los tres escenarios, sin edge demostrable y con muestra insuficiente), o (b) **repensar la
+   composición** antes de gastar otra corrida (p. ej. target intermedio declarado entre `nearest` y
+   `major`, o entrada límite con `wait` mayor) — siempre con preregistro nuevo, no re-corriendo lo mismo.
 3. Lección de bloque: **el filtro que un trader de referencia considera obligatorio no es transferible
    por decreto** — se mide, y aquí empeora.
