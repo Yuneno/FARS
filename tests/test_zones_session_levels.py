@@ -352,8 +352,14 @@ def test_session_pools_false_oracle_parity():
     eng = ZoneEngine(symbol="MNQ", timeframe="M5", tick_size=0.25, session_pools=False)
     eng.update(bars5k)
 
-    assert eng.n_zones == 382
-    active = eng.active_zones()
+    # Z6 añade los tipos support/resistance/order_block al inventario por diseño (feature real en
+    # context()). La paridad con el oráculo Z3-b se verifica sobre los tipos que existían en ese
+    # bloque (fvg + liquidity): los números congelados (382 / 220 / {liquidity: 198, fvg: 22}) se
+    # mantienen EXACTOS para ese subconjunto — Z6 no perturbó el inventario legado.
+    legacy_all = [z for z in eng.all_zones() if z.zone_type in ("fvg", "liquidity")]
+    assert len(legacy_all) == 382
+
+    active = [z for z in eng.active_zones() if z.zone_type in ("fvg", "liquidity")]
     assert len(active) == 220
 
     by_type = {}
@@ -374,7 +380,9 @@ def test_session_pools_false_oracle_parity():
     assert ctx["liquidity_swept"] is True
     assert ctx["fvg_liquidity_overlap"] is True
     assert ctx["zone_overlap_count"] == 154
-    assert ctx["nearest_zone_type"] == "liquidity"
+    # Re-freeze declarado por Z6 (2026-09-17): el inventario incluye ahora S/R y OB, así que el
+    # vecino más cercano al precio de referencia pasa a ser una resistencia (antes de Z6: "liquidity").
+    assert ctx["nearest_zone_type"] == "resistance"
 
     # Con flag OFF, no hay features de sesión en context() (mantiene la forma original exacta de 17 keys)
     assert "distance_to_prev_day_high_pts" not in ctx
