@@ -1,0 +1,146 @@
+{
+  "metadata": {
+    "protocol_version": "C1",
+    "block_id": "M9",
+    "experiment_id": "screening_entradas_crudas",
+    "title": "M9 — Screening de ENTRADAS Crudas Multi-Mercado (MNQ, MES, MYM, MGC)",
+    "description": "Screening rápido y causal de 5 entradas de trading crudas y autónomas (reversión de extremos y rupturas de rango) con riesgo normalizado por volatilidad ATR(14) k=1.0 para determinar si alguna posee edge intrínseco (límite inferior de IC95 CBB > 0 en >= 2 de los 4 mercados bajo escenario realista) tras el agotamiento de filtros sobre SMC-FVG.",
+    "preregistered_at_utc": "2026-09-17T15:38:00Z",
+    "git_branch": "bloque-m9-screening-entradas",
+    "git_commit": "446fd94",
+    "runtime": "Python 3.13.15 (.venv-fars)",
+    "rules": {
+      "no_post_hoc_tuning": true,
+      "frozen_parameters": true,
+      "cbb_bootstrap_reps": 2000,
+      "embargo_bars_h": 192,
+      "max_workers": 4,
+      "decisive_scenario": "realista",
+      "survival_criterion": "IC95 (CBB) lower bound > 0 in >= 2 of 4 markets in realistic scenario"
+    }
+  },
+  "risk_and_execution_convention": {
+    "volatility_stop": "stop = 1.0 * ATR(14) causal Wilder sobre barras M5 cerradas (k = 1.0 declarado ex-ante)",
+    "target_reward": "target = 2.0 * ATR(14) (ratio fijo 2R)",
+    "time_exit": "max_bars_held = 48 barras M5 (4 horas)",
+    "cooldown": "cooldown_bars = 6 barras entre operaciones de la misma estrategia",
+    "entry_mode": "apertura de la siguiente barra M5 (bar.open) con slippage adverso de mercado",
+    "stop_mode": "orden stop de mercado con slippage adverso",
+    "target_mode": "orden límite sin slippage"
+  },
+  "entries": [
+    {
+      "entry_id": "e1_ts_d1",
+      "name": "TS-D1",
+      "family": "mean_reversion",
+      "reference_levels": "prev_day_high, prev_day_low (sesión previa completada)",
+      "rule": "Mecha M5 que barre el máximo o mínimo del día anterior y cierra de vuelta dentro (sin cierre previo hoy fuera del nivel) -> entrar en reversión al open siguiente; stop = 1.0 * ATR(14); target = 2.0 * ATR(14); max_hold = 48 barras",
+      "description": "Turtle Soup del extremo D1 (versión simple de Kai / Linda Raschke)"
+    },
+    {
+      "entry_id": "e2_ts_d20",
+      "name": "TS-D20",
+      "family": "mean_reversion",
+      "reference_levels": "d20_high, d20_low (extremos de las últimas 20 sesiones completadas)",
+      "rule": "Mecha M5 que barre el máximo o mínimo de 20 sesiones y cierra de vuelta dentro -> entrar en reversión al open siguiente; stop = 1.0 * ATR(14); target = 2.0 * ATR(14); max_hold = 48 barras",
+      "description": "Turtle Soup sobre el extremo multi-sesión de 20 días (más selectivo)"
+    },
+    {
+      "entry_id": "e3_mom_break",
+      "name": "MOM-BREAK",
+      "family": "momentum_breakout",
+      "reference_levels": "d20_high, d20_low (canal Donchian de 20 sesiones completadas)",
+      "rule": "Cierre M5 que rompe por primera vez por encima del d20_high (long) o por debajo del d20_low (short) -> entrar al open siguiente; stop = 1.0 * ATR(14); target = 2.0 * ATR(14); max_hold = 48 barras",
+      "description": "Momentum de ruptura de rango multi-sesión de 20 días"
+    },
+    {
+      "entry_id": "e4_mr_level",
+      "name": "MR-LEVEL",
+      "family": "mean_reversion",
+      "reference_levels": "session_pools: prev_day_high, prev_day_low, d20_high, d20_low, overnight_high, overnight_low (SessionLevelsBuilder)",
+      "rule": "Mecha M5 que barre cualquier nivel de sesión activo superior (PDH, D20H, ONH) o inferior (PDL, D20L, ONL) y cierra de vuelta dentro -> entrar en dirección opuesta al open siguiente; stop = 1.0 * ATR(14); target = 2.0 * ATR(14); max_hold = 48 barras",
+      "description": "Reversión a nivel de sesión sobre pools estructurales Z3-b"
+    },
+    {
+      "entry_id": "e5_vol_break",
+      "name": "VOL-BREAK",
+      "family": "volatility_breakout",
+      "reference_levels": "prev_day_high, prev_day_low (sesión previa completada)",
+      "rule": "Cierre M5 que rompe por primera vez por encima de PDH (long) o por debajo de PDL (short) con confirmación de cierre -> entrar al open siguiente; stop = 1.0 * ATR(14); target = 2.0 * ATR(14); max_hold = 48 barras",
+      "description": "Ruptura de volatilidad del rango de la sesión previa (estilo Crabel)"
+    }
+  ],
+  "markets": {
+    "MNQ": {
+      "symbol": "MNQ",
+      "exchange": "CME",
+      "data_file": "databento/MNQ_M5.csv",
+      "tick_size": 0.25,
+      "dollar_per_point": 2.0,
+      "friction_points": 2.0,
+      "friction_status": "validated_reference"
+    },
+    "MES": {
+      "symbol": "MES",
+      "exchange": "CME",
+      "data_file": "databento/MES_M5.csv",
+      "tick_size": 0.25,
+      "dollar_per_point": 5.0,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    },
+    "MYM": {
+      "symbol": "MYM",
+      "exchange": "CBOT",
+      "data_file": "databento/MYM_M5.csv",
+      "tick_size": 1.0,
+      "dollar_per_point": 0.5,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    },
+    "MGC": {
+      "symbol": "MGC",
+      "exchange": "COMEX",
+      "data_file": "databento/MGC_M5.csv",
+      "tick_size": 0.1,
+      "dollar_per_point": 10.0,
+      "friction_points": null,
+      "friction_status": "unvalidated_assumption"
+    }
+  },
+  "cost_scenarios": {
+    "canonico": {
+      "description": "Comisión estándar $4.00 RT, sin slippage",
+      "commission_per_side": 2.0,
+      "slippage_ticks": 0.0
+    },
+    "canonico_mas_1tick": {
+      "description": "Comisión estándar $4.00 RT + 1 tick adverso en patas de mercado/stop",
+      "commission_per_side": 2.0,
+      "slippage_ticks": 1.0
+    },
+    "realista": {
+      "description": "Escenario decisorio: Comisión por tramo $1.24 RT ($0.62/lado) + 1 tick adverso en patas de mercado/stop (límite y TP sin slippage)",
+      "commission_per_side": 0.62,
+      "slippage_ticks": 1.0
+    }
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "folds_count": 8,
+    "start_date": "2019-05-06",
+    "test_period_start": "2022-07-01",
+    "test_period_end": "2026-07-01",
+    "warmup_calibration_bars": 500,
+    "embargo_bars_h": 192,
+    "purge_by_trade_intervals": true
+  },
+  "reading_criteria": {
+    "survival_threshold": "Límite inferior del IC95 CBB > 0 en el escenario realista en >= 2 de los 4 mercados",
+    "reporting_format": "Se reporta E[R] y PF juntos para cada celda, con n, netR, drawdown e IC95 CBB bootstrap",
+    "promotion_policy": "Ninguna entrada se promueve en este bloque; la sobreviviente (si existe) pasa a un bloque C1 completo"
+  }
+}

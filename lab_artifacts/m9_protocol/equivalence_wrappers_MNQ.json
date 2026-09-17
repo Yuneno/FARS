@@ -1,0 +1,42 @@
+{
+  "market": "MNQ",
+  "checked_at_utc": "2026-09-17T15:39:55.552911+00:00",
+  "entries": {
+    "e1_ts_d1": {
+      "base_trades": 2322,
+      "wrapper_trades": 2322,
+      "base_sha256": "766129fa485b7ecaa460d7d6de17d9a629ca592b2365173eea18aec2a5aaed8e",
+      "wrapper_sha256": "766129fa485b7ecaa460d7d6de17d9a629ca592b2365173eea18aec2a5aaed8e",
+      "is_bit_for_bit_identical": true
+    },
+    "e2_ts_d20": {
+      "base_trades": 605,
+      "wrapper_trades": 605,
+      "base_sha256": "80143c3da1651bbcea7556bc0685c1abb6f1a7f2000298a7a1b94410373784ee",
+      "wrapper_sha256": "80143c3da1651bbcea7556bc0685c1abb6f1a7f2000298a7a1b94410373784ee",
+      "is_bit_for_bit_identical": true
+    },
+    "e3_mom_break": {
+      "base_trades": 838,
+      "wrapper_trades": 838,
+      "base_sha256": "8ce9cb1bddfb4aa791678ed7724a84144b992cd5be6fa336ab0f7287dea480bd",
+      "wrapper_sha256": "8ce9cb1bddfb4aa791678ed7724a84144b992cd5be6fa336ab0f7287dea480bd",
+      "is_bit_for_bit_identical": true
+    },
+    "e4_mr_level": {
+      "base_trades": 3736,
+      "wrapper_trades": 3736,
+      "base_sha256": "695036d7653fc530acf79d10d85d711cb706ee3bd794f294a936a2a12530e0d6",
+      "wrapper_sha256": "695036d7653fc530acf79d10d85d711cb706ee3bd794f294a936a2a12530e0d6",
+      "is_bit_for_bit_identical": true
+    },
+    "e5_vol_break": {
+      "base_trades": 3218,
+      "wrapper_trades": 3218,
+      "base_sha256": "daae6dfd37a4c7a317e367dcbab3b369d8f32c67b7501b1e4d07fd9a67c0b3cf",
+      "wrapper_sha256": "daae6dfd37a4c7a317e367dcbab3b369d8f32c67b7501b1e4d07fd9a67c0b3cf",
+      "is_bit_for_bit_identical": true
+    }
+  },
+  "all_identical": true
+}
