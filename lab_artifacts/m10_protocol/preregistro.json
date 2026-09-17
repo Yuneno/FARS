@@ -1,0 +1,254 @@
+{
+  "metadata": {
+    "title": "Preregistro congelado — Bloque M10: ¿Vale la pena pagar una evaluacion?",
+    "block_id": "M10",
+    "preregistered_at_utc": "2026-09-17T21:22:00+00:00",
+    "git_branch": "bloque-m10-evaluacion",
+    "base_commit": "f1bb7d4",
+    "repo_root": "E:/FARS-LAB/FARS",
+    "python_executable": "E:/FARS-LAB/.venv-fars/Scripts/python.exe"
+  },
+  "candidates": [
+    {
+      "id": "C1",
+      "name": "SMC-FVG MNQ riesgo normalizado k=0.5 (realista)",
+      "source_file": "lab_artifacts/m8_protocol/metrics_MNQ_atr_k050_realista.json",
+      "n_trades": 4812,
+      "mean_er": 0.0309,
+      "cbb_ci95": [-0.0001, 0.0624],
+      "rationale": "Lo mejor que existe hoy en FARS (aunque IC95 toca el cero)"
+    },
+    {
+      "id": "C2",
+      "name": "SMC-FVG MNQ regimen M7 8pt fijos (realista)",
+      "source_file": "lab_artifacts/m7_protocol/metrics_MNQ_baseline_realista.json",
+      "n_trades": 3583,
+      "mean_er": 0.0897,
+      "cbb_ci95": [0.0544, 0.1246],
+      "rationale": "Sensibilidad / cota superior: muestra cuanto sube P(pasar) un E[R] mas alto"
+    },
+    {
+      "id": "C3",
+      "name": "Control aleatorio (misma n y media E[R] que C1)",
+      "source_file": "synthetic_resampled_null_matched",
+      "n_trades": 4812,
+      "target_mean_er": 0.0309,
+      "target_std_er": 1.096,
+      "rationale": "Denominador honesto obligatorio: si control da ~= P(pasar) de C1, la estrategia no aporta nada a la evaluacion"
+    },
+    {
+      "id": "C3_zero",
+      "name": "Control aleatorio sin edge puro (E[R] = 0.0, misma volatilidad)",
+      "source_file": "synthetic_zero_edge_matched",
+      "n_trades": 4812,
+      "target_mean_er": 0.0,
+      "target_std_er": 1.096,
+      "rationale": "Variante declarada: linea base de azar puro con cero edge esperado"
+    }
+  ],
+  "sizing_grid": [
+    {
+      "id": "risk_005",
+      "risk_pct": 0.005,
+      "label": "0.5% por trade",
+      "rationale": "Conservador ex-ante, permite absorber rachas de perdidas"
+    },
+    {
+      "id": "risk_010",
+      "risk_pct": 0.010,
+      "label": "1.0% por trade",
+      "rationale": "Agresivo ex-ante, acelera el camino a target si hay edge"
+    }
+  ],
+  "profiles": {
+    "primary": [
+      {
+        "profile_id": "topstep-50k-combine",
+        "provider": "Topstep",
+        "account_size": "50k",
+        "starting_balance": 50000.0,
+        "profit_target": 3000.0,
+        "maximum_loss_limit": 2000.0,
+        "trailing_mode": "end_of_day",
+        "floor_locks_at_starting_balance": true,
+        "floor_lock_ceiling": 50000.0,
+        "daily_loss_limit": 1000.0,
+        "max_micros": 50,
+        "max_minis": 5,
+        "minimum_trading_days": 2,
+        "consistency_ratio": 0.50,
+        "monthly_fee_standard": 49.0,
+        "monthly_fee_no_activation": 95.0,
+        "activation_fee_standard": 149.0,
+        "sources": [
+          {
+            "url": "https://help.topstep.com/en/articles/10000034-how-is-the-maximum-loss-limit-calculated",
+            "retrieved_date": "2026-09-17"
+          },
+          {
+            "url": "https://help.topstep.com/en/articles/8315183-trading-combine-rules",
+            "retrieved_date": "2026-09-17"
+          },
+          {
+            "url": "https://help.topstep.com/en/articles/8315197-consistency-target",
+            "retrieved_date": "2026-09-17"
+          },
+          {
+            "url": "https://topstep.com/pricing",
+            "retrieved_date": "2026-09-17"
+          }
+        ]
+      },
+      {
+        "profile_id": "topstep-100k-combine",
+        "provider": "Topstep",
+        "account_size": "100k",
+        "starting_balance": 100000.0,
+        "profit_target": 6000.0,
+        "maximum_loss_limit": 3000.0,
+        "trailing_mode": "end_of_day",
+        "floor_locks_at_starting_balance": true,
+        "floor_lock_ceiling": 100000.0,
+        "daily_loss_limit": 2000.0,
+        "max_micros": 100,
+        "max_minis": 10,
+        "minimum_trading_days": 2,
+        "consistency_ratio": 0.50,
+        "monthly_fee_standard": 99.0,
+        "monthly_fee_no_activation": 149.0,
+        "activation_fee_standard": 149.0,
+        "sources": [
+          {
+            "url": "https://help.topstep.com/en/articles/10000034-how-is-the-maximum-loss-limit-calculated",
+            "retrieved_date": "2026-09-17"
+          },
+          {
+            "url": "https://help.topstep.com/en/articles/8315183-trading-combine-rules",
+            "retrieved_date": "2026-09-17"
+          },
+          {
+            "url": "https://topstep.com/pricing",
+            "retrieved_date": "2026-09-17"
+          }
+        ]
+      },
+      {
+        "profile_id": "topstep-150k-combine",
+        "provider": "Topstep",
+        "account_size": "150k",
+        "starting_balance": 150000.0,
+        "profit_target": 9000.0,
+        "maximum_loss_limit": 4500.0,
+        "trailing_mode": "end_of_day",
+        "floor_locks_at_starting_balance": true,
+        "floor_lock_ceiling": 150000.0,
+        "daily_loss_limit": 3000.0,
+        "max_micros": 150,
+        "max_minis": 15,
+        "minimum_trading_days": 2,
+        "consistency_ratio": 0.50,
+        "monthly_fee_standard": 199.0,
+        "monthly_fee_no_activation": 229.0,
+        "activation_fee_standard": 149.0,
+        "sources": [
+          {
+            "url": "https://help.topstep.com/en/articles/10000034-how-is-the-maximum-loss-limit-calculated",
+            "retrieved_date": "2026-09-17"
+          },
+          {
+            "url": "https://help.topstep.com/en/articles/8315183-trading-combine-rules",
+            "retrieved_date": "2026-09-17"
+          },
+          {
+            "url": "https://topstep.com/pricing",
+            "retrieved_date": "2026-09-17"
+          }
+        ]
+      }
+    ],
+    "cross_check": {
+      "profile_id": "apex-25k-evaluation",
+      "provider": "Apex Trader Funding",
+      "starting_balance": 25000.0,
+      "profit_target": 1500.0,
+      "maximum_loss_limit": 1500.0,
+      "lock_ceiling": 25100.0,
+      "max_micros": 20,
+      "minimum_trading_days": 0,
+      "source_function": "src.funded_profiles.apex_25k_profile"
+    },
+    "reference_historical": {
+      "profile_id": "myfundedfutures-rapid-25k-evaluation",
+      "provider": "My Funded Futures",
+      "starting_balance": 25000.0,
+      "profit_target": 1500.0,
+      "maximum_loss_limit": 1000.0,
+      "lock_ceiling": 25100.0,
+      "max_micros": 30,
+      "minimum_trading_days": 2,
+      "consistency_ratio": 0.50,
+      "status": "disabled_reference",
+      "source_function": "src.funded_profiles.rapid_25k_profile"
+    }
+  },
+  "declared_variants": {
+    "trailing_modes": [
+      {
+        "id": "eod_trailing",
+        "description": "Regla oficial Topstep: MLL actualiza al cierre del dia (EOD) sobre balance cerrado, no intradia"
+      },
+      {
+        "id": "closed_trade_trailing",
+        "description": "Variante conservadora: MLL actualiza tras cada trade cerrado (cota inferior de P(pasar))"
+      }
+    ],
+    "daily_loss_modes": [
+      {
+        "id": "without_dll",
+        "description": "Regla oficial Topstep por defecto: DLL es opcional al checkout"
+      },
+      {
+        "id": "with_dll_soft",
+        "description": "Si se contrata DLL: liquidacion de posiciones y pausa hasta el dia siguiente (no quema cuenta)"
+      },
+      {
+        "id": "with_dll_hard",
+        "description": "Variante ultra-conservadora: DLL provoca fallo inmediato de evaluacion"
+      }
+    ],
+    "consistency_modes": [
+      {
+        "id": "consistency_50pct",
+        "description": "Regla oficial Topstep: mejor dia no puede exceder 50% de la ganancia total para pasar"
+      },
+      {
+        "id": "consistency_none",
+        "description": "Variante permisiva: sin filtro de consistencia"
+      }
+    ]
+  },
+  "simulation_contract": {
+    "n_simulations": 10000,
+    "resampling_route": "cbb",
+    "cbb_block_length_default": 10,
+    "cbb_block_lengths_sensitivity": [5, 10, 20],
+    "master_seed": 20260917,
+    "horizon_calendar_days": 30,
+    "dd_buffer_safety_frac": 0.75,
+    "dollar_per_point": 2.0,
+    "commission_rt_mnq": 1.00,
+    "slippage_points": 0.25,
+    "workers": 4
+  },
+  "economic_decision_model": {
+    "fee_levels": [49.0, 95.0, 99.0, 149.0, 199.0, 229.0, 50.0, 100.0, 150.0, 200.0],
+    "formula_intentos": "1.0 / P(pasar)",
+    "formula_gasto": "fee / P(pasar)",
+    "formula_gasto_con_activacion": "(fee / P(pasar)) + activation_fee"
+  },
+  "full_verification_mae": {
+    "required_for": "best_candidate_by_pass_rate",
+    "m1_source": "E:/FARS-LAB/databento.zip -> databento/MNQ_M1.csv",
+    "method": "lab_artifacts.run_d_protocol.extract_m1_bars_and_compute_maes"
+  }
+}

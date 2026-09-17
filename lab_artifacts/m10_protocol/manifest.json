@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "block_id": "M10",
+    "title": "Evaluacion de P(pasar) en Topstep Trading Combine",
+    "generated_at_utc": "2026-09-17T21:24:59.729298+00:00",
+    "repo_root": "E:/FARS-LAB/FARS",
+    "git_branch": "bloque-m10-evaluacion"
+  },
+  "artifacts": {
+    "BLOCKERS.md": {
+      "sha256": "235349ba63a4cd1bce90d401f37ae7887b478dd7fc9a9490718f0f9a095b01c7",
+      "size_bytes": 1067
+    },
+    "INFORME.md": {
+      "sha256": "0c7aeda7b483c2c6b432be4477b7fec464120b7adf7ac48d5b2bbf8bea81f148",
+      "size_bytes": 7236
+    },
+    "metrics_cross_check_apex.json": {
+      "sha256": "aaf656e4a792f83c23bd345297ad2ed9fb84f022c7c537f5e29723338db3b1cd",
+      "size_bytes": 8392
+    },
+    "metrics_declared_variants.json": {
+      "sha256": "851d33f246d0e3cf61299ba5797ad4cb18dc0dae5f915bd6a77ec307a156b8bf",
+      "size_bytes": 5196
+    },
+    "metrics_economic_decision.json": {
+      "sha256": "667b2f3f38e9f26d0cbd33548a67fab937c2457f423067eed27e6c9f515a6590",
+      "size_bytes": 9621
+    },
+    "metrics_full_mae_verification.json": {
+      "sha256": "e90b14f3314aa7140ed96dbc33a7735fbf3c64bd4abe9d888844c3aa0a5616c7",
+      "size_bytes": 2773
+    },
+    "metrics_sensitivity_cbb.json": {
+      "sha256": "f73e9a559ee2328c8d80868b7ab2bbe3cf68fc999ba45857efc6d65363fa0c7b",
+      "size_bytes": 3881
+    },
+    "metrics_summary_all.json": {
+      "sha256": "bd5a556b7c1087dbdca3067887bbac6a3383bb4db81b41e05f21893c1912ea44",
+      "size_bytes": 49764
+    },
+    "metrics_topstep_100k.json": {
+      "sha256": "ef20a71ca4c4ec66a0fe476044196dbb16c135f172b11872e37b648dc6114480",
+      "size_bytes": 5160
+    },
+    "metrics_topstep_150k.json": {
+      "sha256": "d55b2f8675b1e606474ea720648c2a16106cb85b52cb3914af3e9176d3a9e5ea",
+      "size_bytes": 5159
+    },
+    "metrics_topstep_50k.json": {
+      "sha256": "89167531aabfc78a55a625ea32eb91222048a0e704c41195e73bf821f2074864",
+      "size_bytes": 5157
+    },
+    "preregistro.json": {
+      "sha256": "5bcd846aa39ff3891dc34e2414d6e0cd9d6eacb99e36bc054ea5c96e5bf64d03",
+      "size_bytes": 8664
+    },
+    "run_m10.py": {
+      "sha256": "37ba368657bedb84acd31c961e9da8176a8b56087fbc2553ff390a0505fd79ef",
+      "size_bytes": 42712
+    }
+  }
+}

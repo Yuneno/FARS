@@ -1,0 +1,362 @@
+{
+  "50k_C1_05": [
+    {
+      "fee": 49.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 163.88,
+      "expected_expense_with_activation": 312.88
+    },
+    {
+      "fee": 95.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 317.73,
+      "expected_expense_with_activation": 466.73
+    },
+    {
+      "fee": 99.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 331.1,
+      "expected_expense_with_activation": 480.1
+    },
+    {
+      "fee": 149.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 498.33,
+      "expected_expense_with_activation": 647.33
+    },
+    {
+      "fee": 199.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 665.55,
+      "expected_expense_with_activation": 814.55
+    },
+    {
+      "fee": 229.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 765.89,
+      "expected_expense_with_activation": 914.89
+    },
+    {
+      "fee": 50.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 167.22,
+      "expected_expense_with_activation": 316.22
+    },
+    {
+      "fee": 100.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 334.45,
+      "expected_expense_with_activation": 483.45
+    },
+    {
+      "fee": 150.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 501.67,
+      "expected_expense_with_activation": 650.67
+    },
+    {
+      "fee": 200.0,
+      "pass_pct": 29.9,
+      "expected_attempts": 3.34,
+      "expected_expense_fees_only": 668.9,
+      "expected_expense_with_activation": 817.9
+    }
+  ],
+  "50k_C1_10": [
+    {
+      "fee": 49.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 150.58,
+      "expected_expense_with_activation": 299.58
+    },
+    {
+      "fee": 95.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 291.95,
+      "expected_expense_with_activation": 440.95
+    },
+    {
+      "fee": 99.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 304.24,
+      "expected_expense_with_activation": 453.24
+    },
+    {
+      "fee": 149.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 457.9,
+      "expected_expense_with_activation": 606.9
+    },
+    {
+      "fee": 199.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 611.56,
+      "expected_expense_with_activation": 760.56
+    },
+    {
+      "fee": 229.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 703.75,
+      "expected_expense_with_activation": 852.75
+    },
+    {
+      "fee": 50.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 153.66,
+      "expected_expense_with_activation": 302.66
+    },
+    {
+      "fee": 100.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 307.31,
+      "expected_expense_with_activation": 456.31
+    },
+    {
+      "fee": 150.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 460.97,
+      "expected_expense_with_activation": 609.97
+    },
+    {
+      "fee": 200.0,
+      "pass_pct": 32.54,
+      "expected_attempts": 3.07,
+      "expected_expense_fees_only": 614.63,
+      "expected_expense_with_activation": 763.63
+    }
+  ],
+  "50k_C1_FULL_10": [
+    {
+      "fee": 49.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 165.32,
+      "expected_expense_with_activation": 314.32
+    },
+    {
+      "fee": 95.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 320.51,
+      "expected_expense_with_activation": 469.51
+    },
+    {
+      "fee": 99.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 334.01,
+      "expected_expense_with_activation": 483.01
+    },
+    {
+      "fee": 149.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 502.7,
+      "expected_expense_with_activation": 651.7
+    },
+    {
+      "fee": 199.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 671.39,
+      "expected_expense_with_activation": 820.39
+    },
+    {
+      "fee": 229.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 772.6,
+      "expected_expense_with_activation": 921.6
+    },
+    {
+      "fee": 50.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 168.69,
+      "expected_expense_with_activation": 317.69
+    },
+    {
+      "fee": 100.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 337.38,
+      "expected_expense_with_activation": 486.38
+    },
+    {
+      "fee": 150.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 506.07,
+      "expected_expense_with_activation": 655.07
+    },
+    {
+      "fee": 200.0,
+      "pass_pct": 29.64,
+      "expected_attempts": 3.37,
+      "expected_expense_fees_only": 674.76,
+      "expected_expense_with_activation": 823.76
+    }
+  ],
+  "50k_C3_10": [
+    {
+      "fee": 49.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 148.39,
+      "expected_expense_with_activation": 297.39
+    },
+    {
+      "fee": 95.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 287.7,
+      "expected_expense_with_activation": 436.7
+    },
+    {
+      "fee": 99.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 299.82,
+      "expected_expense_with_activation": 448.82
+    },
+    {
+      "fee": 149.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 451.24,
+      "expected_expense_with_activation": 600.24
+    },
+    {
+      "fee": 199.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 602.67,
+      "expected_expense_with_activation": 751.67
+    },
+    {
+      "fee": 229.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 693.52,
+      "expected_expense_with_activation": 842.52
+    },
+    {
+      "fee": 50.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 151.42,
+      "expected_expense_with_activation": 300.42
+    },
+    {
+      "fee": 100.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 302.85,
+      "expected_expense_with_activation": 451.85
+    },
+    {
+      "fee": 150.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 454.27,
+      "expected_expense_with_activation": 603.27
+    },
+    {
+      "fee": 200.0,
+      "pass_pct": 33.02,
+      "expected_attempts": 3.03,
+      "expected_expense_fees_only": 605.69,
+      "expected_expense_with_activation": 754.69
+    }
+  ],
+  "50k_C2_10": [
+    {
+      "fee": 49.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 123.43,
+      "expected_expense_with_activation": 272.43
+    },
+    {
+      "fee": 95.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 239.29,
+      "expected_expense_with_activation": 388.29
+    },
+    {
+      "fee": 99.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 249.37,
+      "expected_expense_with_activation": 398.37
+    },
+    {
+      "fee": 149.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 375.31,
+      "expected_expense_with_activation": 524.31
+    },
+    {
+      "fee": 199.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 501.26,
+      "expected_expense_with_activation": 650.26
+    },
+    {
+      "fee": 229.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 576.83,
+      "expected_expense_with_activation": 725.83
+    },
+    {
+      "fee": 50.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 125.94,
+      "expected_expense_with_activation": 274.94
+    },
+    {
+      "fee": 100.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 251.89,
+      "expected_expense_with_activation": 400.89
+    },
+    {
+      "fee": 150.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 377.83,
+      "expected_expense_with_activation": 526.83
+    },
+    {
+      "fee": 200.0,
+      "pass_pct": 39.7,
+      "expected_attempts": 2.52,
+      "expected_expense_fees_only": 503.78,
+      "expected_expense_with_activation": 652.78
+    }
+  ]
+}
