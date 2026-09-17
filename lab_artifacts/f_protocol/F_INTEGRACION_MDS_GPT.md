@@ -73,3 +73,9 @@ baseline MNQ deja de excluir el cero al normalizar (IC95 [−0,0001, +0,0624]).
 > **Convención adoptada:** todo umbral de riesgo multi-mercado se expresa **normalizado por ATR(14)** con
 > `k` declarado en el preregistro; los umbrales en puntos nominales quedan prohibidos salvo justificación
 > explícita.
+
+> **Fuera de la spec (bloque M9, 2026-09-17):** screening de **5 entradas crudas** (TS-D1, TS-D20, MOM-BREAK,
+> MR-LEVEL, VOL-BREAK) con la misma vara → **0/5 con pulso** (WR 30-34 % con objetivo 2R: el filo del
+> breakeven, y el coste decide). Detalle y límites en `lab_artifacts/m9_protocol/HERMES_REVISION_M9.md`.
+> Pregunta viva que queda: **régimen y gestión de salida** (alineación HTF, compresión previa, salidas
+> asimétricas) — nunca más filtros sobre una base sin asimetría.
