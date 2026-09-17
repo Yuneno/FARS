@@ -1,0 +1,45 @@
+{
+  "protocol": "FARS Reversal V1 — Enmienda 1 al Preregistro",
+  "amendment_id": "enmienda_1_target_variants",
+  "amended_at_utc": "2026-09-17T00:08:15.000000Z",
+  "base_commit": "6659a6797a7a5db8bdf4c502b6de1b023f2780ea",
+  "branch": "bloque-v1-reversion",
+  "status": "frozen_before_variant_runs",
+  "rationale": "Hallazgo medido por el revisor en HERMES_REVISION_V1.md: la convención inicial de target ('pool activo opuesto más cercano por encima/debajo del entry') produce objetivos diminutos en la muestra (media de +0.18R en trades ganadores), donde la distancia al target es sistemáticamente menor que el riesgo asumido. Se añaden dos variantes declaradas de target para ser evaluadas y reportadas lado a lado junto a la primaria, sin optimización previa ni selección ex-post.",
+  "primary_preservation_clause": {
+    "primary_target_mode": "nearest_pool",
+    "rule": "La primaria sigue siendo 'nearest_pool'. Ninguna variante sustituye, altera ni promociona sobre la primaria. Las variantes se añaden y se miden al lado; nunca se elige una 'ganadora' ni se modifica la convención principal en este bloque."
+  },
+  "declared_target_variants": [
+    {
+      "target_mode": "nearest_pool",
+      "role": "primary_baseline",
+      "description": "Pool opuesto más cercano por encima/debajo del entry (comportamiento idéntico al preregistro original).",
+      "min_target_r": null
+    },
+    {
+      "target_mode": "major_pool",
+      "role": "declared_variant",
+      "description": "Pool opuesto con mayor 'strength' (empate -> el más cercano), exigiendo distancia(entry -> target) >= min_target_r * riesgo.",
+      "min_target_r": 1.0
+    },
+    {
+      "target_mode": "session_level",
+      "role": "declared_variant",
+      "description": "Preferir el nivel de sesión opuesto más cercano (PDH/PDL/D20/ONH/ONL); si no hay ninguno más allá del entry, cae a major_pool.",
+      "min_target_r": 1.0
+    }
+  ],
+  "composition_invariance": {
+    "rule": "El resto de la composición se mantiene exactamente idéntico: sweep de zona con state=='swept', CHoCH/MSS real con confirmación de desplazamiento disp_mult=1.2, entrada en FVG con limit order (o market en neighbor), CISD/OTE según configuración, stop en extremo del barrido +/- sl_buffer_pts=1.0, wait=48, max_hold_bars=96."
+  },
+  "reported_metrics": [
+    "trade_count",
+    "expectancy_r",
+    "profit_factor",
+    "bootstrap_cbb_95pct_interval_for_expectancy_r",
+    "positive_folds",
+    "fold_count"
+  ],
+  "reading_criterion": "Reportar E[R] y PF juntos, base (nearest_pool) y variantes (major_pool, session_level) lado a lado, con n_trades e IC. Un FAIL o evidencia_insuficiente se reporta tal cual: sin promoción de ninguna configuración."
+}

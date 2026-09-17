@@ -42,8 +42,10 @@ DEFAULT_CISD_LOOKBACK = 10
 DEFAULT_PIVOT_LEFT = 3
 DEFAULT_PIVOT_RIGHT = 3
 DEFAULT_FVG_MIN_GAP_PCT = 0.001
+DEFAULT_MIN_TARGET_R = 1.0
 
 EntryMode = Literal["limit", "market"]
+TargetMode = Literal["nearest_pool", "major_pool", "session_level"]
 DecisionReason = Literal["accepted", "invalidated", "expired", "filled", "closed"]
 
 
@@ -92,6 +94,8 @@ class ReversalV1Strategy:
         use_cisd: bool = True,
         use_ote: bool = False,
         entry_mode: EntryMode = "limit",
+        target_mode: TargetMode = "nearest_pool",
+        min_target_r: float = DEFAULT_MIN_TARGET_R,
         cisd_lookback: int = DEFAULT_CISD_LOOKBACK,
         pivot_left: int = DEFAULT_PIVOT_LEFT,
         pivot_right: int = DEFAULT_PIVOT_RIGHT,
@@ -102,17 +106,19 @@ class ReversalV1Strategy:
             raise TypeError("market must be a MarketSpec")
         if entry_mode not in ("limit", "market"):
             raise ValueError("entry_mode must be 'limit' or 'market'")
+        if target_mode not in ("nearest_pool", "major_pool", "session_level"):
+            raise ValueError("target_mode must be 'nearest_pool', 'major_pool', or 'session_level'")
         if wait < 1 or max_hold_bars < 1 or cisd_lookback < 1:
             raise ValueError("wait, max_hold_bars and cisd_lookback must be >= 1")
         if pivot_left < 1 or pivot_right < 1:
             raise ValueError("pivot_left and pivot_right must be >= 1")
         if pivot_left != pivot_right:
             raise ValueError("canonical confirmed_swing currently requires pivot_left == pivot_right")
-        floats = (disp_mult, sl_buffer_pts, fvg_min_gap_pct)
+        floats = (disp_mult, sl_buffer_pts, fvg_min_gap_pct, min_target_r)
         if not all(math.isfinite(value) for value in floats):
             raise ValueError("floating parameters must be finite")
-        if disp_mult <= 0 or sl_buffer_pts < 0 or fvg_min_gap_pct < 0:
-            raise ValueError("disp_mult must be > 0; buffers/gap threshold must be >= 0")
+        if disp_mult <= 0 or sl_buffer_pts < 0 or fvg_min_gap_pct < 0 or min_target_r < 0:
+            raise ValueError("disp_mult must be > 0; buffers/gap threshold/min_target_r must be >= 0")
 
         self.market = market
         self.disp_mult = float(disp_mult)
@@ -122,6 +128,8 @@ class ReversalV1Strategy:
         self.use_cisd = bool(use_cisd)
         self.use_ote = bool(use_ote)
         self.entry_mode = entry_mode
+        self.target_mode = target_mode
+        self.min_target_r = float(min_target_r)
         self.cisd_lookback = int(cisd_lookback)
         self.pivot_left = int(pivot_left)
         self.pivot_right = int(pivot_right)
@@ -164,6 +172,8 @@ class ReversalV1Strategy:
             use_cisd=self.use_cisd,
             use_ote=self.use_ote,
             entry_mode=self.entry_mode,
+            target_mode=self.target_mode,
+            min_target_r=self.min_target_r,
             cisd_lookback=self.cisd_lookback,
             pivot_left=self.pivot_left,
             pivot_right=self.pivot_right,
@@ -181,6 +191,8 @@ class ReversalV1Strategy:
             "use_cisd": self.use_cisd,
             "use_ote": self.use_ote,
             "entry_mode": self.entry_mode,
+            "target_mode": self.target_mode,
+            "min_target_r": self.min_target_r,
             "cisd_lookback": self.cisd_lookback,
             "pivot_left": self.pivot_left,
             "pivot_right": self.pivot_right,
@@ -227,19 +239,14 @@ class ReversalV1Strategy:
 
     def _new_sweep(self, index: int) -> None:
         decision_time = self._bars[index].timestamp
-        # Canonical swing-sweep detector is consumed for its causal diagnostics;
-        # the actual setup gate is the stricter pool lifecycle transition below.
-        sweep_window = 2 * (self.pivot_left + self.pivot_right) + 3
-        detect_sweeps(
-            _detector_bars(self._bars[-sweep_window:]),
-            symbol=self.market.symbol,
-            timeframe="M5",
-            left=self.pivot_left,
-            right=self.pivot_right,
+        zones_source = (
+            self._engine._all_zones.values()
+            if hasattr(self._engine, "_all_zones")
+            else self._engine.all_zones()
         )
         candidates = [
             zone
-            for zone in self._engine.all_zones()
+            for zone in zones_source
             if zone.zone_type in ("liquidity", "session_level")
             and zone.state == "swept"
             and zone.zone_id not in self._seen_swept
@@ -267,7 +274,13 @@ class ReversalV1Strategy:
         avg = sum(bar.high - bar.low for bar in self._bars[index - 20:index]) / 20.0
         return avg > 0 and (self._bars[index].high - self._bars[index].low) >= self.disp_mult * avg
 
-    def _opposite_pool(self, direction: str, entry: float, decision_time: datetime) -> Zone | None:
+    def _opposite_pool(
+        self,
+        direction: str,
+        entry: float,
+        decision_time: datetime,
+        stop: float | None = None,
+    ) -> Zone | None:
         wanted = "long" if direction == "long" else "short"
         pools = [
             zone
@@ -279,7 +292,29 @@ class ReversalV1Strategy:
         ]
         if not pools:
             return None
-        return min(pools, key=lambda zone: (abs(zone.midpoint - entry), zone.zone_id))
+
+        if self.target_mode == "nearest_pool":
+            return min(pools, key=lambda zone: (abs(zone.midpoint - entry), zone.zone_id))
+
+        if self.target_mode == "session_level":
+            session_pools = [z for z in pools if z.zone_type == "session_level"]
+            if session_pools:
+                return min(session_pools, key=lambda zone: (abs(zone.midpoint - entry), zone.zone_id))
+            # Fallback to major_pool if no session level exists beyond entry
+
+        # major_pool: highest strength, tie -> closest, requiring distance >= min_target_r * risk
+        min_dist = 0.0
+        if stop is not None and self.min_target_r > 0:
+            min_dist = self.min_target_r * abs(entry - stop)
+
+        eligible = [z for z in pools if abs(z.midpoint - entry) >= min_dist]
+        if not eligible:
+            return None
+
+        return min(
+            eligible,
+            key=lambda zone: (-zone.strength, abs(zone.midpoint - entry), zone.zone_id),
+        )
 
     def _candidate(self, index: int) -> Signal | None:
         if self._sweep is None or self._choch is None:
@@ -320,10 +355,10 @@ class ReversalV1Strategy:
             if not lower <= entry <= upper or premium_discount(entry, range_low, range_high) != expected_pd:
                 return None
 
-        target_zone = self._opposite_pool(direction, entry, decision_time)
+        stop = extreme - self.sl_buffer_pts if direction == "long" else extreme + self.sl_buffer_pts
+        target_zone = self._opposite_pool(direction, entry, decision_time, stop=stop)
         if target_zone is None:
             return None
-        stop = extreme - self.sl_buffer_pts if direction == "long" else extreme + self.sl_buffer_pts
         target = target_zone.midpoint
         if not (stop < entry < target if direction == "long" else target < entry < stop):
             return None
@@ -463,5 +498,6 @@ def reversal_v1_config(
 __all__ = [
     "ReversalV1Decision",
     "ReversalV1Strategy",
+    "TargetMode",
     "reversal_v1_config",
 ]

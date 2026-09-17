@@ -27,10 +27,12 @@ def _zone(
     direction: str,
     state: str = "active",
     available_at: datetime,
+    strength: float = 0.0,
+    zone_type: str = "liquidity",
 ) -> Zone:
     return Zone(
-        zone_id=make_zone_id("liquidity", "MNQ", "M5", direction, available_at, (name,)),
-        zone_type="liquidity",
+        zone_id=make_zone_id(zone_type, "MNQ", "M5", direction, available_at, (name,)),
+        zone_type=zone_type,
         symbol="MNQ",
         timeframe="M5",
         lower=level - 0.25,
@@ -40,6 +42,7 @@ def _zone(
         pattern_time=available_at,
         available_at=available_at,
         state=state,
+        strength=strength,
         metadata={"available_bar_index": 0},
     )
 
@@ -218,3 +221,131 @@ def test_config_declares_limit_primary_and_market_neighbor():
 def test_import_is_opt_in_and_exports_no_registry_mutation():
     assert rv1.ReversalV1Strategy.__module__ == "src.backtest.reversal_v1"
     assert rv1.ReversalV1Strategy().parameters()["session_pools"] is True
+
+
+def test_nearest_pool_reproduces_baseline_bit_for_bit():
+    bars = synthetic_bars(160, seed=71, interval_seconds=300)
+    strat_default = rv1.ReversalV1Strategy()
+    strat_explicit = rv1.ReversalV1Strategy(target_mode="nearest_pool")
+    config = rv1.reversal_v1_config()
+    res_default = run_backtest(bars, strat_default, config)
+    res_explicit = run_backtest(bars, strat_explicit, config)
+    projection = lambda result: [
+        (trade.r_result, trade.entry_time, trade.exit_time, trade.exit_reason, trade.target_price)
+        for trade in result.trades
+    ]
+    assert projection(res_default) == projection(res_explicit)
+    assert strat_default.decisions == strat_explicit.decisions
+
+
+def test_major_pool_selection_and_min_target_r_gate(monkeypatch):
+    # Entry is at 104.0, stop at 89.0 (risk = 15.0 pts).
+    # With min_target_r = 1.0, required distance >= 15.0 pts (i.e. target >= 119.0).
+    strategy, bars = _armed(monkeypatch)
+    swept = strategy._sweep["zone"]
+    now = bars[-1].timestamp
+
+    # Subtest A: Pool below min_target_r distance (target=110, distance=6 < 15)
+    pool_close = _zone(name="close", level=110.0, direction="long", available_at=now, strength=10.0)
+    strategy._engine.zones = [swept, pool_close]
+
+    # nearest_pool accepts it (distance doesn't matter)
+    strategy.target_mode = "nearest_pool"
+    sig_near = strategy._candidate(len(bars) - 1)
+    assert sig_near is not None
+    assert sig_near.target == 110.0
+
+    # major_pool rejects it because distance < 1.0 * risk
+    strategy.target_mode = "major_pool"
+    strategy.min_target_r = 1.0
+    strategy._sweep = {"zone": swept, "direction": "long", "index": 20, "extreme": 90.0}
+    strategy._choch = {"index": 22, "level": 100.0}
+    assert strategy._candidate(len(bars) - 1) is None
+
+    # Subtest B: Two pools satisfying min_target_r:
+    # Pool A: level 120 (dist 16), strength 1.0
+    # Pool B: level 130 (dist 26), strength 3.0
+    pool_a = _zone(name="a", level=120.0, direction="long", available_at=now, strength=1.0)
+    pool_b = _zone(name="b", level=130.0, direction="long", available_at=now, strength=3.0)
+    strategy._engine.zones = [swept, pool_a, pool_b]
+
+    # nearest_pool picks closer pool (pool_a at 120)
+    strategy.target_mode = "nearest_pool"
+    strategy._sweep = {"zone": swept, "direction": "long", "index": 20, "extreme": 90.0}
+    strategy._choch = {"index": 22, "level": 100.0}
+    sig_near = strategy._candidate(len(bars) - 1)
+    assert sig_near is not None
+    assert sig_near.target == 120.0
+
+    # major_pool picks pool_b (higher strength 3.0 > 1.0)
+    strategy.target_mode = "major_pool"
+    strategy._sweep = {"zone": swept, "direction": "long", "index": 20, "extreme": 90.0}
+    strategy._choch = {"index": 22, "level": 100.0}
+    sig_major = strategy._candidate(len(bars) - 1)
+    assert sig_major is not None
+    assert sig_major.target == 130.0
+
+    # Subtest C: Tie in strength: Pool A (strength 2.0, level 120) vs Pool C (strength 2.0, level 135)
+    pool_c = _zone(name="c", level=135.0, direction="long", available_at=now, strength=2.0)
+    pool_a_tie = _zone(name="a", level=120.0, direction="long", available_at=now, strength=2.0)
+    strategy._engine.zones = [swept, pool_a_tie, pool_c]
+    strategy._sweep = {"zone": swept, "direction": "long", "index": 20, "extreme": 90.0}
+    strategy._choch = {"index": 22, "level": 100.0}
+    sig_tie = strategy._candidate(len(bars) - 1)
+    assert sig_tie is not None
+    assert sig_tie.target == 120.0  # Closest distance on strength tie
+
+    # Subtest D: Single pool satisfying min_target_r behaves identically to nearest_pool
+    single_pool = _zone(name="single", level=125.0, direction="long", available_at=now, strength=1.5)
+    strategy._engine.zones = [swept, single_pool]
+    strategy.target_mode = "nearest_pool"
+    strategy._sweep = {"zone": swept, "direction": "long", "index": 20, "extreme": 90.0}
+    strategy._choch = {"index": 22, "level": 100.0}
+    sig_single_near = strategy._candidate(len(bars) - 1)
+
+    strategy.target_mode = "major_pool"
+    strategy._sweep = {"zone": swept, "direction": "long", "index": 20, "extreme": 90.0}
+    strategy._choch = {"index": 22, "level": 100.0}
+    sig_single_major = strategy._candidate(len(bars) - 1)
+
+    assert sig_single_near == sig_single_major
+    assert sig_single_major.target == 125.0
+
+
+def test_session_level_preference_and_major_pool_fallback(monkeypatch):
+    strategy, bars = _armed(monkeypatch)
+    swept = strategy._sweep["zone"]
+    now = bars[-1].timestamp
+
+    # Case A: Session level exists (PDH at 118.0) and major liquidity pool exists (level 130.0, strength 5.0)
+    pdh = _zone(name="pdh", level=118.0, direction="long", available_at=now, zone_type="session_level", strength=1.0)
+    liq_major = _zone(name="liq", level=130.0, direction="long", available_at=now, zone_type="liquidity", strength=5.0)
+    strategy._engine.zones = [swept, pdh, liq_major]
+
+    strategy.target_mode = "session_level"
+    sig_session = strategy._candidate(len(bars) - 1)
+    assert sig_session is not None
+    assert sig_session.target == 118.0  # Prefers session level over higher strength liquidity pool
+
+    # Case B: No session level beyond entry, falls back to major_pool
+    liq_a = _zone(name="liq_a", level=120.0, direction="long", available_at=now, zone_type="liquidity", strength=1.0)
+    liq_b = _zone(name="liq_b", level=130.0, direction="long", available_at=now, zone_type="liquidity", strength=4.0)
+    strategy._engine.zones = [swept, liq_a, liq_b]
+    strategy._sweep = {"zone": swept, "direction": "long", "index": 20, "extreme": 90.0}
+    strategy._choch = {"index": 22, "level": 100.0}
+    sig_fallback = strategy._candidate(len(bars) - 1)
+    assert sig_fallback is not None
+    assert sig_fallback.target == 130.0  # Fell back to major_pool (highest strength)
+
+
+def test_target_variants_determinism():
+    bars = synthetic_bars(160, seed=83, interval_seconds=300)
+    config = rv1.reversal_v1_config()
+    for mode in ("nearest_pool", "major_pool", "session_level"):
+        strat1 = rv1.ReversalV1Strategy(target_mode=mode)
+        strat2 = rv1.ReversalV1Strategy(target_mode=mode)
+        res1 = run_backtest(bars, strat1, config)
+        res2 = run_backtest(bars, strat2, config)
+        proj = lambda r: [(t.r_result, t.entry_time, t.exit_time, t.target_price, t.exit_reason) for t in r.trades]
+        assert proj(res1) == proj(res2), f"Non-deterministic runs for {mode}"
+        assert strat1.decisions == strat2.decisions, f"Non-deterministic decisions for {mode}"
