@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "title": "Preregistro congelado — Bloque S2-Multi: Runner Multi-Cuenta Fantasma en Replay",
+    "block_id": "S2-multi",
+    "preregistered_at_utc": "2026-09-17T21:25:00+00:00",
+    "git_branch": "bloque-s2-multi",
+    "base_commit": "f1bb7d4",
+    "mode": "replay",
+    "offline_guarantee": true,
+    "live_api_disabled": true,
+    "live_execution_enabled": false
+  },
+  "market_data_feed": {
+    "symbol": "MNQ",
+    "timeframe": "M5",
+    "source_file": "E:/FARS-LAB/databento.zip -> databento/MNQ_M5.csv",
+    "sample_bars": 500,
+    "simulated_session_window": "18:00 - 22:00 ET (continuous replay stream)",
+    "description": "Stream único de barras M5 canónicas que alimenta el bus de eventos"
+  },
+  "strategy": {
+    "name": "SMC-FVG MNQ (arm atr_k050)",
+    "adapter": "RealtimeStrategyAdapter",
+    "source": "lab_artifacts.m8_protocol.filters.M8FilteredStrategy",
+    "signal_dispatch": "Fan-out 1 a 3: cada señal generada por la estrategia se envía simultáneamente a las 3 cuentas fantasma"
+  },
+  "accounts_mapping": [
+    {
+      "account_id": "topstep-50k-ghost",
+      "account_name": "Topstep 50K Express Ghost",
+      "starting_balance": 50000.0,
+      "profit_target": 3000.0,
+      "max_drawdown": 2000.0,
+      "daily_loss_limit": 1000.0,
+      "trailing_mode": "trailing",
+      "lock_ceiling": 50000.0,
+      "max_contracts": 50,
+      "sizing": {
+        "mode": "risk_fraction",
+        "risk_pct": 0.005,
+        "nominal_risk_dollars": 250.0,
+        "max_micros": 50
+      },
+      "rules_source": "Topstep Trading Combine 50K (help.topstep.com)"
+    },
+    {
+      "account_id": "topstep-100k-ghost",
+      "account_name": "Topstep 100K Express Ghost",
+      "starting_balance": 100000.0,
+      "profit_target": 6000.0,
+      "max_drawdown": 3000.0,
+      "daily_loss_limit": 2000.0,
+      "trailing_mode": "trailing",
+      "lock_ceiling": 100000.0,
+      "max_contracts": 100,
+      "sizing": {
+        "mode": "risk_fraction",
+        "risk_pct": 0.005,
+        "nominal_risk_dollars": 500.0,
+        "max_micros": 100
+      },
+      "rules_source": "Topstep Trading Combine 100K (help.topstep.com)"
+    },
+    {
+      "account_id": "topstep-150k-ghost",
+      "account_name": "Topstep 150K Express Ghost",
+      "starting_balance": 150000.0,
+      "profit_target": 9000.0,
+      "max_drawdown": 4500.0,
+      "daily_loss_limit": 3000.0,
+      "trailing_mode": "trailing",
+      "lock_ceiling": 150000.0,
+      "max_contracts": 150,
+      "sizing": {
+        "mode": "risk_fraction",
+        "risk_pct": 0.005,
+        "nominal_risk_dollars": 750.0,
+        "max_micros": 150
+      },
+      "rules_source": "Topstep Trading Combine 150K (help.topstep.com)"
+    }
+  ],
+  "execution_assumptions": {
+    "engine": "PaperExecutionAdapter",
+    "commission_rt_mnq": 1.00,
+    "slippage_points": 0.25,
+    "dollar_per_point": 2.0
+  },
+  "deliverables": [
+    "preregistro.json",
+    "session_runner_multi.py",
+    "metrics_multi.json",
+    "comparativa_cuentas.md",
+    "manifest.json",
+    "INFORME.md",
+    "BLOCKERS.md"
+  ]
+}

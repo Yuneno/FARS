@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "block_id": "S2-multi",
+    "title": "Runner 3 Cuentas Fantasma en Replay",
+    "generated_at_utc": "2026-09-17T21:28:57.771124+00:00",
+    "repo_root": "E:/FARS-LAB/FARS",
+    "git_branch": "bloque-s2-multi"
+  },
+  "artifacts": {
+    "BLOCKERS.md": {
+      "sha256": "9b21d55a3adaa5c90115115a3816599a83f66f8bf2c45636414e2cb41b592e2b",
+      "size_bytes": 825
+    },
+    "comparativa_cuentas.md": {
+      "sha256": "bcdb7eb74185a80e7f751f2f81c77cdd6bf2a50920f2e141f5cf83e07384cc90",
+      "size_bytes": 2328
+    },
+    "INFORME.md": {
+      "sha256": "31f24adfb0869ab50b5edb0e131410928a8dc12542a76a59358e028fa2fe0476",
+      "size_bytes": 2534
+    },
+    "metrics_multi.json": {
+      "sha256": "11e3fd740d6c64e6f7460c15c70d6638f5f82262a4ebe5d2197d04ecc8c8928b",
+      "size_bytes": 2620
+    },
+    "preregistro.json": {
+      "sha256": "933d62e7354b495f10aa0d3bd51b3022116b44d20577bc58b3307b4b33686cd5",
+      "size_bytes": 3084
+    },
+    "session_runner_multi.py": {
+      "sha256": "b3461e04e76d2fe2f732ff218d6255a044a675b1807d80392c91c06b9537c155",
+      "size_bytes": 30776
+    }
+  }
+}

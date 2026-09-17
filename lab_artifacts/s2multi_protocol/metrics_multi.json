@@ -1,0 +1,89 @@
+{
+  "mode": "replay",
+  "bars_processed": 500,
+  "signals_generated": 18,
+  "accounts": {
+    "50k": {
+      "account_id": "topstep-50k-ghost",
+      "account_name": "Topstep 50K Express Ghost",
+      "starting_balance": 50000.0,
+      "final_balance": 50805.37,
+      "final_equity": 50805.37,
+      "net_pnl": 805.37,
+      "max_drawdown_dollars": 304.85,
+      "max_drawdown_pct": 0.61,
+      "closed_trades_count": 17,
+      "winning_trades": 7,
+      "losing_trades": 10,
+      "win_rate_pct": 41.2,
+      "signals_received": 18,
+      "signals_approved": 17,
+      "signals_denied": 1,
+      "denial_reasons": {
+        "POSITION_ALREADY_OPEN": 1
+      },
+      "orders_submitted": 17,
+      "execution_reports": 17,
+      "final_status": "active",
+      "profit_target": 3000.0,
+      "max_loss_limit": 2000.0,
+      "target_reached": false,
+      "account_blown": false
+    },
+    "100k": {
+      "account_id": "topstep-100k-ghost",
+      "account_name": "Topstep 100K Express Ghost",
+      "starting_balance": 100000.0,
+      "final_balance": 101698.12,
+      "final_equity": 101698.12,
+      "net_pnl": 1698.12,
+      "max_drawdown_dollars": 521.04,
+      "max_drawdown_pct": 0.52,
+      "closed_trades_count": 17,
+      "winning_trades": 7,
+      "losing_trades": 10,
+      "win_rate_pct": 41.2,
+      "signals_received": 18,
+      "signals_approved": 17,
+      "signals_denied": 1,
+      "denial_reasons": {
+        "POSITION_ALREADY_OPEN": 1
+      },
+      "orders_submitted": 17,
+      "execution_reports": 17,
+      "final_status": "active",
+      "profit_target": 6000.0,
+      "max_loss_limit": 3000.0,
+      "target_reached": false,
+      "account_blown": false
+    },
+    "150k": {
+      "account_id": "topstep-150k-ghost",
+      "account_name": "Topstep 150K Express Ghost",
+      "starting_balance": 150000.0,
+      "final_balance": 152503.82,
+      "final_equity": 152503.82,
+      "net_pnl": 2503.82,
+      "max_drawdown_dollars": 825.89,
+      "max_drawdown_pct": 0.55,
+      "closed_trades_count": 17,
+      "winning_trades": 7,
+      "losing_trades": 10,
+      "win_rate_pct": 41.2,
+      "signals_received": 18,
+      "signals_approved": 17,
+      "signals_denied": 1,
+      "denial_reasons": {
+        "POSITION_ALREADY_OPEN": 1
+      },
+      "orders_submitted": 17,
+      "execution_reports": 17,
+      "final_status": "active",
+      "profit_target": 9000.0,
+      "max_loss_limit": 4500.0,
+      "target_reached": false,
+      "account_blown": false
+    }
+  },
+  "reconstructed_events_count": 677
+}
