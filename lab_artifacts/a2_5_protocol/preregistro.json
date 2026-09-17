@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "title": "Preregistro congelado — Bloque A2.5: Auditoria de Ambiguedad Intrabarra (M5 vs M1)",
+    "block_id": "A2.5",
+    "preregistered_at_utc": "2026-09-17T21:30:00+00:00",
+    "git_branch": "bloque-a2-5-intrabar",
+    "base_commit": "f1bb7d4",
+    "repo_root": "E:/FARS-LAB/FARS",
+    "mode": "offline",
+    "offline_guarantee": true
+  },
+  "datasets": {
+    "m5_source": "E:/FARS-LAB/databento.zip -> databento/MNQ_M5.csv",
+    "m1_source": "E:/FARS-LAB/databento.zip -> databento/MNQ_M1.csv",
+    "start_date": "2019-05-06",
+    "market": "MNQ",
+    "dollar_per_point": 2.0,
+    "commission_per_side": 0.62,
+    "slippage_points": 0.25
+  },
+  "evaluated_strategies": [
+    {
+      "id": "smc_fvg",
+      "name": "SMC-FVG (Fair Value Gap)",
+      "strategy_class": "src.backtest.smc_fvg.SmcFvgStrategy",
+      "config_function": "src.backtest.smc_fvg.smc_fvg_config",
+      "parameters": {
+        "min_risk_pts": 8.0,
+        "discrete_partial_contracts": true
+      }
+    },
+    {
+      "id": "emas",
+      "name": "EMAS (Cruzamiento de Medias Exponenciales)",
+      "strategy_class": "src.backtest.emas.EmasStrategy",
+      "config_function": "src.backtest.emas.emas_config",
+      "parameters": {
+        "discrete_partial_contracts": true
+      }
+    }
+  ],
+  "ambiguity_definitions": {
+    "m5_ambiguous_condition": "Barra M5 donde tanto Take Profit (TP) como Stop Loss (SL) caen dentro del rango [low, high]",
+    "conservative_bound": "Ante ambigüedad sin M1 o con ambigüedad residual en M1, se asume stop_loss primero",
+    "m1_causal_resolution": "Inspección cronológica de las barras M1 constituyentes: el primer nivel tocado determina el fill real"
+  },
+  "research_questions": [
+    {
+      "id": "Q1",
+      "question": "¿Cual es el porcentaje de trades ambiguos en SMC-FVG y en EMAS?"
+    },
+    {
+      "id": "Q2",
+      "question": "¿Cual es el delta de PnL entre resolver de forma conservadora (SL primero) vs resolucion real con M1?"
+    },
+    {
+      "id": "Q3",
+      "question": "¿El edge de SMC-FVG depende del supuesto de fill o se mantiene positivo bajo la cota conservadora?"
+    }
+  ],
+  "deliverables": [
+    "preregistro.json",
+    "run_a2_5.py",
+    "metrics_ambiguity.json",
+    "INFORME.md",
+    "BLOCKERS.md",
+    "manifest.json"
+  ]
+}

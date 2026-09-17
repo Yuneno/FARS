@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "block_id": "A2.5",
+    "title": "Auditoria de Ambiguedad Intrabarra (M5 vs M1)",
+    "generated_at_utc": "2026-09-17T21:35:03.399868+00:00",
+    "repo_root": "E:/FARS-LAB/FARS",
+    "git_branch": "bloque-a2-5-intrabar"
+  },
+  "artifacts": {
+    "BLOCKERS.md": {
+      "sha256": "d35b504699d08bc5fd386f70525e46fc9ae843d0588f3fc658f32277dc5e5e44",
+      "size_bytes": 678
+    },
+    "INFORME.md": {
+      "sha256": "a80e77c41a35f254d63d5cecd6bfda0b74b1198b0a88b639bcfb9bf85f855d4d",
+      "size_bytes": 4720
+    },
+    "metrics_ambiguity.json": {
+      "sha256": "b4528b6e9c46e2f4bcfd4cc3f50f5fba06acfa8d7359d3b3e68f891ad8a7bf08",
+      "size_bytes": 6198
+    },
+    "preregistro.json": {
+      "sha256": "93c30cdfb8adbf85dce3e6e28e9d820c6d9349677409b5829c2f0a3e82a85fa8",
+      "size_bytes": 2306
+    },
+    "run_a2_5.py": {
+      "sha256": "0db94b6a5adfbeaa27c61ea441a4011f133c7e7f187d58ab571423838ca6d686",
+      "size_bytes": 20005
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "metadata": {
+    "block_id": "A2.5",
+    "title": "Auditoria de Ambiguedad Intrabarra M5 vs M1",
+    "ran_at_utc": "2026-09-17T21:34:35.590931+00:00",
+    "total_m5_bars": 518237,
+    "friction": "commission $0.62/side, slippage 0.25 pt, discrete partials True",
+    "canonical_period": "2019-05-06 a 2026-09-03"
+  },
+  "benchmarks": {
+    "smc_fvg_canonical": {
+      "strategy_name": "SMC-FVG",
+      "n_trades": 5973,
+      "ambiguous_bars_count": 622,
+      "ambiguous_bars_pct": 10.4135,
+      "m1_bars_extracted": 3110,
+      "m1_resolution": {
+        "resolved_by_m1_target": 449,
+        "resolved_by_m1_target_pct": 72.19,
+        "resolved_by_m1_stop": 103,
+        "resolved_by_m1_stop_pct": 16.56,
+        "residual_ambiguity": 70,
+        "residual_ambiguity_pct": 11.25
+      },
+      "metrics_conservative": {
+        "net_pnl": 314391.94,
+        "win_rate_pct": 58.93,
+        "profit_factor": 1.2397,
+        "max_drawdown_pct": 14.09,
+        "expectancy": 52.64
+      },
+      "metrics_m1_resolved": {
+        "net_pnl": 801927.44,
+        "win_rate_pct": 65.91,
+        "profit_factor": 1.7379,
+        "max_drawdown_pct": 6.47,
+        "expectancy": 134.26
+      },
+      "delta": {
+        "net_pnl": 487535.5,
+        "win_rate_pct": 6.98,
+        "profit_factor": 0.4982
+      },
+      "timing_seconds": {
+        "pass1_conservative": 0.94,
+        "m1_extraction": 7.75,
+        "pass2_m1_resolved": 0.93
+      }
+    },
+    "emas_canonical": {
+      "strategy_name": "EMAS",
+      "n_trades": 5100,
+      "ambiguous_bars_count": 15,
+      "ambiguous_bars_pct": 0.2941,
+      "m1_bars_extracted": 75,
+      "m1_resolution": {
+        "resolved_by_m1_target": 5,
+        "resolved_by_m1_target_pct": 33.33,
+        "resolved_by_m1_stop": 3,
+        "resolved_by_m1_stop_pct": 20.0,
+        "residual_ambiguity": 7,
+        "residual_ambiguity_pct": 46.67
+      },
+      "metrics_conservative": {
+        "net_pnl": -11494.0,
+        "win_rate_pct": 50.94,
+        "profit_factor": 0.9912,
+        "max_drawdown_pct": 100.51,
+        "expectancy": -2.25
+      },
+      "metrics_m1_resolved": {
+        "net_pnl": -7394.5,
+        "win_rate_pct": 50.94,
+        "profit_factor": 0.9943,
+        "max_drawdown_pct": 97.36,
+        "expectancy": -1.45
+      },
+      "delta": {
+        "net_pnl": 4099.5,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0031
+      },
+      "timing_seconds": {
+        "pass1_conservative": 2.34,
+        "m1_extraction": 7.44,
+        "pass2_m1_resolved": 2.24
+      }
+    },
+    "smc_fvg_walkforward_oos": {
+      "total_oos_trades": 3619,
+      "total_ambiguous_bars": 391,
+      "total_ambiguous_pct": 10.8,
+      "total_pnl_conservative": 179587.24,
+      "total_pnl_m1_resolved": 480040.74,
+      "total_delta_pnl": 300453.5,
+      "folds": [
+        {
+          "fold_id": 0,
+          "trades": 408,
+          "ambiguous_bars": 41,
+          "ambiguous_pct": 10.05,
+          "net_pnl_conservative": 27277.16,
+          "net_pnl_m1_resolved": 62577.66,
+          "delta_pnl": 35300.5,
+          "tp_resolved": 33,
+          "sl_resolved": 5
+        },
+        {
+          "fold_id": 1,
+          "trades": 297,
+          "ambiguous_bars": 27,
+          "ambiguous_pct": 9.09,
+          "net_pnl_conservative": 3268.08,
+          "net_pnl_m1_resolved": 24126.58,
+          "delta_pnl": 20858.5,
+          "tp_resolved": 19,
+          "sl_resolved": 7
+        },
+        {
+          "fold_id": 2,
+          "trades": 282,
+          "ambiguous_bars": 15,
+          "ambiguous_pct": 5.32,
+          "net_pnl_conservative": 6736.0,
+          "net_pnl_m1_resolved": 19295.0,
+          "delta_pnl": 12559.0,
+          "tp_resolved": 11,
+          "sl_resolved": 3
+        },
+        {
+          "fold_id": 3,
+          "trades": 300,
+          "ambiguous_bars": 30,
+          "ambiguous_pct": 10.0,
+          "net_pnl_conservative": 16585.26,
+          "net_pnl_m1_resolved": 37760.76,
+          "delta_pnl": 21175.5,
+          "tp_resolved": 20,
+          "sl_resolved": 7
+        },
+        {
+          "fold_id": 4,
+          "trades": 494,
+          "ambiguous_bars": 47,
+          "ambiguous_pct": 9.51,
+          "net_pnl_conservative": 27748.12,
+          "net_pnl_m1_resolved": 61930.12,
+          "delta_pnl": 34182.0,
+          "tp_resolved": 30,
+          "sl_resolved": 9
+        },
+        {
+          "fold_id": 5,
+          "trades": 582,
+          "ambiguous_bars": 62,
+          "ambiguous_pct": 10.65,
+          "net_pnl_conservative": 51241.92,
+          "net_pnl_m1_resolved": 100576.42,
+          "delta_pnl": 49334.5,
+          "tp_resolved": 46,
+          "sl_resolved": 8
+        },
+        {
+          "fold_id": 6,
+          "trades": 499,
+          "ambiguous_bars": 44,
+          "ambiguous_pct": 8.82,
+          "net_pnl_conservative": 31596.32,
+          "net_pnl_m1_resolved": 64443.82,
+          "delta_pnl": 32847.5,
+          "tp_resolved": 29,
+          "sl_resolved": 12
+        },
+        {
+          "fold_id": 7,
+          "trades": 757,
+          "ambiguous_bars": 125,
+          "ambiguous_pct": 16.51,
+          "net_pnl_conservative": 15134.38,
+          "net_pnl_m1_resolved": 109330.38,
+          "delta_pnl": 94196.0,
+          "tp_resolved": 86,
+          "sl_resolved": 19
+        }
+      ]
+    }
+  },
+  "synthesis": {
+    "smc_fvg_ambiguous_rate_pct": 10.4135,
+    "emas_ambiguous_rate_pct": 0.2941,
+    "smc_fvg_delta_pnl_usd": 487535.5,
+    "emas_delta_pnl_usd": 4099.5,
+    "edge_depends_on_fill_assumption": false,
+    "explanation": "El edge de SMC-FVG NO depende del supuesto de fill para ser positivo: incluso bajo la cota conservadora (donde el 100% de las barras ambiguas se asumen como stop_loss), SMC-FVG genera +$314,391.94 USD (PF 1.2397). Sin embargo, la magnitud real del PnL está severamente penalizada por la cota conservadora, ya que el 72.2% de las barras ambiguas tocan realmente Take Profit primero en M1, sumando un delta de +$487,535.50 USD adicionales."
+  }
+}
