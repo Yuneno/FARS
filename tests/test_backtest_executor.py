@@ -72,6 +72,17 @@ class _FixedDistanceLong:
         return Signal("long", 0.0, 10.0, 20.0, stop_target_as_points=True)
 
 
+class _FixedDistanceShort:
+    def __init__(self):
+        self.fired = False
+
+    def evaluate(self, history):
+        if self.fired or not history:
+            return None
+        self.fired = True
+        return Signal("short", 0.0, 10.0, 20.0, stop_target_as_points=True)
+
+
 class _EveryEligibleBar:
     def evaluate(self, history):
         return Signal("long", 0.0, 1.0, 1.0, stop_target_as_points=True)
@@ -248,6 +259,100 @@ def test_partial_tp_exact_half_then_break_even_stop_is_half_r():
     assert trade.gross_pnl == 10.0
     assert trade.r_result == 0.5
     assert trade.exit_reason == "break_even_stop"
+
+
+def test_partial_tp1_before_target_same_bar_long():
+    """In a long trade, when a single bar crosses both TP1 and Target without touching stop,
+    TP1 (1R) must be booked on the partial fraction before closing the remainder at Target (2R),
+    yielding exactly 1.5R gross return rather than full 2.0R."""
+    bars = [
+        _bar(_min(0), 100, 101, 99, 100),
+        # Entry bar reaches 125, crossing TP1 (110) and Target (120) in the same candle; low 99 leaves SL (90) untouched
+        _bar(_min(1), 100, 125, 99, 122),
+    ]
+    config = BacktestConfig(
+        initial_balance=1_000.0,
+        risk_per_trade=0.02,  # $20 budget = 10 pts * $2/pt * 1 contract
+        dollar_per_point=2.0,
+        fixed_quantity=1,
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        partial_take_profit_fraction=0.5,
+    )
+    result = run_backtest(bars, _FixedDistanceLong(), config)
+
+    assert result.n_trades == 1
+    trade = result.trades[0]
+    assert trade.exit_reason == "take_profit"
+    assert trade.r_result == 1.5
+    assert trade.gross_pnl == 30.0  # 0.5 * 10 * 2 + 0.5 * 20 * 2 = 10 + 20 = 30
+    assert trade.exit_price == 115.0  # Volume-weighted exit: entry + 15.0 pts
+
+
+def test_partial_tp1_before_target_same_bar_short():
+    """Gemelo simetrico en corto: cuando una vela cruza TP1 y Target simultaneamente,
+    TP1 (1R) se ejecuta primero para la fraccion parcial y el resto al Target (2R),
+    fijando 1.5R de retorno y evitando la ejecucion al 100% en Target."""
+    bars = [
+        _bar(_min(0), 100, 101, 99, 100),
+        # Entry bar drops to 75, crossing TP1 (90) and Target (80) in the same candle; high 101 leaves SL (110) untouched
+        _bar(_min(1), 100, 101, 75, 78),
+    ]
+    config = BacktestConfig(
+        initial_balance=1_000.0,
+        risk_per_trade=0.02,
+        dollar_per_point=2.0,
+        fixed_quantity=1,
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        partial_take_profit_fraction=0.5,
+    )
+    result = run_backtest(bars, _FixedDistanceShort(), config)
+
+    assert result.n_trades == 1
+    trade = result.trades[0]
+    assert trade.exit_reason == "take_profit"
+    assert trade.r_result == 1.5
+    assert trade.gross_pnl == 30.0
+    assert trade.exit_price == 85.0  # Volume-weighted exit: entry - 15.0 pts
+
+
+def test_partial_tp1_before_target_same_bar_parity_with_sequential():
+    """Fija la invariante de paridad: el resultado de alcanzar TP1 y Target en la MISMA vela
+    es exactamente equivalente al resultado de alcanzarlos secuencialmente en VELAS DISTINTAS,
+    tanto en contratos continuos como en contratos discretos enteros."""
+    config_disc = BacktestConfig(
+        initial_balance=1_000.0,
+        risk_per_trade=0.04,  # $40 budget = 10 pts * $2/pt * 2 contracts
+        dollar_per_point=2.0,
+        fixed_quantity=2,
+        commission_per_side=0.0,
+        slippage_points=0.0,
+        partial_take_profit_fraction=0.5,
+        discrete_partial_contracts=True,
+    )
+    # Escenario A: TP1 en barra 1 (high 112), Target en barra 2 (high 122)
+    bars_seq = [
+        _bar(_min(0), 100, 101, 99, 100),
+        _bar(_min(1), 100, 112, 99, 110),
+        _bar(_min(2), 110, 122, 109, 120),
+    ]
+    # Escenario B: TP1 y Target alcanzados en la misma barra 1 (high 125)
+    bars_same = [
+        _bar(_min(0), 100, 101, 99, 100),
+        _bar(_min(1), 100, 125, 99, 122),
+    ]
+    res_seq = run_backtest(bars_seq, _FixedDistanceLong(), config_disc)
+    res_same = run_backtest(bars_same, _FixedDistanceLong(), config_disc)
+
+    t_seq = res_seq.trades[0]
+    t_same = res_same.trades[0]
+
+    assert t_same.gross_pnl == t_seq.gross_pnl == 60.0  # 1 contr @ 10pts + 1 contr @ 20pts = 20 + 40 = $60
+    assert t_same.exit_price == t_seq.exit_price == 115.0
+    assert t_same.r_result == t_seq.r_result == 1.5
+    assert t_same.effective_r == t_seq.effective_r == 1.5
+    assert t_same.exit_reason == t_seq.exit_reason == "take_profit"
 
 
 def test_pending_limit_expires_after_exact_wait_without_trade():
