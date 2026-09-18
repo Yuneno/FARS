@@ -33,15 +33,15 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 
 | Bloque | Qué falta | Siguiente paso |
 |---|---|---|
-| **S2** | sesión fantasma RTH con 50k/100k/150k + curva evolutiva | encargo listo: `E:\FARS-LAB\FARS_LAB_GEMINI_ENCARGO_BLOQUE_S2_CUENTA_FANTASMA.md` (hay una prueba de fontanería nocturna ya commiteada: `s2_protocol/`) |
+| **S2** | sesión fantasma RTH con 50k/100k/150k + curva evolutiva | 🟡 **construido por Gemini** en `bloque-s2-multi` (`s2multi_protocol/session_runner_multi.py`, validado en replay) — **SIN AUDITAR**; falta la corrida en vivo en RTH. Prueba de fontanería nocturna commiteada en `s2_protocol/` |
 | **RT-9** | órdenes reales en cuenta **Practice** (place/cancel/search + brackets + kill-switch + protocolo de aceptación) | encargo por escribir; antes: respuesta de Juanca sobre cómo ejecuta Kai (Rithmic) y **cuenta Practice limpia** creada por Ricardo |
-| **M10** | P(pasar) bajo reglas de Topstep (50k/100k/150k), control aleatorio, tabla de coste del combine | encargo listo: `FARS_LAB_GEMINI_ENCARGO_BLOQUE_M10_EVALUACION.md` |
+| **M10** | P(pasar) bajo reglas de Topstep (50k/100k/150k), control aleatorio, tabla de coste del combine | 🟡 **medido por Gemini** en `bloque-m10-evaluacion`: veredicto **NO PAGAR** — C1 29,90 % vs control aleatorio 29,55 % (el azar empata; techo C2 36-40 %; ~3,07 intentos ≈ $150-300). **SIN AUDITAR** |
 | **M11** | régimen + gestión de salida (la única pregunta sin cerrar); candidata declarada `EMA + zona + liquidez` | encargo por escribir (incluye el corte horario RTH/noche/Asia como insumo preregistrado) |
 | **Fase 11D** | primer adapter de proveedor | contrato aprobado, sin implementar |
 | **Fases 12/13** | validación temporal y estrés | contratos aprobados; **parámetros diferidos** (decidir antes de implementar) |
 | **Fase 14** | reporting operativo (sin ejecución) | contrato aprobado, sin implementar |
 | **Entrega a Kai** | 5 docs `FARS_A_KAI_*` (motor de zonas, CPCV/PBO/DSR, `KAI_APEX_SPEC`, discrepancias de port, qué no se comparte) | cuando Ricardo diga; ahora **también aplica la vía inversa**: piezas de Kai que sirvan se portan a FARS con atribución |
-| **Menores** | (a) test de regresión del orden de parciales (`tp1` antes de `tp`); (b) auditar ambigüedad intrabarra de SMC-FVG y EMAS | sin fecha; no bloquean |
+| **Menores** | (a) test de regresión del orden de parciales (`tp1` antes de `tp`); (b) auditar ambigüedad intrabarra de SMC-FVG y EMAS → 🟡 **hecho por Gemini** en `bloque-a2-5-intrabar` (`a2_5_protocol/`), **SIN AUDITAR** | (a) sin fecha; no bloquean |
 
 ## 3. Aviso aceptado (no bloquea)
 
@@ -56,6 +56,7 @@ toca sin pedirlo**.
   otro con atribución** (dejó de ser "solo lectura"). Su dataset sigue sin mezclarse con el nuestro y cada
   número se mide en el canónico propio.
 - Un solo escritor por repo y bloque · cola de encargos de a uno · **nada se promueve sin revisión**.
+- **Los tres bloques que Gemini cerró el 17-sep por la tarde (M10, S2-multi, A2.5 intrabar) están commiteados en su rama y SIN AUDITAR**, por decisión explícita de Ricardo (ahorro de tokens). No cuentan como verificados y **no se mergean** hasta pasar revisión; la auditoría queda pendiente y anotada aquí.
 - Umbrales de riesgo **normalizados por ATR(14)** con `k` declarado; nada de puntos nominales sin justificar.
 - Credenciales solo en `.env` local · sin push sin decisión de Ricardo · prohibido citar el 79,4 % del combo
   EMAS+SMC-FVG (retirado upstream por fill fantasma).
