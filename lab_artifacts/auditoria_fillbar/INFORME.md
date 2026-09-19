@@ -117,6 +117,15 @@ La puerta de control fue superada con **100% de reproducibilidad**.
 | | Limpio A1 | 1,763 | 44.47% | **-13.40** | -0.2838 | **-0.1958** | 0.586 | -500.31 | **0/8** | 0 | 0.0% | 0.0% | **INFLADO** |
 | | Limpio A2 | 1,763 | 44.70% | **-13.17** | -0.2810 | **-0.1930** | 0.588 | -495.48 | **0/8** | 7 | 0.9% | 0.4% | **INFLADO** |
 
+> [!NOTE]
+> **Refinamiento de Medición — Efecto Subcontado en la Columna "Fill-Bar Wins (n)" para SMC-OB:**  
+> La columna *Fill-Bar Wins (n)* registra exclusivamente los Take Profits *completos* salidos en la misma vela de la entrada (`entry_time == exit_time` con `exit_reason == "take_profit"`).  
+> En SMC-OB, al utilizar toma parcial de beneficios (`partial_take_profit_fraction = 0.5`) y desplazamiento de stop a break-even (`move_stop_to_break_even = True`), el artefacto en la vela del fill también dispara `tp1` intrabar, cerrando el 50% de la posición en ganancia y protegiendo el resto a BE en esa misma vela. Al aplicar la regla limpia A1 (anulación de `hit_tp1` en fill-bar), el número de **flips netos de trades ganadores a perdedores** es significativamente mayor que las salidas directas por TP en fill-bar:
+> - **MNQ:** 288 flips netos vs 88 salidas directas por TP (exceso de +200 trades protegidos artificialmente).
+> - **MYM:** +149 flips netos vs 84 salidas directas por TP (+65 trades adicionales).
+> - **MGC:** +195 flips netos vs 47 salidas directas por TP (+148 trades adicionales).  
+> Por tanto, el impacto desestabilizador real del defecto en SMC-OB es todavía más severo de lo que la columna de TPs directos aparenta a primera vista.
+
 ---
 
 ## 4. Mecánica del Artefacto: ¿Por qué Ocurre?
@@ -189,7 +198,7 @@ E:\FARS-LAB\.venv-fars\Scripts\python.exe lab_artifacts/auditoria_fillbar/run_fi
 ```
 
 ### 7.2 Hashes de Integridad (SHA-256)
-- `src/backtest/executor.py` (original intacto): `68a2bf16a5b28aa1d575fafe24f114c0a52dfdb0f6707328905fe4381373ea89`
+- `src/backtest/executor.py` (original base f7add46): `80dea045cc91a055cc68f12efa0dd607be401495433e18502efbbe8c36bba70d`
 - `lab_artifacts/auditoria_fillbar/executor_fillbar.py`: `874d430bbd13b943e3589d1d0b030a61ba4f4e8942e27d6004799e1831706ee0`
 - `lab_artifacts/auditoria_fillbar/diff_executor_fillbar.txt`: `7561b608b86b45f7d32f5130427353c5b04b62d0c8bebda467fae96caa17fb1c`
 - `lab_artifacts/auditoria_fillbar/control_smc_fvg.json`: generado y validado contra baseline C2.

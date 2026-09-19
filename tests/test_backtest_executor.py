@@ -270,6 +270,13 @@ def test_pending_limit_expires_after_exact_wait_without_trade():
 
 
 def test_pending_limit_fills_on_fvg_retracement_and_trades():
+    # RE-FREEZE DECLARADO (auditoria_fillbar + HERMES_REVISION_FILLBAR.md):
+    # La semántica legada asumía que el TP se resolvía en la propia vela del fill (barra 1).
+    # Con la regla limpia A1, en la vela del fill solo SL cuenta; TP se evalúa a partir de
+    # la vela siguiente.
+    # 1) En la vela del fill (bars[:2]), la posición se llena a 95.0 pero queda abierta (n_trades == 0).
+    # 2) Al llegar una vela posterior (barra 2) que cotiza el target (105.0), se preserva la
+    #    aserción legada EXACTA de ejecución a take_profit.
     bars = [
         _bar(_min(0), 100, 101, 99, 100),
         _bar(_min(1), 100, 106, 94, 100),
@@ -282,7 +289,15 @@ def test_pending_limit_fills_on_fvg_retracement_and_trades():
         pending_order_wait_bars=2,
     )
 
-    result = run_backtest(bars, _OneLimit(), config)
+    # 1. Verificación de regla limpia en vela del fill: orden llena, pero posición sigue abierta
+    result_fill = run_backtest(bars, _OneLimit(), config)
+    assert result_fill.n_trades == 0
+    assert result_fill.unresolved_positions == 1
+    assert result_fill.open_position["entry_price"] == 95.0
+
+    # 2. Aserción legada exacta preservada con vela posterior que alcanza target
+    bars_with_subsequent = bars + [_bar(_min(2), 100, 106, 99, 105)]
+    result = run_backtest(bars_with_subsequent, _OneLimit(), config)
 
     assert result.n_trades == 1
     assert result.trades[0].entry_price == 95.0

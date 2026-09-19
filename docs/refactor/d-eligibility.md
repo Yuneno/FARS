@@ -114,7 +114,7 @@ Por rigor metodológico, se hace constar lo que **no** se puede garantizar en un
 ## 6. Dictamen Final del Bloque D
 
 1. **Infraestructura Validada:** FARS cuenta ahora con un motor de cuentas único, determinista y auditado (`src/account_engine.py`), que consume directamente `src/funded_rules_v2.py` y aplica MAE M1 causal (`src/backtest/mae.py`) sobre los 2.842 trades sin duplicar reglas de negocio.
-2. **Recomendación Operativa:** Para operar en Apex Trader Funding con SMC-FVG 10.0:
+2. **Recomendación Operativa:** *(VIGENCIA REVOCADA 2026-09-19: Los trades de entrada de SMC-FVG estaban inflados por el defecto fill-bar; ver [`lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md`](file:///E:/FARS-LAB/FARS/lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md))* Para operar en Apex Trader Funding con SMC-FVG 10.0:
    - Utilizar **cuentas de 25K**.
    - Sizing recomendado: **0.1946%** ($48.65 por trade en 25K) para un riesgo mínimo de quema (2.2%) bajo un enfoque patrimonial o de horizonte flexible, o **0.4671%** ($116.77 por trade) si se busca maximizar la tasa de pase mensual (25.6% en ~21 días reales) aceptando un 6.6% de quema.
    - Descartar totalmente cuentas grandes (100K/150K) para evaluación, debido a la asimetría del ratio Target/DD que triplica el riesgo de quema.

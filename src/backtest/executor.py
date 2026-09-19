@@ -907,6 +907,14 @@ def _run_backtest_enhanced(
             hit_stop = stop >= bar.low if direction == "long" else stop <= bar.high
             hit_target = target <= bar.high if direction == "long" else target >= bar.low
             hit_tp1 = tp1 <= bar.high if direction == "long" else tp1 >= bar.low
+
+            # Fix fill-bar (auditoria_fillbar + HERMES_REVISION_FILLBAR.md):
+            # En fills de limites descansados, los extremos previos al fill no pueden
+            # acreditar TP ni tp1 en la misma vela. Solo cuenta SL; TP/tp1 evaluan desde la siguiente vela.
+            if position.get("limit_entry") and i == position["entry_index"]:
+                hit_target = False
+                hit_tp1 = False
+
             if hit_target and hit_stop:
                 intrabar_audit.ambiguous_bars_count += 1
                 intrabar_audit.ambiguous_timestamps.append(bar.timestamp)
