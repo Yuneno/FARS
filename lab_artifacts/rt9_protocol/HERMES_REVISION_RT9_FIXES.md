@@ -39,3 +39,17 @@ Verificado: `hasattr(ProjectXClient, "search_accounts") == False`; el método re
 - `session_token` es un **método** (no property): pasarlo como `token_provider` funciona correctamente (el cliente lo llama si es callable) ✓.
 - Tras el fix de 1 línea: re-correr la suite (no afecta offline) y **la ventana queda lista** (dom 17:00 CT / 18:00 ET).
 - Recordatorio operativo de la ventana: `fars-projectx doctor` → `-m src.realtime.acceptance_rt9 --live` (interactivo; sin `--yes` en la primera corrida), S2 apagado, solo cuenta Practice.
+
+---
+
+## ACTUALIZACIÓN — F1 **RESUELTO** (commit `a474eed`)
+
+Verificado por Hermes (todo offline con dobles, cero red):
+
+- **Fix aplicado:** `px_client.list_accounts()` ✓; además el live path quedó **inyectable** (`px_client/order_client/clock/log_path/report_path`) y con **test offline del camino live completo** (`test_live_acceptance_path_offline_with_doubles`) — el que habría cazado F1 sin ventana ✓.
+- **Suite realtime: 271/271** (+1 = el test nuevo).
+- **Live path completo re-corrido por Hermes con dobles reales** (ProjectXClient + PracticeOrderClient + transport mock): **7/7 PASS** — mercado abierto → cuenta verificada vía `list_accounts` real (`/api/Account/search` invocado) → 8/8 pasos → JSONL + reporte escritos.
+- **Fail-closed de mercado cerrado:** domingo 10:00 CT → exit 2 **con 0 requests** (ni toca la red) ✓.
+- **Manifiesto: 5/5 hashes resuelven** contra los blobs de `a474eed` ✓ · Mock acceptance re-corrido: PASS ✓.
+
+**Estado: RT-9 LISTO para la ventana en vivo** (dom 17:00 CT / 18:00 ET): `fars-projectx doctor` → `-m src.realtime.acceptance_rt9 --live` (interactivo), S2 apagado, solo cuenta Practice.
