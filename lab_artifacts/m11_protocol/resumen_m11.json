@@ -1,0 +1,5408 @@
+{
+  "metadata": {
+    "protocol": "Bloque M11",
+    "base_commit_sha": "f25b3537efedc570210d1d70ff1b0d96666e55e0",
+    "completed_at_utc": "2026-09-20T03:58:13.571415+00:00",
+    "selected_stage_2_winner": {
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "metrics_realista": {
+        "cell_id": "E2_C0+L_asia_realista",
+        "arm_id": "C0+L",
+        "window_id": "asia",
+        "cost_scenario": "realista",
+        "exit_variant": "S0",
+        "market": "MNQ",
+        "total_trades": 496,
+        "total_net_r": 29.8708,
+        "global_expectancy_r": 0.060223,
+        "global_profit_factor": 1.126,
+        "global_win_rate": 0.5504,
+        "positive_folds": 5,
+        "total_folds": 8,
+        "bootstrap_ci_95": [
+          -0.041969,
+          0.163072
+        ],
+        "sin_muestra": false,
+        "folds": [
+          {
+            "fold_id": 0,
+            "test_start": "2022-07-01",
+            "test_end": "2023-01-01",
+            "n_trades": 60,
+            "net_r": -5.0372,
+            "mean_er": -0.083953,
+            "win_rate": 0.4833,
+            "profit_factor": 0.8484,
+            "net_pnl": -2518.58
+          },
+          {
+            "fold_id": 1,
+            "test_start": "2023-01-01",
+            "test_end": "2023-07-01",
+            "n_trades": 68,
+            "net_r": 0.2633,
+            "mean_er": 0.003872,
+            "win_rate": 0.5294,
+            "profit_factor": 1.0076,
+            "net_pnl": 131.64
+          },
+          {
+            "fold_id": 2,
+            "test_start": "2023-07-01",
+            "test_end": "2024-01-01",
+            "n_trades": 73,
+            "net_r": 21.5291,
+            "mean_er": 0.294919,
+            "win_rate": 0.6849,
+            "profit_factor": 1.8585,
+            "net_pnl": 10764.56
+          },
+          {
+            "fold_id": 3,
+            "test_start": "2024-01-01",
+            "test_end": "2024-07-01",
+            "n_trades": 62,
+            "net_r": -2.2786,
+            "mean_er": -0.036751,
+            "win_rate": 0.5484,
+            "profit_factor": 0.9247,
+            "net_pnl": -1139.28
+          },
+          {
+            "fold_id": 4,
+            "test_start": "2024-07-01",
+            "test_end": "2025-01-01",
+            "n_trades": 73,
+            "net_r": -9.4245,
+            "mean_er": -0.129102,
+            "win_rate": 0.4932,
+            "profit_factor": 0.758,
+            "net_pnl": -4712.24
+          },
+          {
+            "fold_id": 5,
+            "test_start": "2025-01-01",
+            "test_end": "2025-07-01",
+            "n_trades": 37,
+            "net_r": 6.6596,
+            "mean_er": 0.17999,
+            "win_rate": 0.5135,
+            "profit_factor": 1.3542,
+            "net_pnl": 3329.82
+          },
+          {
+            "fold_id": 6,
+            "test_start": "2025-07-01",
+            "test_end": "2026-01-01",
+            "n_trades": 59,
+            "net_r": 9.0306,
+            "mean_er": 0.153062,
+            "win_rate": 0.5593,
+            "profit_factor": 1.3306,
+            "net_pnl": 4515.32
+          },
+          {
+            "fold_id": 7,
+            "test_start": "2026-01-01",
+            "test_end": "2026-07-01",
+            "n_trades": 64,
+            "net_r": 9.1283,
+            "mean_er": 0.142629,
+            "win_rate": 0.5625,
+            "profit_factor": 1.315,
+            "net_pnl": 4564.14
+          }
+        ]
+      }
+    },
+    "verdict": "NO_EDGE"
+  },
+  "stage_1": {
+    "E1_C0_realista": {
+      "cell_id": "E1_C0_realista",
+      "arm_id": "C0",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 2821,
+      "total_net_r": 46.0716,
+      "global_expectancy_r": 0.016332,
+      "global_profit_factor": 1.0326,
+      "global_win_rate": 0.519,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.024782,
+        0.054518
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 344,
+          "net_r": -15.6843,
+          "mean_er": -0.045594,
+          "win_rate": 0.5029,
+          "profit_factor": 0.9117,
+          "net_pnl": -7842.14
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 355,
+          "net_r": -22.9779,
+          "mean_er": -0.064726,
+          "win_rate": 0.4845,
+          "profit_factor": 0.8799,
+          "net_pnl": -11488.94
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 343,
+          "net_r": 21.7846,
+          "mean_er": 0.063512,
+          "win_rate": 0.5569,
+          "profit_factor": 1.1356,
+          "net_pnl": 10892.3
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 336,
+          "net_r": 16.5478,
+          "mean_er": 0.04925,
+          "win_rate": 0.5327,
+          "profit_factor": 1.1003,
+          "net_pnl": 8273.92
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 368,
+          "net_r": -13.9888,
+          "mean_er": -0.038013,
+          "win_rate": 0.4837,
+          "profit_factor": 0.9289,
+          "net_pnl": -6994.38
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 350,
+          "net_r": -0.5807,
+          "mean_er": -0.001659,
+          "win_rate": 0.4857,
+          "profit_factor": 0.9969,
+          "net_pnl": -290.34
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 353,
+          "net_r": 17.4717,
+          "mean_er": 0.049495,
+          "win_rate": 0.5467,
+          "profit_factor": 1.1053,
+          "net_pnl": 8735.84
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 372,
+          "net_r": 43.499,
+          "mean_er": 0.116933,
+          "win_rate": 0.5591,
+          "profit_factor": 1.2574,
+          "net_pnl": 21749.52
+        }
+      ]
+    },
+    "E1_C0_canonico": {
+      "cell_id": "E1_C0_canonico",
+      "arm_id": "C0",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 2823,
+      "total_net_r": -62.067,
+      "global_expectancy_r": -0.021986,
+      "global_profit_factor": 0.9575,
+      "global_win_rate": 0.5243,
+      "positive_folds": 3,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.063397,
+        0.017696
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 345,
+          "net_r": -28.63,
+          "mean_er": -0.082986,
+          "win_rate": 0.5072,
+          "profit_factor": 0.8446,
+          "net_pnl": -14315.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 355,
+          "net_r": -39.64,
+          "mean_er": -0.111662,
+          "win_rate": 0.4958,
+          "profit_factor": 0.8005,
+          "net_pnl": -19820.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 342,
+          "net_r": 0.044,
+          "mean_er": 0.000129,
+          "win_rate": 0.5585,
+          "profit_factor": 1.0003,
+          "net_pnl": 22.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 336,
+          "net_r": 1.912,
+          "mean_er": 0.00569,
+          "win_rate": 0.5417,
+          "profit_factor": 1.0112,
+          "net_pnl": 956.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 368,
+          "net_r": -25.851,
+          "mean_er": -0.070247,
+          "win_rate": 0.4837,
+          "profit_factor": 0.8736,
+          "net_pnl": -12925.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 350,
+          "net_r": -11.322,
+          "mean_er": -0.032349,
+          "win_rate": 0.4914,
+          "profit_factor": 0.9401,
+          "net_pnl": -5661.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 355,
+          "net_r": -0.478,
+          "mean_er": -0.001346,
+          "win_rate": 0.5465,
+          "profit_factor": 0.9973,
+          "net_pnl": -239.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 372,
+          "net_r": 41.898,
+          "mean_er": 0.112629,
+          "win_rate": 0.5699,
+          "profit_factor": 1.2465,
+          "net_pnl": 20949.0
+        }
+      ]
+    },
+    "E1_C0+Z_realista": {
+      "cell_id": "E1_C0+Z_realista",
+      "arm_id": "C0+Z",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 686,
+      "total_net_r": 40.6618,
+      "global_expectancy_r": 0.059274,
+      "global_profit_factor": 1.1242,
+      "global_win_rate": 0.5408,
+      "positive_folds": 6,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.021913,
+        0.14198
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 109,
+          "net_r": -17.2238,
+          "mean_er": -0.158017,
+          "win_rate": 0.4312,
+          "profit_factor": 0.7319,
+          "net_pnl": -8611.9
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": -11.3016,
+          "mean_er": -0.166199,
+          "win_rate": 0.4559,
+          "profit_factor": 0.7092,
+          "net_pnl": -5650.78
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 82,
+          "net_r": 10.9819,
+          "mean_er": 0.133925,
+          "win_rate": 0.5854,
+          "profit_factor": 1.3057,
+          "net_pnl": 5490.94
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 91,
+          "net_r": 18.5477,
+          "mean_er": 0.203821,
+          "win_rate": 0.5934,
+          "profit_factor": 1.4784,
+          "net_pnl": 9273.86
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 55,
+          "net_r": 3.5069,
+          "mean_er": 0.063762,
+          "win_rate": 0.5636,
+          "profit_factor": 1.1409,
+          "net_pnl": 1753.46
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 98,
+          "net_r": 6.8577,
+          "mean_er": 0.069977,
+          "win_rate": 0.5102,
+          "profit_factor": 1.1399,
+          "net_pnl": 3428.86
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 78,
+          "net_r": 8.7698,
+          "mean_er": 0.112433,
+          "win_rate": 0.5769,
+          "profit_factor": 1.2545,
+          "net_pnl": 4384.88
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 105,
+          "net_r": 20.5231,
+          "mean_er": 0.195458,
+          "win_rate": 0.619,
+          "profit_factor": 1.4983,
+          "net_pnl": 10261.56
+        }
+      ]
+    },
+    "E1_C0+Z_canonico": {
+      "cell_id": "E1_C0+Z_canonico",
+      "arm_id": "C0+Z",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 686,
+      "total_net_r": 16.196,
+      "global_expectancy_r": 0.023609,
+      "global_profit_factor": 1.0477,
+      "global_win_rate": 0.5452,
+      "positive_folds": 6,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.057725,
+        0.106977
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 109,
+          "net_r": -21.15,
+          "mean_er": -0.194037,
+          "win_rate": 0.4312,
+          "profit_factor": 0.6855,
+          "net_pnl": -10575.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": -13.248,
+          "mean_er": -0.194824,
+          "win_rate": 0.4559,
+          "profit_factor": 0.6807,
+          "net_pnl": -6624.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 82,
+          "net_r": 4.583,
+          "mean_er": 0.05589,
+          "win_rate": 0.5854,
+          "profit_factor": 1.1202,
+          "net_pnl": 2291.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 91,
+          "net_r": 18.514,
+          "mean_er": 0.203451,
+          "win_rate": 0.6154,
+          "profit_factor": 1.4804,
+          "net_pnl": 9257.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 55,
+          "net_r": 1.072,
+          "mean_er": 0.019491,
+          "win_rate": 0.5636,
+          "profit_factor": 1.0416,
+          "net_pnl": 536.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 98,
+          "net_r": 3.259,
+          "mean_er": 0.033255,
+          "win_rate": 0.5102,
+          "profit_factor": 1.0644,
+          "net_pnl": 1629.5
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 78,
+          "net_r": 5.057,
+          "mean_er": 0.064833,
+          "win_rate": 0.5769,
+          "profit_factor": 1.1401,
+          "net_pnl": 2528.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 105,
+          "net_r": 18.109,
+          "mean_er": 0.172467,
+          "win_rate": 0.6286,
+          "profit_factor": 1.4369,
+          "net_pnl": 9054.5
+        }
+      ]
+    },
+    "E1_C0+L_realista": {
+      "cell_id": "E1_C0+L_realista",
+      "arm_id": "C0+L",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 1767,
+      "total_net_r": 48.2005,
+      "global_expectancy_r": 0.027278,
+      "global_profit_factor": 1.0554,
+      "global_win_rate": 0.5269,
+      "positive_folds": 6,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.022378,
+        0.079957
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 225,
+          "net_r": -14.9122,
+          "mean_er": -0.066277,
+          "win_rate": 0.4889,
+          "profit_factor": 0.875,
+          "net_pnl": -7456.12
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 215,
+          "net_r": 3.822,
+          "mean_er": 0.017777,
+          "win_rate": 0.5163,
+          "profit_factor": 1.035,
+          "net_pnl": 1911.02
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 222,
+          "net_r": 34.9118,
+          "mean_er": 0.15726,
+          "win_rate": 0.6081,
+          "profit_factor": 1.3808,
+          "net_pnl": 17455.88
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 220,
+          "net_r": 23.4698,
+          "mean_er": 0.106681,
+          "win_rate": 0.5591,
+          "profit_factor": 1.2299,
+          "net_pnl": 11734.92
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 228,
+          "net_r": -26.6451,
+          "mean_er": -0.116865,
+          "win_rate": 0.4649,
+          "profit_factor": 0.7891,
+          "net_pnl": -13322.56
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 202,
+          "net_r": 11.5675,
+          "mean_er": 0.057265,
+          "win_rate": 0.5,
+          "profit_factor": 1.1116,
+          "net_pnl": 5783.74
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 236,
+          "net_r": 6.4661,
+          "mean_er": 0.027399,
+          "win_rate": 0.5339,
+          "profit_factor": 1.0566,
+          "net_pnl": 3233.04
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 219,
+          "net_r": 9.5206,
+          "mean_er": 0.043473,
+          "win_rate": 0.5434,
+          "profit_factor": 1.0922,
+          "net_pnl": 4760.32
+        }
+      ]
+    },
+    "E1_C0+L_canonico": {
+      "cell_id": "E1_C0+L_canonico",
+      "arm_id": "C0+L",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 1767,
+      "total_net_r": -38.449,
+      "global_expectancy_r": -0.021759,
+      "global_profit_factor": 0.9574,
+      "global_win_rate": 0.5308,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.072163,
+        0.027134
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 225,
+          "net_r": -24.638,
+          "mean_er": -0.109502,
+          "win_rate": 0.4933,
+          "profit_factor": 0.8004,
+          "net_pnl": -12319.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 215,
+          "net_r": -9.051,
+          "mean_er": -0.042098,
+          "win_rate": 0.5209,
+          "profit_factor": 0.9213,
+          "net_pnl": -4525.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 220,
+          "net_r": 19.369,
+          "mean_er": 0.088041,
+          "win_rate": 0.6091,
+          "profit_factor": 1.2024,
+          "net_pnl": 9684.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 220,
+          "net_r": 8.298,
+          "mean_er": 0.037718,
+          "win_rate": 0.5636,
+          "profit_factor": 1.0776,
+          "net_pnl": 4149.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 228,
+          "net_r": -35.495,
+          "mean_er": -0.15568,
+          "win_rate": 0.4693,
+          "profit_factor": 0.7291,
+          "net_pnl": -17747.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 202,
+          "net_r": 6.492,
+          "mean_er": 0.032139,
+          "win_rate": 0.5099,
+          "profit_factor": 1.0616,
+          "net_pnl": 3246.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 238,
+          "net_r": -7.167,
+          "mean_er": -0.030113,
+          "win_rate": 0.5336,
+          "profit_factor": 0.9404,
+          "net_pnl": -3583.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 219,
+          "net_r": 3.743,
+          "mean_er": 0.017091,
+          "win_rate": 0.5479,
+          "profit_factor": 1.0355,
+          "net_pnl": 1871.5
+        }
+      ]
+    },
+    "E1_C0+Z+L_realista": {
+      "cell_id": "E1_C0+Z+L_realista",
+      "arm_id": "C0+Z+L",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 496,
+      "total_net_r": 24.751,
+      "global_expectancy_r": 0.049901,
+      "global_profit_factor": 1.1033,
+      "global_win_rate": 0.5343,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.049407,
+        0.148965
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 84,
+          "net_r": -16.5667,
+          "mean_er": -0.197222,
+          "win_rate": 0.4048,
+          "profit_factor": 0.6808,
+          "net_pnl": -8283.34
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 44,
+          "net_r": -2.5063,
+          "mean_er": -0.056962,
+          "win_rate": 0.5,
+          "profit_factor": 0.8907,
+          "net_pnl": -1253.16
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 61,
+          "net_r": 12.2486,
+          "mean_er": 0.200797,
+          "win_rate": 0.6066,
+          "profit_factor": 1.4838,
+          "net_pnl": 6124.3
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 68,
+          "net_r": 18.4906,
+          "mean_er": 0.271921,
+          "win_rate": 0.6324,
+          "profit_factor": 1.7077,
+          "net_pnl": 9245.32
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 35,
+          "net_r": 0.1681,
+          "mean_er": 0.004803,
+          "win_rate": 0.5714,
+          "profit_factor": 1.0108,
+          "net_pnl": 84.06
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 68,
+          "net_r": 9.4161,
+          "mean_er": 0.138472,
+          "win_rate": 0.5147,
+          "profit_factor": 1.2817,
+          "net_pnl": 4708.06
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 4.2988,
+          "mean_er": 0.072862,
+          "win_rate": 0.5424,
+          "profit_factor": 1.1519,
+          "net_pnl": 2149.42
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 77,
+          "net_r": -0.7983,
+          "mean_er": -0.010367,
+          "win_rate": 0.5455,
+          "profit_factor": 0.9779,
+          "net_pnl": -399.14
+        }
+      ]
+    },
+    "E1_C0+Z+L_canonico": {
+      "cell_id": "E1_C0+Z+L_canonico",
+      "arm_id": "C0+Z+L",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 497,
+      "total_net_r": 4.671,
+      "global_expectancy_r": 0.009398,
+      "global_profit_factor": 1.0187,
+      "global_win_rate": 0.5372,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.088201,
+        0.111689
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 84,
+          "net_r": -21.086,
+          "mean_er": -0.251024,
+          "win_rate": 0.4048,
+          "profit_factor": 0.6129,
+          "net_pnl": -10543.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 44,
+          "net_r": -2.757,
+          "mean_er": -0.062659,
+          "win_rate": 0.5,
+          "profit_factor": 0.8868,
+          "net_pnl": -1378.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 61,
+          "net_r": 7.75,
+          "mean_er": 0.127049,
+          "win_rate": 0.6066,
+          "profit_factor": 1.2896,
+          "net_pnl": 3875.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 69,
+          "net_r": 15.837,
+          "mean_er": 0.229522,
+          "win_rate": 0.6377,
+          "profit_factor": 1.5738,
+          "net_pnl": 7918.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 35,
+          "net_r": -1.318,
+          "mean_er": -0.037657,
+          "win_rate": 0.5714,
+          "profit_factor": 0.9181,
+          "net_pnl": -659.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 68,
+          "net_r": 6.928,
+          "mean_er": 0.101882,
+          "win_rate": 0.5147,
+          "profit_factor": 1.2012,
+          "net_pnl": 3464.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 1.297,
+          "mean_er": 0.021983,
+          "win_rate": 0.5424,
+          "profit_factor": 1.0437,
+          "net_pnl": 648.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 77,
+          "net_r": -1.98,
+          "mean_er": -0.025714,
+          "win_rate": 0.5584,
+          "profit_factor": 0.9454,
+          "net_pnl": -990.0
+        }
+      ]
+    }
+  },
+  "stage_2": {
+    "E2_C0_full_realista": {
+      "cell_id": "E2_C0_full_realista",
+      "arm_id": "C0",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 2821,
+      "total_net_r": 46.0716,
+      "global_expectancy_r": 0.016332,
+      "global_profit_factor": 1.0326,
+      "global_win_rate": 0.519,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.024782,
+        0.054518
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 344,
+          "net_r": -15.6843,
+          "mean_er": -0.045594,
+          "win_rate": 0.5029,
+          "profit_factor": 0.9117,
+          "net_pnl": -7842.14
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 355,
+          "net_r": -22.9779,
+          "mean_er": -0.064726,
+          "win_rate": 0.4845,
+          "profit_factor": 0.8799,
+          "net_pnl": -11488.94
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 343,
+          "net_r": 21.7846,
+          "mean_er": 0.063512,
+          "win_rate": 0.5569,
+          "profit_factor": 1.1356,
+          "net_pnl": 10892.3
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 336,
+          "net_r": 16.5478,
+          "mean_er": 0.04925,
+          "win_rate": 0.5327,
+          "profit_factor": 1.1003,
+          "net_pnl": 8273.92
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 368,
+          "net_r": -13.9888,
+          "mean_er": -0.038013,
+          "win_rate": 0.4837,
+          "profit_factor": 0.9289,
+          "net_pnl": -6994.38
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 350,
+          "net_r": -0.5807,
+          "mean_er": -0.001659,
+          "win_rate": 0.4857,
+          "profit_factor": 0.9969,
+          "net_pnl": -290.34
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 353,
+          "net_r": 17.4717,
+          "mean_er": 0.049495,
+          "win_rate": 0.5467,
+          "profit_factor": 1.1053,
+          "net_pnl": 8735.84
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 372,
+          "net_r": 43.499,
+          "mean_er": 0.116933,
+          "win_rate": 0.5591,
+          "profit_factor": 1.2574,
+          "net_pnl": 21749.52
+        }
+      ]
+    },
+    "E2_C0_full_canonico": {
+      "cell_id": "E2_C0_full_canonico",
+      "arm_id": "C0",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 2823,
+      "total_net_r": -62.067,
+      "global_expectancy_r": -0.021986,
+      "global_profit_factor": 0.9575,
+      "global_win_rate": 0.5243,
+      "positive_folds": 3,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.063397,
+        0.017696
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 345,
+          "net_r": -28.63,
+          "mean_er": -0.082986,
+          "win_rate": 0.5072,
+          "profit_factor": 0.8446,
+          "net_pnl": -14315.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 355,
+          "net_r": -39.64,
+          "mean_er": -0.111662,
+          "win_rate": 0.4958,
+          "profit_factor": 0.8005,
+          "net_pnl": -19820.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 342,
+          "net_r": 0.044,
+          "mean_er": 0.000129,
+          "win_rate": 0.5585,
+          "profit_factor": 1.0003,
+          "net_pnl": 22.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 336,
+          "net_r": 1.912,
+          "mean_er": 0.00569,
+          "win_rate": 0.5417,
+          "profit_factor": 1.0112,
+          "net_pnl": 956.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 368,
+          "net_r": -25.851,
+          "mean_er": -0.070247,
+          "win_rate": 0.4837,
+          "profit_factor": 0.8736,
+          "net_pnl": -12925.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 350,
+          "net_r": -11.322,
+          "mean_er": -0.032349,
+          "win_rate": 0.4914,
+          "profit_factor": 0.9401,
+          "net_pnl": -5661.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 355,
+          "net_r": -0.478,
+          "mean_er": -0.001346,
+          "win_rate": 0.5465,
+          "profit_factor": 0.9973,
+          "net_pnl": -239.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 372,
+          "net_r": 41.898,
+          "mean_er": 0.112629,
+          "win_rate": 0.5699,
+          "profit_factor": 1.2465,
+          "net_pnl": 20949.0
+        }
+      ]
+    },
+    "E2_C0_rth_realista": {
+      "cell_id": "E2_C0_rth_realista",
+      "arm_id": "C0",
+      "window_id": "rth",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 465,
+      "total_net_r": -10.5912,
+      "global_expectancy_r": -0.022777,
+      "global_profit_factor": 0.956,
+      "global_win_rate": 0.4946,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.139419,
+        0.101019
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 86,
+          "net_r": -10.3943,
+          "mean_er": -0.120864,
+          "win_rate": 0.4651,
+          "profit_factor": 0.7792,
+          "net_pnl": -5197.14
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 52,
+          "net_r": 1.4247,
+          "mean_er": 0.027398,
+          "win_rate": 0.4808,
+          "profit_factor": 1.0519,
+          "net_pnl": 712.36
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 54,
+          "net_r": -8.2401,
+          "mean_er": -0.152595,
+          "win_rate": 0.463,
+          "profit_factor": 0.7299,
+          "net_pnl": -4120.06
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 53,
+          "net_r": 1.7776,
+          "mean_er": 0.03354,
+          "win_rate": 0.5094,
+          "profit_factor": 1.067,
+          "net_pnl": 888.8
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 44,
+          "net_r": -21.461,
+          "mean_er": -0.487751,
+          "win_rate": 0.3182,
+          "profit_factor": 0.3023,
+          "net_pnl": -10730.52
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 64,
+          "net_r": -6.1302,
+          "mean_er": -0.095785,
+          "win_rate": 0.4375,
+          "profit_factor": 0.8325,
+          "net_pnl": -3065.12
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 53,
+          "net_r": 8.7986,
+          "mean_er": 0.166012,
+          "win_rate": 0.6038,
+          "profit_factor": 1.412,
+          "net_pnl": 4399.32
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 59,
+          "net_r": 23.6336,
+          "mean_er": 0.400569,
+          "win_rate": 0.661,
+          "profit_factor": 2.1637,
+          "net_pnl": 11816.78
+        }
+      ]
+    },
+    "E2_C0_rth_canonico": {
+      "cell_id": "E2_C0_rth_canonico",
+      "arm_id": "C0",
+      "window_id": "rth",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 465,
+      "total_net_r": -17.537,
+      "global_expectancy_r": -0.037714,
+      "global_profit_factor": 0.9284,
+      "global_win_rate": 0.4989,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.154487,
+        0.085312
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 86,
+          "net_r": -12.73,
+          "mean_er": -0.148023,
+          "win_rate": 0.4651,
+          "profit_factor": 0.736,
+          "net_pnl": -6365.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 52,
+          "net_r": 0.972,
+          "mean_er": 0.018692,
+          "win_rate": 0.5,
+          "profit_factor": 1.0356,
+          "net_pnl": 486.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 54,
+          "net_r": -9.886,
+          "mean_er": -0.183074,
+          "win_rate": 0.463,
+          "profit_factor": 0.6848,
+          "net_pnl": -4943.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 53,
+          "net_r": 0.173,
+          "mean_er": 0.003264,
+          "win_rate": 0.5094,
+          "profit_factor": 1.0063,
+          "net_pnl": 86.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 44,
+          "net_r": -20.824,
+          "mean_er": -0.473273,
+          "win_rate": 0.3182,
+          "profit_factor": 0.3392,
+          "net_pnl": -10412.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 64,
+          "net_r": -6.353,
+          "mean_er": -0.099266,
+          "win_rate": 0.4531,
+          "profit_factor": 0.8256,
+          "net_pnl": -3176.5
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 53,
+          "net_r": 7.174,
+          "mean_er": 0.135358,
+          "win_rate": 0.6038,
+          "profit_factor": 1.3267,
+          "net_pnl": 3587.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 59,
+          "net_r": 23.937,
+          "mean_er": 0.405712,
+          "win_rate": 0.661,
+          "profit_factor": 2.1512,
+          "net_pnl": 11968.5
+        }
+      ]
+    },
+    "E2_C0_asia_realista": {
+      "cell_id": "E2_C0_asia_realista",
+      "arm_id": "C0",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 813,
+      "total_net_r": 31.4357,
+      "global_expectancy_r": 0.038666,
+      "global_profit_factor": 1.0784,
+      "global_win_rate": 0.5363,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.039163,
+        0.113223
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 99,
+          "net_r": -8.6516,
+          "mean_er": -0.08739,
+          "win_rate": 0.5152,
+          "profit_factor": 0.8308,
+          "net_pnl": -4325.82
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 111,
+          "net_r": -8.3432,
+          "mean_er": -0.075164,
+          "win_rate": 0.5045,
+          "profit_factor": 0.8594,
+          "net_pnl": -4171.62
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 106,
+          "net_r": 15.4163,
+          "mean_er": 0.145437,
+          "win_rate": 0.6038,
+          "profit_factor": 1.3351,
+          "net_pnl": 7708.16
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 97,
+          "net_r": -7.1116,
+          "mean_er": -0.073316,
+          "win_rate": 0.5052,
+          "profit_factor": 0.8635,
+          "net_pnl": -3555.82
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 114,
+          "net_r": 0.4943,
+          "mean_er": 0.004336,
+          "win_rate": 0.5175,
+          "profit_factor": 1.0086,
+          "net_pnl": 247.14
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 85,
+          "net_r": 15.4856,
+          "mean_er": 0.182183,
+          "win_rate": 0.5294,
+          "profit_factor": 1.3707,
+          "net_pnl": 7742.78
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 99,
+          "net_r": 10.3952,
+          "mean_er": 0.105002,
+          "win_rate": 0.5556,
+          "profit_factor": 1.2248,
+          "net_pnl": 5197.6
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 102,
+          "net_r": 13.7509,
+          "mean_er": 0.134813,
+          "win_rate": 0.5588,
+          "profit_factor": 1.295,
+          "net_pnl": 6875.44
+        }
+      ]
+    },
+    "E2_C0_asia_canonico": {
+      "cell_id": "E2_C0_asia_canonico",
+      "arm_id": "C0",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 810,
+      "total_net_r": -31.805,
+      "global_expectancy_r": -0.039265,
+      "global_profit_factor": 0.9248,
+      "global_win_rate": 0.5432,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.112867,
+        0.040991
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 99,
+          "net_r": -17.181,
+          "mean_er": -0.173545,
+          "win_rate": 0.5152,
+          "profit_factor": 0.6892,
+          "net_pnl": -8590.5
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 111,
+          "net_r": -17.041,
+          "mean_er": -0.153523,
+          "win_rate": 0.5225,
+          "profit_factor": 0.7293,
+          "net_pnl": -8520.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 104,
+          "net_r": 0.761,
+          "mean_er": 0.007317,
+          "win_rate": 0.6058,
+          "profit_factor": 1.0153,
+          "net_pnl": 380.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 96,
+          "net_r": -14.775,
+          "mean_er": -0.153906,
+          "win_rate": 0.5312,
+          "profit_factor": 0.725,
+          "net_pnl": -7387.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 114,
+          "net_r": -8.02,
+          "mean_er": -0.070351,
+          "win_rate": 0.5088,
+          "profit_factor": 0.8703,
+          "net_pnl": -4010.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 85,
+          "net_r": 10.541,
+          "mean_er": 0.124012,
+          "win_rate": 0.5294,
+          "profit_factor": 1.24,
+          "net_pnl": 5270.5
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 99,
+          "net_r": 3.364,
+          "mean_er": 0.03398,
+          "win_rate": 0.5657,
+          "profit_factor": 1.07,
+          "net_pnl": 1682.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 102,
+          "net_r": 10.546,
+          "mean_er": 0.103392,
+          "win_rate": 0.5686,
+          "profit_factor": 1.2219,
+          "net_pnl": 5273.0
+        }
+      ]
+    },
+    "E2_C0_noche_realista": {
+      "cell_id": "E2_C0_noche_realista",
+      "arm_id": "C0",
+      "window_id": "noche",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 939,
+      "total_net_r": -28.3739,
+      "global_expectancy_r": -0.030217,
+      "global_profit_factor": 0.9403,
+      "global_win_rate": 0.5122,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.104465,
+        0.041968
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 107,
+          "net_r": 1.6951,
+          "mean_er": 0.015842,
+          "win_rate": 0.5047,
+          "profit_factor": 1.031,
+          "net_pnl": 847.56
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 129,
+          "net_r": -22.41,
+          "mean_er": -0.173721,
+          "win_rate": 0.4496,
+          "profit_factor": 0.698,
+          "net_pnl": -11205.02
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 121,
+          "net_r": 6.1855,
+          "mean_er": 0.05112,
+          "win_rate": 0.562,
+          "profit_factor": 1.1112,
+          "net_pnl": 3092.74
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 106,
+          "net_r": -1.4702,
+          "mean_er": -0.01387,
+          "win_rate": 0.5283,
+          "profit_factor": 0.9721,
+          "net_pnl": -735.12
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 114,
+          "net_r": 6.2062,
+          "mean_er": 0.05444,
+          "win_rate": 0.5351,
+          "profit_factor": 1.1129,
+          "net_pnl": 3103.08
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 129,
+          "net_r": 8.146,
+          "mean_er": 0.063147,
+          "win_rate": 0.5349,
+          "profit_factor": 1.1329,
+          "net_pnl": 4073.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 115,
+          "net_r": -13.5463,
+          "mean_er": -0.117794,
+          "win_rate": 0.487,
+          "profit_factor": 0.78,
+          "net_pnl": -6773.14
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 118,
+          "net_r": -13.1801,
+          "mean_er": -0.111696,
+          "win_rate": 0.5,
+          "profit_factor": 0.7824,
+          "net_pnl": -6590.04
+        }
+      ]
+    },
+    "E2_C0_noche_canonico": {
+      "cell_id": "E2_C0_noche_canonico",
+      "arm_id": "C0",
+      "window_id": "noche",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 936,
+      "total_net_r": -55.705,
+      "global_expectancy_r": -0.059514,
+      "global_profit_factor": 0.8854,
+      "global_win_rate": 0.5224,
+      "positive_folds": 3,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.131503,
+        0.014696
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 107,
+          "net_r": -0.176,
+          "mean_er": -0.001645,
+          "win_rate": 0.514,
+          "profit_factor": 0.9969,
+          "net_pnl": -88.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 128,
+          "net_r": -26.359,
+          "mean_er": -0.20593,
+          "win_rate": 0.4609,
+          "profit_factor": 0.6535,
+          "net_pnl": -13179.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 120,
+          "net_r": 0.654,
+          "mean_er": 0.00545,
+          "win_rate": 0.575,
+          "profit_factor": 1.0115,
+          "net_pnl": 327.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 105,
+          "net_r": -7.176,
+          "mean_er": -0.068343,
+          "win_rate": 0.5333,
+          "profit_factor": 0.869,
+          "net_pnl": -3588.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 114,
+          "net_r": 2.234,
+          "mean_er": 0.019596,
+          "win_rate": 0.5351,
+          "profit_factor": 1.0389,
+          "net_pnl": 1117.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 129,
+          "net_r": 4.574,
+          "mean_er": 0.035457,
+          "win_rate": 0.5426,
+          "profit_factor": 1.0733,
+          "net_pnl": 2287.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 116,
+          "net_r": -16.253,
+          "mean_er": -0.140112,
+          "win_rate": 0.5,
+          "profit_factor": 0.7443,
+          "net_pnl": -8126.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 117,
+          "net_r": -13.203,
+          "mean_er": -0.112846,
+          "win_rate": 0.5214,
+          "profit_factor": 0.7771,
+          "net_pnl": -6601.5
+        }
+      ]
+    },
+    "E2_C0+Z_full_realista": {
+      "cell_id": "E2_C0+Z_full_realista",
+      "arm_id": "C0+Z",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 686,
+      "total_net_r": 40.6618,
+      "global_expectancy_r": 0.059274,
+      "global_profit_factor": 1.1242,
+      "global_win_rate": 0.5408,
+      "positive_folds": 6,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.021913,
+        0.14198
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 109,
+          "net_r": -17.2238,
+          "mean_er": -0.158017,
+          "win_rate": 0.4312,
+          "profit_factor": 0.7319,
+          "net_pnl": -8611.9
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": -11.3016,
+          "mean_er": -0.166199,
+          "win_rate": 0.4559,
+          "profit_factor": 0.7092,
+          "net_pnl": -5650.78
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 82,
+          "net_r": 10.9819,
+          "mean_er": 0.133925,
+          "win_rate": 0.5854,
+          "profit_factor": 1.3057,
+          "net_pnl": 5490.94
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 91,
+          "net_r": 18.5477,
+          "mean_er": 0.203821,
+          "win_rate": 0.5934,
+          "profit_factor": 1.4784,
+          "net_pnl": 9273.86
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 55,
+          "net_r": 3.5069,
+          "mean_er": 0.063762,
+          "win_rate": 0.5636,
+          "profit_factor": 1.1409,
+          "net_pnl": 1753.46
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 98,
+          "net_r": 6.8577,
+          "mean_er": 0.069977,
+          "win_rate": 0.5102,
+          "profit_factor": 1.1399,
+          "net_pnl": 3428.86
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 78,
+          "net_r": 8.7698,
+          "mean_er": 0.112433,
+          "win_rate": 0.5769,
+          "profit_factor": 1.2545,
+          "net_pnl": 4384.88
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 105,
+          "net_r": 20.5231,
+          "mean_er": 0.195458,
+          "win_rate": 0.619,
+          "profit_factor": 1.4983,
+          "net_pnl": 10261.56
+        }
+      ]
+    },
+    "E2_C0+Z_full_canonico": {
+      "cell_id": "E2_C0+Z_full_canonico",
+      "arm_id": "C0+Z",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 686,
+      "total_net_r": 16.196,
+      "global_expectancy_r": 0.023609,
+      "global_profit_factor": 1.0477,
+      "global_win_rate": 0.5452,
+      "positive_folds": 6,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.057725,
+        0.106977
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 109,
+          "net_r": -21.15,
+          "mean_er": -0.194037,
+          "win_rate": 0.4312,
+          "profit_factor": 0.6855,
+          "net_pnl": -10575.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": -13.248,
+          "mean_er": -0.194824,
+          "win_rate": 0.4559,
+          "profit_factor": 0.6807,
+          "net_pnl": -6624.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 82,
+          "net_r": 4.583,
+          "mean_er": 0.05589,
+          "win_rate": 0.5854,
+          "profit_factor": 1.1202,
+          "net_pnl": 2291.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 91,
+          "net_r": 18.514,
+          "mean_er": 0.203451,
+          "win_rate": 0.6154,
+          "profit_factor": 1.4804,
+          "net_pnl": 9257.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 55,
+          "net_r": 1.072,
+          "mean_er": 0.019491,
+          "win_rate": 0.5636,
+          "profit_factor": 1.0416,
+          "net_pnl": 536.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 98,
+          "net_r": 3.259,
+          "mean_er": 0.033255,
+          "win_rate": 0.5102,
+          "profit_factor": 1.0644,
+          "net_pnl": 1629.5
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 78,
+          "net_r": 5.057,
+          "mean_er": 0.064833,
+          "win_rate": 0.5769,
+          "profit_factor": 1.1401,
+          "net_pnl": 2528.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 105,
+          "net_r": 18.109,
+          "mean_er": 0.172467,
+          "win_rate": 0.6286,
+          "profit_factor": 1.4369,
+          "net_pnl": 9054.5
+        }
+      ]
+    },
+    "E2_C0+Z_rth_realista": {
+      "cell_id": "E2_C0+Z_rth_realista",
+      "arm_id": "C0+Z",
+      "window_id": "rth",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 103,
+      "total_net_r": -11.0762,
+      "global_expectancy_r": -0.107536,
+      "global_profit_factor": 0.7954,
+      "global_win_rate": 0.4854,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.293679,
+        0.080454
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 27,
+          "net_r": -11.5579,
+          "mean_er": -0.42807,
+          "win_rate": 0.3333,
+          "profit_factor": 0.3732,
+          "net_pnl": -5778.94
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 10,
+          "net_r": 3.4648,
+          "mean_er": 0.34648,
+          "win_rate": 0.7,
+          "profit_factor": 2.1437,
+          "net_pnl": 1732.4
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 11,
+          "net_r": -1.0246,
+          "mean_er": -0.093145,
+          "win_rate": 0.5455,
+          "profit_factor": 0.8028,
+          "net_pnl": -512.3
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 15,
+          "net_r": 0.0514,
+          "mean_er": 0.003424,
+          "win_rate": 0.4667,
+          "profit_factor": 1.0063,
+          "net_pnl": 25.68
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 5,
+          "net_r": -5.1585,
+          "mean_er": -1.031696,
+          "win_rate": 0.0,
+          "profit_factor": 0.0,
+          "net_pnl": -2579.24
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 12,
+          "net_r": -5.7288,
+          "mean_er": -0.4774,
+          "win_rate": 0.1667,
+          "profit_factor": 0.433,
+          "net_pnl": -2864.4
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 7,
+          "net_r": 4.7258,
+          "mean_er": 0.675114,
+          "win_rate": 1.0,
+          "profit_factor": 999.0,
+          "net_pnl": 2362.9
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 16,
+          "net_r": 4.1516,
+          "mean_er": 0.259475,
+          "win_rate": 0.75,
+          "profit_factor": 2.0201,
+          "net_pnl": 2075.8
+        }
+      ]
+    },
+    "E2_C0+Z_rth_canonico": {
+      "cell_id": "E2_C0+Z_rth_canonico",
+      "arm_id": "C0+Z",
+      "window_id": "rth",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 103,
+      "total_net_r": -14.035,
+      "global_expectancy_r": -0.136262,
+      "global_profit_factor": 0.7471,
+      "global_win_rate": 0.4854,
+      "positive_folds": 3,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.321347,
+        0.050115
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 27,
+          "net_r": -12.298,
+          "mean_er": -0.455481,
+          "win_rate": 0.3333,
+          "profit_factor": 0.3485,
+          "net_pnl": -6149.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 10,
+          "net_r": 3.024,
+          "mean_er": 0.3024,
+          "win_rate": 0.7,
+          "profit_factor": 1.9555,
+          "net_pnl": 1512.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 11,
+          "net_r": -1.36,
+          "mean_er": -0.123636,
+          "win_rate": 0.5455,
+          "profit_factor": 0.7455,
+          "net_pnl": -680.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 15,
+          "net_r": -0.399,
+          "mean_er": -0.0266,
+          "win_rate": 0.4667,
+          "profit_factor": 0.9522,
+          "net_pnl": -199.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 5,
+          "net_r": -5.276,
+          "mean_er": -1.0552,
+          "win_rate": 0.0,
+          "profit_factor": 0.0,
+          "net_pnl": -2638.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 12,
+          "net_r": -6.01,
+          "mean_er": -0.500833,
+          "win_rate": 0.1667,
+          "profit_factor": 0.4182,
+          "net_pnl": -3005.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 7,
+          "net_r": 4.524,
+          "mean_er": 0.646286,
+          "win_rate": 1.0,
+          "profit_factor": 999.0,
+          "net_pnl": 2262.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 16,
+          "net_r": 3.76,
+          "mean_er": 0.235,
+          "win_rate": 0.75,
+          "profit_factor": 1.9038,
+          "net_pnl": 1880.0
+        }
+      ]
+    },
+    "E2_C0+Z_asia_realista": {
+      "cell_id": "E2_C0+Z_asia_realista",
+      "arm_id": "C0+Z",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 226,
+      "total_net_r": 19.7508,
+      "global_expectancy_r": 0.087393,
+      "global_profit_factor": 1.186,
+      "global_win_rate": 0.5575,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.073932,
+        0.250391
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 40,
+          "net_r": -7.8819,
+          "mean_er": -0.197048,
+          "win_rate": 0.45,
+          "profit_factor": 0.663,
+          "net_pnl": -3940.96
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 24,
+          "net_r": -7.7394,
+          "mean_er": -0.322477,
+          "win_rate": 0.375,
+          "profit_factor": 0.522,
+          "net_pnl": -3869.72
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 25,
+          "net_r": 9.02,
+          "mean_er": 0.360798,
+          "win_rate": 0.64,
+          "profit_factor": 1.9217,
+          "net_pnl": 4509.98
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 25,
+          "net_r": -2.8073,
+          "mean_er": -0.112291,
+          "win_rate": 0.52,
+          "profit_factor": 0.7806,
+          "net_pnl": -1403.64
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 21,
+          "net_r": 9.7505,
+          "mean_er": 0.464309,
+          "win_rate": 0.8095,
+          "profit_factor": 3.3118,
+          "net_pnl": 4875.24
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 30,
+          "net_r": 1.7358,
+          "mean_er": 0.05786,
+          "win_rate": 0.5,
+          "profit_factor": 1.1109,
+          "net_pnl": 867.9
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 26,
+          "net_r": 4.1254,
+          "mean_er": 0.158668,
+          "win_rate": 0.5769,
+          "profit_factor": 1.3561,
+          "net_pnl": 2062.68
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 35,
+          "net_r": 13.5478,
+          "mean_er": 0.387081,
+          "win_rate": 0.6571,
+          "profit_factor": 2.0789,
+          "net_pnl": 6773.92
+        }
+      ]
+    },
+    "E2_C0+Z_asia_canonico": {
+      "cell_id": "E2_C0+Z_asia_canonico",
+      "arm_id": "C0+Z",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 225,
+      "total_net_r": 7.319,
+      "global_expectancy_r": 0.032529,
+      "global_profit_factor": 1.0656,
+      "global_win_rate": 0.5644,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.138485,
+        0.198612
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 40,
+          "net_r": -11.136,
+          "mean_er": -0.2784,
+          "win_rate": 0.45,
+          "profit_factor": 0.5581,
+          "net_pnl": -5568.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 24,
+          "net_r": -9.008,
+          "mean_er": -0.375333,
+          "win_rate": 0.375,
+          "profit_factor": 0.496,
+          "net_pnl": -4504.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 25,
+          "net_r": 5.643,
+          "mean_er": 0.22572,
+          "win_rate": 0.64,
+          "profit_factor": 1.5237,
+          "net_pnl": 2821.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 24,
+          "net_r": -1.427,
+          "mean_er": -0.059458,
+          "win_rate": 0.5833,
+          "profit_factor": 0.8756,
+          "net_pnl": -713.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 21,
+          "net_r": 8.622,
+          "mean_er": 0.410571,
+          "win_rate": 0.8095,
+          "profit_factor": 2.9582,
+          "net_pnl": 4311.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 30,
+          "net_r": 0.326,
+          "mean_er": 0.010867,
+          "win_rate": 0.5,
+          "profit_factor": 1.0199,
+          "net_pnl": 163.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 26,
+          "net_r": 2.445,
+          "mean_er": 0.094038,
+          "win_rate": 0.5769,
+          "profit_factor": 1.1984,
+          "net_pnl": 1222.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 35,
+          "net_r": 11.854,
+          "mean_er": 0.338686,
+          "win_rate": 0.6571,
+          "profit_factor": 1.9024,
+          "net_pnl": 5927.0
+        }
+      ]
+    },
+    "E2_C0+Z_noche_realista": {
+      "cell_id": "E2_C0+Z_noche_realista",
+      "arm_id": "C0+Z",
+      "window_id": "noche",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 274,
+      "total_net_r": 23.7393,
+      "global_expectancy_r": 0.08664,
+      "global_profit_factor": 1.1836,
+      "global_win_rate": 0.5438,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.035528,
+        0.215202
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 38,
+          "net_r": 8.242,
+          "mean_er": 0.216896,
+          "win_rate": 0.5263,
+          "profit_factor": 1.4487,
+          "net_pnl": 4121.02
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 31,
+          "net_r": -5.397,
+          "mean_er": -0.174098,
+          "win_rate": 0.4516,
+          "profit_factor": 0.6961,
+          "net_pnl": -2698.52
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 33,
+          "net_r": 1.3418,
+          "mean_er": 0.040659,
+          "win_rate": 0.5455,
+          "profit_factor": 1.0853,
+          "net_pnl": 670.88
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 36,
+          "net_r": 8.6193,
+          "mean_er": 0.239424,
+          "win_rate": 0.6111,
+          "profit_factor": 1.5771,
+          "net_pnl": 4309.64
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 19,
+          "net_r": -1.3365,
+          "mean_er": -0.070341,
+          "win_rate": 0.4737,
+          "profit_factor": 0.8716,
+          "net_pnl": -668.24
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 47,
+          "net_r": 11.0711,
+          "mean_er": 0.235556,
+          "win_rate": 0.617,
+          "profit_factor": 1.6126,
+          "net_pnl": 5535.56
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 32,
+          "net_r": 4.6682,
+          "mean_er": 0.145882,
+          "win_rate": 0.5312,
+          "profit_factor": 1.2996,
+          "net_pnl": 2334.12
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 38,
+          "net_r": -3.4696,
+          "mean_er": -0.091306,
+          "win_rate": 0.5263,
+          "profit_factor": 0.8122,
+          "net_pnl": -1734.82
+        }
+      ]
+    },
+    "E2_C0+Z_noche_canonico": {
+      "cell_id": "E2_C0+Z_noche_canonico",
+      "arm_id": "C0+Z",
+      "window_id": "noche",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 273,
+      "total_net_r": 17.682,
+      "global_expectancy_r": 0.064769,
+      "global_profit_factor": 1.1332,
+      "global_win_rate": 0.5495,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.066248,
+        0.19396
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 38,
+          "net_r": 8.162,
+          "mean_er": 0.214789,
+          "win_rate": 0.5263,
+          "profit_factor": 1.4277,
+          "net_pnl": 4081.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 31,
+          "net_r": -5.842,
+          "mean_er": -0.188452,
+          "win_rate": 0.4516,
+          "profit_factor": 0.6883,
+          "net_pnl": -2921.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 33,
+          "net_r": -0.678,
+          "mean_er": -0.020545,
+          "win_rate": 0.5455,
+          "profit_factor": 0.959,
+          "net_pnl": -339.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 36,
+          "net_r": 7.819,
+          "mean_er": 0.217194,
+          "win_rate": 0.6111,
+          "profit_factor": 1.4929,
+          "net_pnl": 3909.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 19,
+          "net_r": -2.183,
+          "mean_er": -0.114895,
+          "win_rate": 0.4737,
+          "profit_factor": 0.7986,
+          "net_pnl": -1091.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 47,
+          "net_r": 9.43,
+          "mean_er": 0.200638,
+          "win_rate": 0.617,
+          "profit_factor": 1.5082,
+          "net_pnl": 4715.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 32,
+          "net_r": 3.276,
+          "mean_er": 0.102375,
+          "win_rate": 0.5312,
+          "profit_factor": 1.2015,
+          "net_pnl": 1638.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 37,
+          "net_r": -2.302,
+          "mean_er": -0.062216,
+          "win_rate": 0.5676,
+          "profit_factor": 0.8636,
+          "net_pnl": -1151.0
+        }
+      ]
+    },
+    "E2_C0+L_full_realista": {
+      "cell_id": "E2_C0+L_full_realista",
+      "arm_id": "C0+L",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 1767,
+      "total_net_r": 48.2005,
+      "global_expectancy_r": 0.027278,
+      "global_profit_factor": 1.0554,
+      "global_win_rate": 0.5269,
+      "positive_folds": 6,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.022378,
+        0.079957
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 225,
+          "net_r": -14.9122,
+          "mean_er": -0.066277,
+          "win_rate": 0.4889,
+          "profit_factor": 0.875,
+          "net_pnl": -7456.12
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 215,
+          "net_r": 3.822,
+          "mean_er": 0.017777,
+          "win_rate": 0.5163,
+          "profit_factor": 1.035,
+          "net_pnl": 1911.02
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 222,
+          "net_r": 34.9118,
+          "mean_er": 0.15726,
+          "win_rate": 0.6081,
+          "profit_factor": 1.3808,
+          "net_pnl": 17455.88
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 220,
+          "net_r": 23.4698,
+          "mean_er": 0.106681,
+          "win_rate": 0.5591,
+          "profit_factor": 1.2299,
+          "net_pnl": 11734.92
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 228,
+          "net_r": -26.6451,
+          "mean_er": -0.116865,
+          "win_rate": 0.4649,
+          "profit_factor": 0.7891,
+          "net_pnl": -13322.56
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 202,
+          "net_r": 11.5675,
+          "mean_er": 0.057265,
+          "win_rate": 0.5,
+          "profit_factor": 1.1116,
+          "net_pnl": 5783.74
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 236,
+          "net_r": 6.4661,
+          "mean_er": 0.027399,
+          "win_rate": 0.5339,
+          "profit_factor": 1.0566,
+          "net_pnl": 3233.04
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 219,
+          "net_r": 9.5206,
+          "mean_er": 0.043473,
+          "win_rate": 0.5434,
+          "profit_factor": 1.0922,
+          "net_pnl": 4760.32
+        }
+      ]
+    },
+    "E2_C0+L_full_canonico": {
+      "cell_id": "E2_C0+L_full_canonico",
+      "arm_id": "C0+L",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 1767,
+      "total_net_r": -38.449,
+      "global_expectancy_r": -0.021759,
+      "global_profit_factor": 0.9574,
+      "global_win_rate": 0.5308,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.072163,
+        0.027134
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 225,
+          "net_r": -24.638,
+          "mean_er": -0.109502,
+          "win_rate": 0.4933,
+          "profit_factor": 0.8004,
+          "net_pnl": -12319.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 215,
+          "net_r": -9.051,
+          "mean_er": -0.042098,
+          "win_rate": 0.5209,
+          "profit_factor": 0.9213,
+          "net_pnl": -4525.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 220,
+          "net_r": 19.369,
+          "mean_er": 0.088041,
+          "win_rate": 0.6091,
+          "profit_factor": 1.2024,
+          "net_pnl": 9684.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 220,
+          "net_r": 8.298,
+          "mean_er": 0.037718,
+          "win_rate": 0.5636,
+          "profit_factor": 1.0776,
+          "net_pnl": 4149.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 228,
+          "net_r": -35.495,
+          "mean_er": -0.15568,
+          "win_rate": 0.4693,
+          "profit_factor": 0.7291,
+          "net_pnl": -17747.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 202,
+          "net_r": 6.492,
+          "mean_er": 0.032139,
+          "win_rate": 0.5099,
+          "profit_factor": 1.0616,
+          "net_pnl": 3246.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 238,
+          "net_r": -7.167,
+          "mean_er": -0.030113,
+          "win_rate": 0.5336,
+          "profit_factor": 0.9404,
+          "net_pnl": -3583.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 219,
+          "net_r": 3.743,
+          "mean_er": 0.017091,
+          "win_rate": 0.5479,
+          "profit_factor": 1.0355,
+          "net_pnl": 1871.5
+        }
+      ]
+    },
+    "E2_C0+L_rth_realista": {
+      "cell_id": "E2_C0+L_rth_realista",
+      "arm_id": "C0+L",
+      "window_id": "rth",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 327,
+      "total_net_r": -10.3382,
+      "global_expectancy_r": -0.031615,
+      "global_profit_factor": 0.939,
+      "global_win_rate": 0.4924,
+      "positive_folds": 3,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.154251,
+        0.109078
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 64,
+          "net_r": -13.5168,
+          "mean_er": -0.211199,
+          "win_rate": 0.4375,
+          "profit_factor": 0.6323,
+          "net_pnl": -6758.38
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 29,
+          "net_r": 2.4576,
+          "mean_er": 0.084743,
+          "win_rate": 0.5172,
+          "profit_factor": 1.1719,
+          "net_pnl": 1228.78
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 41,
+          "net_r": -2.8113,
+          "mean_er": -0.068569,
+          "win_rate": 0.4878,
+          "profit_factor": 0.8695,
+          "net_pnl": -1405.66
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 38,
+          "net_r": -1.0656,
+          "mean_er": -0.028041,
+          "win_rate": 0.4737,
+          "profit_factor": 0.9478,
+          "net_pnl": -532.78
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 31,
+          "net_r": -16.8541,
+          "mean_er": -0.54368,
+          "win_rate": 0.2581,
+          "profit_factor": 0.2834,
+          "net_pnl": -8427.04
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 42,
+          "net_r": -1.6671,
+          "mean_er": -0.039692,
+          "win_rate": 0.4286,
+          "profit_factor": 0.9319,
+          "net_pnl": -833.54
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 43,
+          "net_r": 3.9956,
+          "mean_er": 0.092921,
+          "win_rate": 0.5814,
+          "profit_factor": 1.2179,
+          "net_pnl": 1997.8
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 39,
+          "net_r": 19.1234,
+          "mean_er": 0.490345,
+          "win_rate": 0.7436,
+          "profit_factor": 2.8831,
+          "net_pnl": 9561.72
+        }
+      ]
+    },
+    "E2_C0+L_rth_canonico": {
+      "cell_id": "E2_C0+L_rth_canonico",
+      "arm_id": "C0+L",
+      "window_id": "rth",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 327,
+      "total_net_r": -18.301,
+      "global_expectancy_r": -0.055966,
+      "global_profit_factor": 0.8941,
+      "global_win_rate": 0.4954,
+      "positive_folds": 3,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.180049,
+        0.085517
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 64,
+          "net_r": -15.248,
+          "mean_er": -0.23825,
+          "win_rate": 0.4375,
+          "profit_factor": 0.595,
+          "net_pnl": -7624.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 29,
+          "net_r": 1.35,
+          "mean_er": 0.046552,
+          "win_rate": 0.5172,
+          "profit_factor": 1.0913,
+          "net_pnl": 675.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 41,
+          "net_r": -4.053,
+          "mean_er": -0.098854,
+          "win_rate": 0.4878,
+          "profit_factor": 0.8172,
+          "net_pnl": -2026.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 38,
+          "net_r": -2.265,
+          "mean_er": -0.059605,
+          "win_rate": 0.4737,
+          "profit_factor": 0.8921,
+          "net_pnl": -1132.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 31,
+          "net_r": -17.651,
+          "mean_er": -0.569387,
+          "win_rate": 0.2581,
+          "profit_factor": 0.2676,
+          "net_pnl": -8825.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 42,
+          "net_r": -1.332,
+          "mean_er": -0.031714,
+          "win_rate": 0.4524,
+          "profit_factor": 0.9445,
+          "net_pnl": -666.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 43,
+          "net_r": 2.754,
+          "mean_er": 0.064047,
+          "win_rate": 0.5814,
+          "profit_factor": 1.1464,
+          "net_pnl": 1377.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 39,
+          "net_r": 18.144,
+          "mean_er": 0.465231,
+          "win_rate": 0.7436,
+          "profit_factor": 2.747,
+          "net_pnl": 9072.0
+        }
+      ]
+    },
+    "E2_C0+L_asia_realista": {
+      "cell_id": "E2_C0+L_asia_realista",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 496,
+      "total_net_r": 29.8708,
+      "global_expectancy_r": 0.060223,
+      "global_profit_factor": 1.126,
+      "global_win_rate": 0.5504,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.041969,
+        0.163072
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 60,
+          "net_r": -5.0372,
+          "mean_er": -0.083953,
+          "win_rate": 0.4833,
+          "profit_factor": 0.8484,
+          "net_pnl": -2518.58
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": 0.2633,
+          "mean_er": 0.003872,
+          "win_rate": 0.5294,
+          "profit_factor": 1.0076,
+          "net_pnl": 131.64
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 73,
+          "net_r": 21.5291,
+          "mean_er": 0.294919,
+          "win_rate": 0.6849,
+          "profit_factor": 1.8585,
+          "net_pnl": 10764.56
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 62,
+          "net_r": -2.2786,
+          "mean_er": -0.036751,
+          "win_rate": 0.5484,
+          "profit_factor": 0.9247,
+          "net_pnl": -1139.28
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 73,
+          "net_r": -9.4245,
+          "mean_er": -0.129102,
+          "win_rate": 0.4932,
+          "profit_factor": 0.758,
+          "net_pnl": -4712.24
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 6.6596,
+          "mean_er": 0.17999,
+          "win_rate": 0.5135,
+          "profit_factor": 1.3542,
+          "net_pnl": 3329.82
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 9.0306,
+          "mean_er": 0.153062,
+          "win_rate": 0.5593,
+          "profit_factor": 1.3306,
+          "net_pnl": 4515.32
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 9.1283,
+          "mean_er": 0.142629,
+          "win_rate": 0.5625,
+          "profit_factor": 1.315,
+          "net_pnl": 4564.14
+        }
+      ]
+    },
+    "E2_C0+L_asia_canonico": {
+      "cell_id": "E2_C0+L_asia_canonico",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 494,
+      "total_net_r": -17.864,
+      "global_expectancy_r": -0.036162,
+      "global_profit_factor": 0.9297,
+      "global_win_rate": 0.5506,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.135463,
+        0.068787
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 60,
+          "net_r": -10.814,
+          "mean_er": -0.180233,
+          "win_rate": 0.4833,
+          "profit_factor": 0.7,
+          "net_pnl": -5407.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": -6.535,
+          "mean_er": -0.096103,
+          "win_rate": 0.5294,
+          "profit_factor": 0.827,
+          "net_pnl": -3267.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 71,
+          "net_r": 11.401,
+          "mean_er": 0.160577,
+          "win_rate": 0.6901,
+          "profit_factor": 1.4315,
+          "net_pnl": 5700.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 62,
+          "net_r": -11.215,
+          "mean_er": -0.180887,
+          "win_rate": 0.5484,
+          "profit_factor": 0.6626,
+          "net_pnl": -5607.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 73,
+          "net_r": -14.914,
+          "mean_er": -0.204301,
+          "win_rate": 0.4932,
+          "profit_factor": 0.6421,
+          "net_pnl": -7457.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 4.424,
+          "mean_er": 0.119568,
+          "win_rate": 0.5135,
+          "profit_factor": 1.2222,
+          "net_pnl": 2212.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 3.411,
+          "mean_er": 0.057814,
+          "win_rate": 0.5593,
+          "profit_factor": 1.1176,
+          "net_pnl": 1705.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 6.378,
+          "mean_er": 0.099656,
+          "win_rate": 0.5625,
+          "profit_factor": 1.2118,
+          "net_pnl": 3189.0
+        }
+      ]
+    },
+    "E2_C0+L_noche_realista": {
+      "cell_id": "E2_C0+L_noche_realista",
+      "arm_id": "C0+L",
+      "window_id": "noche",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 637,
+      "total_net_r": -0.0655,
+      "global_expectancy_r": -0.000103,
+      "global_profit_factor": 0.9998,
+      "global_win_rate": 0.5196,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.084991,
+        0.090314
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 77,
+          "net_r": -5.9555,
+          "mean_er": -0.077344,
+          "win_rate": 0.4545,
+          "profit_factor": 0.8627,
+          "net_pnl": -2977.74
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 87,
+          "net_r": -11.6514,
+          "mean_er": -0.133925,
+          "win_rate": 0.4598,
+          "profit_factor": 0.7632,
+          "net_pnl": -5825.72
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 79,
+          "net_r": 8.3285,
+          "mean_er": 0.105424,
+          "win_rate": 0.5823,
+          "profit_factor": 1.2402,
+          "net_pnl": 4164.24
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 70,
+          "net_r": 8.0242,
+          "mean_er": 0.114631,
+          "win_rate": 0.5857,
+          "profit_factor": 1.2623,
+          "net_pnl": 4012.1
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 75,
+          "net_r": 8.2806,
+          "mean_er": 0.110409,
+          "win_rate": 0.5467,
+          "profit_factor": 1.2365,
+          "net_pnl": 4140.32
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 94,
+          "net_r": 14.073,
+          "mean_er": 0.149713,
+          "win_rate": 0.5532,
+          "profit_factor": 1.328,
+          "net_pnl": 7036.5
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 80,
+          "net_r": -7.2815,
+          "mean_er": -0.091019,
+          "win_rate": 0.5,
+          "profit_factor": 0.8258,
+          "net_pnl": -3640.76
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 75,
+          "net_r": -13.8834,
+          "mean_er": -0.185112,
+          "win_rate": 0.48,
+          "profit_factor": 0.653,
+          "net_pnl": -6941.7
+        }
+      ]
+    },
+    "E2_C0+L_noche_canonico": {
+      "cell_id": "E2_C0+L_noche_canonico",
+      "arm_id": "C0+L",
+      "window_id": "noche",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 635,
+      "total_net_r": -22.442,
+      "global_expectancy_r": -0.035342,
+      "global_profit_factor": 0.9309,
+      "global_win_rate": 0.5291,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.117774,
+        0.052742
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 77,
+          "net_r": -7.982,
+          "mean_er": -0.103662,
+          "win_rate": 0.4675,
+          "profit_factor": 0.8189,
+          "net_pnl": -3991.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 86,
+          "net_r": -14.586,
+          "mean_er": -0.169605,
+          "win_rate": 0.4651,
+          "profit_factor": 0.7132,
+          "net_pnl": -7293.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 78,
+          "net_r": 5.57,
+          "mean_er": 0.07141,
+          "win_rate": 0.6026,
+          "profit_factor": 1.1618,
+          "net_pnl": 2785.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 69,
+          "net_r": 4.581,
+          "mean_er": 0.066391,
+          "win_rate": 0.5942,
+          "profit_factor": 1.1467,
+          "net_pnl": 2290.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 75,
+          "net_r": 4.318,
+          "mean_er": 0.057573,
+          "win_rate": 0.5467,
+          "profit_factor": 1.1179,
+          "net_pnl": 2159.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 94,
+          "net_r": 11.703,
+          "mean_er": 0.1245,
+          "win_rate": 0.5638,
+          "profit_factor": 1.2689,
+          "net_pnl": 5851.5
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 81,
+          "net_r": -11.15,
+          "mean_er": -0.137654,
+          "win_rate": 0.5062,
+          "profit_factor": 0.746,
+          "net_pnl": -5575.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 75,
+          "net_r": -14.896,
+          "mean_er": -0.198613,
+          "win_rate": 0.4933,
+          "profit_factor": 0.6292,
+          "net_pnl": -7448.0
+        }
+      ]
+    },
+    "E2_C0+Z+L_full_realista": {
+      "cell_id": "E2_C0+Z+L_full_realista",
+      "arm_id": "C0+Z+L",
+      "window_id": "full",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 496,
+      "total_net_r": 24.751,
+      "global_expectancy_r": 0.049901,
+      "global_profit_factor": 1.1033,
+      "global_win_rate": 0.5343,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.049407,
+        0.148965
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 84,
+          "net_r": -16.5667,
+          "mean_er": -0.197222,
+          "win_rate": 0.4048,
+          "profit_factor": 0.6808,
+          "net_pnl": -8283.34
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 44,
+          "net_r": -2.5063,
+          "mean_er": -0.056962,
+          "win_rate": 0.5,
+          "profit_factor": 0.8907,
+          "net_pnl": -1253.16
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 61,
+          "net_r": 12.2486,
+          "mean_er": 0.200797,
+          "win_rate": 0.6066,
+          "profit_factor": 1.4838,
+          "net_pnl": 6124.3
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 68,
+          "net_r": 18.4906,
+          "mean_er": 0.271921,
+          "win_rate": 0.6324,
+          "profit_factor": 1.7077,
+          "net_pnl": 9245.32
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 35,
+          "net_r": 0.1681,
+          "mean_er": 0.004803,
+          "win_rate": 0.5714,
+          "profit_factor": 1.0108,
+          "net_pnl": 84.06
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 68,
+          "net_r": 9.4161,
+          "mean_er": 0.138472,
+          "win_rate": 0.5147,
+          "profit_factor": 1.2817,
+          "net_pnl": 4708.06
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 4.2988,
+          "mean_er": 0.072862,
+          "win_rate": 0.5424,
+          "profit_factor": 1.1519,
+          "net_pnl": 2149.42
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 77,
+          "net_r": -0.7983,
+          "mean_er": -0.010367,
+          "win_rate": 0.5455,
+          "profit_factor": 0.9779,
+          "net_pnl": -399.14
+        }
+      ]
+    },
+    "E2_C0+Z+L_full_canonico": {
+      "cell_id": "E2_C0+Z+L_full_canonico",
+      "arm_id": "C0+Z+L",
+      "window_id": "full",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 497,
+      "total_net_r": 4.671,
+      "global_expectancy_r": 0.009398,
+      "global_profit_factor": 1.0187,
+      "global_win_rate": 0.5372,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.088201,
+        0.111689
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 84,
+          "net_r": -21.086,
+          "mean_er": -0.251024,
+          "win_rate": 0.4048,
+          "profit_factor": 0.6129,
+          "net_pnl": -10543.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 44,
+          "net_r": -2.757,
+          "mean_er": -0.062659,
+          "win_rate": 0.5,
+          "profit_factor": 0.8868,
+          "net_pnl": -1378.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 61,
+          "net_r": 7.75,
+          "mean_er": 0.127049,
+          "win_rate": 0.6066,
+          "profit_factor": 1.2896,
+          "net_pnl": 3875.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 69,
+          "net_r": 15.837,
+          "mean_er": 0.229522,
+          "win_rate": 0.6377,
+          "profit_factor": 1.5738,
+          "net_pnl": 7918.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 35,
+          "net_r": -1.318,
+          "mean_er": -0.037657,
+          "win_rate": 0.5714,
+          "profit_factor": 0.9181,
+          "net_pnl": -659.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 68,
+          "net_r": 6.928,
+          "mean_er": 0.101882,
+          "win_rate": 0.5147,
+          "profit_factor": 1.2012,
+          "net_pnl": 3464.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 1.297,
+          "mean_er": 0.021983,
+          "win_rate": 0.5424,
+          "profit_factor": 1.0437,
+          "net_pnl": 648.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 77,
+          "net_r": -1.98,
+          "mean_er": -0.025714,
+          "win_rate": 0.5584,
+          "profit_factor": 0.9454,
+          "net_pnl": -990.0
+        }
+      ]
+    },
+    "E2_C0+Z+L_rth_realista": {
+      "cell_id": "E2_C0+Z+L_rth_realista",
+      "arm_id": "C0+Z+L",
+      "window_id": "rth",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 84,
+      "total_net_r": -5.0683,
+      "global_expectancy_r": -0.060337,
+      "global_profit_factor": 0.8787,
+      "global_win_rate": 0.5119,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.24908,
+        0.116071
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 23,
+          "net_r": -7.4588,
+          "mean_er": -0.324296,
+          "win_rate": 0.3913,
+          "profit_factor": 0.4798,
+          "net_pnl": -3729.4
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 7,
+          "net_r": 1.936,
+          "mean_er": 0.276571,
+          "win_rate": 0.7143,
+          "profit_factor": 1.9622,
+          "net_pnl": 968.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 10,
+          "net_r": -0.0033,
+          "mean_er": -0.000328,
+          "win_rate": 0.6,
+          "profit_factor": 0.9992,
+          "net_pnl": -1.64
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 13,
+          "net_r": 2.1081,
+          "mean_er": 0.16216,
+          "win_rate": 0.5385,
+          "profit_factor": 1.3472,
+          "net_pnl": 1054.04
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 3,
+          "net_r": -3.0522,
+          "mean_er": -1.0174,
+          "win_rate": 0.0,
+          "profit_factor": 0.0,
+          "net_pnl": -1526.1
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 10,
+          "net_r": -3.694,
+          "mean_er": -0.3694,
+          "win_rate": 0.2,
+          "profit_factor": 0.5422,
+          "net_pnl": -1847.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 4,
+          "net_r": 3.5165,
+          "mean_er": 0.87912,
+          "win_rate": 1.0,
+          "profit_factor": 999.0,
+          "net_pnl": 1758.24
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 14,
+          "net_r": 1.5794,
+          "mean_er": 0.112814,
+          "win_rate": 0.7143,
+          "profit_factor": 1.3881,
+          "net_pnl": 789.7
+        }
+      ]
+    },
+    "E2_C0+Z+L_rth_canonico": {
+      "cell_id": "E2_C0+Z+L_rth_canonico",
+      "arm_id": "C0+Z+L",
+      "window_id": "rth",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 84,
+      "total_net_r": -7.527,
+      "global_expectancy_r": -0.089607,
+      "global_profit_factor": 0.8243,
+      "global_win_rate": 0.5119,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.276679,
+        0.087514
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 23,
+          "net_r": -8.104,
+          "mean_er": -0.352348,
+          "win_rate": 0.3913,
+          "profit_factor": 0.4481,
+          "net_pnl": -4052.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 7,
+          "net_r": 1.57,
+          "mean_er": 0.224286,
+          "win_rate": 0.7143,
+          "profit_factor": 1.7388,
+          "net_pnl": 785.0
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 10,
+          "net_r": -0.298,
+          "mean_er": -0.0298,
+          "win_rate": 0.6,
+          "profit_factor": 0.9304,
+          "net_pnl": -149.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 13,
+          "net_r": 1.721,
+          "mean_er": 0.132385,
+          "win_rate": 0.5385,
+          "profit_factor": 1.2762,
+          "net_pnl": 860.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 3,
+          "net_r": -3.12,
+          "mean_er": -1.04,
+          "win_rate": 0.0,
+          "profit_factor": 0.0,
+          "net_pnl": -1560.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 10,
+          "net_r": -3.93,
+          "mean_er": -0.393,
+          "win_rate": 0.2,
+          "profit_factor": 0.5236,
+          "net_pnl": -1965.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 4,
+          "net_r": 3.394,
+          "mean_er": 0.8485,
+          "win_rate": 1.0,
+          "profit_factor": 999.0,
+          "net_pnl": 1697.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 14,
+          "net_r": 1.24,
+          "mean_er": 0.088571,
+          "win_rate": 0.7143,
+          "profit_factor": 1.2981,
+          "net_pnl": 620.0
+        }
+      ]
+    },
+    "E2_C0+Z+L_asia_realista": {
+      "cell_id": "E2_C0+Z+L_asia_realista",
+      "arm_id": "C0+Z+L",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 150,
+      "total_net_r": 13.9165,
+      "global_expectancy_r": 0.092777,
+      "global_profit_factor": 1.1988,
+      "global_win_rate": 0.56,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.109499,
+        0.294361
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 28,
+          "net_r": -7.1498,
+          "mean_er": -0.255349,
+          "win_rate": 0.3929,
+          "profit_factor": 0.6066,
+          "net_pnl": -3574.88
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 13,
+          "net_r": -0.5276,
+          "mean_er": -0.040585,
+          "win_rate": 0.4615,
+          "profit_factor": 0.9306,
+          "net_pnl": -263.8
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 18,
+          "net_r": 9.1383,
+          "mean_er": 0.507682,
+          "win_rate": 0.7222,
+          "profit_factor": 2.7017,
+          "net_pnl": 4569.14
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 18,
+          "net_r": -2.7957,
+          "mean_er": -0.155316,
+          "win_rate": 0.5,
+          "profit_factor": 0.7076,
+          "net_pnl": -1397.84
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 10,
+          "net_r": 2.961,
+          "mean_er": 0.2961,
+          "win_rate": 0.9,
+          "profit_factor": 3.7344,
+          "net_pnl": 1480.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 17,
+          "net_r": 1.7226,
+          "mean_er": 0.101329,
+          "win_rate": 0.5294,
+          "profit_factor": 1.2093,
+          "net_pnl": 861.3
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 21,
+          "net_r": 4.9561,
+          "mean_er": 0.236004,
+          "win_rate": 0.5714,
+          "profit_factor": 1.5231,
+          "net_pnl": 2478.04
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 25,
+          "net_r": 5.6116,
+          "mean_er": 0.224464,
+          "win_rate": 0.6,
+          "profit_factor": 1.5337,
+          "net_pnl": 2805.8
+        }
+      ]
+    },
+    "E2_C0+Z+L_asia_canonico": {
+      "cell_id": "E2_C0+Z+L_asia_canonico",
+      "arm_id": "C0+Z+L",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 150,
+      "total_net_r": 3.04,
+      "global_expectancy_r": 0.020267,
+      "global_profit_factor": 1.0405,
+      "global_win_rate": 0.56,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.186874,
+        0.223655
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 28,
+          "net_r": -9.602,
+          "mean_er": -0.342929,
+          "win_rate": 0.3929,
+          "profit_factor": 0.5113,
+          "net_pnl": -4801.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 13,
+          "net_r": -0.723,
+          "mean_er": -0.055615,
+          "win_rate": 0.4615,
+          "profit_factor": 0.914,
+          "net_pnl": -361.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 18,
+          "net_r": 6.786,
+          "mean_er": 0.377,
+          "win_rate": 0.7222,
+          "profit_factor": 2.1521,
+          "net_pnl": 3393.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 18,
+          "net_r": -4.928,
+          "mean_er": -0.273778,
+          "win_rate": 0.5,
+          "profit_factor": 0.5258,
+          "net_pnl": -2464.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 10,
+          "net_r": 2.463,
+          "mean_er": 0.2463,
+          "win_rate": 0.9,
+          "profit_factor": 3.2189,
+          "net_pnl": 1231.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 17,
+          "net_r": 0.97,
+          "mean_er": 0.057059,
+          "win_rate": 0.5294,
+          "profit_factor": 1.1128,
+          "net_pnl": 485.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 21,
+          "net_r": 3.58,
+          "mean_er": 0.170476,
+          "win_rate": 0.5714,
+          "profit_factor": 1.3555,
+          "net_pnl": 1790.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 25,
+          "net_r": 4.494,
+          "mean_er": 0.17976,
+          "win_rate": 0.6,
+          "profit_factor": 1.4082,
+          "net_pnl": 2247.0
+        }
+      ]
+    },
+    "E2_C0+Z+L_noche_realista": {
+      "cell_id": "E2_C0+Z+L_noche_realista",
+      "arm_id": "C0+Z+L",
+      "window_id": "noche",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 210,
+      "total_net_r": 19.3396,
+      "global_expectancy_r": 0.092093,
+      "global_profit_factor": 1.1929,
+      "global_win_rate": 0.5381,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.060898,
+        0.243593
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 31,
+          "net_r": 2.0054,
+          "mean_er": 0.064689,
+          "win_rate": 0.4516,
+          "profit_factor": 1.1155,
+          "net_pnl": 1002.68
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 23,
+          "net_r": -1.4518,
+          "mean_er": -0.063122,
+          "win_rate": 0.4783,
+          "profit_factor": 0.8837,
+          "net_pnl": -725.9
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 26,
+          "net_r": -0.4149,
+          "mean_er": -0.015958,
+          "win_rate": 0.5,
+          "profit_factor": 0.9697,
+          "net_pnl": -207.46
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 26,
+          "net_r": 13.1903,
+          "mean_er": 0.507318,
+          "win_rate": 0.7692,
+          "profit_factor": 3.0602,
+          "net_pnl": 6595.14
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 17,
+          "net_r": -0.6368,
+          "mean_er": -0.037456,
+          "win_rate": 0.4706,
+          "profit_factor": 0.932,
+          "net_pnl": -318.38
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 36,
+          "net_r": 8.9634,
+          "mean_er": 0.248983,
+          "win_rate": 0.5833,
+          "profit_factor": 1.5967,
+          "net_pnl": 4481.7
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 23,
+          "net_r": 2.8088,
+          "mean_er": 0.122123,
+          "win_rate": 0.5652,
+          "profit_factor": 1.268,
+          "net_pnl": 1404.42
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 28,
+          "net_r": -5.1248,
+          "mean_er": -0.18303,
+          "win_rate": 0.4643,
+          "profit_factor": 0.6678,
+          "net_pnl": -2562.42
+        }
+      ]
+    },
+    "E2_C0+Z+L_noche_canonico": {
+      "cell_id": "E2_C0+Z+L_noche_canonico",
+      "arm_id": "C0+Z+L",
+      "window_id": "noche",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 210,
+      "total_net_r": 13.517,
+      "global_expectancy_r": 0.064367,
+      "global_profit_factor": 1.1308,
+      "global_win_rate": 0.5429,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.090381,
+        0.211643
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 31,
+          "net_r": 0.575,
+          "mean_er": 0.018548,
+          "win_rate": 0.4516,
+          "profit_factor": 1.0318,
+          "net_pnl": 287.5
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 23,
+          "net_r": -1.483,
+          "mean_er": -0.064478,
+          "win_rate": 0.4783,
+          "profit_factor": 0.8879,
+          "net_pnl": -741.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 26,
+          "net_r": -2.018,
+          "mean_er": -0.077615,
+          "win_rate": 0.5,
+          "profit_factor": 0.8599,
+          "net_pnl": -1009.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 26,
+          "net_r": 13.09,
+          "mean_er": 0.503462,
+          "win_rate": 0.7692,
+          "profit_factor": 2.943,
+          "net_pnl": 6545.0
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 17,
+          "net_r": -1.418,
+          "mean_er": -0.083412,
+          "win_rate": 0.4706,
+          "profit_factor": 0.8545,
+          "net_pnl": -709.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 36,
+          "net_r": 7.621,
+          "mean_er": 0.211694,
+          "win_rate": 0.5833,
+          "profit_factor": 1.4937,
+          "net_pnl": 3810.5
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 23,
+          "net_r": 1.755,
+          "mean_er": 0.076304,
+          "win_rate": 0.5652,
+          "profit_factor": 1.1601,
+          "net_pnl": 877.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 28,
+          "net_r": -4.605,
+          "mean_er": -0.164464,
+          "win_rate": 0.5,
+          "profit_factor": 0.6887,
+          "net_pnl": -2302.5
+        }
+      ]
+    }
+  },
+  "stage_3": {
+    "E3_C0+L_asia_S0_realista": {
+      "cell_id": "E3_C0+L_asia_S0_realista",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 496,
+      "total_net_r": 29.8708,
+      "global_expectancy_r": 0.060223,
+      "global_profit_factor": 1.126,
+      "global_win_rate": 0.5504,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.041969,
+        0.163072
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 60,
+          "net_r": -5.0372,
+          "mean_er": -0.083953,
+          "win_rate": 0.4833,
+          "profit_factor": 0.8484,
+          "net_pnl": -2518.58
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": 0.2633,
+          "mean_er": 0.003872,
+          "win_rate": 0.5294,
+          "profit_factor": 1.0076,
+          "net_pnl": 131.64
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 73,
+          "net_r": 21.5291,
+          "mean_er": 0.294919,
+          "win_rate": 0.6849,
+          "profit_factor": 1.8585,
+          "net_pnl": 10764.56
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 62,
+          "net_r": -2.2786,
+          "mean_er": -0.036751,
+          "win_rate": 0.5484,
+          "profit_factor": 0.9247,
+          "net_pnl": -1139.28
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 73,
+          "net_r": -9.4245,
+          "mean_er": -0.129102,
+          "win_rate": 0.4932,
+          "profit_factor": 0.758,
+          "net_pnl": -4712.24
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 6.6596,
+          "mean_er": 0.17999,
+          "win_rate": 0.5135,
+          "profit_factor": 1.3542,
+          "net_pnl": 3329.82
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 9.0306,
+          "mean_er": 0.153062,
+          "win_rate": 0.5593,
+          "profit_factor": 1.3306,
+          "net_pnl": 4515.32
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 9.1283,
+          "mean_er": 0.142629,
+          "win_rate": 0.5625,
+          "profit_factor": 1.315,
+          "net_pnl": 4564.14
+        }
+      ]
+    },
+    "E3_C0+L_asia_S0_canonico": {
+      "cell_id": "E3_C0+L_asia_S0_canonico",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S0",
+      "market": "MNQ",
+      "total_trades": 494,
+      "total_net_r": -17.864,
+      "global_expectancy_r": -0.036162,
+      "global_profit_factor": 0.9297,
+      "global_win_rate": 0.5506,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.135463,
+        0.068787
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 60,
+          "net_r": -10.814,
+          "mean_er": -0.180233,
+          "win_rate": 0.4833,
+          "profit_factor": 0.7,
+          "net_pnl": -5407.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": -6.535,
+          "mean_er": -0.096103,
+          "win_rate": 0.5294,
+          "profit_factor": 0.827,
+          "net_pnl": -3267.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 71,
+          "net_r": 11.401,
+          "mean_er": 0.160577,
+          "win_rate": 0.6901,
+          "profit_factor": 1.4315,
+          "net_pnl": 5700.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 62,
+          "net_r": -11.215,
+          "mean_er": -0.180887,
+          "win_rate": 0.5484,
+          "profit_factor": 0.6626,
+          "net_pnl": -5607.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 73,
+          "net_r": -14.914,
+          "mean_er": -0.204301,
+          "win_rate": 0.4932,
+          "profit_factor": 0.6421,
+          "net_pnl": -7457.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 4.424,
+          "mean_er": 0.119568,
+          "win_rate": 0.5135,
+          "profit_factor": 1.2222,
+          "net_pnl": 2212.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 3.411,
+          "mean_er": 0.057814,
+          "win_rate": 0.5593,
+          "profit_factor": 1.1176,
+          "net_pnl": 1705.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 6.378,
+          "mean_er": 0.099656,
+          "win_rate": 0.5625,
+          "profit_factor": 1.2118,
+          "net_pnl": 3189.0
+        }
+      ]
+    },
+    "E3_C0+L_asia_S1_realista": {
+      "cell_id": "E3_C0+L_asia_S1_realista",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S1",
+      "market": "MNQ",
+      "total_trades": 496,
+      "total_net_r": 29.8708,
+      "global_expectancy_r": 0.060223,
+      "global_profit_factor": 1.126,
+      "global_win_rate": 0.5504,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.041969,
+        0.163072
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 60,
+          "net_r": -5.0372,
+          "mean_er": -0.083953,
+          "win_rate": 0.4833,
+          "profit_factor": 0.8484,
+          "net_pnl": -2518.58
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": 0.2633,
+          "mean_er": 0.003872,
+          "win_rate": 0.5294,
+          "profit_factor": 1.0076,
+          "net_pnl": 131.64
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 73,
+          "net_r": 21.5291,
+          "mean_er": 0.294919,
+          "win_rate": 0.6849,
+          "profit_factor": 1.8585,
+          "net_pnl": 10764.56
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 62,
+          "net_r": -2.2786,
+          "mean_er": -0.036751,
+          "win_rate": 0.5484,
+          "profit_factor": 0.9247,
+          "net_pnl": -1139.28
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 73,
+          "net_r": -9.4245,
+          "mean_er": -0.129102,
+          "win_rate": 0.4932,
+          "profit_factor": 0.758,
+          "net_pnl": -4712.24
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 6.6596,
+          "mean_er": 0.17999,
+          "win_rate": 0.5135,
+          "profit_factor": 1.3542,
+          "net_pnl": 3329.82
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 9.0306,
+          "mean_er": 0.153062,
+          "win_rate": 0.5593,
+          "profit_factor": 1.3306,
+          "net_pnl": 4515.32
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 9.1283,
+          "mean_er": 0.142629,
+          "win_rate": 0.5625,
+          "profit_factor": 1.315,
+          "net_pnl": 4564.14
+        }
+      ]
+    },
+    "E3_C0+L_asia_S1_canonico": {
+      "cell_id": "E3_C0+L_asia_S1_canonico",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S1",
+      "market": "MNQ",
+      "total_trades": 494,
+      "total_net_r": -17.864,
+      "global_expectancy_r": -0.036162,
+      "global_profit_factor": 0.9297,
+      "global_win_rate": 0.5506,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.135463,
+        0.068787
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 60,
+          "net_r": -10.814,
+          "mean_er": -0.180233,
+          "win_rate": 0.4833,
+          "profit_factor": 0.7,
+          "net_pnl": -5407.0
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 68,
+          "net_r": -6.535,
+          "mean_er": -0.096103,
+          "win_rate": 0.5294,
+          "profit_factor": 0.827,
+          "net_pnl": -3267.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 71,
+          "net_r": 11.401,
+          "mean_er": 0.160577,
+          "win_rate": 0.6901,
+          "profit_factor": 1.4315,
+          "net_pnl": 5700.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 62,
+          "net_r": -11.215,
+          "mean_er": -0.180887,
+          "win_rate": 0.5484,
+          "profit_factor": 0.6626,
+          "net_pnl": -5607.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 73,
+          "net_r": -14.914,
+          "mean_er": -0.204301,
+          "win_rate": 0.4932,
+          "profit_factor": 0.6421,
+          "net_pnl": -7457.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 4.424,
+          "mean_er": 0.119568,
+          "win_rate": 0.5135,
+          "profit_factor": 1.2222,
+          "net_pnl": 2212.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 59,
+          "net_r": 3.411,
+          "mean_er": 0.057814,
+          "win_rate": 0.5593,
+          "profit_factor": 1.1176,
+          "net_pnl": 1705.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 6.378,
+          "mean_er": 0.099656,
+          "win_rate": 0.5625,
+          "profit_factor": 1.2118,
+          "net_pnl": 3189.0
+        }
+      ]
+    },
+    "E3_C0+L_asia_S2_realista": {
+      "cell_id": "E3_C0+L_asia_S2_realista",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S2",
+      "market": "MNQ",
+      "total_trades": 511,
+      "total_net_r": 26.5915,
+      "global_expectancy_r": 0.052038,
+      "global_profit_factor": 1.1082,
+      "global_win_rate": 0.546,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.046632,
+        0.155082
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 61,
+          "net_r": -5.7997,
+          "mean_er": -0.095077,
+          "win_rate": 0.4918,
+          "profit_factor": 0.8255,
+          "net_pnl": -2899.86
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 71,
+          "net_r": -0.7365,
+          "mean_er": -0.010374,
+          "win_rate": 0.5211,
+          "profit_factor": 0.9799,
+          "net_pnl": -368.26
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 73,
+          "net_r": 22.3981,
+          "mean_er": 0.306824,
+          "win_rate": 0.6849,
+          "profit_factor": 1.8931,
+          "net_pnl": 11199.06
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 65,
+          "net_r": -4.3205,
+          "mean_er": -0.066469,
+          "win_rate": 0.5231,
+          "profit_factor": 0.8711,
+          "net_pnl": -2160.24
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 78,
+          "net_r": -11.4631,
+          "mean_er": -0.146963,
+          "win_rate": 0.4872,
+          "profit_factor": 0.7275,
+          "net_pnl": -5731.54
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 38,
+          "net_r": 6.2034,
+          "mean_er": 0.163247,
+          "win_rate": 0.5263,
+          "profit_factor": 1.3299,
+          "net_pnl": 3101.7
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 61,
+          "net_r": 12.2855,
+          "mean_er": 0.201401,
+          "win_rate": 0.5574,
+          "profit_factor": 1.4474,
+          "net_pnl": 6142.74
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 8.0243,
+          "mean_er": 0.125379,
+          "win_rate": 0.5625,
+          "profit_factor": 1.2769,
+          "net_pnl": 4012.14
+        }
+      ]
+    },
+    "E3_C0+L_asia_S2_canonico": {
+      "cell_id": "E3_C0+L_asia_S2_canonico",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S2",
+      "market": "MNQ",
+      "total_trades": 509,
+      "total_net_r": -21.68,
+      "global_expectancy_r": -0.042593,
+      "global_profit_factor": 0.9178,
+      "global_win_rate": 0.5462,
+      "positive_folds": 4,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.139039,
+        0.061252
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 61,
+          "net_r": -11.671,
+          "mean_er": -0.191328,
+          "win_rate": 0.4918,
+          "profit_factor": 0.6762,
+          "net_pnl": -5835.5
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 71,
+          "net_r": -7.923,
+          "mean_er": -0.111592,
+          "win_rate": 0.5211,
+          "profit_factor": 0.8029,
+          "net_pnl": -3961.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 71,
+          "net_r": 13.054,
+          "mean_er": 0.183859,
+          "win_rate": 0.6901,
+          "profit_factor": 1.4941,
+          "net_pnl": 6527.0
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 65,
+          "net_r": -13.597,
+          "mean_er": -0.209185,
+          "win_rate": 0.5231,
+          "profit_factor": 0.631,
+          "net_pnl": -6798.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 78,
+          "net_r": -17.234,
+          "mean_er": -0.220949,
+          "win_rate": 0.4872,
+          "profit_factor": 0.6166,
+          "net_pnl": -8617.0
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 38,
+          "net_r": 3.924,
+          "mean_er": 0.103263,
+          "win_rate": 0.5263,
+          "profit_factor": 1.1971,
+          "net_pnl": 1962.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 61,
+          "net_r": 6.469,
+          "mean_er": 0.106049,
+          "win_rate": 0.5574,
+          "profit_factor": 1.2217,
+          "net_pnl": 3234.5
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 64,
+          "net_r": 5.298,
+          "mean_er": 0.082781,
+          "win_rate": 0.5625,
+          "profit_factor": 1.1759,
+          "net_pnl": 2649.0
+        }
+      ]
+    },
+    "E3_C0+L_asia_S3_realista": {
+      "cell_id": "E3_C0+L_asia_S3_realista",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "realista",
+      "exit_variant": "S3",
+      "market": "MNQ",
+      "total_trades": 479,
+      "total_net_r": 39.3074,
+      "global_expectancy_r": 0.082061,
+      "global_profit_factor": 1.1081,
+      "global_win_rate": 0.286,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.089116,
+        0.259595
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 59,
+          "net_r": -6.3586,
+          "mean_er": -0.107774,
+          "win_rate": 0.2373,
+          "profit_factor": 0.867,
+          "net_pnl": -3179.32
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 65,
+          "net_r": 10.2543,
+          "mean_er": 0.157759,
+          "win_rate": 0.3077,
+          "profit_factor": 1.2109,
+          "net_pnl": 5127.16
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 68,
+          "net_r": 22.0591,
+          "mean_er": 0.324398,
+          "win_rate": 0.3529,
+          "profit_factor": 1.459,
+          "net_pnl": 11029.54
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 61,
+          "net_r": -17.7092,
+          "mean_er": -0.290315,
+          "win_rate": 0.1967,
+          "profit_factor": 0.6642,
+          "net_pnl": -8854.62
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 72,
+          "net_r": -28.0014,
+          "mean_er": -0.388909,
+          "win_rate": 0.1667,
+          "profit_factor": 0.5579,
+          "net_pnl": -14000.72
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 21.1205,
+          "mean_er": 0.570825,
+          "win_rate": 0.4054,
+          "profit_factor": 1.9165,
+          "net_pnl": 10560.26
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 57,
+          "net_r": 24.2261,
+          "mean_er": 0.42502,
+          "win_rate": 0.3684,
+          "profit_factor": 1.6424,
+          "net_pnl": 12113.06
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 60,
+          "net_r": 13.7166,
+          "mean_er": 0.228611,
+          "win_rate": 0.3167,
+          "profit_factor": 1.325,
+          "net_pnl": 6858.32
+        }
+      ]
+    },
+    "E3_C0+L_asia_S3_canonico": {
+      "cell_id": "E3_C0+L_asia_S3_canonico",
+      "arm_id": "C0+L",
+      "window_id": "asia",
+      "cost_scenario": "canonico",
+      "exit_variant": "S3",
+      "market": "MNQ",
+      "total_trades": 478,
+      "total_net_r": 0.97,
+      "global_expectancy_r": 0.002029,
+      "global_profit_factor": 1.0025,
+      "global_win_rate": 0.2887,
+      "positive_folds": 5,
+      "total_folds": 8,
+      "bootstrap_ci_95": [
+        -0.171535,
+        0.182411
+      ],
+      "sin_muestra": false,
+      "folds": [
+        {
+          "fold_id": 0,
+          "test_start": "2022-07-01",
+          "test_end": "2023-01-01",
+          "n_trades": 59,
+          "net_r": -11.947,
+          "mean_er": -0.202492,
+          "win_rate": 0.2373,
+          "profit_factor": 0.7689,
+          "net_pnl": -5973.5
+        },
+        {
+          "fold_id": 1,
+          "test_start": "2023-01-01",
+          "test_end": "2023-07-01",
+          "n_trades": 65,
+          "net_r": 2.403,
+          "mean_er": 0.036969,
+          "win_rate": 0.3077,
+          "profit_factor": 1.0449,
+          "net_pnl": 1201.5
+        },
+        {
+          "fold_id": 2,
+          "test_start": "2023-07-01",
+          "test_end": "2024-01-01",
+          "n_trades": 67,
+          "net_r": 18.597,
+          "mean_er": 0.277567,
+          "win_rate": 0.3731,
+          "profit_factor": 1.3662,
+          "net_pnl": 9298.5
+        },
+        {
+          "fold_id": 3,
+          "test_start": "2024-01-01",
+          "test_end": "2024-07-01",
+          "n_trades": 61,
+          "net_r": -24.763,
+          "mean_er": -0.405951,
+          "win_rate": 0.1967,
+          "profit_factor": 0.5729,
+          "net_pnl": -12381.5
+        },
+        {
+          "fold_id": 4,
+          "test_start": "2024-07-01",
+          "test_end": "2025-01-01",
+          "n_trades": 72,
+          "net_r": -33.679,
+          "mean_er": -0.467764,
+          "win_rate": 0.1667,
+          "profit_factor": 0.5024,
+          "net_pnl": -16839.5
+        },
+        {
+          "fold_id": 5,
+          "test_start": "2025-01-01",
+          "test_end": "2025-07-01",
+          "n_trades": 37,
+          "net_r": 18.914,
+          "mean_er": 0.511189,
+          "win_rate": 0.4054,
+          "profit_factor": 1.7776,
+          "net_pnl": 9457.0
+        },
+        {
+          "fold_id": 6,
+          "test_start": "2025-07-01",
+          "test_end": "2026-01-01",
+          "n_trades": 57,
+          "net_r": 20.286,
+          "mean_er": 0.355895,
+          "win_rate": 0.3684,
+          "profit_factor": 1.507,
+          "net_pnl": 10143.0
+        },
+        {
+          "fold_id": 7,
+          "test_start": "2026-01-01",
+          "test_end": "2026-07-01",
+          "n_trades": 60,
+          "net_r": 11.159,
+          "mean_er": 0.185983,
+          "win_rate": 0.3167,
+          "profit_factor": 1.2541,
+          "net_pnl": 5579.5
+        }
+      ]
+    }
+  }
+}

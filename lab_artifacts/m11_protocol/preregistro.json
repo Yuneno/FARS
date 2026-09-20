@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "protocol": "Bloque M11: Régimen horario + gestión de salida sobre candidata EMA + zona + liquidez",
+    "timestamp_utc": "2026-09-20T03:36:30Z",
+    "base_commit_sha": "f25b3537efedc570210d1d70ff1b0d96666e55e0",
+    "base_branch": "main",
+    "active_branch": "bloque-m11-regimen-salidas",
+    "environment": "E:\\FARS-LAB\\.venv-fars\\Scripts\\python.exe",
+    "max_workers": 4
+  },
+  "continuity_gate": {
+    "description": "C0 sin filtros en escenario canonico DEBE reproducir EXACTO el artefacto c2_protocol/emas_baseline_fold_metrics.json",
+    "reference_artifact": "lab_artifacts/c2_protocol/emas_baseline_fold_metrics.json",
+    "scenario": "canonico",
+    "expected_metrics": {
+      "total_trades": 2823,
+      "total_net_r": -62.067,
+      "global_expectancy_r": -0.021986,
+      "global_win_rate": 0.5243,
+      "fold_trade_counts": [345, 355, 342, 336, 368, 350, 355, 372]
+    },
+    "action_on_mismatch": "STOP and report in BLOCKERS.md"
+  },
+  "cost_scenarios": {
+    "realista": {
+      "role": "decisor",
+      "commission_per_side": 0.62,
+      "slippage_ticks": 1.0,
+      "slippage_points_mnq": 0.25,
+      "time_exit_mode": "market"
+    },
+    "canonico": {
+      "role": "transparencia",
+      "commission_per_side": 2.0,
+      "slippage_ticks": 0.0,
+      "slippage_points_mnq": 0.0,
+      "time_exit_mode": "market"
+    }
+  },
+  "etapa_1_confluencias": {
+    "description": "Evaluación de las 4 combinaciones de confluencia sobre MNQ M5 walk-forward 8 folds",
+    "arms": [
+      {
+        "arm_id": "C0",
+        "name": "EMA Baseline",
+        "description": "EMAS tal cual de fábrica (port causal de kai: EMA 10/20/55/200, gates ET, vetos volumen/distancia, confirmación M15/H1, stop ATR(14), parcial + BE, target_rr=3.0, riesgo k=0.5)"
+      },
+      {
+        "arm_id": "C0+Z",
+        "name": "EMA + Zona",
+        "description": "C0 filtrado por predicado inside_fvg (longs en bullish FVG, shorts en bearish FVG)"
+      },
+      {
+        "arm_id": "C0+L",
+        "name": "EMA + Liquidez",
+        "description": "C0 filtrado por predicado distance_to_{lado}_liquidity_atr_le_1 (longs con sellside liq <= 1.0 ATR, shorts con buyside liq <= 1.0 ATR)"
+      },
+      {
+        "arm_id": "C0+Z+L",
+        "name": "EMA + Zona + Liquidez",
+        "description": "C0 con ambas confluencias activas simultáneamente (inside_fvg AND distance_to_{lado}_liquidity_atr_le_1)"
+      }
+    ],
+    "scenarios": ["realista", "canonico"]
+  },
+  "etapa_2_regimen_horario": {
+    "description": "Partición horaria disjunta en tiempo ET (America/New_York) cruzada sobre cada brazo de Etapa 1 (16 celdas)",
+    "time_windows": {
+      "full": {
+        "description": "Sin corte (referencia completa 24h)",
+        "window_et": "[00:00, 24:00)"
+      },
+      "rth": {
+        "description": "Regular Trading Hours US equities",
+        "window_et": "[09:30, 16:00)",
+        "minute_range": [570, 960]
+      },
+      "asia": {
+        "description": "Sesión asiática nocturna",
+        "window_et": "[18:00, 03:00)",
+        "minute_range_1": [1080, 1440],
+        "minute_range_2": [0, 180]
+      },
+      "noche": {
+        "description": "Sesión overnight Londres / pre-mercado y cierre post-RTH",
+        "window_et": "[03:00, 09:30) U [16:00, 18:00)",
+        "minute_range_1": [180, 570],
+        "minute_range_2": [960, 1080]
+      }
+    },
+    "grid_cells_count": 16,
+    "minimum_sample_n": 60,
+    "insufficient_sample_label": "sin muestra",
+    "context_output": "histograma_operaciones_por_hora_et.json"
+  },
+  "etapa_3_salidas": {
+    "selection_rule": "Mayor E[R] neta realista entre las celdas de Etapa 2 con n >= 300. Si ninguna califica, se corre sobre C0/full y se declara.",
+    "arms": [
+      {
+        "arm_id": "S0",
+        "name": "Fábrica (referencia)",
+        "partial_take_profit_fraction": 0.5,
+        "move_stop_to_break_even": true,
+        "max_bars_held": 1000000000,
+        "description": "Toma parcial 50% a 1R + desplazamiento de stop a BE + runner al target 3.0R de fábrica"
+      },
+      {
+        "arm_id": "S1",
+        "name": "Parcial 50% + BE",
+        "partial_take_profit_fraction": 0.5,
+        "move_stop_to_break_even": true,
+        "max_bars_held": 1000000000,
+        "description": "Parcial 50% a 1R + BE + runner al target de fábrica (formalización explícita)"
+      },
+      {
+        "arm_id": "S2",
+        "name": "S1 + Time-stop",
+        "partial_take_profit_fraction": 0.5,
+        "move_stop_to_break_even": true,
+        "max_bars_held": 48,
+        "description": "S1 con time-stop a 48 barras M5 (4 horas de retención máxima)"
+      },
+      {
+        "arm_id": "S3",
+        "name": "Sin parcial (todo al runner)",
+        "partial_take_profit_fraction": 0.0,
+        "move_stop_to_break_even": false,
+        "max_bars_held": 1000000000,
+        "description": "Sin toma parcial (f=0.00), todo al runner al target 3.0R de fábrica. Limitación declarada: en executor.py:182 move_stop_to_break_even requiere f > 0; sin modificar src/, S3 corre con move_stop_to_break_even=False."
+      }
+    ]
+  },
+  "promotion_gates": {
+    "primary_edge_filter": {
+      "ic95_cbb_lower_gt_zero": true,
+      "positive_folds_ratio_ge": 0.75,
+      "minimum_trades_n": 300
+    },
+    "cpcv_pbo_diagnostic": {
+      "universe_definition": "16 celdas de Etapa 2 + 4 celdas de Etapa 3",
+      "N": 10,
+      "k": 2,
+      "embargo_h_bars": 192,
+      "max_pbo_threshold": 0.35,
+      "verdict_if_exceeded": "FAIL_NO_PROMOTION"
+    },
+    "multimarket_confirmation": {
+      "markets": ["MES", "MYM", "MGC"],
+      "minimum_confirmed_markets": 2,
+      "scenario": "realista",
+      "same_parameters": true
+    },
+    "economic_reading_m10": {
+      "minimum_er_target": 0.10,
+      "optimal_er_target": 0.15,
+      "role": "lectura_economica_no_gate"
+    }
+  }
+}
