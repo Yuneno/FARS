@@ -25,6 +25,7 @@ from typing import Any
 
 from src.realtime.clock import Clock
 from src.realtime.events import (
+    EXEC_ACCEPTED,
     EXEC_FILLED,
     EXEC_REJECTED,
     ExecutionReport,
@@ -39,6 +40,11 @@ from src.realtime.interfaces import LIVE_EXECUTION_ENABLED, ExecutionAdapter
 from src.realtime.orders.practice_client import (
     ORDER_SIDE_BUY,
     ORDER_SIDE_SELL,
+    ORDER_STATUS_CANCELLED,
+    ORDER_STATUS_EXPIRED,
+    ORDER_STATUS_FILLED,
+    ORDER_STATUS_REJECTED,
+    ORDER_STATUS_WORKING,
     ORDER_TYPE_LIMIT,
     ORDER_TYPE_MARKET,
     ORDER_TYPE_STOP,
@@ -98,7 +104,9 @@ class PracticeExecutionAdapter(ExecutionAdapter):
         self._source = source
         self._seq = 0
         self._reports: dict[tuple[str, str], ExecutionReport] = {}
+        self._fingerprints: dict[tuple[str, str], tuple[Any, ...]] = {}
         self._open_positions: dict[str, int] = {}  # symbol -> net contracts
+        self._working_orders: dict[int, str] = {}  # order_id -> contract/symbol
         self._flatten_count = 0
 
     @property
@@ -110,6 +118,16 @@ class PracticeExecutionAdapter(ExecutionAdapter):
         return dict(self._open_positions)
 
     @property
+    def working_order_ids(self) -> frozenset[int]:
+        """Read-only view of currently tracked working order IDs."""
+        return frozenset(self._working_orders.keys())
+
+    @property
+    def working_order_count(self) -> int:
+        """Number of currently tracked working orders."""
+        return len(self._working_orders)
+
+    @property
     def flatten_count(self) -> int:
         return self._flatten_count
 
@@ -117,9 +135,33 @@ class PracticeExecutionAdapter(ExecutionAdapter):
     def order_client(self) -> PracticeOrderClient | None:
         return self._order_client
 
+    def _cache_report(
+        self,
+        key: tuple[str, str],
+        report: ExecutionReport,
+        fingerprint: tuple[Any, ...],
+    ) -> ExecutionReport:
+        self._reports[key] = report
+        self._fingerprints[key] = fingerprint
+        return report
+
     def _execute_authorized(self, intent: OrderIntent) -> ExecutionReport:
         key = identity_key(intent)
+        fingerprint = (
+            intent.symbol,
+            intent.action,
+            intent.risk_decision_id,
+            intent.origin,
+            intent.size,
+            intent.entry_price,
+            intent.stop_price,
+            intent.target_price,
+            intent.dollars_per_point,
+        )
         if key in self._reports:
+            previous_fp = self._fingerprints.get(key)
+            if previous_fp != fingerprint:
+                raise ValueError("duplicate practice intent identity with a conflicting fingerprint")
             return self._reports[key]
 
         # 1. Market close cutoff check (15:10 CT daily close rule)
@@ -135,8 +177,7 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                 origin=intent.origin,
                 reason="MARKET_CLOSE_CUTOFF_REACHED: new orders prohibited after 15:10 CT; flatten strictly enforced",
             )
-            self._reports[key] = report
-            return report
+            return self._cache_report(key, report, fingerprint)
 
         # 2. Allowlist gate (if allowlist configured)
         if self._account_allowlist:
@@ -161,11 +202,10 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                     origin=intent.origin,
                     reason=f"ACCOUNT_NOT_ALLOWLISTED: account {self._account_name!r} / {self._account_id!r} not in {self._account_allowlist!r}",
                 )
-                self._reports[key] = report
-                return report
+                return self._cache_report(key, report, fingerprint)
 
-        # 3. Gateway dispatch prerequisite: require both entry_price and stop_price (fail-closed)
-        if self._order_client is not None and self._order_client.practice_execution_enabled:
+        # 3. Prerequisite for LONG/SHORT: require both entry_price and stop_price (fail-closed, parity with gateway)
+        if intent.action in (SIGNAL_LONG, SIGNAL_SHORT):
             if intent.entry_price is None or intent.stop_price is None:
                 self._seq += 1
                 report = ExecutionReport(
@@ -177,12 +217,11 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                     status=EXEC_REJECTED,
                     origin=intent.origin,
                     reason=(
-                        "MISSING_ENTRY_OR_STOP_PRICE: gateway order requires both entry_price "
+                        "MISSING_ENTRY_OR_STOP_PRICE: order requires both entry_price "
                         f"and stop_price for risk pre-check and bracket placement (got entry={intent.entry_price!r}, stop={intent.stop_price!r})"
                     ),
                 )
-                self._reports[key] = report
-                return report
+                return self._cache_report(key, report, fingerprint)
 
         # 4. Risk per order pre-check (§4-bis RT-9) & Declared limit: strictly 1 micro
         effective_size = intent.size
@@ -211,8 +250,7 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                             f"(at 1 micro) exceeds limit ${self._max_risk_dollars_per_order:.2f}"
                         ),
                     )
-                    self._reports[key] = report
-                    return report
+                    return self._cache_report(key, report, fingerprint)
 
                 effective_size = 1
                 reduction_notes.append(
@@ -229,6 +267,20 @@ class PracticeExecutionAdapter(ExecutionAdapter):
 
         # 3. Gateway dispatch (if PracticeOrderClient is configured and active)
         if self._order_client is not None and self._order_client.practice_execution_enabled:
+            if intent.action == SIGNAL_FLAT:
+                self._seq += 1
+                report = ExecutionReport(
+                    event_id=f"practice-reject-{self._seq}",
+                    source=self._source,
+                    timestamp=self._clock.now(),
+                    sequence=self._seq,
+                    order_intent_id=intent.event_id,
+                    status=EXEC_REJECTED,
+                    origin=intent.origin,
+                    reason="FLAT_REQUIRES_EXPLICIT_FLATTEN: flat signals cannot be routed as directional gateway orders; use adapter.flatten()",
+                )
+                return self._cache_report(key, report, fingerprint)
+
             if self._account_id is None:
                 self._seq += 1
                 report = ExecutionReport(
@@ -241,8 +293,7 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                     origin=intent.origin,
                     reason="MISSING_ACCOUNT_ID: account_id required for gateway order placement",
                 )
-                self._reports[key] = report
-                return report
+                return self._cache_report(key, report, fingerprint)
 
             contract = self._contract_id or intent.symbol
             side = ORDER_SIDE_BUY if intent.action == SIGNAL_LONG else ORDER_SIDE_SELL
@@ -280,28 +331,87 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                 if reduction_note:
                     reason_str += f"; {reduction_note}"
 
-                report = ExecutionReport(
-                    event_id=f"practice-gateway-{result.order_id}",
-                    source=self._source,
-                    timestamp=self._clock.now(),
-                    sequence=self._seq,
-                    order_intent_id=intent.event_id,
-                    status=EXEC_FILLED,
-                    origin=intent.origin,
-                    reason=reason_str,
-                )
-                self._reports[key] = report
-
-                # Update position tracking
-                current = self._open_positions.get(intent.symbol, 0)
-                if intent.action == SIGNAL_LONG:
-                    self._open_positions[intent.symbol] = current + effective_size
-                elif intent.action == SIGNAL_SHORT:
-                    self._open_positions[intent.symbol] = current - effective_size
-                elif intent.action == SIGNAL_FLAT:
-                    self._open_positions[intent.symbol] = 0
-
-                return report
+                if result.status == ORDER_STATUS_WORKING:
+                    self._working_orders[result.order_id] = contract
+                    report = ExecutionReport(
+                        event_id=f"practice-gateway-{result.order_id}-{self._seq}",
+                        source=self._source,
+                        timestamp=self._clock.now(),
+                        sequence=self._seq,
+                        order_intent_id=intent.event_id,
+                        status=EXEC_ACCEPTED,
+                        origin=intent.origin,
+                        reason=reason_str,
+                    )
+                    return self._cache_report(key, report, fingerprint)
+                elif result.status == ORDER_STATUS_FILLED:
+                    report = ExecutionReport(
+                        event_id=f"practice-gateway-{result.order_id}-{self._seq}",
+                        source=self._source,
+                        timestamp=self._clock.now(),
+                        sequence=self._seq,
+                        order_intent_id=intent.event_id,
+                        status=EXEC_FILLED,
+                        origin=intent.origin,
+                        reason=reason_str,
+                    )
+                    current = self._open_positions.get(intent.symbol, 0)
+                    if intent.action == SIGNAL_LONG:
+                        self._open_positions[intent.symbol] = current + effective_size
+                    elif intent.action == SIGNAL_SHORT:
+                        self._open_positions[intent.symbol] = current - effective_size
+                    elif intent.action == SIGNAL_FLAT:
+                        self._open_positions[intent.symbol] = 0
+                    return self._cache_report(key, report, fingerprint)
+                elif result.status == ORDER_STATUS_CANCELLED:
+                    report = ExecutionReport(
+                        event_id=f"practice-gateway-cancelled-{result.order_id}-{self._seq}",
+                        source=self._source,
+                        timestamp=self._clock.now(),
+                        sequence=self._seq,
+                        order_intent_id=intent.event_id,
+                        status=EXEC_REJECTED,
+                        origin=intent.origin,
+                        reason=f"GATEWAY_ORDER_CANCELLED: broker reported order {result.order_id} cancelled",
+                    )
+                    return self._cache_report(key, report, fingerprint)
+                elif result.status == ORDER_STATUS_REJECTED:
+                    err_detail = f": {result.error_message}" if result.error_message else ""
+                    report = ExecutionReport(
+                        event_id=f"practice-gateway-rejected-{result.order_id}-{self._seq}",
+                        source=self._source,
+                        timestamp=self._clock.now(),
+                        sequence=self._seq,
+                        order_intent_id=intent.event_id,
+                        status=EXEC_REJECTED,
+                        origin=intent.origin,
+                        reason=f"GATEWAY_ORDER_REJECTED: broker rejected order {result.order_id}{err_detail}",
+                    )
+                    return self._cache_report(key, report, fingerprint)
+                elif result.status == ORDER_STATUS_EXPIRED:
+                    report = ExecutionReport(
+                        event_id=f"practice-gateway-expired-{result.order_id}-{self._seq}",
+                        source=self._source,
+                        timestamp=self._clock.now(),
+                        sequence=self._seq,
+                        order_intent_id=intent.event_id,
+                        status=EXEC_REJECTED,
+                        origin=intent.origin,
+                        reason=f"GATEWAY_ORDER_EXPIRED: broker reported order {result.order_id} expired",
+                    )
+                    return self._cache_report(key, report, fingerprint)
+                else:
+                    report = ExecutionReport(
+                        event_id=f"practice-gateway-unknown-{result.order_id}-{self._seq}",
+                        source=self._source,
+                        timestamp=self._clock.now(),
+                        sequence=self._seq,
+                        order_intent_id=intent.event_id,
+                        status=EXEC_REJECTED,
+                        origin=intent.origin,
+                        reason=f"UNKNOWN_ORDER_STATUS: gateway returned unexpected status {result.status!r}",
+                    )
+                    return self._cache_report(key, report, fingerprint)
 
             except PracticeOrderError as exc:
                 self._seq += 1
@@ -315,8 +425,7 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                     origin=intent.origin,
                     reason=f"GATEWAY_REJECTION: {exc}",
                 )
-                self._reports[key] = report
-                return report
+                return self._cache_report(key, report, fingerprint)
 
         # 4. Deterministic Simulation / Offline Paper Fallback
         self._seq += 1
@@ -334,7 +443,6 @@ class PracticeExecutionAdapter(ExecutionAdapter):
             origin=intent.origin,
             reason="; ".join(reason_parts),
         )
-        self._reports[key] = report
 
         # Update position tracking
         current = self._open_positions.get(intent.symbol, 0)
@@ -345,7 +453,7 @@ class PracticeExecutionAdapter(ExecutionAdapter):
         elif intent.action == SIGNAL_FLAT:
             self._open_positions[intent.symbol] = 0
 
-        return report
+        return self._cache_report(key, report, fingerprint)
 
     def flatten(self, symbol: str | None = None) -> list[str]:
         """Flatten open positions and cancel working orders immediately. Fail-closed."""
@@ -354,14 +462,16 @@ class PracticeExecutionAdapter(ExecutionAdapter):
         if self._order_client is not None and self._order_client.practice_execution_enabled:
             if self._account_id is not None:
                 # Do not catch or silence gateway exceptions
-                self._order_client.cancel_all_orders(self._account_id, account_name=self._account_name)
                 if symbol is not None:
+                    # Symbol-specific flatten: cancel all working orders first, then flatten the specific contract
+                    self._order_client.cancel_all_orders(self._account_id, account_name=self._account_name)
                     target_contract = self._contract_id or symbol
                     self._order_client.flatten_contract(
                         self._account_id, target_contract, account_name=self._account_name
                     )
                     gateway_flattened.append(symbol)
                 else:
+                    # Full flatten: flatten_all is the single owner of cancel_all_orders + closing all positions
                     closed = self._order_client.flatten_all(self._account_id, account_name=self._account_name)
                     gateway_flattened.extend(closed)
 
@@ -401,12 +511,15 @@ class PracticeExecutionAdapter(ExecutionAdapter):
             if self._flatten_handler is not None:
                 self._flatten_handler()
 
+        # Clear verified working orders globally (cancel_all was executed for all symbols on gateway)
+        self._working_orders.clear()
+
         return all_flattened
 
     def check_market_close_cutoff(self) -> bool:
-        """Check 15:10 CT cutoff rule: triggers flatten if reached with open positions."""
+        """Check 15:10 CT cutoff rule: triggers flatten if reached with open positions or working orders."""
         if is_past_daily_close_cutoff(self._clock.now()):
-            if any(pos != 0 for pos in self._open_positions.values()):
+            if any(pos != 0 for pos in self._open_positions.values()) or len(self._working_orders) > 0:
                 self.flatten()
                 return True
         return False

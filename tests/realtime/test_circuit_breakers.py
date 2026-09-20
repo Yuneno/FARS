@@ -243,7 +243,7 @@ def test_practice_session_accumulated_loss_1000_triggers_total_shutdown():
     # Position open
     sig = Signal("sig-1", "strat", TS, 1, "MNQ", "LONG", "live")
     dec = risk.evaluate(sig)
-    oi = OrderIntent("oi-1", "exec", TS, 1, "MNQ", "LONG", dec.event_id, origin="live")
+    oi = OrderIntent("oi-1", "exec", TS, 1, "MNQ", "LONG", dec.event_id, origin="live", entry_price=20000.0, stop_price=19950.0)
     adapter.submit(sig, dec, oi)
     assert adapter.open_positions["MNQ"] == 1
 

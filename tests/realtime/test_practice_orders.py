@@ -15,6 +15,7 @@ import pytest
 from src.realtime.clock import FrozenClock
 from src.realtime.connectors.projectx import JsonTransport
 from src.realtime.events import (
+    EXEC_ACCEPTED,
     EXEC_FILLED,
     EXEC_REJECTED,
     ORIGIN_LIVE,
@@ -465,9 +466,9 @@ def test_practice_adapter_dispatches_through_order_client() -> None:
     )
 
     report = adapter.submit(sig, dec, intent)
-    assert report.status == EXEC_FILLED
+    assert report.status == EXEC_ACCEPTED
     assert "GATEWAY_ORDER_PLACED" in report.reason
-    assert adapter.open_positions[TEST_CONTRACT_ID] == 1
+    assert adapter.open_positions.get(TEST_CONTRACT_ID, 0) == 0
 
     # Check transport received the order with brackets
     place_calls = [c for c in transport.calls if c[0] == "/api/Order/place"]
@@ -536,9 +537,9 @@ def test_practice_adapter_precheck_reduces_size_and_dispatches() -> None:
     )
 
     report = adapter.submit(sig, dec, intent)
-    assert report.status == EXEC_FILLED
+    assert report.status == EXEC_ACCEPTED
     assert "REDUCED_TO_1_MICRO" in report.reason
-    assert adapter.open_positions[TEST_CONTRACT_ID] == 1
+    assert adapter.open_positions.get(TEST_CONTRACT_ID, 0) == 0
 
     place_calls = [c for c in transport.calls if c[0] == "/api/Order/place"]
     assert place_calls[0][1]["size"] == 1
@@ -693,7 +694,7 @@ def test_order_with_size_3_small_stop_clamped_to_1_micro() -> None:
     )
 
     report = adapter.submit(sig, dec, intent)
-    assert report.status == EXEC_FILLED
+    assert report.status == EXEC_ACCEPTED
     assert "CLAMPED_TO_1_MICRO" in report.reason
 
     place_calls = [c for c in transport.calls if c[0] == "/api/Order/place"]
