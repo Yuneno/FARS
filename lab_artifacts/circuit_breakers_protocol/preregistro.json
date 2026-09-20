@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "protocol": "Bloque RT-9 (§4-bis) Circuit Breakers de Sesión",
+    "timestamp_utc": "2026-09-20T04:50:00Z",
+    "git_base_commit": "5fb30efefc8c3b92c89b36f1e845aea0ff334c68",
+    "git_branch": "bloque-circuit-breakers-sesion",
+    "author": "Ricardo Medina (Owner) & Gemini (Agent)"
+  },
+  "declared_limits_practice": {
+    "account_type": "Practice",
+    "initial_balance_usd": 50000.0,
+    "daily_profit_target_usd": 500.0,
+    "daily_loss_limit_usd": 200.0,
+    "max_risk_dollars_per_order": 200.0,
+    "max_drawdown_usd": 1000.0,
+    "max_trades_per_day": 6,
+    "default_symbol": "MNQ",
+    "default_dollars_per_point": 2.0
+  },
+  "declared_behaviors": {
+    "daily_profit_target": {
+      "trigger": "equity >= start_of_day_equity + 500.0",
+      "reason": "DAILY_PROFIT_TARGET_REACHED",
+      "action": "flatten_once_if_open_and_halt_for_today",
+      "latch": "latched_until_next_utc_day",
+      "rationale": "Preservar racha positiva, no devolver lo ganado al mercado"
+    },
+    "daily_loss_limit": {
+      "trigger": "equity <= start_of_day_equity - 200.0",
+      "reason": "DAILY_LOSS_LIMIT",
+      "action": "flatten_once_and_halt_until_next_utc_day",
+      "latch": "latched_until_next_utc_day",
+      "rationale": "Cortar drawdown diario de inmediato y apagar el runner"
+    },
+    "max_risk_per_order": {
+      "formula": "|entry_price - stop_price| * dollars_per_point * size",
+      "threshold_usd": 200.0,
+      "adaptation": "if risk > 200 and risk_at_1_micro <= 200 -> reduce size to 1 micro",
+      "veto": "if risk_at_1_micro > 200 -> reject order with MAX_RISK_PER_ORDER",
+      "rationale": "Garantizar que ninguna orden individual exponga más de $200"
+    },
+    "accumulated_loss_drawdown": {
+      "trigger": "equity <= reference_balance - 1000.0",
+      "reason": "DRAWDOWN_BUFFER_TOO_LOW",
+      "action": "flatten_and_total_shutdown",
+      "latch": "permanent_shutdown",
+      "rationale": "Disciplina de preservación de cuenta de práctica"
+    },
+    "anti_overtrading": {
+      "trigger": "trades_applied >= 6",
+      "reason": "MAX_TRADES_REACHED",
+      "action": "veto_subsequent_orders_for_the_day"
+    }
+  },
+  "execution_safety": {
+    "live_execution_enabled": false,
+    "allowlist_policy": "explicit_allowlist_only",
+    "fail_closed": true
+  }
+}

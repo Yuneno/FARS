@@ -30,27 +30,31 @@ from src.realtime.risk import (
     REASON_DRAWDOWN,
     REASON_HALTED,
     REASON_MAX_TRADES,
+    REASON_DAILY_PROFIT_TARGET,
     REASON_RECONCILE,
     REASON_STALE,
     REASON_UNKNOWN,
     AccountAwareRiskEngine,
 )
-from src.types import FundedAccountRules, Trade
+from src.types import FundedAccountRules, Trade, create_practice_rules
 
 TS = datetime(2024, 8, 1, 14, 0, tzinfo=timezone.utc)
 
 
 def _rules(**kwargs) -> FundedAccountRules:
-    return FundedAccountRules(
-        initial_balance=kwargs.get("initial_balance", 100_000.0),
-        profit_target_pct=kwargs.get("profit_target_pct", 0.10),
-        max_drawdown_pct=kwargs.get("max_drawdown_pct", 0.10),
-        daily_loss_limit_pct=kwargs.get("daily_loss_limit_pct", 0.05),
-        risk_per_trade=kwargs.get("risk_per_trade", 0.01),
-        daily_loss_base=kwargs.get("daily_loss_base", "initial"),
-        drawdown_mode=kwargs.get("drawdown_mode", "static"),
-        max_trades=kwargs.get("max_trades"),
-    )
+    defaults = {
+        "initial_balance": 100_000.0,
+        "profit_target_pct": 0.10,
+        "max_drawdown_pct": 0.10,
+        "daily_loss_limit_pct": 0.05,
+        "risk_per_trade": 0.01,
+        "daily_loss_base": "initial",
+        "drawdown_mode": "static",
+        "max_trades": None,
+    }
+    defaults.update(kwargs)
+    return FundedAccountRules(**defaults)
+
 
 
 def _engine(rules=None, instant=TS) -> AccountAwareRiskEngine:
@@ -515,3 +519,84 @@ def test_denied_decision_cannot_reach_execution():
     with pytest.raises(ValueError, match="did not approve"):
         sink.submit(signal, decision, intent)
     assert sink.got == []
+
+
+def test_daily_profit_target_reached_denies_and_latches():
+    rules = _rules(daily_profit_target_usd=500.0)
+    engine = _engine(rules)
+    engine.observe(_snapshot(equity=100_000.0, trades_applied=0))
+    later = TS + timedelta(minutes=15)
+    engine.observe(
+        _snapshot(
+            event_id="acct-profit",
+            timestamp=later,
+            sequence=2,
+            equity=100_500.0,
+            peak_equity=100_500.0,
+            trades_applied=1,
+        )
+    )
+    decision = engine.evaluate(_signal(timestamp=later, sequence=2))
+    assert is_authorized(decision) is False
+    assert decision.reason == REASON_DAILY_PROFIT_TARGET
+
+    # Latching: even if equity pulls back below target within same day, remains halted
+    engine.observe(
+        _snapshot(
+            event_id="acct-pullback",
+            timestamp=later + timedelta(minutes=5),
+            sequence=3,
+            equity=100_450.0,
+            peak_equity=100_500.0,
+            trades_applied=1,
+        )
+    )
+    decision_latched = engine.evaluate(_signal(timestamp=later + timedelta(minutes=5), sequence=3))
+    assert is_authorized(decision_latched) is False
+    assert decision_latched.reason == REASON_DAILY_PROFIT_TARGET
+
+
+def test_daily_profit_target_resets_on_new_utc_day():
+    rules = _rules(daily_profit_target_usd=500.0)
+    engine = _engine(rules)
+    engine.observe(_snapshot(equity=100_000.0, trades_applied=0))
+    # Hit profit target on day 1
+    engine.observe(_snapshot(event_id="d1-profit", sequence=2, equity=100_500.0, trades_applied=1))
+    assert engine.evaluate(_signal()).reason == REASON_DAILY_PROFIT_TARGET
+
+    # Next UTC day
+    next_day = TS + timedelta(days=1)
+    engine.observe(
+        _snapshot(
+            event_id="d2-open",
+            timestamp=next_day,
+            sequence=3,
+            equity=100_500.0,
+            peak_equity=100_500.0,
+            trades_applied=1,
+        )
+    )
+    decision = engine.evaluate(_signal(timestamp=next_day, sequence=2))
+    assert is_authorized(decision) is True
+    assert decision.reason == REASON_APPROVED
+
+
+def test_daily_profit_target_just_below_threshold_approves():
+    rules = _rules(daily_profit_target_usd=500.0)
+    engine = _engine(rules)
+    engine.observe(_snapshot(equity=100_000.0, trades_applied=0))
+    engine.observe(_snapshot(event_id="acct-2", sequence=2, equity=100_499.99, trades_applied=1))
+    decision = engine.evaluate(_signal(sequence=2))
+    assert is_authorized(decision) is True
+    assert decision.reason == REASON_APPROVED
+
+
+def test_create_practice_rules_matches_declared_practice_limits():
+    rules = create_practice_rules()
+    assert rules.initial_balance == 50_000.0
+    assert rules.daily_profit_target_usd == 500.0
+    assert rules.daily_loss_limit_usd == 200.0
+    assert rules.max_risk_dollars_per_order == 200.0
+    assert rules.max_drawdown_usd == 1000.0
+    assert rules.max_trades == 6
+

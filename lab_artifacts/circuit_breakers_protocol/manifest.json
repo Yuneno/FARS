@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "protocol": "Bloque RT-9 (§4-bis) Circuit Breakers de Sesión",
+    "generated_at_utc": "2026-09-20T04:53:09.675187+00:00",
+    "git_commit_base": "5fb30efefc8c3b92c89b36f1e845aea0ff334c68"
+  },
+  "artifacts": {
+    "lab_artifacts/circuit_breakers_protocol/BLOCKERS.md": {
+      "sha256": "97215f3b3f86cb71d9d1b012eebe2e0588c3dc16bf384df641fb1c96ebcec69f",
+      "bytes": 2205
+    },
+    "lab_artifacts/circuit_breakers_protocol/INFORME.md": {
+      "sha256": "e14c9ff365ca928dcaab99084f3939c6d8129a2678821e3a70ae8f40cc898d12",
+      "bytes": 9127
+    },
+    "lab_artifacts/circuit_breakers_protocol/preregistro.json": {
+      "sha256": "5e90b1446c60715e1443fb679ea48629c013b97b4543e2b2e69cca44900a7a4f",
+      "bytes": 2317
+    }
+  }
+}
