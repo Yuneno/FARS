@@ -36,6 +36,8 @@ REASON_RECONCILE = "RECONCILIATION_MISMATCH"
 REASON_CIRCUIT = "CIRCUIT_BREAKER"
 REASON_DRAWDOWN = "DRAWDOWN_BUFFER_TOO_LOW"
 REASON_DAILY_LOSS = "DAILY_LOSS_LIMIT"
+REASON_DAILY_PROFIT_TARGET = "DAILY_PROFIT_TARGET_REACHED"
+REASON_MAX_RISK_PER_ORDER = "MAX_RISK_PER_ORDER"
 REASON_MAX_TRADES = "MAX_TRADES_REACHED"
 REASON_APPROVED = "APPROVED"
 
@@ -77,6 +79,7 @@ class AccountAwareRiskEngine:
         self._circuit = False
         self._mismatch = False
         self._clock_inconsistent = False
+        self._daily_profit_reached = False
 
     def observe(self, event: CanonicalEvent) -> None:
         """Ingest account/system state. Market ticks and signals are ignored."""
@@ -148,6 +151,7 @@ class AccountAwareRiskEngine:
                 else:
                     self._start_of_day_equity = snap.equity
                 self._start_of_day_date = day
+                self._daily_profit_reached = False
             elif day < self._start_of_day_date:
                 self._clock_inconsistent = True
             if not self._disconnected:
@@ -190,6 +194,8 @@ class AccountAwareRiskEngine:
             return False, REASON_DRAWDOWN
         if self._daily_loss_violated(snap):
             return False, REASON_DAILY_LOSS
+        if self._daily_profit_target_reached(snap):
+            return False, REASON_DAILY_PROFIT_TARGET
         return True, REASON_APPROVED
 
     def _drawdown_violated(self, snap: AccountSnapshot) -> bool:
@@ -203,6 +209,9 @@ class AccountAwareRiskEngine:
             if peak is None:
                 return True
             ref = peak
+        max_dd_usd = getattr(self._rules, "max_drawdown_usd", None)
+        if max_dd_usd is not None and equity <= ref - max_dd_usd:
+            return True
         threshold = ref - ref * self._rules.max_drawdown_pct
         return equity <= threshold
 
@@ -211,8 +220,33 @@ class AccountAwareRiskEngine:
         sod = self._start_of_day_equity
         if equity is None or sod is None:
             return True
+        loss_usd = getattr(self._rules, "daily_loss_limit_usd", None)
+        if loss_usd is not None and equity <= sod - loss_usd:
+            return True
         if self._rules.daily_loss_base == "initial":
             threshold = sod - self._rules.initial_balance * self._rules.daily_loss_limit_pct
         else:
             threshold = sod - sod * self._rules.daily_loss_limit_pct
         return equity <= threshold
+
+    def _daily_profit_target_reached(self, snap: AccountSnapshot) -> bool:
+        if self._daily_profit_reached:
+            return True
+        equity = snap.equity
+        sod = self._start_of_day_equity
+        if equity is None or sod is None:
+            return False
+        reached = False
+        target_usd = getattr(self._rules, "daily_profit_target_usd", None)
+        if target_usd is not None and equity >= sod + target_usd:
+            reached = True
+        target_pct = getattr(self._rules, "daily_profit_target_pct", None)
+        if not reached and target_pct is not None:
+            ref = self._rules.initial_balance if self._rules.daily_loss_base == "initial" else sod
+            if equity >= sod + ref * target_pct:
+                reached = True
+        if reached:
+            self._daily_profit_reached = True
+            return True
+        return False
+

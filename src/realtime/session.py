@@ -72,7 +72,14 @@ def default_intent_factory(
     sequence: int,
     clock: Clock,
 ) -> OrderIntent:
-    """Create a minimal intent bound to one explicitly approved decision."""
+    """Create a minimal intent bound to one explicitly approved decision.
+
+    Note: This minimal factory emits intents without prices (suitable for pure
+    in-memory paper execution). Adapters requiring strict risk pre-checks and
+    gateway routing (such as PracticeExecutionAdapter) reject intents missing
+    entry_price or stop_price (fail-closed); callers targeting Practice execution
+    must inject a custom intent_factory that populates entry_price and stop_price.
+    """
 
     return OrderIntent(
         event_id=f"paper-intent-{sequence}",

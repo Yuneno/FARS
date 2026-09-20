@@ -181,6 +181,11 @@ class FundedAccountRules:
     daily_loss_base: Literal["initial", "eod"] = "initial"
     drawdown_mode: Literal["static", "trailing"] = "static"
     max_trades: int | None = None
+    daily_profit_target_pct: float | None = None
+    daily_profit_target_usd: float | None = None
+    daily_loss_limit_usd: float | None = None
+    max_drawdown_usd: float | None = None
+    max_risk_dollars_per_order: float | None = None
 
     def __post_init__(self):
         if not isfinite(self.initial_balance) or self.initial_balance <= 0:
@@ -268,3 +273,47 @@ class FundedAccountRules:
                 f"daily_loss_limit_pct too small: balance - balance*pct rounds to "
                 f"balance, got {self.daily_loss_limit_pct!r}"
             )
+        for name in (
+            "daily_profit_target_pct",
+            "daily_profit_target_usd",
+            "daily_loss_limit_usd",
+            "max_drawdown_usd",
+            "max_risk_dollars_per_order",
+        ):
+            val = getattr(self, name)
+            if val is not None:
+                if (
+                    not isinstance(val, (int, float))
+                    or isinstance(val, bool)
+                    or not isfinite(val)
+                    or val <= 0
+                ):
+                    raise ValueError(f"{name} must be finite and positive, got {val!r}")
+
+
+def create_practice_rules(
+    initial_balance: float = 50_000.0,
+    daily_profit_target_usd: float = 500.0,
+    daily_loss_limit_usd: float = 200.0,
+    max_risk_dollars_per_order: float = 200.0,
+    max_drawdown_usd: float = 1_000.0,
+    max_trades: int = 6,
+    profit_target_pct: float = 0.06,
+    drawdown_mode: Literal["static", "trailing"] = "static",
+) -> FundedAccountRules:
+    """Declared risk rules for the Practice account (§4-bis RT-9)."""
+    return FundedAccountRules(
+        initial_balance=initial_balance,
+        profit_target_pct=profit_target_pct,
+        max_drawdown_pct=max_drawdown_usd / initial_balance,
+        daily_loss_limit_pct=daily_loss_limit_usd / initial_balance,
+        risk_per_trade=max_risk_dollars_per_order / initial_balance,
+        daily_loss_base="initial",
+        drawdown_mode=drawdown_mode,
+        max_trades=max_trades,
+        daily_profit_target_usd=daily_profit_target_usd,
+        daily_loss_limit_usd=daily_loss_limit_usd,
+        max_drawdown_usd=max_drawdown_usd,
+        max_risk_dollars_per_order=max_risk_dollars_per_order,
+    )
+

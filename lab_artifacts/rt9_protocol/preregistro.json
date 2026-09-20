@@ -1,0 +1,45 @@
+{
+  "schema_version": "fars-rt9-preregistro-v1",
+  "created_at": "2026-09-20T00:57:00Z",
+  "branch": "bloque-rt9-ordenes-practice",
+  "base_commit": "6cbe1cb417ca3574c8612140bbd609db2460113f",
+  "base_branch": "bloque-circuit-breakers-sesion",
+  "target_account": {
+    "name": "PRAC-V2-673085-85699223",
+    "id": 27765990,
+    "simulated": true,
+    "can_trade": true,
+    "initial_balance": 150000.0
+  },
+  "prohibited_accounts": [
+    {
+      "pattern": "1.5KCHCR-*",
+      "reason": "Live Combine / Evaluation account (combate quemada); strictly forbidden from receiving orders"
+    }
+  ],
+  "permission_gates": {
+    "LIVE_EXECUTION_ENABLED": false,
+    "PRACTICE_EXECUTION_ENABLED": false,
+    "PRACTICE_ACCOUNT_ALLOWLIST": [
+      "PRAC-V2-673085-85699223",
+      27765990
+    ]
+  },
+  "declared_limits": {
+    "max_position_size_contracts": 1,
+    "contract_type": "micro",
+    "default_symbol": "MNQ",
+    "max_risk_dollars_per_order": 200.0,
+    "daily_profit_target_usd": 500.0,
+    "daily_loss_limit_usd": 200.0,
+    "max_drawdown_usd": 1000.0,
+    "max_trades_per_day": 6,
+    "market_close_rule": "15:10 CT flatten strictly enforced"
+  },
+  "anti_order_pending_discipline": {
+    "client_order_id_scheme": "fars-prac-{uuid}-{timestamp}",
+    "timeout_action": "search_open_orders and search_orders before concluding or retrying",
+    "blind_resend_allowed": false
+  },
+  "status": "FROZEN_PRE_EXECUTION"
+}

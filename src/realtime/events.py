@@ -63,6 +63,9 @@ _ALLOWED_SYSTEM_KINDS = {
     SYSTEM_HALTED,
 }
 
+REASON_DAILY_PROFIT_TARGET = "DAILY_PROFIT_TARGET_REACHED"
+REASON_MAX_RISK_PER_ORDER = "MAX_RISK_PER_ORDER"
+
 
 def _require_non_empty_str(name: str, value: object) -> str:
     if not isinstance(value, str) or value.strip() == "":
@@ -117,10 +120,16 @@ def _optional_aware_datetime(name: str, value: object) -> datetime | None:
     return _require_aware_datetime(name, value)
 
 
-def _optional_finite(name: str, value: object) -> float | None:
+def _optional_finite(
+    name: str,
+    value: object,
+    *,
+    positive: bool = False,
+    non_negative: bool = False,
+) -> float | None:
     if value is None:
         return None
-    return _require_finite(name, value)
+    return _require_finite(name, value, positive=positive, non_negative=non_negative)
 
 
 def _canonical_leaf(name: str, value: object) -> str | int | float:
@@ -448,6 +457,11 @@ class OrderIntent:
     action: str
     risk_decision_id: str
     origin: Literal["live", "replay"] = ORIGIN_LIVE
+    size: int = 1
+    entry_price: float | None = None
+    stop_price: float | None = None
+    target_price: float | None = None
+    dollars_per_point: float | None = None
 
     def __post_init__(self) -> None:
         _validate_envelope(
@@ -464,6 +478,12 @@ class OrderIntent:
                 f"action must be one of {sorted(_ALLOWED_SIGNAL_ACTIONS)}, "
                 f"got {self.action!r}"
             )
+        if not isinstance(self.size, int) or isinstance(self.size, bool) or self.size <= 0:
+            raise ValueError("size must be a positive integer")
+        _optional_finite("entry_price", self.entry_price, positive=True)
+        _optional_finite("stop_price", self.stop_price, positive=True)
+        _optional_finite("target_price", self.target_price, positive=True)
+        _optional_finite("dollars_per_point", self.dollars_per_point, positive=True)
 
 
 @dataclass(frozen=True)
