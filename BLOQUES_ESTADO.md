@@ -31,15 +31,15 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 | **Fases 1.0–10B** | Core estadístico + bootstrap | ✅ mergeado |
 | **Fases 11A–11C** (`agent/phases-night`) | datos de cuenta, reglas de fondeo, paths probabilísticos | ✅ **mergeado** (`b0f5e0b`) · **suite post-merge: 1586 passed, 2 skipped** ✓ |
 | **M10** (`bloque-m10-evaluacion`) | P(pasar) de evaluaciones Topstep con la foto limpia: C1 (SMC-FVG re-congelado), escalera C2, control C3, tabla económica | ✅ **MEDIDO — NO PAGAR** (C1 11,30 % ≈ control emparejado y peor que el zero-edge 27,9 %; gasto esperado $421–1.685). Acta `lab_artifacts/m10_protocol/HERMES_REVISION_M10.md` · merge `2e6fce1` |
+| **M11** (`bloque-m11-regimen-salidas`) | régimen horario + gestión de salida sobre la candidata EMA+zona+liquidez (3 etapas, 24 celdas) | ✅ **MEDIDO — NO** (0 celdas cruzan IC95; gate C0 exacto). Acta `lab_artifacts/m11_protocol/HERMES_REVISION_M11.md` · merge `ee9aaab` |
 
 ## 2. ABIERTOS (con nombre y siguiente paso)
 
 | Bloque | Qué falta | Siguiente paso |
 |---|---|---|
 | **S2** | sesión fantasma RTH con 50k/100k/150k + curva evolutiva | encargo listo: `E:\FARS-LAB\FARS_LAB_GEMINI_ENCARGO_BLOQUE_S2_CUENTA_FANTASMA.md` (hay una prueba de fontanería nocturna ya commiteada: `s2_protocol/`) |
-| **RT-9** | órdenes reales en cuenta **Practice** (place/cancel/search + brackets + kill-switch + protocolo de aceptación) | encargo por escribir; antes: respuesta de Juanca sobre cómo ejecuta Kai (Rithmic) y **cuenta Practice limpia** creada por Ricardo |
+| **RT-9** | órdenes reales en cuenta **Practice** (place/cancel/search + brackets + kill-switch + protocolo de aceptación) | **encargo listo**: `E:\FARS-LAB\FARS_LAB_GEMINI_ENCARGO_BLOQUE_RT9_ORDENES_PRACTICE.md` — pendiente: **cuenta Practice designada por Ricardo** (la vía TopstepX ya no requiere la respuesta de Juanca) |
 | **M10** | P(pasar) bajo reglas de Topstep (50k/100k/150k) con foto limpia + escalera de edge + control | ✅ **MEDIDO — NO PAGAR** (C1 ≈ control sintético; 2×F se cruza en +0,15 R). Ver §1. |
-| **M11** | régimen + gestión de salida (la única pregunta sin cerrar); candidata declarada `EMA + zona + liquidez` | **encargo listo**: `E:\FARS-LAB\FARS_LAB_GEMINI_ENCARGO_BLOQUE_M11_REGIMEN_SALIDAS.md` |
 | **Fase 11D** | primer adapter de proveedor | contrato aprobado, sin implementar |
 | **Fases 12/13** | validación temporal y estrés | contratos aprobados; **parámetros diferidos** (decidir antes de implementar) |
 | **Fase 14** | reporting operativo (sin ejecución) | contrato aprobado, sin implementar |
