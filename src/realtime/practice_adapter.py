@@ -45,6 +45,7 @@ from src.realtime.orders.practice_client import (
     BracketConfig,
     PracticeOrderClient,
     PracticeOrderError,
+    is_past_daily_close_cutoff,
 )
 
 
@@ -121,7 +122,23 @@ class PracticeExecutionAdapter(ExecutionAdapter):
         if key in self._reports:
             return self._reports[key]
 
-        # 1. Allowlist gate (if allowlist configured)
+        # 1. Market close cutoff check (15:10 CT daily close rule)
+        if is_past_daily_close_cutoff(self._clock.now()):
+            self._seq += 1
+            report = ExecutionReport(
+                event_id=f"practice-reject-{self._seq}",
+                source=self._source,
+                timestamp=self._clock.now(),
+                sequence=self._seq,
+                order_intent_id=intent.event_id,
+                status=EXEC_REJECTED,
+                origin=intent.origin,
+                reason="MARKET_CLOSE_CUTOFF_REACHED: new orders prohibited after 15:10 CT; flatten strictly enforced",
+            )
+            self._reports[key] = report
+            return report
+
+        # 2. Allowlist gate (if allowlist configured)
         if self._account_allowlist:
             matched = False
             if self._account_name is not None and self._account_name in self._account_allowlist:
@@ -147,28 +164,38 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                 self._reports[key] = report
                 return report
 
-        # 2. Risk per order pre-check (§4-bis RT-9)
+        # 3. Gateway dispatch prerequisite: require both entry_price and stop_price (fail-closed)
+        if self._order_client is not None and self._order_client.practice_execution_enabled:
+            if intent.entry_price is None or intent.stop_price is None:
+                self._seq += 1
+                report = ExecutionReport(
+                    event_id=f"practice-reject-{self._seq}",
+                    source=self._source,
+                    timestamp=self._clock.now(),
+                    sequence=self._seq,
+                    order_intent_id=intent.event_id,
+                    status=EXEC_REJECTED,
+                    origin=intent.origin,
+                    reason=(
+                        "MISSING_ENTRY_OR_STOP_PRICE: gateway order requires both entry_price "
+                        f"and stop_price for risk pre-check and bracket placement (got entry={intent.entry_price!r}, stop={intent.stop_price!r})"
+                    ),
+                )
+                self._reports[key] = report
+                return report
+
+        # 4. Risk per order pre-check (§4-bis RT-9) & Declared limit: strictly 1 micro
         effective_size = intent.size
-        size_reduced = False
-        reduction_note = ""
+        reduction_notes: list[str] = []
 
         if intent.entry_price is not None and intent.stop_price is not None:
             dpp = intent.dollars_per_point if intent.dollars_per_point is not None else self._default_dpp
             point_risk = abs(intent.entry_price - intent.stop_price)
-            order_risk = point_risk * dpp * intent.size
+            calc_risk = point_risk * dpp * intent.size
+            micro_risk = point_risk * dpp * 1
 
-            if order_risk > self._max_risk_dollars_per_order:
-                # Check if 1 micro fits within limit
-                micro_risk = point_risk * dpp * 1
-                if micro_risk <= self._max_risk_dollars_per_order:
-                    effective_size = 1
-                    size_reduced = True
-                    reduction_note = (
-                        f"REDUCED_TO_1_MICRO (requested {intent.size} with risk "
-                        f"${order_risk:.2f} > max ${self._max_risk_dollars_per_order:.2f}; "
-                        f"1 micro risk ${micro_risk:.2f} fits)"
-                    )
-                else:
+            if calc_risk > self._max_risk_dollars_per_order:
+                if micro_risk > self._max_risk_dollars_per_order:
                     # Even 1 micro exceeds limit -> VETO
                     self._seq += 1
                     report = ExecutionReport(
@@ -186,6 +213,19 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                     )
                     self._reports[key] = report
                     return report
+
+                effective_size = 1
+                reduction_notes.append(
+                    f"REDUCED_TO_1_MICRO: risk ${calc_risk:.2f} > ${self._max_risk_dollars_per_order:.2f}"
+                )
+
+        if effective_size > 1:
+            effective_size = 1
+            reduction_notes.append(
+                f"CLAMPED_TO_1_MICRO: requested size {intent.size} clamped to declared limit of 1 micro"
+            )
+
+        reduction_note = "; ".join(reduction_notes)
 
         # 3. Gateway dispatch (if PracticeOrderClient is configured and active)
         if self._order_client is not None and self._order_client.practice_execution_enabled:
@@ -313,19 +353,31 @@ class PracticeExecutionAdapter(ExecutionAdapter):
         # 1. Gateway cancellation and position closing if order_client present
         if self._order_client is not None and self._order_client.practice_execution_enabled:
             if self._account_id is not None:
-                try:
-                    self._order_client.cancel_all_orders(self._account_id, account_name=self._account_name)
-                    if symbol is not None:
-                        target_contract = self._contract_id or symbol
-                        self._order_client.flatten_contract(
-                            self._account_id, target_contract, account_name=self._account_name
-                        )
-                        gateway_flattened.append(symbol)
-                    else:
-                        closed = self._order_client.flatten_all(self._account_id, account_name=self._account_name)
-                        gateway_flattened.extend(closed)
-                except Exception:
-                    pass
+                # Do not catch or silence gateway exceptions
+                self._order_client.cancel_all_orders(self._account_id, account_name=self._account_name)
+                if symbol is not None:
+                    target_contract = self._contract_id or symbol
+                    self._order_client.flatten_contract(
+                        self._account_id, target_contract, account_name=self._account_name
+                    )
+                    gateway_flattened.append(symbol)
+                else:
+                    closed = self._order_client.flatten_all(self._account_id, account_name=self._account_name)
+                    gateway_flattened.extend(closed)
+
+                # Verified flatten: query gateway to confirm open positions are 0
+                open_pos = self._order_client.search_open_positions(
+                    self._account_id, account_name=self._account_name
+                )
+                target_check = [self._contract_id or symbol] if symbol is not None else None
+                unconfirmed = [
+                    p for p in open_pos
+                    if p.size != 0 and (target_check is None or p.contract_id in target_check)
+                ]
+                if unconfirmed:
+                    raise PracticeOrderError(
+                        f"FLATTEN_UNCONFIRMED: open positions persist on gateway after flatten: {unconfirmed}"
+                    )
 
         # 2. Local tracking update
         flattened_symbols: list[str] = []
@@ -350,3 +402,11 @@ class PracticeExecutionAdapter(ExecutionAdapter):
                 self._flatten_handler()
 
         return all_flattened
+
+    def check_market_close_cutoff(self) -> bool:
+        """Check 15:10 CT cutoff rule: triggers flatten if reached with open positions."""
+        if is_past_daily_close_cutoff(self._clock.now()):
+            if any(pos != 0 for pos in self._open_positions.values()):
+                self.flatten()
+                return True
+        return False

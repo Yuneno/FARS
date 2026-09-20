@@ -6,14 +6,14 @@
   "total_orders_placed": 4,
   "combine_orders_attempted": 0,
   "live_execution_enabled": false,
-  "completed_at": "2026-09-20T04:58:47.592214+00:00",
+  "completed_at": "2026-09-20T05:18:44.288606+00:00",
   "steps": [
     {
       "step_number": 1,
       "name": "account_validation",
       "passed": true,
       "detail": "Practice account PRAC-V2-673085-85699223 (id=27765990) verified; active contract CON_MNQ_202612",
-      "timestamp": "2026-09-20T04:58:47.591894+00:00",
+      "timestamp": "2026-09-20T05:18:44.286732+00:00",
       "evidence": {
         "account_id": 27765990,
         "account_name": "PRAC-V2-673085-85699223",
@@ -25,7 +25,7 @@
       "name": "initial_state_clean",
       "passed": true,
       "detail": "Initial state verified clean: 0 working orders, 0 positions",
-      "timestamp": "2026-09-20T04:58:47.591918+00:00",
+      "timestamp": "2026-09-20T05:18:44.287017+00:00",
       "evidence": {
         "open_orders_count": 0,
         "positions_count": 0
@@ -36,7 +36,7 @@
       "name": "limit_order_place_and_cancel",
       "passed": true,
       "detail": "Limit order 80000001 placed (working=True), cancelled cleanly (working_after=False)",
-      "timestamp": "2026-09-20T04:58:47.591939+00:00",
+      "timestamp": "2026-09-20T05:18:44.287306+00:00",
       "evidence": {
         "order_id": 80000001,
         "found_working": true,
@@ -48,7 +48,7 @@
       "name": "market_order_with_brackets",
       "passed": true,
       "detail": "Market order filled with open position (pos_found=True), 2 bracket orders working",
-      "timestamp": "2026-09-20T04:58:47.591995+00:00",
+      "timestamp": "2026-09-20T05:18:44.287754+00:00",
       "evidence": {
         "pos_found": true,
         "working_brackets_count": 2
@@ -59,7 +59,7 @@
       "name": "cancel_brackets_and_flatten",
       "passed": true,
       "detail": "Cancelled 2 brackets; position persisted before flatten; account verified flat after flatten",
-      "timestamp": "2026-09-20T04:58:47.592040+00:00",
+      "timestamp": "2026-09-20T05:18:44.288025+00:00",
       "evidence": {
         "cancelled_brackets": 2,
         "is_flat": true
@@ -70,7 +70,7 @@
       "name": "kill_switch_with_open_position",
       "passed": true,
       "detail": "Kill-switch flattened ['CON_MNQ_202612']; 0 working orders and flat position verified",
-      "timestamp": "2026-09-20T04:58:47.592074+00:00",
+      "timestamp": "2026-09-20T05:18:44.288178+00:00",
       "evidence": {
         "closed_contracts": [
           "CON_MNQ_202612"
@@ -82,10 +82,10 @@
       "step_number": 7,
       "name": "anti_order_pending_discipline",
       "passed": true,
-      "detail": "Anti-OrderPending verified: customTag 'fars-prac-test-1789880327592' correctly tracked; zero blind resends",
-      "timestamp": "2026-09-20T04:58:47.592125+00:00",
+      "detail": "Anti-OrderPending verified: customTag 'fars-prac-test-1789881524288' correctly tracked; zero blind resends",
+      "timestamp": "2026-09-20T05:18:44.288337+00:00",
       "evidence": {
-        "custom_tag": "fars-prac-test-1789880327592",
+        "custom_tag": "fars-prac-test-1789881524288",
         "passed": true
       }
     },
@@ -94,7 +94,7 @@
       "name": "final_audit_combine_isolation",
       "passed": true,
       "detail": "Audit verified: combine account 100% blocked (True); 0 combine requests sent (True); credentials safe (True)",
-      "timestamp": "2026-09-20T04:58:47.592153+00:00",
+      "timestamp": "2026-09-20T05:18:44.288461+00:00",
       "evidence": {
         "combine_blocked": true,
         "zero_combine_requests": true,

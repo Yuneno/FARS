@@ -2,6 +2,9 @@
 
 **Fecha de extracción y verificación:** 2026-09-20  
 **Fuente:** TopstepX / ProjectX Gateway Developer API Reference (Swagger & REST Schema)  
+- Swagger UI: `https://api.topstepx.com/swagger/index.html`  
+- Swagger OpenAPI JSON: `https://api.topstepx.com/swagger/v1/swagger.json`  
+- Documentación oficial: `https://topstepx.com/api-docs`  
 **Base URL:** `https://api.topstepx.com`  
 **Autenticación:** Encabezado HTTP `Authorization: Bearer <token>`  
 **Regla de Seguridad FARS:** Cero adivinanzas; únicamente endpoints documentados y verificados.

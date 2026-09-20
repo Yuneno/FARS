@@ -99,6 +99,8 @@ class RecordingTransport(JsonTransport):
         if endpoint == "/api/Position/searchOpen":
             return []
         if endpoint == "/api/Position/closeContract":
+            if not getattr(self, "keep_positions_on_close", False):
+                self.canned_responses["/api/Position/searchOpen"] = []
             return {"success": True, "errorMessage": None}
         if endpoint == "/api/Contract/search":
             return [{"id": TEST_CONTRACT_ID, "name": "MNQZ6", "active": True}]
@@ -648,3 +650,248 @@ def test_practice_adapter_flatten_invokes_client_cancel_all_and_close() -> None:
     called_endpoints = [c[0] for c in transport.calls]
     assert "/api/Order/searchOpen" in called_endpoints
     assert "/api/Position/closeContract" in called_endpoints
+
+
+# ---------------------------------------------------------------------------
+# 5. Fixes Verification: 1 Micro Clamp, Missing Prices Veto, Verified Flatten
+# ---------------------------------------------------------------------------
+
+def test_order_with_size_3_small_stop_clamped_to_1_micro() -> None:
+    transport = RecordingTransport()
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=transport,
+        practice_execution_enabled=True,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+    clock = FrozenClock(datetime(2026, 9, 20, 14, tzinfo=UTC))
+    adapter = PracticeExecutionAdapter(
+        clock=clock,
+        account_name=TEST_ACCOUNT_NAME,
+        account_id=TEST_ACCOUNT_ID,
+        contract_id=TEST_CONTRACT_ID,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+        order_client=client,
+        max_risk_dollars_per_order=200.0,
+    )
+
+    # Size 3 with tiny 10 pt stop: 10 * $2 * 3 = $60 <= $200 (fits risk, but violates 1 micro limit)
+    sig = Signal("sig-clamp", "strategy", clock.now(), 1, TEST_CONTRACT_ID, SIGNAL_LONG, origin=ORIGIN_LIVE)
+    dec = RiskDecision("dec-clamp", "risk", clock.now(), 1, "sig-clamp", "strategy", approved=True, reason=REASON_APPROVED, origin=ORIGIN_LIVE)
+    intent = OrderIntent(
+        event_id="intent-clamp",
+        source="strategy",
+        timestamp=clock.now(),
+        sequence=1,
+        symbol=TEST_CONTRACT_ID,
+        action=SIGNAL_LONG,
+        risk_decision_id="dec-clamp",
+        origin=ORIGIN_LIVE,
+        size=3,
+        entry_price=20500.0,
+        stop_price=20490.0,
+    )
+
+    report = adapter.submit(sig, dec, intent)
+    assert report.status == EXEC_FILLED
+    assert "CLAMPED_TO_1_MICRO" in report.reason
+
+    place_calls = [c for c in transport.calls if c[0] == "/api/Order/place"]
+    assert len(place_calls) == 1
+    assert place_calls[0][1]["size"] == 1
+
+
+def test_client_directly_rejects_size_greater_than_1() -> None:
+    transport = RecordingTransport()
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=transport,
+        practice_execution_enabled=True,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+    with pytest.raises(PracticeOrderError, match="DECLARED_LIMIT_VIOLATION"):
+        client.place_order(
+            account_id=TEST_ACCOUNT_ID,
+            contract_id=TEST_CONTRACT_ID,
+            order_type=ORDER_TYPE_LIMIT,
+            side=ORDER_SIDE_BUY,
+            size=2,
+            limit_price=20450.0,
+        )
+
+
+def test_practice_adapter_vetoes_gateway_intent_without_prices() -> None:
+    transport = RecordingTransport()
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=transport,
+        practice_execution_enabled=True,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+    clock = FrozenClock(datetime(2026, 9, 20, 14, tzinfo=UTC))
+    adapter = PracticeExecutionAdapter(
+        clock=clock,
+        account_name=TEST_ACCOUNT_NAME,
+        account_id=TEST_ACCOUNT_ID,
+        contract_id=TEST_CONTRACT_ID,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+        order_client=client,
+    )
+
+    # Missing both entry and stop
+    sig = Signal("sig-noprice", "strategy", clock.now(), 1, TEST_CONTRACT_ID, SIGNAL_LONG, origin=ORIGIN_LIVE)
+    dec = RiskDecision("dec-noprice", "risk", clock.now(), 1, "sig-noprice", "strategy", approved=True, reason=REASON_APPROVED, origin=ORIGIN_LIVE)
+    intent = OrderIntent(
+        event_id="intent-noprice",
+        source="strategy",
+        timestamp=clock.now(),
+        sequence=1,
+        symbol=TEST_CONTRACT_ID,
+        action=SIGNAL_LONG,
+        risk_decision_id="dec-noprice",
+        origin=ORIGIN_LIVE,
+        size=1,
+        entry_price=None,
+        stop_price=None,
+    )
+
+    report = adapter.submit(sig, dec, intent)
+    assert report.status == EXEC_REJECTED
+    assert "MISSING_ENTRY_OR_STOP_PRICE" in report.reason
+
+
+def test_practice_adapter_vetoes_gateway_intent_with_stop_without_entry() -> None:
+    transport = RecordingTransport()
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=transport,
+        practice_execution_enabled=True,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+    clock = FrozenClock(datetime(2026, 9, 20, 14, tzinfo=UTC))
+    adapter = PracticeExecutionAdapter(
+        clock=clock,
+        account_name=TEST_ACCOUNT_NAME,
+        account_id=TEST_ACCOUNT_ID,
+        contract_id=TEST_CONTRACT_ID,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+        order_client=client,
+    )
+
+    # Stop without entry
+    sig = Signal("sig-noentry", "strategy", clock.now(), 1, TEST_CONTRACT_ID, SIGNAL_LONG, origin=ORIGIN_LIVE)
+    dec = RiskDecision("dec-noentry", "risk", clock.now(), 1, "sig-noentry", "strategy", approved=True, reason=REASON_APPROVED, origin=ORIGIN_LIVE)
+    intent = OrderIntent(
+        event_id="intent-noentry",
+        source="strategy",
+        timestamp=clock.now(),
+        sequence=1,
+        symbol=TEST_CONTRACT_ID,
+        action=SIGNAL_LONG,
+        risk_decision_id="dec-noentry",
+        origin=ORIGIN_LIVE,
+        size=1,
+        entry_price=None,
+        stop_price=20400.0,
+    )
+
+    report = adapter.submit(sig, dec, intent)
+    assert report.status == EXEC_REJECTED
+    assert "MISSING_ENTRY_OR_STOP_PRICE" in report.reason
+
+
+def test_flatten_unconfirmed_raises_and_preserves_position() -> None:
+    transport = RecordingTransport()
+    transport.keep_positions_on_close = True
+    # Mock position that persists after closeContract call
+    transport.canned_responses["/api/Position/searchOpen"] = [
+        {
+            "id": 9001,
+            "accountId": TEST_ACCOUNT_ID,
+            "contractId": TEST_CONTRACT_ID,
+            "type": 1,
+            "size": 1,
+            "averagePrice": 20500.0,
+        }
+    ]
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=transport,
+        practice_execution_enabled=True,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+    clock = FrozenClock(datetime(2026, 9, 20, 14, tzinfo=UTC))
+    adapter = PracticeExecutionAdapter(
+        clock=clock,
+        account_name=TEST_ACCOUNT_NAME,
+        account_id=TEST_ACCOUNT_ID,
+        contract_id=TEST_CONTRACT_ID,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+        order_client=client,
+    )
+    # Give adapter a tracked open position
+    adapter._open_positions[TEST_CONTRACT_ID] = 1
+
+    with pytest.raises(PracticeOrderError, match="FLATTEN_UNCONFIRMED"):
+        adapter.flatten(TEST_CONTRACT_ID)
+
+    # Position is preserved, NOT marked 0
+    assert adapter.open_positions[TEST_CONTRACT_ID] == 1
+
+
+def test_market_close_cutoff_1510_ct_vetoes_new_orders() -> None:
+    from zoneinfo import ZoneInfo
+    chi_tz = ZoneInfo("America/Chicago")
+    # Set clock to a Monday at 15:15 CT
+    t_cutoff = datetime(2026, 9, 21, 15, 15, tzinfo=chi_tz)
+    clock = FrozenClock(t_cutoff)
+
+    adapter = PracticeExecutionAdapter(
+        clock=clock,
+        account_name=TEST_ACCOUNT_NAME,
+        account_id=TEST_ACCOUNT_ID,
+        contract_id=TEST_CONTRACT_ID,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+
+    sig = Signal("sig-cutoff", "strategy", clock.now(), 1, TEST_CONTRACT_ID, SIGNAL_LONG, origin=ORIGIN_LIVE)
+    dec = RiskDecision("dec-cutoff", "risk", clock.now(), 1, "sig-cutoff", "strategy", approved=True, reason=REASON_APPROVED, origin=ORIGIN_LIVE)
+    intent = OrderIntent(
+        event_id="intent-cutoff",
+        source="strategy",
+        timestamp=clock.now(),
+        sequence=1,
+        symbol=TEST_CONTRACT_ID,
+        action=SIGNAL_LONG,
+        risk_decision_id="dec-cutoff",
+        origin=ORIGIN_LIVE,
+        size=1,
+        entry_price=20500.0,
+        stop_price=20450.0,
+    )
+
+    report = adapter.submit(sig, dec, intent)
+    assert report.status == EXEC_REJECTED
+    assert "MARKET_CLOSE_CUTOFF_REACHED" in report.reason
+
+
+def test_market_close_cutoff_triggers_flatten() -> None:
+    from zoneinfo import ZoneInfo
+    chi_tz = ZoneInfo("America/Chicago")
+    # Monday at 15:15 CT
+    t_cutoff = datetime(2026, 9, 21, 15, 15, tzinfo=chi_tz)
+    clock = FrozenClock(t_cutoff)
+
+    adapter = PracticeExecutionAdapter(
+        clock=clock,
+        account_name=TEST_ACCOUNT_NAME,
+        account_id=TEST_ACCOUNT_ID,
+        contract_id=TEST_CONTRACT_ID,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+    adapter._open_positions[TEST_CONTRACT_ID] = 1
+
+    flattened = adapter.check_market_close_cutoff()
+    assert flattened is True
+    assert adapter.open_positions[TEST_CONTRACT_ID] == 0
+

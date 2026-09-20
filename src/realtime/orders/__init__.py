@@ -16,6 +16,7 @@ from src.realtime.orders.practice_client import (
     ORDER_TYPE_STOP,
     ORDER_TYPE_TRAILING_STOP,
     BracketConfig,
+    CHICAGO_TZ,
     OrderPendingAmbiguityError,
     PracticeOrderClient,
     PracticeOrderError,
@@ -24,9 +25,12 @@ from src.realtime.orders.practice_client import (
     UnauthorizedAccountError,
     generate_client_order_id,
     is_account_forbidden,
+    is_cme_market_open,
+    is_past_daily_close_cutoff,
 )
 
 __all__ = [
+    "CHICAGO_TZ",
     "DEFAULT_PRACTICE_ACCOUNT_ALLOWLIST",
     "DEFAULT_PRACTICE_EXECUTION_ENABLED",
     "FORBIDDEN_ACCOUNT_PATTERNS",
@@ -50,4 +54,6 @@ __all__ = [
     "UnauthorizedAccountError",
     "generate_client_order_id",
     "is_account_forbidden",
+    "is_cme_market_open",
+    "is_past_daily_close_cutoff",
 ]

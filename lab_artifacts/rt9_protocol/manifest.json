@@ -1,10 +1,10 @@
 {
   "schema_version": "fars-rt9-manifest-v1",
   "files": {
-    "API_NOTES.md": "dd766734e1698463e8d7019d5b722571ce6391f8416fa47b895f4f411bd60370",
-    "BLOCKERS.md": "4b9ad3c58412562711c00cdf950e9cf5ab81a13fd13b3b9bc6782d4d35d51027",
-    "INFORME.md": "b09eae1abea6dbbb2db0189c9ebe03f755aec798a44850aa336c6d7d7b1756c3",
-    "acceptance_mock_report.json": "1872d764a3340ee61b35cc2f4c4fac2af2f8501a92e6e4aad44c7e2b7585e3cb",
+    "API_NOTES.md": "4b90f395b7cad723e3e695f332bffa16f74707c306611a288c1789adafe2460b",
+    "BLOCKERS.md": "fc8d9686fdff5032ac833cd6d656071f630f70088e143fb97280f85e40e63f29",
+    "INFORME.md": "f196484c6be82ff7d14bac9060a2ef43040d27a87a6b232407650e508cf943ab",
+    "acceptance_mock_report.json": "0c72e9e9a4e310102c1e7771f1c8956a30a500f8076fb295d105ad96a8e9477e",
     "preregistro.json": "7fd1616328d316ede67283cb72e1fb03c967e58949806fca23ea770cd37644ea"
   }
 }

@@ -290,43 +290,64 @@ class RT9AcceptanceRunner:
         account_name: str = TARGET_ACCOUNT_NAME,
         account_id: int = TARGET_ACCOUNT_ID,
         clock: Clock | None = None,
+        jsonl_log_path: Path | None = None,
     ) -> None:
         self.client = order_client
         self.account_name = account_name
         self.account_id = account_id
         self.clock = clock or SystemClock()
+        self.jsonl_log_path = jsonl_log_path
         self.steps: list[StepResult] = []
         self.orders_placed_count = 0
         self.contract_id: str = ""
 
+    def _record_step(self, step: StepResult) -> None:
+        self.steps.append(step)
+        if self.jsonl_log_path is not None:
+            try:
+                self.jsonl_log_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(self.jsonl_log_path, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(asdict(step)) + "\n")
+            except Exception:
+                pass
+
     def run_all(self) -> RT9AcceptanceReport:
-        """Run all 8 steps in sequence. Fail-closed on any error."""
+        """Run all 8 steps in sequence with fail-closed error handling and guaranteed cleanup."""
         if LIVE_EXECUTION_ENABLED is not False:
             raise RuntimeError("LIVE_EXECUTION_ENABLED must be False")
 
-        # Step 1: Account validation
-        self._step1_account_validation()
+        try:
+            # Step 1: Account validation
+            self._step1_account_validation()
 
-        # Step 2: Initial state check
-        self._step2_initial_state()
+            # Step 2: Initial state check
+            self._step2_initial_state()
 
-        # Step 3: Limit order far from market -> working -> cancel -> verify cancelled
-        self._step3_limit_order_cancel()
+            # Step 3: Limit order far from market -> working -> cancel -> verify cancelled
+            self._step3_limit_order_cancel()
 
-        # Step 4: Market order 1 micro -> fill -> position visible -> brackets working
-        self._step4_market_order_with_brackets()
+            # Step 4: Market order 1 micro -> fill -> position visible -> brackets working
+            self._step4_market_order_with_brackets()
 
-        # Step 5: Cancel brackets -> flatten -> verify flat
-        self._step5_cancel_brackets_and_flatten()
+            # Step 5: Cancel brackets -> flatten -> verify flat
+            self._step5_cancel_brackets_and_flatten()
 
-        # Step 6: Kill switch with open position -> cancel_all + flatten
-        self._step6_kill_switch_with_open_position()
+            # Step 6: Kill switch with open position -> cancel_all + flatten
+            self._step6_kill_switch_with_open_position()
 
-        # Step 7: Anti-OrderPending timeout & search discipline
-        self._step7_anti_order_pending_discipline()
+            # Step 7: Anti-OrderPending timeout & search discipline
+            self._step7_anti_order_pending_discipline()
 
-        # Step 8: Final audit: 0 combine orders, zero leaked credentials
-        self._step8_final_audit()
+            # Step 8: Final audit: 0 combine orders, zero leaked credentials
+            self._step8_final_audit()
+        finally:
+            # Guaranteed kill-switch and cleanup as final action
+            if self.client.practice_execution_enabled:
+                try:
+                    self.client.cancel_all_orders(self.account_id, account_name=self.account_name)
+                    self.client.flatten_all(self.account_id, account_name=self.account_name)
+                except Exception:
+                    pass
 
         all_passed = all(s.passed for s in self.steps)
         status = "PASS" if all_passed else "FAIL"
@@ -352,7 +373,7 @@ class RT9AcceptanceRunner:
             # Validate account allowlist
             self.client._verify_account_authorized(self.account_id, self.account_name)
 
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=1,
                     name="account_validation",
@@ -363,7 +384,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=1,
                     name="account_validation",
@@ -391,7 +412,7 @@ class RT9AcceptanceRunner:
                 open_positions = self.client.search_open_positions(self.account_id, account_name=self.account_name)
 
             is_clean = len(open_orders) == 0 and all(p.size == 0 for p in open_positions)
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=2,
                     name="initial_state_clean",
@@ -402,7 +423,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=2,
                     name="initial_state_clean",
@@ -442,7 +463,7 @@ class RT9AcceptanceRunner:
             still_working = any(int(o.get("id", 0)) == order_id for o in after_cancel)
 
             passed = found_working and not still_working
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=3,
                     name="limit_order_place_and_cancel",
@@ -453,7 +474,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=3,
                     name="limit_order_place_and_cancel",
@@ -490,7 +511,7 @@ class RT9AcceptanceRunner:
             bracket_orders_found = len(working) >= 2
 
             passed = pos_found and bracket_orders_found
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=4,
                     name="market_order_with_brackets",
@@ -501,7 +522,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=4,
                     name="market_order_with_brackets",
@@ -532,7 +553,7 @@ class RT9AcceptanceRunner:
             is_flat = all(p.size == 0 for p in positions_flat)
 
             passed = len(working_after_cancel) == 0 and pos_persists and is_flat
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=5,
                     name="cancel_brackets_and_flatten",
@@ -543,7 +564,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=5,
                     name="cancel_brackets_and_flatten",
@@ -578,7 +599,7 @@ class RT9AcceptanceRunner:
             positions = self.client.search_open_positions(self.account_id, account_name=self.account_name)
             is_flat = len(working) == 0 and all(p.size == 0 for p in positions)
 
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=6,
                     name="kill_switch_with_open_position",
@@ -589,7 +610,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=6,
                     name="kill_switch_with_open_position",
@@ -644,7 +665,7 @@ class RT9AcceptanceRunner:
                 passed = res.custom_tag == custom_tag
                 self.client.cancel_order(account_id=self.account_id, order_id=res.order_id, account_name=self.account_name)
 
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=7,
                     name="anti_order_pending_discipline",
@@ -655,7 +676,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=7,
                     name="anti_order_pending_discipline",
@@ -699,7 +720,7 @@ class RT9AcceptanceRunner:
                         credentials_safe = False
 
             passed = combine_blocked and zero_combine_requests and credentials_safe
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=8,
                     name="final_audit_combine_isolation",
@@ -717,7 +738,7 @@ class RT9AcceptanceRunner:
                 )
             )
         except Exception as exc:
-            self.steps.append(
+            self._record_step(
                 StepResult(
                     step_number=8,
                     name="final_audit_combine_isolation",
@@ -739,18 +760,128 @@ def run_mock_acceptance() -> RT9AcceptanceReport:
         practice_execution_enabled=True,
         account_allowlist=(TARGET_ACCOUNT_NAME, TARGET_ACCOUNT_ID),
     )
+    log_path = Path("lab_artifacts/rt9_protocol/acceptance_mock_session.jsonl")
+    if log_path.exists():
+        log_path.unlink()
     runner = RT9AcceptanceRunner(
         order_client=client,
         account_name=TARGET_ACCOUNT_NAME,
         account_id=TARGET_ACCOUNT_ID,
+        jsonl_log_path=log_path,
     )
-    return runner.run_all()
+    report = runner.run_all()
+    report_path = Path("lab_artifacts/rt9_protocol/acceptance_mock_report.json")
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
+    return report
+
+
+def run_live_acceptance(
+    env_file: str = ".env",
+    force_market_check: bool = False,
+    auto_confirm: bool = False,
+) -> RT9AcceptanceReport:
+    """Run live acceptance on real Practice account with explicit checks and fail-closed guards."""
+    from src.realtime.config import load_projectx_credentials
+    from src.realtime.connectors.projectx import ProjectXClient
+    from src.realtime.orders.practice_client import is_cme_market_open
+
+    clock = SystemClock()
+
+    # 1. Market Hours Check (CME Equity Futures)
+    is_open, market_msg = is_cme_market_open(clock.now())
+    if not is_open:
+        print(f"\n[FAIL-CLOSED] {market_msg}")
+        if not force_market_check:
+            print("CME market is currently closed. To bypass this check for testing, pass --force.")
+            sys.exit(2)
+        else:
+            print("[WARNING] --force passed: proceeding despite market hours check.\n")
+    else:
+        print(f"\n[OK] Market Window Check: {market_msg}\n")
+
+    # 2. Load credentials safely from .env without printing secrets
+    credentials = load_projectx_credentials(env_file=env_file)
+    if not credentials.username or not credentials.api_key:
+        raise RuntimeError(
+            "FARS_PROJECTX_USERNAME and FARS_PROJECTX_API_KEY must be configured in .env"
+        )
+
+    # 3. Authenticate read-only client to obtain bearer token
+    print(f"Authenticating session for user: {credentials.username}...")
+    px_client = ProjectXClient(credentials)
+    px_client.authenticate()
+    print("Authentication successful. Session token established.")
+
+    # 4. Search and verify Practice account allowlist
+    accounts = px_client.search_accounts()
+    target = None
+    for acc in accounts:
+        if acc.account_id == TARGET_ACCOUNT_ID or acc.name == TARGET_ACCOUNT_NAME:
+            target = acc
+            break
+
+    if target is None:
+        raise RuntimeError(
+            f"Required practice account {TARGET_ACCOUNT_NAME} (id={TARGET_ACCOUNT_ID}) not found in account search."
+        )
+
+    if target.account_id != TARGET_ACCOUNT_ID:
+        raise RuntimeError(
+            f"Account ID mismatch: expected {TARGET_ACCOUNT_ID}, found {target.account_id}"
+        )
+    if not target.can_trade:
+        raise RuntimeError(f"Account {target.name} has canTrade=False on gateway.")
+    if target.simulated is not True:
+        raise RuntimeError(
+            f"Account {target.name} is NOT a simulated practice account (simulated={target.simulated})! Fail-closed."
+        )
+
+    print(f"Target Account Verified: {target.name} (id: {target.account_id}, balance: ${target.balance:,.2f})")
+
+    # 5. Explicit user confirmation prompt
+    if not auto_confirm:
+        print("\n" + "=" * 70)
+        print("ATTENTION: YOU ARE ABOUT TO EXECUTE REAL ORDERS ON TOPSTEPX PRACTICE GATEWAY")
+        print(f"Account: {target.name} ({target.account_id})")
+        print("=" * 70)
+        confirm = input("Type 'yes' to proceed with live acceptance execution: ")
+        if confirm.strip().lower() != "yes":
+            print("Execution aborted by user.")
+            sys.exit(1)
+
+    # 6. Instantiate PracticeOrderClient with PRACTICE_EXECUTION_ENABLED=True SCOPED ONLY TO HARNESS
+    practice_client = PracticeOrderClient(
+        token_provider=px_client.session_token,
+        practice_execution_enabled=True,
+        account_allowlist=(TARGET_ACCOUNT_NAME, TARGET_ACCOUNT_ID),
+        clock=clock,
+    )
+
+    log_path = Path("lab_artifacts/rt9_protocol/acceptance_live_session.jsonl")
+    if log_path.exists():
+        log_path.unlink()
+    runner = RT9AcceptanceRunner(
+        order_client=practice_client,
+        account_name=TARGET_ACCOUNT_NAME,
+        account_id=TARGET_ACCOUNT_ID,
+        clock=clock,
+        jsonl_log_path=log_path,
+    )
+    report = runner.run_all()
+    report_path = Path("lab_artifacts/rt9_protocol/acceptance_live_report.json")
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
+    return report
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="RT-9 Practice Order Acceptance Harness")
     parser.add_argument("--mock", action="store_true", help="Run offline acceptance with mock transport")
     parser.add_argument("--live", action="store_true", help="Run live acceptance with real Practice account")
+    parser.add_argument("--force", action="store_true", help="Skip/ignore market hours check in live mode")
+    parser.add_argument("--yes", action="store_true", help="Auto-confirm execution prompt in live mode")
+    parser.add_argument("--env-file", default=".env", help="Path to .env credentials file")
     args = parser.parse_args()
 
     if args.mock:
@@ -759,8 +890,14 @@ if __name__ == "__main__":
         print(json.dumps(report.to_dict(), indent=2))
         sys.exit(0 if report.status == "PASS" else 1)
     elif args.live:
-        print("Live practice acceptance requires open market window. Exiting fail-closed.")
-        sys.exit(2)
+        print("Running RT-9 Acceptance Protocol in LIVE PRACTICE mode...")
+        report = run_live_acceptance(
+            env_file=args.env_file,
+            force_market_check=args.force,
+            auto_confirm=args.yes,
+        )
+        print(json.dumps(report.to_dict(), indent=2))
+        sys.exit(0 if report.status == "PASS" else 1)
     else:
         print("Specify --mock or --live")
         sys.exit(1)

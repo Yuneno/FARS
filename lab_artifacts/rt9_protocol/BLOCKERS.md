@@ -20,6 +20,10 @@
 - **Instrucción de Ricardo:** Construir y validar offline primero; la ejecución en vivo se corre en la ventana autorizada con mercado abierto sin colisionar con S2.
 - **Acción al abrir ventana:**
   ```powershell
+  # 1. Chequeo de salud y cuenta Practice activa
+  fars-projectx doctor
+
+  # 2. Ejecución del arnés en vivo
   E:\FARS-LAB\.venv-fars\Scripts\python.exe -m src.realtime.acceptance_rt9 --live
   ```
   La cuenta Practice `PRAC-V2-673085-85699223` (id `27765990`) ya está configurada en `.env` y validada por `fars-projectx doctor`.

@@ -14,13 +14,12 @@ Enforces:
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from decimal import Decimal
 from typing import Any, Callable
 import uuid
+from zoneinfo import ZoneInfo
 
 from src.realtime.clock import Clock, SystemClock
 from src.realtime.connectors.projectx import (
@@ -33,6 +32,69 @@ from src.realtime.connectors.projectx import (
     UrllibJsonTransport,
 )
 from src.realtime.interfaces import LIVE_EXECUTION_ENABLED
+
+CHICAGO_TZ = ZoneInfo("America/Chicago")
+
+
+def is_past_daily_close_cutoff(
+    now: datetime,
+    cutoff_hour: int = 15,
+    cutoff_minute: int = 10,
+) -> bool:
+    """Check if current time is past the daily 15:10 CT market close cutoff.
+
+    On trading weekdays (Monday through Friday), between 15:10 CT and 17:00 CT,
+    new orders are strictly prohibited to enforce the daily account closing rules.
+    """
+    if now.tzinfo is None:
+        raise ValueError("now must be timezone-aware")
+    ct_now = now.astimezone(CHICAGO_TZ)
+    # Check weekday (Monday=0 ... Friday=4)
+    if ct_now.weekday() in (0, 1, 2, 3, 4):
+        cutoff_time = ct_now.replace(hour=cutoff_hour, minute=cutoff_minute, second=0, microsecond=0)
+        reopen_time = ct_now.replace(hour=17, minute=0, second=0, microsecond=0)
+        if cutoff_time <= ct_now < reopen_time:
+            return True
+    return False
+
+
+def is_cme_market_open(now: datetime) -> tuple[bool, str]:
+    """Check if CME futures equity index market (NQ/MNQ) is currently open.
+
+    Schedule (in Central Time):
+    - Opens Sunday at 17:00 CT.
+    - Closes Friday at 16:00 CT.
+    - Daily maintenance halt: Monday through Thursday 16:00 to 17:00 CT.
+    - Weekend break: Friday 16:00 CT to Sunday 17:00 CT.
+    """
+    if now.tzinfo is None:
+        raise ValueError("now must be timezone-aware")
+    ct_now = now.astimezone(CHICAGO_TZ)
+    weekday = ct_now.weekday()  # Monday=0 ... Sunday=6
+    hour = ct_now.hour
+
+    # Saturday: completely closed
+    if weekday == 5:
+        return False, "CME market is CLOSED (Saturday weekend break; opens Sunday 17:00 CT)"
+
+    # Sunday: closed until 17:00 CT
+    if weekday == 6:
+        if hour < 17:
+            return False, f"CME market is CLOSED (Sunday pre-open; opens at 17:00 CT, current CT: {ct_now.strftime('%H:%M')})"
+        return True, "CME market is OPEN (Sunday evening session)"
+
+    # Friday: closed after 16:00 CT
+    if weekday == 4:
+        if hour >= 16:
+            return False, f"CME market is CLOSED (Friday weekend close at 16:00 CT; current CT: {ct_now.strftime('%H:%M')})"
+
+    # Monday through Thursday daily maintenance halt: 16:00 - 17:00 CT
+    if weekday in (0, 1, 2, 3):
+        if 16 <= hour < 17:
+            return False, "CME market is in DAILY HALT (16:00 - 17:00 CT maintenance break; reopens 17:00 CT)"
+
+    return True, f"CME market is OPEN (current CT: {ct_now.strftime('%A %H:%M %Z')})"
+
 
 # Order types official TopstepX Gateway
 ORDER_TYPE_LIMIT = 1
@@ -240,8 +302,10 @@ class PracticeOrderClient:
         # 2. Parameter validations
         if not contract_id or not isinstance(contract_id, str):
             raise ValueError("contract_id must be a non-empty string")
-        if size <= 0:
-            raise ValueError(f"size must be positive, got {size}")
+        if size != 1:
+            raise PracticeOrderError(
+                f"DECLARED_LIMIT_VIOLATION: Practice orders strictly limited to 1 micro contract, got size={size}"
+            )
         if side not in (ORDER_SIDE_BUY, ORDER_SIDE_SELL):
             raise ValueError(f"invalid side: {side}")
         if order_type not in (ORDER_TYPE_LIMIT, ORDER_TYPE_MARKET, ORDER_TYPE_STOP, ORDER_TYPE_TRAILING_STOP):
@@ -392,14 +456,19 @@ class PracticeOrderClient:
         self._verify_account_authorized(account_id, account_name)
         open_orders = self.search_open_orders(account_id, account_name=account_name)
         cancelled_ids: list[int] = []
+        cancel_errors: list[str] = []
         for order in open_orders:
             oid = order.get("id") or order.get("orderId")
             if oid is not None:
                 try:
                     self.cancel_order(account_id=account_id, order_id=int(oid), account_name=account_name)
                     cancelled_ids.append(int(oid))
-                except Exception:
-                    pass
+                except Exception as exc:
+                    cancel_errors.append(f"order {oid}: {exc}")
+        if cancel_errors:
+            raise PracticeOrderError(
+                f"cancel_all_orders failed on {len(cancel_errors)} orders: {'; '.join(cancel_errors)}"
+            )
         return cancelled_ids
 
     def search_orders(
@@ -513,13 +582,18 @@ class PracticeOrderClient:
         # 2. Close each open position
         open_positions = self.search_open_positions(account_id, account_name=account_name)
         closed_contracts: list[str] = []
+        flatten_errors: list[str] = []
         for pos in open_positions:
             if pos.size != 0 and pos.contract_id:
                 try:
                     self.flatten_contract(account_id, pos.contract_id, account_name=account_name)
                     closed_contracts.append(pos.contract_id)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    flatten_errors.append(f"contract {pos.contract_id}: {exc}")
+        if flatten_errors:
+            raise PracticeOrderError(
+                f"flatten_all failed on {len(flatten_errors)} positions: {'; '.join(flatten_errors)}"
+            )
         return closed_contracts
 
     def resolve_active_contract(self, symbol_id: str = "MNQ") -> str:

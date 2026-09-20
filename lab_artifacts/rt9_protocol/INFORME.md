@@ -128,21 +128,28 @@ Los circuit breakers desarrollados en el commit base `6cbe1cb` están plenamente
   - `test_practice_adapter_precheck_reduces_size_and_dispatches`: **PASSED**
   - `test_practice_adapter_precheck_vetoes_when_1_micro_exceeds_max_risk`: **PASSED**
   - `test_practice_adapter_flatten_invokes_client_cancel_all_and_close`: **PASSED**
+  - `test_order_with_size_3_small_stop_clamped_to_1_micro`: **PASSED**
+  - `test_client_directly_rejects_size_greater_than_1`: **PASSED**
+  - `test_practice_adapter_vetoes_gateway_intent_without_prices`: **PASSED**
+  - `test_practice_adapter_vetoes_gateway_intent_with_stop_without_entry`: **PASSED**
+  - `test_flatten_unconfirmed_raises_and_preserves_position`: **PASSED**
+  - `test_market_close_cutoff_1510_ct_vetoes_new_orders`: **PASSED**
+  - `test_market_close_cutoff_triggers_flatten`: **PASSED**
 - **Suite Completa Realtime (`tests/realtime/`):**
-  - **263 de 263 tests en VERDE (0 fallos, 0 errores, 2.10s de ejecución).**
+  - **270 de 270 tests en VERDE (0 fallos, 0 errores).**
 
 ---
 
 ## 5. Instrucciones para la Ejecución en Vivo (Mercado Abierto)
 
-Cuando Ricardo autorice la ventana operativa (domingo noche 6:00 PM ET o lunes):
+Cuando Ricardo autorice la ventana operativa (domingo noche 5:00 PM CT / 6:00 PM ET o lunes):
 1. Asegurar que la sesión S2 no esté corriendo en paralelo.
-2. Verificar conectividad y credenciales:
+2. Verificar conectividad y selección de cuenta:
    ```powershell
-   E:\FARS-LAB\.venv-fars\Scripts\python.exe -m src.realtime.doctor
+   fars-projectx doctor
    ```
 3. Ejecutar el arnés de aceptación en vivo:
    ```powershell
    E:\FARS-LAB\.venv-fars\Scripts\python.exe -m src.realtime.acceptance_rt9 --live
    ```
-   El arnés ejecutará la checklist de 8 pasos, generará los reportes JSONL en tiempo real y detendrá la operativa fail-closed ante cualquier anomalía.
+   El arnés verificará la ventana de mercado CME (Sunday 17:00 CT - Friday 16:00 CT), solicitará confirmación explícita interactiva (o `--yes`), activará `PRACTICE_EXECUTION_ENABLED=True` con alcance exclusivo dentro del arnés, grabará la sesión en `acceptance_live_session.jsonl` y garantizará un kill-switch/flatten como paso final.
