@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "block_id": "M10-v2",
+    "title": "Evaluaci\u00f3n de P(pasar) en Topstep Trading Combine con foto limpia post-revocaci\u00f3n fill-bar",
+    "generated_at_utc": "2026-09-20T00:27:02.819842+00:00",
+    "git_branch": "bloque-m10-evaluacion",
+    "base_commit": "277efae",
+    "python_executable": "E:\\FARS-LAB\\.venv-fars\\Scripts\\python.exe"
+  },
+  "artifacts": {
+    "BLOCKERS.md": {
+      "sha256": "533c58c222141f1704eab8365ee7dfa0b1075eca337ba8e113179d5cc2c3834c",
+      "size_bytes": 594
+    },
+    "decision_economica.json": {
+      "sha256": "8ffe92093b77586d3824e16650facdb500907f444782c721b6093e7e11b897cb",
+      "size_bytes": 15586
+    },
+    "gen_stream_smc.py": {
+      "sha256": "379e424e7d516e4bb5c26d4f34ed1dfbf888a68bb7597e22b859cb842f71bd30",
+      "size_bytes": 6186
+    },
+    "INFORME.md": {
+      "sha256": "4ed7110e8303337a58d291c2a59c8cdbd29549286e2945ca37ddfe30c93cb810",
+      "size_bytes": 8496
+    },
+    "preregistro.json": {
+      "sha256": "4a4f7f6443addaec770b39ea7fbf61cb4e1926bbb91975d2510fa108ac05f8b0",
+      "size_bytes": 4643
+    },
+    "resultados_c1.json": {
+      "sha256": "970338a2c2dd65b96b4efd5c40574e950a2f472fbc9681136043bcafb278f022",
+      "size_bytes": 3030
+    },
+    "resultados_c2_escalera.json": {
+      "sha256": "51b2add4ba40a4ec25cfa2ff6940f88897959758ab82985e5692a3e71d7c7c94",
+      "size_bytes": 22889
+    },
+    "resultados_c3_control.json": {
+      "sha256": "34eb9f9f2019195e58087527cb2fa370c4a47b889510669f39fd0fc48c893723",
+      "size_bytes": 6548
+    },
+    "resultados_cross_check_apex.json": {
+      "sha256": "64dca071d050b5e53adb9d02c1ab56a8ebd2e206206784a9cf7f2fb73d13fedf",
+      "size_bytes": 2039
+    },
+    "resultados_variantes_declaradas.json": {
+      "sha256": "52c2822c33a4b71150926bf1cf8d0daad206176f99869e758d84b1224a03045e",
+      "size_bytes": 2408
+    },
+    "run_m10.py": {
+      "sha256": "a9b906be287ad32f27580abd049395c735804bf8c10b83ec33af0a7683141545",
+      "size_bytes": 50359
+    },
+    "stream_smc_fvg_clean_por_tramo.json": {
+      "sha256": "119611ab2047bf548c75f1c297cac133a42d5de737fcc72cd64d4be040d8068c",
+      "size_bytes": 2165107
+    },
+    "verificacion_full_mae.json": {
+      "sha256": "c4fa255906cf52f2b8f5a7711ba1840392c20fb60ef5f6e80f889498578d9519",
+      "size_bytes": 2236
+    }
+  }
+}

@@ -1,0 +1,608 @@
+{
+  "50k": {
+    "0.5%": [
+      {
+        "expectancy_r": -0.13006756349427853,
+        "expectancy_label": "-0.13R",
+        "pass_pct": 3.26,
+        "expected_attempts": 30.67,
+        "expected_costs": {
+          "F_50": 1533.74,
+          "F_100": 3067.48,
+          "F_150": 4601.23,
+          "F_200": 6134.97
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": -0.05,
+        "expectancy_label": "-0.05R",
+        "pass_pct": 9.71,
+        "expected_attempts": 10.3,
+        "expected_costs": {
+          "F_50": 514.93,
+          "F_100": 1029.87,
+          "F_150": 1544.8,
+          "F_200": 2059.73
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.0,
+        "expectancy_label": "+0.00R",
+        "pass_pct": 16.67,
+        "expected_attempts": 6.0,
+        "expected_costs": {
+          "F_50": 299.94,
+          "F_100": 599.88,
+          "F_150": 899.82,
+          "F_200": 1199.76
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.05,
+        "expectancy_label": "+0.05R",
+        "pass_pct": 27.24,
+        "expected_attempts": 3.67,
+        "expected_costs": {
+          "F_50": 183.55,
+          "F_100": 367.11,
+          "F_150": 550.66,
+          "F_200": 734.21
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.1,
+        "expectancy_label": "+0.10R",
+        "pass_pct": 41.37,
+        "expected_attempts": 2.42,
+        "expected_costs": {
+          "F_50": 120.86,
+          "F_100": 241.72,
+          "F_150": 362.58,
+          "F_200": 483.44
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.15,
+        "expectancy_label": "+0.15R",
+        "pass_pct": 55.45,
+        "expected_attempts": 1.8,
+        "expected_costs": {
+          "F_50": 90.17,
+          "F_100": 180.34,
+          "F_150": 270.51,
+          "F_200": 360.69
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.2,
+        "expectancy_label": "+0.20R",
+        "pass_pct": 69.44,
+        "expected_attempts": 1.44,
+        "expected_costs": {
+          "F_50": 72.0,
+          "F_100": 144.01,
+          "F_150": 216.01,
+          "F_200": 288.02
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      }
+    ],
+    "1.0%": [
+      {
+        "expectancy_r": -0.13006756349427853,
+        "expectancy_label": "-0.13R",
+        "pass_pct": 11.87,
+        "expected_attempts": 8.42,
+        "expected_costs": {
+          "F_50": 421.23,
+          "F_100": 842.46,
+          "F_150": 1263.69,
+          "F_200": 1684.92
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": -0.05,
+        "expectancy_label": "-0.05R",
+        "pass_pct": 20.64,
+        "expected_attempts": 4.84,
+        "expected_costs": {
+          "F_50": 242.25,
+          "F_100": 484.5,
+          "F_150": 726.74,
+          "F_200": 968.99
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.0,
+        "expectancy_label": "+0.00R",
+        "pass_pct": 27.6,
+        "expected_attempts": 3.62,
+        "expected_costs": {
+          "F_50": 181.16,
+          "F_100": 362.32,
+          "F_150": 543.48,
+          "F_200": 724.64
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.05,
+        "expectancy_label": "+0.05R",
+        "pass_pct": 37.42,
+        "expected_attempts": 2.67,
+        "expected_costs": {
+          "F_50": 133.62,
+          "F_100": 267.24,
+          "F_150": 400.86,
+          "F_200": 534.47
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.1,
+        "expectancy_label": "+0.10R",
+        "pass_pct": 47.58,
+        "expected_attempts": 2.1,
+        "expected_costs": {
+          "F_50": 105.09,
+          "F_100": 210.17,
+          "F_150": 315.26,
+          "F_200": 420.34
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.15,
+        "expectancy_label": "+0.15R",
+        "pass_pct": 57.3,
+        "expected_attempts": 1.75,
+        "expected_costs": {
+          "F_50": 87.26,
+          "F_100": 174.52,
+          "F_150": 261.78,
+          "F_200": 349.04
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.2,
+        "expectancy_label": "+0.20R",
+        "pass_pct": 68.35,
+        "expected_attempts": 1.46,
+        "expected_costs": {
+          "F_50": 73.15,
+          "F_100": 146.31,
+          "F_150": 219.46,
+          "F_200": 292.61
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      }
+    ]
+  },
+  "100k": {
+    "0.5%": [
+      {
+        "expectancy_r": -0.13006756349427853,
+        "expectancy_label": "-0.13R",
+        "pass_pct": 2.98,
+        "expected_attempts": 33.56,
+        "expected_costs": {
+          "F_50": 1677.85,
+          "F_100": 3355.7,
+          "F_150": 5033.56,
+          "F_200": 6711.41
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": -0.05,
+        "expectancy_label": "-0.05R",
+        "pass_pct": 8.84,
+        "expected_attempts": 11.31,
+        "expected_costs": {
+          "F_50": 565.61,
+          "F_100": 1131.22,
+          "F_150": 1696.83,
+          "F_200": 2262.44
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.0,
+        "expectancy_label": "+0.00R",
+        "pass_pct": 15.04,
+        "expected_attempts": 6.65,
+        "expected_costs": {
+          "F_50": 332.45,
+          "F_100": 664.89,
+          "F_150": 997.34,
+          "F_200": 1329.79
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.05,
+        "expectancy_label": "+0.05R",
+        "pass_pct": 25.32,
+        "expected_attempts": 3.95,
+        "expected_costs": {
+          "F_50": 197.47,
+          "F_100": 394.94,
+          "F_150": 592.42,
+          "F_200": 789.89
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.1,
+        "expectancy_label": "+0.10R",
+        "pass_pct": 38.36,
+        "expected_attempts": 2.61,
+        "expected_costs": {
+          "F_50": 130.34,
+          "F_100": 260.69,
+          "F_150": 391.03,
+          "F_200": 521.38
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.15,
+        "expectancy_label": "+0.15R",
+        "pass_pct": 52.18,
+        "expected_attempts": 1.92,
+        "expected_costs": {
+          "F_50": 95.82,
+          "F_100": 191.64,
+          "F_150": 287.47,
+          "F_200": 383.29
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.2,
+        "expectancy_label": "+0.20R",
+        "pass_pct": 66.4,
+        "expected_attempts": 1.51,
+        "expected_costs": {
+          "F_50": 75.3,
+          "F_100": 150.6,
+          "F_150": 225.9,
+          "F_200": 301.2
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      }
+    ],
+    "1.0%": [
+      {
+        "expectancy_r": -0.13006756349427853,
+        "expectancy_label": "-0.13R",
+        "pass_pct": 9.66,
+        "expected_attempts": 10.35,
+        "expected_costs": {
+          "F_50": 517.6,
+          "F_100": 1035.2,
+          "F_150": 1552.8,
+          "F_200": 2070.39
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": -0.05,
+        "expectancy_label": "-0.05R",
+        "pass_pct": 16.96,
+        "expected_attempts": 5.9,
+        "expected_costs": {
+          "F_50": 294.81,
+          "F_100": 589.62,
+          "F_150": 884.43,
+          "F_200": 1179.25
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.0,
+        "expectancy_label": "+0.00R",
+        "pass_pct": 22.25,
+        "expected_attempts": 4.49,
+        "expected_costs": {
+          "F_50": 224.72,
+          "F_100": 449.44,
+          "F_150": 674.16,
+          "F_200": 898.88
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.05,
+        "expectancy_label": "+0.05R",
+        "pass_pct": 30.7,
+        "expected_attempts": 3.26,
+        "expected_costs": {
+          "F_50": 162.87,
+          "F_100": 325.73,
+          "F_150": 488.6,
+          "F_200": 651.47
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.1,
+        "expectancy_label": "+0.10R",
+        "pass_pct": 39.73,
+        "expected_attempts": 2.52,
+        "expected_costs": {
+          "F_50": 125.85,
+          "F_100": 251.7,
+          "F_150": 377.55,
+          "F_200": 503.4
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.15,
+        "expectancy_label": "+0.15R",
+        "pass_pct": 49.3,
+        "expected_attempts": 2.03,
+        "expected_costs": {
+          "F_50": 101.42,
+          "F_100": 202.84,
+          "F_150": 304.26,
+          "F_200": 405.68
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.2,
+        "expectancy_label": "+0.20R",
+        "pass_pct": 59.96,
+        "expected_attempts": 1.67,
+        "expected_costs": {
+          "F_50": 83.39,
+          "F_100": 166.78,
+          "F_150": 250.17,
+          "F_200": 333.56
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      }
+    ]
+  },
+  "150k": {
+    "0.5%": [
+      {
+        "expectancy_r": -0.13006756349427853,
+        "expectancy_label": "-0.13R",
+        "pass_pct": 2.99,
+        "expected_attempts": 33.44,
+        "expected_costs": {
+          "F_50": 1672.24,
+          "F_100": 3344.48,
+          "F_150": 5016.72,
+          "F_200": 6688.96
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": -0.05,
+        "expectancy_label": "-0.05R",
+        "pass_pct": 8.82,
+        "expected_attempts": 11.34,
+        "expected_costs": {
+          "F_50": 566.89,
+          "F_100": 1133.79,
+          "F_150": 1700.68,
+          "F_200": 2267.57
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.0,
+        "expectancy_label": "+0.00R",
+        "pass_pct": 15.09,
+        "expected_attempts": 6.63,
+        "expected_costs": {
+          "F_50": 331.35,
+          "F_100": 662.69,
+          "F_150": 994.04,
+          "F_200": 1325.38
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.05,
+        "expectancy_label": "+0.05R",
+        "pass_pct": 25.37,
+        "expected_attempts": 3.94,
+        "expected_costs": {
+          "F_50": 197.08,
+          "F_100": 394.17,
+          "F_150": 591.25,
+          "F_200": 788.33
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.1,
+        "expectancy_label": "+0.10R",
+        "pass_pct": 38.34,
+        "expected_attempts": 2.61,
+        "expected_costs": {
+          "F_50": 130.41,
+          "F_100": 260.82,
+          "F_150": 391.24,
+          "F_200": 521.65
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.15,
+        "expectancy_label": "+0.15R",
+        "pass_pct": 52.19,
+        "expected_attempts": 1.92,
+        "expected_costs": {
+          "F_50": 95.8,
+          "F_100": 191.61,
+          "F_150": 287.41,
+          "F_200": 383.22
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.2,
+        "expectancy_label": "+0.20R",
+        "pass_pct": 66.37,
+        "expected_attempts": 1.51,
+        "expected_costs": {
+          "F_50": 75.34,
+          "F_100": 150.67,
+          "F_150": 226.01,
+          "F_200": 301.34
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      }
+    ],
+    "1.0%": [
+      {
+        "expectancy_r": -0.13006756349427853,
+        "expectancy_label": "-0.13R",
+        "pass_pct": 9.66,
+        "expected_attempts": 10.35,
+        "expected_costs": {
+          "F_50": 517.6,
+          "F_100": 1035.2,
+          "F_150": 1552.8,
+          "F_200": 2070.39
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": -0.05,
+        "expectancy_label": "-0.05R",
+        "pass_pct": 17.07,
+        "expected_attempts": 5.86,
+        "expected_costs": {
+          "F_50": 292.91,
+          "F_100": 585.82,
+          "F_150": 878.73,
+          "F_200": 1171.65
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.0,
+        "expectancy_label": "+0.00R",
+        "pass_pct": 22.3,
+        "expected_attempts": 4.48,
+        "expected_costs": {
+          "F_50": 224.22,
+          "F_100": 448.43,
+          "F_150": 672.65,
+          "F_200": 896.86
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.05,
+        "expectancy_label": "+0.05R",
+        "pass_pct": 30.79,
+        "expected_attempts": 3.25,
+        "expected_costs": {
+          "F_50": 162.39,
+          "F_100": 324.78,
+          "F_150": 487.17,
+          "F_200": 649.56
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.1,
+        "expectancy_label": "+0.10R",
+        "pass_pct": 40.02,
+        "expected_attempts": 2.5,
+        "expected_costs": {
+          "F_50": 124.94,
+          "F_100": 249.88,
+          "F_150": 374.81,
+          "F_200": 499.75
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.15,
+        "expectancy_label": "+0.15R",
+        "pass_pct": 49.51,
+        "expected_attempts": 2.02,
+        "expected_costs": {
+          "F_50": 100.99,
+          "F_100": 201.98,
+          "F_150": 302.97,
+          "F_200": 403.96
+        },
+        "crosses_2xF": false,
+        "crosses_1xF": false
+      },
+      {
+        "expectancy_r": 0.2,
+        "expectancy_label": "+0.20R",
+        "pass_pct": 60.49,
+        "expected_attempts": 1.65,
+        "expected_costs": {
+          "F_50": 82.66,
+          "F_100": 165.32,
+          "F_150": 247.97,
+          "F_200": 330.63
+        },
+        "crosses_2xF": true,
+        "crosses_1xF": false
+      }
+    ]
+  }
+}

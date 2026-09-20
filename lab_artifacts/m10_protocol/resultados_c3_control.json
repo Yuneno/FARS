@@ -1,0 +1,222 @@
+{
+  "matched": {
+    "50k": {
+      "0.5%": {
+        "account_size": 50000.0,
+        "risk_pct": 0.005,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 1.92,
+        "blown_pct": 42.81,
+        "blocked_pct": 43.46,
+        "timeout_pct": 11.81,
+        "median_days_to_pass": 14.0,
+        "p25_days_to_pass": 10.0,
+        "p75_days_to_pass": 16.0,
+        "median_trades_to_pass": 47.0,
+        "median_max_dd_dollars": 1991.9,
+        "p95_max_dd_dollars": 2000.0
+      },
+      "1.0%": {
+        "account_size": 50000.0,
+        "risk_pct": 0.01,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 10.61,
+        "blown_pct": 54.54,
+        "blocked_pct": 34.68,
+        "timeout_pct": 0.17,
+        "median_days_to_pass": 5.0,
+        "p25_days_to_pass": 4.0,
+        "p75_days_to_pass": 8.0,
+        "median_trades_to_pass": 18.0,
+        "median_max_dd_dollars": 2000.0,
+        "p95_max_dd_dollars": 2127.14
+      }
+    },
+    "100k": {
+      "0.5%": {
+        "account_size": 100000.0,
+        "risk_pct": 0.005,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 1.77,
+        "blown_pct": 57.16,
+        "blocked_pct": 35.91,
+        "timeout_pct": 5.16,
+        "median_days_to_pass": 13.0,
+        "p25_days_to_pass": 10.0,
+        "p75_days_to_pass": 16.0,
+        "median_trades_to_pass": 46.0,
+        "median_max_dd_dollars": 3000.0,
+        "p95_max_dd_dollars": 3449.27
+      },
+      "1.0%": {
+        "account_size": 100000.0,
+        "risk_pct": 0.01,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 8.65,
+        "blown_pct": 64.3,
+        "blocked_pct": 27.02,
+        "timeout_pct": 0.03,
+        "median_days_to_pass": 5.0,
+        "p25_days_to_pass": 3.0,
+        "p75_days_to_pass": 7.0,
+        "median_trades_to_pass": 16.0,
+        "median_max_dd_dollars": 3000.0,
+        "p95_max_dd_dollars": 4035.59
+      }
+    },
+    "150k": {
+      "0.5%": {
+        "account_size": 150000.0,
+        "risk_pct": 0.005,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 1.83,
+        "blown_pct": 62.09,
+        "blocked_pct": 30.84,
+        "timeout_pct": 5.24,
+        "median_days_to_pass": 13.0,
+        "p25_days_to_pass": 10.0,
+        "p75_days_to_pass": 16.0,
+        "median_trades_to_pass": 46.0,
+        "median_max_dd_dollars": 4500.0,
+        "p95_max_dd_dollars": 5198.91
+      },
+      "1.0%": {
+        "account_size": 150000.0,
+        "risk_pct": 0.01,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 8.67,
+        "blown_pct": 68.31,
+        "blocked_pct": 23.0,
+        "timeout_pct": 0.02,
+        "median_days_to_pass": 5.0,
+        "p25_days_to_pass": 3.0,
+        "p75_days_to_pass": 7.0,
+        "median_trades_to_pass": 17.0,
+        "median_max_dd_dollars": 4500.0,
+        "p95_max_dd_dollars": 6066.72
+      }
+    }
+  },
+  "zero_edge": {
+    "50k": {
+      "0.5%": {
+        "account_size": 50000.0,
+        "risk_pct": 0.005,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 14.06,
+        "blown_pct": 26.19,
+        "blocked_pct": 30.69,
+        "timeout_pct": 29.06,
+        "median_days_to_pass": 14.0,
+        "p25_days_to_pass": 10.0,
+        "p75_days_to_pass": 17.0,
+        "median_trades_to_pass": 47.0,
+        "median_max_dd_dollars": 1958.13,
+        "p95_max_dd_dollars": 2000.0
+      },
+      "1.0%": {
+        "account_size": 50000.0,
+        "risk_pct": 0.01,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 27.94,
+        "blown_pct": 40.2,
+        "blocked_pct": 31.35,
+        "timeout_pct": 0.51,
+        "median_days_to_pass": 6.0,
+        "p25_days_to_pass": 4.0,
+        "p75_days_to_pass": 9.0,
+        "median_trades_to_pass": 20.0,
+        "median_max_dd_dollars": 1987.35,
+        "p95_max_dd_dollars": 2241.67
+      }
+    },
+    "100k": {
+      "0.5%": {
+        "account_size": 100000.0,
+        "risk_pct": 0.005,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 12.77,
+        "blown_pct": 39.64,
+        "blocked_pct": 30.94,
+        "timeout_pct": 16.65,
+        "median_days_to_pass": 13.0,
+        "p25_days_to_pass": 10.0,
+        "p75_days_to_pass": 17.0,
+        "median_trades_to_pass": 45.0,
+        "median_max_dd_dollars": 2994.89,
+        "p95_max_dd_dollars": 3884.31
+      },
+      "1.0%": {
+        "account_size": 100000.0,
+        "risk_pct": 0.01,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 22.53,
+        "blown_pct": 50.95,
+        "blocked_pct": 26.36,
+        "timeout_pct": 0.16,
+        "median_days_to_pass": 5.0,
+        "p25_days_to_pass": 3.0,
+        "p75_days_to_pass": 8.0,
+        "median_trades_to_pass": 17.0,
+        "median_max_dd_dollars": 3000.0,
+        "p95_max_dd_dollars": 4347.1
+      }
+    },
+    "150k": {
+      "0.5%": {
+        "account_size": 150000.0,
+        "risk_pct": 0.005,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 13.09,
+        "blown_pct": 43.1,
+        "blocked_pct": 26.79,
+        "timeout_pct": 17.02,
+        "median_days_to_pass": 13.0,
+        "p25_days_to_pass": 10.0,
+        "p75_days_to_pass": 17.0,
+        "median_trades_to_pass": 46.0,
+        "median_max_dd_dollars": 4500.0,
+        "p95_max_dd_dollars": 5806.3
+      },
+      "1.0%": {
+        "account_size": 150000.0,
+        "risk_pct": 0.01,
+        "trailing_mode": "eod",
+        "n_simulations": 10000,
+        "horizon_trades": 74,
+        "pass_pct": 22.6,
+        "blown_pct": 53.93,
+        "blocked_pct": 23.27,
+        "timeout_pct": 0.2,
+        "median_days_to_pass": 5.0,
+        "p25_days_to_pass": 3.0,
+        "p75_days_to_pass": 8.0,
+        "median_trades_to_pass": 17.0,
+        "median_max_dd_dollars": 4500.0,
+        "p95_max_dd_dollars": 6532.8
+      }
+    }
+  }
+}

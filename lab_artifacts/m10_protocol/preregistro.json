@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "block_id": "M10-v2",
+    "title": "Preregistro de evaluación de cuentas fondeadas Topstep con foto limpia post-revocación fill-bar",
+    "preregistered_at_utc": "2026-09-19T20:25:30.000000+00:00",
+    "git_branch": "bloque-m10-evaluacion",
+    "base_commit": "277efae",
+    "author": "Gemini 3.8 Flash (High)",
+    "status": "CONGELADO"
+  },
+  "sources": [
+    {
+      "provider": "Topstep",
+      "rule": "Maximum Loss Limit (MLL)",
+      "url": "https://help.topstep.com/en/articles/9355700-maximum-loss-limit-mll",
+      "retrieved_at": "2026-09-19"
+    },
+    {
+      "provider": "Topstep",
+      "rule": "Daily Loss Limit (DLL)",
+      "url": "https://help.topstep.com/en/articles/9355699-daily-loss-limit",
+      "retrieved_at": "2026-09-19"
+    },
+    {
+      "provider": "Topstep",
+      "rule": "Consistency Target (55% rule)",
+      "url": "https://help.topstep.com/en/articles/9355701-consistency-target",
+      "retrieved_at": "2026-09-19"
+    }
+  ],
+  "candidates": {
+    "C1": {
+      "id": "C1",
+      "name": "SMC-FVG limpio (regla A1)",
+      "strategy": "smc_fvg_baseline",
+      "market": "MNQ",
+      "scenario": "por_tramo",
+      "parameters": {
+        "min_risk_pts": 8.0
+      },
+      "gate_consistency": {
+        "n_trades": 3583,
+        "win_rate_pct": 45.185598660340496,
+        "expectancy_r": -0.13006756349427853,
+        "net_r": -466.03208,
+        "positive_folds": 0,
+        "n_folds": 8
+      }
+    },
+    "C2": {
+      "id": "C2",
+      "name": "Escalera de edge sintética",
+      "base_candidate": "C1",
+      "formula": "R' = R - mean(R) + objetivo",
+      "objectives_r": [
+        -0.13006756349427853,
+        -0.05,
+        0.00,
+        0.05,
+        0.10,
+        0.15,
+        0.20
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "name": "Control aleatorio",
+      "type": "synthetic_matched_mean_and_volatility",
+      "n_trades": 3583,
+      "mean_r": -0.13006756349427853,
+      "seed": 20260919
+    }
+  },
+  "sizing_declared": {
+    "risk_fractions": [
+      0.005,
+      0.010
+    ],
+    "risk_labels": [
+      "0.5%",
+      "1.0%"
+    ],
+    "safety_buffer_fraction": 0.75,
+    "sizing_policy": "fixed_fraction_with_buffer_cap"
+  },
+  "monte_carlo": {
+    "n_simulations": 10000,
+    "master_seed": 20260919,
+    "resampling_method": "Circular Block Bootstrap (CBB)",
+    "block_length": 10,
+    "horizon_calendar_days": 30,
+    "horizon_trading_days": 21
+  },
+  "account_profiles": {
+    "topstep_50k": {
+      "provider": "Topstep",
+      "account_size": "50k",
+      "starting_balance": 50000.0,
+      "profit_target": 3000.0,
+      "maximum_loss_limit": 2000.0,
+      "lock_ceiling": 50000.0,
+      "daily_loss_limit": 1000.0,
+      "max_micros": 50,
+      "max_minis": 5
+    },
+    "topstep_100k": {
+      "provider": "Topstep",
+      "account_size": "100k",
+      "starting_balance": 100000.0,
+      "profit_target": 6000.0,
+      "maximum_loss_limit": 3000.0,
+      "lock_ceiling": 100000.0,
+      "daily_loss_limit": 2000.0,
+      "max_micros": 100,
+      "max_minis": 10
+    },
+    "topstep_150k": {
+      "provider": "Topstep",
+      "account_size": "150k",
+      "starting_balance": 150000.0,
+      "profit_target": 9000.0,
+      "maximum_loss_limit": 4500.0,
+      "lock_ceiling": 150000.0,
+      "daily_loss_limit": 3000.0,
+      "max_micros": 150,
+      "max_minis": 15
+    },
+    "apex_25k": {
+      "provider": "Apex Trader Funding",
+      "account_size": "25k",
+      "starting_balance": 25000.0,
+      "profit_target": 1500.0,
+      "maximum_loss_limit": 1500.0,
+      "lock_ceiling": 25100.0,
+      "daily_loss_limit": null,
+      "max_micros": 20,
+      "max_minis": 2
+    },
+    "rapid_25k": {
+      "provider": "My Funded Futures",
+      "account_size": "25k",
+      "starting_balance": 25000.0,
+      "profit_target": 1500.0,
+      "maximum_loss_limit": 1000.0,
+      "lock_ceiling": 25100.0,
+      "daily_loss_limit": null,
+      "max_micros": 30,
+      "max_minis": 3
+    }
+  },
+  "declared_variants": {
+    "trailing_modes": [
+      "eod",
+      "closed"
+    ],
+    "daily_loss_modes": [
+      "off",
+      "soft_pause"
+    ],
+    "consistency_modes": [
+      "none",
+      "topstep_55_pct"
+    ]
+  },
+  "economic_decision_criteria": {
+    "fees": [
+      50.0,
+      100.0,
+      150.0,
+      200.0
+    ],
+    "formula_expected_attempts": "1.0 / P(pass)",
+    "formula_expected_cost": "F / P(pass)",
+    "thresholds": {
+      "2xF": "gasto_esperado <= 2 * F (P >= 50%)",
+      "1xF": "gasto_esperado <= 1 * F (P >= 100%)"
+    },
+    "edge_minimo_viable_metric": "Menor E[R] de la escalera que logra gasto_esperado <= 2 * F"
+  }
+}
