@@ -38,7 +38,7 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 | Bloque | Qué falta | Siguiente paso |
 |---|---|---|
 | **S2** | sesión fantasma RTH con 50k/100k/150k + curva evolutiva | encargo listo: `E:\FARS-LAB\FARS_LAB_GEMINI_ENCARGO_BLOQUE_S2_CUENTA_FANTASMA.md` (hay una prueba de fontanería nocturna ya commiteada: `s2_protocol/`) |
-| **RT-9** | órdenes reales en cuenta **Practice** (place/cancel/search + brackets + kill-switch + límites de sesión + protocolo de aceptación) | construcción+offline ✅ (263/263, mock PASS re-corrido por Hermes) — **REVISADO: PASA (offline)**; **1 bloqueante para la ventana: `--live` del arnés sin cablear** + H2-H5 (acta: `lab_artifacts/rt9_protocol/HERMES_REVISION_RT9.md`); cuenta ✅ direccionada |
+| **RT-9** | órdenes reales en cuenta **Practice** (place/cancel/search + brackets + kill-switch + límites de sesión + protocolo de aceptación) | fixes pre-ventana ✅ verificados (22/23 sondas; 270/270; mock PASS; manifiesto 5/5) — **1 línea pendiente en el live path** (`search_accounts`→`list_accounts`) y luego **ventana** (dom 17:00 CT / 18:00 ET). Actas: `HERMES_REVISION_RT9.md` + `HERMES_REVISION_RT9_FIXES.md` |
 | **M10** | P(pasar) bajo reglas de Topstep (50k/100k/150k) con foto limpia + escalera de edge + control | ✅ **MEDIDO — NO PAGAR** (C1 ≈ control sintético; 2×F se cruza en +0,15 R). Ver §1. |
 | **Fase 11D** | primer adapter de proveedor | contrato aprobado, sin implementar |
 | **Fases 12/13** | validación temporal y estrés | contratos aprobados; **parámetros diferidos** (decidir antes de implementar) |
