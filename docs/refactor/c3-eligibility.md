@@ -1,5 +1,8 @@
 # Bloque C3 — elegibilidad final y cierre del bloque C
 
+> [!WARNING]
+> **VIGENCIA REVOCADA (2026-09-19):** las filas de SMC-FVG de la tabla final, el CPCV/PBO y el vecindario de este documento parten de los trades OOS de SMC-FVG, invalidados por el artefacto de resolución "fill-bar" en órdenes límite descansadas (edge limpio: WR 45.19%, E[R] −0.1301 R, 0/8 folds; ver [`lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md`](file:///E:/FARS-LAB/FARS/lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md)). La conclusión de cierre (ninguna configuración elegible) no cambia; las celdas PASS de SMC-FVG y los diagnósticos que rankearon SMC como ganador in-sample deben leerse como inválidos. Las filas EMAS/CRT 4H no están afectadas por este defecto. *Nota añadida por el revisor (Hermes).*
+
 ## Alcance y regla de lectura
 
 C3 no reestima el edge causal: ese resultado sigue siendo el walk-forward OOS

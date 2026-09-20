@@ -13,8 +13,10 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 |---|---|---|
 | **A1–A6** (`fix/a1..a6`) | reconciliación de piernas, semántica de fin de datos, calendario de sesión, poda documental | ✅ mergeados |
 | **B** (`bloque-b-reconciliacion`) | reconciliación bruto/neto, distinción ORB flat vs market | ✅ mergeado |
-| **C1/C2/C3** | protocolo C1, port CRT 4H de Kai, CPCV/PBO + gates | ✅ mergeados |
+| **C1/C2/C3 & SMC-OB** | baselines OOS C2 (SMC-FVG) y multimercado (SMC-OB) | ⚠️ **REVOCADOS / INFLADOS**. Desplome a WR 44-45% y 0/8 folds positivos por artefacto fill-bar. Re-congelados limpios como NO APTOS (`lab_artifacts/re_congelado_fillbar/`). |
 | **D** (`bloque-d-motor-cuentas`) | motor de cuentas fondeadas + paths probabilísticos | ✅ mergeado |
+| **Auditoría Fill-Bar** (`bloque-fillbar-medicion`) | medición empírica del artefacto de TP/tp1 en vela de fill en límites descansados; brazo de control reprodujo baselines bit a bit; variantes A1/A2 colapsan WR y E[R] | ✅ Veredicto INFLADO (acta Hermes `lab_artifacts/auditoria_fillbar/HERMES_REVISION_FILLBAR.md`) |
+| **Fix Fill-Bar** (`bloque-fix-fillbar`) | adopción de regla A1 en `src/backtest/executor.py` (límite descansado solo evalúa SL en vela de fill; TP/tp1 evalúan en velas posteriores); 6 tests de regresión nuevos; suite 1586 tests pasa al 100%; verificación bit a bit contra oráculo A1 | ✅ CERRADO con re-congelado en `lab_artifacts/re_congelado_fillbar/` |
 | **F · Z1–Z4** | motor de zonas: modelo, FVG, liquidez/EQH-EQL, engine incremental | ✅ mergeado (`605c9dd`→) |
 | **F · Z3-b** | pools de sesión PDH/PDL/D20/ONH/ONL | ✅ mergeado (`cae7424`) |
 | **Z5** bridge + escenarios | features de zona a backtests; 30 arms × 3 escenarios | ✅ mergeado (`26e458f`); informe `z5_protocol/HERMES_REVISION_Z5_ESCENARIOS.md` |
@@ -27,7 +29,7 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 | **S1** | sesión sombra en vivo (TopstepX) | ✅ mergeado (`1a8f80a`); 2 señales, 2 vetos fail-closed, 0 órdenes; `s1_protocol/HERMES_REVISION_S1.md` |
 | **RT-0 … RT-8** | pipeline realtime: bus, replay, riesgo fail-closed, aceptación | ✅ DONE (ver `AUTONOMY_ROADMAP.md`) |
 | **Fases 1.0–10B** | Core estadístico + bootstrap | ✅ mergeado |
-| **Fases 11A–11C** (`agent/phases-night`) | datos de cuenta, reglas de fondeo, paths probabilísticos | ✅ **mergeado hoy** (`b0f5e0b`) con los fixes de la ronda 2 y sus dos informes de auditoría · **suite post-merge: 1580 passed, 2 skipped** ✓ |
+| **Fases 11A–11C** (`agent/phases-night`) | datos de cuenta, reglas de fondeo, paths probabilísticos | ✅ **mergeado** (`b0f5e0b`) · **suite post-merge: 1586 passed, 2 skipped** ✓ |
 
 ## 2. ABIERTOS (con nombre y siguiente paso)
 

@@ -129,7 +129,11 @@ def test_wrapper_signal_fresh_pending_observe_and_logging():
 
 
 def test_executor_limit_partial_then_break_even():
-    bars = bullish_bars() + bars_from([122, 115], [109, 109], [120, 110])
+    # RE-FREEZE DECLARADO (bloque-fix-fillbar / auditoria_fillbar + HERMES_REVISION_FILLBAR.md):
+    # Con la regla A1 limpia, en la vela del fill (bar 5, low=109 -> fill a 110.0) no se
+    # acredita tp1 parcial. Se agrega la barra 6 (high=122) para activar tp1 y mover stop a BE,
+    # y la barra 7 (low=109) para ejecutar la salida a break-even.
+    bars = bullish_bars() + bars_from([115, 122, 115], [109, 110, 109], [112, 120, 110])
     bars = [Bar(datetime(2026, 1, 1, tzinfo=timezone.utc)+timedelta(minutes=5*i),
                 b.open, b.high, b.low, b.close, b.volume) for i, b in enumerate(bars)]
     cfg = smc_ob_config(fixed_quantity=2)

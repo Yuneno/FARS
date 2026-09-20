@@ -1,0 +1,74 @@
+{
+  "apex_25k": {
+    "0.5%": {
+      "account_size": 25000.0,
+      "risk_pct": 0.005,
+      "trailing_mode": "closed",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 3.38,
+      "blown_pct": 1.26,
+      "blocked_pct": 70.83,
+      "timeout_pct": 24.53,
+      "median_days_to_pass": 13.0,
+      "p25_days_to_pass": 9.0,
+      "p75_days_to_pass": 17.0,
+      "median_trades_to_pass": 44.0,
+      "median_max_dd_dollars": 1465.77,
+      "p95_max_dd_dollars": 1490.55
+    },
+    "1.0%": {
+      "account_size": 25000.0,
+      "risk_pct": 0.01,
+      "trailing_mode": "closed",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 14.12,
+      "blown_pct": 1.08,
+      "blocked_pct": 84.51,
+      "timeout_pct": 0.29,
+      "median_days_to_pass": 5.0,
+      "p25_days_to_pass": 4.0,
+      "p75_days_to_pass": 8.0,
+      "median_trades_to_pass": 18.0,
+      "median_max_dd_dollars": 1472.29,
+      "p95_max_dd_dollars": 1491.49
+    }
+  },
+  "rapid_25k": {
+    "0.5%": {
+      "account_size": 25000.0,
+      "risk_pct": 0.005,
+      "trailing_mode": "closed",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 2.79,
+      "blown_pct": 0.76,
+      "blocked_pct": 91.01,
+      "timeout_pct": 5.44,
+      "median_days_to_pass": 12.0,
+      "p25_days_to_pass": 9.0,
+      "p75_days_to_pass": 16.0,
+      "median_trades_to_pass": 42.0,
+      "median_max_dd_dollars": 973.31,
+      "p95_max_dd_dollars": 993.11
+    },
+    "1.0%": {
+      "account_size": 25000.0,
+      "risk_pct": 0.01,
+      "trailing_mode": "closed",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 3.8,
+      "blown_pct": 1.1,
+      "blocked_pct": 93.59,
+      "timeout_pct": 1.51,
+      "median_days_to_pass": 5.0,
+      "p25_days_to_pass": 4.0,
+      "p75_days_to_pass": 7.0,
+      "median_trades_to_pass": 17.0,
+      "median_max_dd_dollars": 978.32,
+      "p95_max_dd_dollars": 1461.64
+    }
+  }
+}

@@ -2,6 +2,9 @@
 
 **Autor:** Hermes · **Fecha:** 2026-09-15 · **Estado:** análisis exploratorio (no preregistrado), scripts reproducibles en `lab_artifacts/improvement_math/`
 
+> [!WARNING]
+> **VIGENCIA REVOCADA (2026-09-19):** El insumo empírico de trades OOS de SMC-FVG utilizado en este documento está invalidado por el artefacto de resolución fill-bar (ver [`lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md`](file:///E:/FARS-LAB/FARS/lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md)). Consérvese únicamente como demostración metodológica del motor de cuentas.
+
 Motor: Monte Carlo vectorizado sobre la distribución REAL de trades OOS (SMC-FVG risk=10, por tramo, n=2.842) + MAE causal M1 + reglas Apex 25K (objetivo $1.500, DD $1.500 trailing, lock +$100, safety 0.75, máx 20 micros, 1.8631 trades/día, horizonte 30 días).
 
 Validación del motor: reproduce el P&L aplicado +0.0904R (real +0.0879R), el pase 25.6% y los días 20.9 del FIX-D ✓.

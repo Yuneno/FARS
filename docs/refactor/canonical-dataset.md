@@ -20,6 +20,9 @@ denso esté el backfill de minutos — es sintético y se descarta. Se descartan
 
 ## Hallazgo SMC-FVG: el corte purifica, no perjudica
 
+> [!WARNING]
+> **VIGENCIA REVOCADA (2026-09-19):** las cifras de SMC-FVG de esta sección y de la tabla de referencia se apoyan en resoluciones de límites descansados no re-auditadas bajo la regla limpia A1; el artefacto "fill-bar" corregido en FARS deja el edge de SMC-FVG en negativo (WR 45.19%, E[R] −0.1301 R, 0/8 folds; ver [`lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md`](file:///E:/FARS-LAB/FARS/lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md)). La decisión de corte del dataset no depende de estas cifras (se sostiene en el lanzamiento real del contrato MNQ en mayo 2019). *Nota añadida por el revisor (Hermes).*
+
 Corrida completa del código de kai, split por timestamp de entrada:
 
 | tramo | trades | netR | win rate |

@@ -1,0 +1,78 @@
+{
+  "C1_50k_1pct": {
+    "closed_trade_model": {
+      "account_size": 50000.0,
+      "risk_pct": 0.01,
+      "trailing_mode": "eod",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 11.3,
+      "blown_pct": 1.2,
+      "blocked_pct": 87.47,
+      "timeout_pct": 0.03,
+      "median_days_to_pass": 5.0,
+      "p25_days_to_pass": 3.0,
+      "p75_days_to_pass": 7.0,
+      "median_trades_to_pass": 16.0,
+      "median_max_dd_dollars": 1974.68,
+      "p95_max_dd_dollars": 2101.16
+    },
+    "full_intraday_mae_model": {
+      "account_size": 50000.0,
+      "risk_pct": 0.01,
+      "trailing_mode": "eod",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 10.6,
+      "blown_pct": 26.23,
+      "blocked_pct": 63.16,
+      "timeout_pct": 0.01,
+      "median_days_to_pass": 5.0,
+      "p25_days_to_pass": 3.0,
+      "p75_days_to_pass": 7.0,
+      "median_trades_to_pass": 16.0,
+      "median_max_dd_dollars": 1964.75,
+      "p95_max_dd_dollars": 2026.09
+    },
+    "delta_pass_pct": 0.7,
+    "delta_blown_pct": 25.03
+  },
+  "C2_midpoint_plus_010R_50k_1pct": {
+    "closed_trade_model": {
+      "account_size": 50000.0,
+      "risk_pct": 0.01,
+      "trailing_mode": "eod",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 47.58,
+      "blown_pct": 1.45,
+      "blocked_pct": 50.73,
+      "timeout_pct": 0.24,
+      "median_days_to_pass": 5.0,
+      "p25_days_to_pass": 3.0,
+      "p75_days_to_pass": 8.0,
+      "median_trades_to_pass": 17.0,
+      "median_max_dd_dollars": 1928.52,
+      "p95_max_dd_dollars": 2156.72
+    },
+    "full_intraday_mae_model": {
+      "account_size": 50000.0,
+      "risk_pct": 0.01,
+      "trailing_mode": "eod",
+      "n_simulations": 10000,
+      "horizon_trades": 74,
+      "pass_pct": 41.77,
+      "blown_pct": 29.24,
+      "blocked_pct": 28.85,
+      "timeout_pct": 0.14,
+      "median_days_to_pass": 5.0,
+      "p25_days_to_pass": 3.0,
+      "p75_days_to_pass": 7.0,
+      "median_trades_to_pass": 16.0,
+      "median_max_dd_dollars": 1577.22,
+      "p95_max_dd_dollars": 2004.66
+    },
+    "delta_pass_pct": 5.81,
+    "delta_blown_pct": 27.79
+  }
+}

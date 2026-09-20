@@ -94,12 +94,15 @@ class BacktestConfig:
     time_exit_slippage_points: float = 0.0
     end_of_data_slippage_points: float = 0.0
     session_date_for_ledger: bool = False
+    fillbar_mode: str = "control"  # "control", "A1", "A2"
 
     def __post_init__(self) -> None:
         if self.time_exit_mode not in {"market", "flat"}:
             raise ValueError("time_exit_mode must be 'market' or 'flat'")
         if self.end_of_data_policy not in {"unresolved", "close"}:
             raise ValueError("end_of_data_policy must be 'unresolved' or 'close'")
+        if self.fillbar_mode not in {"control", "A1", "A2"}:
+            raise ValueError("fillbar_mode must be 'control', 'A1', or 'A2'")
         float_fields = (
             "initial_balance",
             "risk_per_trade",
@@ -658,6 +661,7 @@ def _run_backtest_enhanced(
     *,
     calibration_bars: Sequence[Bar] = (),
     m1_index: dict[datetime, list[Bar]] | None = None,
+    fillbar_mode: str = "control",
 ) -> BacktestResult:
     """Opt-in executor for partial/BE, pending limits, and cooldown.
 
@@ -908,13 +912,26 @@ def _run_backtest_enhanced(
             hit_target = target <= bar.high if direction == "long" else target >= bar.low
             hit_tp1 = tp1 <= bar.high if direction == "long" else tp1 >= bar.low
 
-            # Fix fill-bar (auditoria_fillbar + HERMES_REVISION_FILLBAR.md):
-            # En fills de limites descansados, los extremos previos al fill no pueden
-            # acreditar TP ni tp1 en la misma vela. Solo cuenta SL; TP/tp1 evaluan desde la siguiente vela.
             if position.get("limit_entry") and i == position["entry_index"]:
-                hit_target = False
-                hit_tp1 = False
-
+                if fillbar_mode == "A1":
+                    hit_target = False
+                    hit_tp1 = False
+                elif fillbar_mode == "A2":
+                    if not hit_stop:
+                        target_closed_beyond = (
+                            bar.close >= target
+                            if direction == "long"
+                            else bar.close <= target
+                        )
+                        if not target_closed_beyond:
+                            hit_target = False
+                        tp1_closed_beyond = (
+                            bar.close >= tp1
+                            if direction == "long"
+                            else bar.close <= tp1
+                        )
+                        if not tp1_closed_beyond:
+                            hit_tp1 = False
             if hit_target and hit_stop:
                 intrabar_audit.ambiguous_bars_count += 1
                 intrabar_audit.ambiguous_timestamps.append(bar.timestamp)
@@ -1068,15 +1085,17 @@ def run_backtest(
     *,
     calibration_bars: Sequence[Bar] = (),
     m1_bars: Sequence[Bar] | None = None,
+    fillbar_mode: str | None = None,
 ) -> BacktestResult:
     """Run the legacy executor or the additive opt-in execution path."""
+    mode = fillbar_mode or getattr(config, "fillbar_mode", "control")
     m1_idx = index_m1_bars(m1_bars) if m1_bars else None
     if not _uses_enhanced_execution(config):
         return _run_backtest_legacy(
             bars, strategy, config, calibration_bars=calibration_bars, m1_index=m1_idx
         )
     return _run_backtest_enhanced(
-        bars, strategy, config, calibration_bars=calibration_bars, m1_index=m1_idx
+        bars, strategy, config, calibration_bars=calibration_bars, m1_index=m1_idx, fillbar_mode=mode
     )
 
 

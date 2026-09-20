@@ -63,10 +63,29 @@ def test_smc_fvg_fresh_copies_parameters_without_state():
 
 
 def test_smc_fvg_limit_fills_on_retracement_to_fvg_edge():
+    # RE-FREEZE DECLARADO (auditoria_fillbar + HERMES_REVISION_FILLBAR.md):
+    # La prueba legada asumía que el TP se cobraba en la propia vela M5 del fill (barra 5).
+    # Con la regla limpia A1, en la vela del fill solo SL cuenta; TP se evalúa a partir de la
+    # vela siguiente.
+    # 1) En la vela del fill (barra 5), el límite se llena a 111.0 pero la posición queda abierta (n_trades == 0).
+    # 2) Con una vela posterior (barra 6) que cotiza el target (112.5), se preserva la
+    #    aserción legada EXACTA de ejecución a take_profit.
     bars = _bullish_structure() + [_bar(5, 112, 113, 110.5, 112.5)]
 
-    result = run_backtest(
+    # 1. En la vela del fill la orden se llena pero NO cierra por TP
+    result_fill = run_backtest(
         bars,
+        SmcFvgStrategy(swing_w=1, min_risk_pts=0.0),
+        smc_fvg_config(),
+    )
+    assert result_fill.n_trades == 0
+    assert result_fill.unresolved_positions == 1
+    assert result_fill.open_position["entry_price"] == 111.0
+
+    # 2. Aserción legada exacta preservada en vela posterior que alcanza target
+    bars_with_subsequent = bars + [_bar(6, 112.0, 113.0, 111.5, 112.5)]
+    result = run_backtest(
+        bars_with_subsequent,
         SmcFvgStrategy(swing_w=1, min_risk_pts=0.0),
         smc_fvg_config(),
     )

@@ -4,6 +4,9 @@ Fecha de actualización: 2026-09-14
 Rama: `bloque-b-reconciliacion`  
 Base commit: `fe295d5` (Bloque B cerrado) / `0f2fb5b` (merge Bloque A1+A2)
 
+> [!WARNING]
+> **VIGENCIA REVOCADA (2026-09-19):** Las métricas históricas de rendimiento y elegibilidad de SMC-FVG y SMC-OB documentadas en este registro quedan formalmente invalidadas por el defecto de resolución temporal "fill-bar" en órdenes límite descansadas (`src/backtest/executor.py`). Para los baselines re-congelados limpios bajo la regla A1, consultar [`lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md`](file:///E:/FARS-LAB/FARS/lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md).
+
 ---
 
 ## 1. Nota Formal de Corrección de Alcance (§5 del Plan Original)

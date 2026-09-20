@@ -1,5 +1,8 @@
 # C2 — elegibilidad para C3
 
+> [!WARNING]
+> **VIGENCIA REVOCADA (2026-09-19):** Las evaluaciones de elegibilidad de SMC-FVG documentadas en este archivo están formalmente invalidadas por el defecto de resolución fill-bar en órdenes límite descansadas. La medición limpia con la regla A1 desploma el WR a 45.19% y los folds positivos a 0/8 (ver [`lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md`](file:///E:/FARS-LAB/FARS/lab_artifacts/re_congelado_fillbar/RE_CONGELADO.md)).
+
 Fecha de evaluación: 2026-09-15 UTC. Dataset canónico: MNQ M5, 518,237 barras, SHA-256 `fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96`. Protocolo: 8 folds rolling 36m/6m/6m, purga por intervalos reales y embargo de 192 barras.
 
 El escenario canónico de $4.00 RT es el escenario decisorio de C2; los escenarios por tramo y Kai son análisis de sensibilidad preregistrados. Gates activos: G1 E[R] neta > 0; G2 IC CBB 95% con límite inferior > 0; G3 al menos 75% de folds positivos y concentración < 60%; G5 DD < 5% y < 12R; G6 al menos 15 trades en cada fold. G4 y G7 no se aplican hasta C3.
