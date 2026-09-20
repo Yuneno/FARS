@@ -71,12 +71,12 @@ En conformidad con las políticas de gobernanza de FARS:
 
 Para blindar permanentemente el motor contra cualquier reintroducción del defecto, se creó una suite de pruebas deterministas dedicadas:
 - **`tests/test_executor_fillbar_regression.py`** (6 tests):
-  1. `test_a_limit_tp_on_fill_bar_remains_open`: Orden límite con target en la vela del fill no se adjudica; posición queda abierta.
+  1. `test_a_limit_solo_target_on_fill_bar_remains_open`: Orden límite con target en la vela del fill no se adjudica; posición queda abierta.
   2. `test_b_limit_tp1_partial_on_fill_bar_does_not_trigger_partial_or_be`: `tp1` parcial no se dispara en fill-bar; contratos se preservan íntegros y stop no migra a BE.
-  3. `test_c_limit_both_sl_and_tp_on_fill_bar_closes_at_stop_loss`: Si se tocan SL y TP en la vela de entrada, prevalece el Stop Loss.
-  4. `test_d_market_orders_retain_intrabar_resolution`: Las órdenes a mercado conservan su resolución intrabarra original.
+  3. `test_c_limit_both_sl_and_tp_on_fill_bar_exits_by_stop_loss`: Si se tocan SL y TP en la vela de entrada, prevalece el Stop Loss.
+  4. `test_d_market_entry_semantics_remain_intact`: Las órdenes a mercado conservan su resolución intrabarra original.
   5. `test_e_subsequent_bars_resolve_normally`: En velas posteriores al fill, TP y SL operan de forma estándar.
-  6. `test_f_frozen_deterministic_fixture_matches_rule_a1`: Fixture congelado de 5 barras que valida exactamente la secuencia de eventos.
+  6. `test_f_frozen_deterministic_fixture_clean_semantics`: Fixture determinista de 3 velas (con comisión y slippage) que congela la secuencia limpia completa: fill sin TP en la vela del fill y salida posterior por stop_loss con slippage (exit 89.75; net −24.5 con costes).
 
 ### Re-freezes Declarados en Tests Preexistentes
 Exactamente 3 tests unitarios preexistentes codificaban la expectativa del artefacto legado. Todos fueron actualizados y documentados con comentarios explícitos:
