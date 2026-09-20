@@ -122,24 +122,27 @@ class MockTopstepXGatewayTransport(JsonTransport):
             return {"token": "mock-practice-bearer-token", "success": True, "errorCode": 0}
 
         if endpoint == "/api/Account/search":
-            return [
-                {
-                    "id": self.target_account_id,
-                    "name": TARGET_ACCOUNT_NAME,
-                    "balance": 150000.0,
-                    "canTrade": True,
-                    "isVisible": True,
-                    "simulated": True,
-                },
-                {
-                    "id": 99999999,
-                    "name": "1.5KCHCR-MOCK-COMBINE",
-                    "balance": -501.30,
-                    "canTrade": False,
-                    "isVisible": True,
-                    "simulated": False,
-                },
-            ]
+            return {
+                "accounts": [
+                    {
+                        "id": self.target_account_id,
+                        "name": TARGET_ACCOUNT_NAME,
+                        "balance": 150000.0,
+                        "canTrade": True,
+                        "isVisible": True,
+                        "simulated": True,
+                    },
+                    {
+                        "id": 99999999,
+                        "name": "1.5KCHCR-MOCK-COMBINE",
+                        "balance": -501.30,
+                        "canTrade": False,
+                        "isVisible": True,
+                        "simulated": False,
+                    },
+                ],
+                "success": True,
+            }
 
         if endpoint == "/api/Contract/search":
             return [
@@ -780,16 +783,21 @@ def run_live_acceptance(
     env_file: str = ".env",
     force_market_check: bool = False,
     auto_confirm: bool = False,
+    px_client: ProjectXClient | None = None,
+    order_client: PracticeOrderClient | None = None,
+    clock: Clock | None = None,
+    log_path: Path | None = None,
+    report_path: Path | None = None,
 ) -> RT9AcceptanceReport:
     """Run live acceptance on real Practice account with explicit checks and fail-closed guards."""
     from src.realtime.config import load_projectx_credentials
     from src.realtime.connectors.projectx import ProjectXClient
     from src.realtime.orders.practice_client import is_cme_market_open
 
-    clock = SystemClock()
+    runner_clock = clock or SystemClock()
 
     # 1. Market Hours Check (CME Equity Futures)
-    is_open, market_msg = is_cme_market_open(clock.now())
+    is_open, market_msg = is_cme_market_open(runner_clock.now())
     if not is_open:
         print(f"\n[FAIL-CLOSED] {market_msg}")
         if not force_market_check:
@@ -800,21 +808,22 @@ def run_live_acceptance(
     else:
         print(f"\n[OK] Market Window Check: {market_msg}\n")
 
-    # 2. Load credentials safely from .env without printing secrets
-    credentials = load_projectx_credentials(env_file=env_file)
-    if not credentials.username or not credentials.api_key:
-        raise RuntimeError(
-            "FARS_PROJECTX_USERNAME and FARS_PROJECTX_API_KEY must be configured in .env"
-        )
+    # 2. Load credentials safely from .env without printing secrets if client not injected
+    if px_client is None:
+        credentials = load_projectx_credentials(env_file=env_file)
+        if not credentials.username or not credentials.api_key:
+            raise RuntimeError(
+                "FARS_PROJECTX_USERNAME and FARS_PROJECTX_API_KEY must be configured in .env"
+            )
 
-    # 3. Authenticate read-only client to obtain bearer token
-    print(f"Authenticating session for user: {credentials.username}...")
-    px_client = ProjectXClient(credentials)
-    px_client.authenticate()
-    print("Authentication successful. Session token established.")
+        # 3. Authenticate read-only client to obtain bearer token
+        print(f"Authenticating session for user: {credentials.username}...")
+        px_client = ProjectXClient(credentials)
+        px_client.authenticate()
+        print("Authentication successful. Session token established.")
 
-    # 4. Search and verify Practice account allowlist
-    accounts = px_client.search_accounts()
+    # 4. Search and verify Practice account allowlist using official list_accounts
+    accounts = px_client.list_accounts()
     target = None
     for acc in accounts:
         if acc.account_id == TARGET_ACCOUNT_ID or acc.name == TARGET_ACCOUNT_NAME:
@@ -823,7 +832,7 @@ def run_live_acceptance(
 
     if target is None:
         raise RuntimeError(
-            f"Required practice account {TARGET_ACCOUNT_NAME} (id={TARGET_ACCOUNT_ID}) not found in account search."
+            f"Required practice account {TARGET_ACCOUNT_NAME} (id={TARGET_ACCOUNT_ID}) not found in account list."
         )
 
     if target.account_id != TARGET_ACCOUNT_ID:
@@ -851,27 +860,30 @@ def run_live_acceptance(
             sys.exit(1)
 
     # 6. Instantiate PracticeOrderClient with PRACTICE_EXECUTION_ENABLED=True SCOPED ONLY TO HARNESS
-    practice_client = PracticeOrderClient(
-        token_provider=px_client.session_token,
-        practice_execution_enabled=True,
-        account_allowlist=(TARGET_ACCOUNT_NAME, TARGET_ACCOUNT_ID),
-        clock=clock,
-    )
+    if order_client is None:
+        practice_client = PracticeOrderClient(
+            token_provider=px_client.session_token,
+            practice_execution_enabled=True,
+            account_allowlist=(TARGET_ACCOUNT_NAME, TARGET_ACCOUNT_ID),
+            clock=runner_clock,
+        )
+    else:
+        practice_client = order_client
 
-    log_path = Path("lab_artifacts/rt9_protocol/acceptance_live_session.jsonl")
-    if log_path.exists():
-        log_path.unlink()
+    session_log_path = log_path or Path("lab_artifacts/rt9_protocol/acceptance_live_session.jsonl")
+    if session_log_path.exists():
+        session_log_path.unlink()
     runner = RT9AcceptanceRunner(
         order_client=practice_client,
         account_name=TARGET_ACCOUNT_NAME,
         account_id=TARGET_ACCOUNT_ID,
-        clock=clock,
-        jsonl_log_path=log_path,
+        clock=runner_clock,
+        jsonl_log_path=session_log_path,
     )
     report = runner.run_all()
-    report_path = Path("lab_artifacts/rt9_protocol/acceptance_live_report.json")
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
+    out_report_path = report_path or Path("lab_artifacts/rt9_protocol/acceptance_live_report.json")
+    out_report_path.parent.mkdir(parents=True, exist_ok=True)
+    out_report_path.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
     return report
 
 

@@ -135,8 +135,9 @@ Los circuit breakers desarrollados en el commit base `6cbe1cb` están plenamente
   - `test_flatten_unconfirmed_raises_and_preserves_position`: **PASSED**
   - `test_market_close_cutoff_1510_ct_vetoes_new_orders`: **PASSED**
   - `test_market_close_cutoff_triggers_flatten`: **PASSED**
+  - `test_live_acceptance_path_offline_with_doubles`: **PASSED**
 - **Suite Completa Realtime (`tests/realtime/`):**
-  - **270 de 270 tests en VERDE (0 fallos, 0 errores).**
+  - **271 de 271 tests en VERDE (0 fallos, 0 errores).**
 
 ---
 

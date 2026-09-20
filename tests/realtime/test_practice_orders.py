@@ -895,3 +895,54 @@ def test_market_close_cutoff_triggers_flatten() -> None:
     assert flattened is True
     assert adapter.open_positions[TEST_CONTRACT_ID] == 0
 
+
+def test_live_acceptance_path_offline_with_doubles(tmp_path: Any) -> None:
+    from pathlib import Path
+    from zoneinfo import ZoneInfo
+    from src.realtime.acceptance_rt9 import MockTopstepXGatewayTransport, run_live_acceptance
+    from src.realtime.connectors.projectx import ProjectXClient, ProjectXCredentials
+
+    # Mock gateway transport supporting both ProjectXClient list_accounts and PracticeOrderClient orders
+    mock_transport = MockTopstepXGatewayTransport(target_account_id=TEST_ACCOUNT_ID)
+
+    # Real ProjectXClient with mock transport (exercises authenticate + list_accounts)
+    credentials = ProjectXCredentials(username="test_live_user", api_key="test_live_key")
+    px_client = ProjectXClient(credentials, transport=mock_transport)
+    px_client.authenticate()
+
+    # Real PracticeOrderClient with mock transport
+    practice_client = PracticeOrderClient(
+        token_provider=px_client.session_token,
+        transport=mock_transport,
+        practice_execution_enabled=True,
+        account_allowlist=(TEST_ACCOUNT_NAME, TEST_ACCOUNT_ID),
+    )
+
+    # Monday 10:00 CT (CME market open)
+    chi_tz = ZoneInfo("America/Chicago")
+    t_open = datetime(2026, 9, 21, 10, 0, tzinfo=chi_tz)
+    clock = FrozenClock(t_open)
+
+    log_file = Path(tmp_path) / "acceptance_live_session.jsonl"
+    report_file = Path(tmp_path) / "acceptance_live_report.json"
+
+    # Execute the live acceptance path with doubles
+    report = run_live_acceptance(
+        force_market_check=False,  # verifies CME market hours check naturally passes
+        auto_confirm=True,
+        px_client=px_client,
+        order_client=practice_client,
+        clock=clock,
+        log_path=log_file,
+        report_path=report_file,
+    )
+
+    assert report.status == "PASS"
+    assert len(report.steps) == 8
+    assert all(s.passed for s in report.steps)
+    assert report.account_id == TEST_ACCOUNT_ID
+    assert report.account_name == TEST_ACCOUNT_NAME
+    assert log_file.exists()
+    assert report_file.exists()
+
+
