@@ -55,21 +55,42 @@
 
 ### 2.1 `POST /api/Contract/search`
 - **Propósito:** Obtener detalles del contrato activo evitando desalineaciones por expiración/roll.
+- **Headers:** `Authorization: Bearer <token>`, `Content-Type: application/json`
 - **Request Body:**
   ```json
   {
-    "symbolId": "MNQ",
-    "onlyActive": true
+    "searchText": "MNQ",
+    "live": false
+  }
+  ```
+- **Response Schema:**
+  ```json
+  {
+    "success": true,
+    "errorCode": 0,
+    "errorMessage": null,
+    "contracts": [
+      {
+        "id": "CON.F.US.MNQ.Z26",
+        "name": "MNQZ6",
+        "description": "Micro E-mini Nasdaq-100: December 2026",
+        "tickSize": 0.25,
+        "tickValue": 0.5,
+        "activeContract": true,
+        "symbolId": "F.US.MNQ"
+      }
+    ]
   }
   ```
 - **Campos del Contrato:**
-  - `id` (string): ID de contrato en TopstepX (ej. `CON_MNQ_202412`).
-  - `name` (string): Nombre corto (ej. `MNQZ4`).
+  - `id` (string): ID de contrato en TopstepX (ej. `CON.F.US.MNQ.Z26`).
+  - `name` (string): Nombre corto (ej. `MNQZ6`).
   - `description` (string): Descripción completa.
   - `tickSize` (number): Tamaño mínimo de tick (ej. `0.25` para MNQ).
   - `tickValue` (number): Valor monetario por tick (ej. `0.50` para MNQ, equivalente a `$2.00` por punto).
-  - `active` (boolean): `true` si es el contrato vigente actual.
-- **Regla FARS:** Nunca hardcodear `contractId`. La resolución dinámica consulta el contrato con `active: true`.
+  - `activeContract` (boolean): `true` si es el contrato vigente actual (sustituye al campo obsoleto `active`).
+  - `symbolId` (string): Identificador canónico del símbolo (ej. `F.US.MNQ`).
+- **Regla FARS:** Nunca hardcodear `contractId`. La resolución dinámica consulta el contrato con `activeContract: true` y coincidencia estricta de símbolo (sin aceptar substrings como `NQ` para `MNQ`).
 
 ---
 

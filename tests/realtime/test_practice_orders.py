@@ -905,6 +905,35 @@ def test_live_acceptance_path_offline_with_doubles(tmp_path: Any) -> None:
 
     # Mock gateway transport supporting both ProjectXClient list_accounts and PracticeOrderClient orders
     mock_transport = MockTopstepXGatewayTransport(target_account_id=TEST_ACCOUNT_ID)
+    orig_mock_post = mock_transport.post
+
+    def patched_mock_post(url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+        endpoint = url.split("api.topstepx.com")[-1] if "api.topstepx.com" in url else url
+        if endpoint == "/api/Contract/search":
+            mock_transport.requests_log.append({
+                "endpoint": endpoint,
+                "payload": dict(payload),
+                "timestamp": datetime.now(UTC).isoformat(),
+            })
+            return {
+                "success": True,
+                "errorCode": 0,
+                "errorMessage": None,
+                "contracts": [
+                    {
+                        "id": "CON_MNQ_202612",
+                        "name": "MNQZ6",
+                        "description": "Micro E-mini Nasdaq-100",
+                        "tickSize": 0.25,
+                        "tickValue": 0.50,
+                        "activeContract": True,
+                        "symbolId": "MNQ",
+                    }
+                ],
+            }
+        return orig_mock_post(url, headers, payload, timeout)
+
+    mock_transport.post = patched_mock_post  # type: ignore[assignment]
 
     # Real ProjectXClient with mock transport (exercises authenticate + list_accounts)
     credentials = ProjectXCredentials(username="test_live_user", api_key="test_live_key")
@@ -946,4 +975,250 @@ def test_live_acceptance_path_offline_with_doubles(tmp_path: Any) -> None:
     assert log_file.exists()
     assert report_file.exists()
 
+
+# ===========================================================================
+# RT-9 F2: Contract/search exact payload and fail-closed parsing tests
+# ===========================================================================
+
+
+class StrictContractSearchTransport(JsonTransport):
+    """Strict mock transport simulating real TopstepX /api/Contract/search behavior."""
+
+    def __init__(self, response: Mapping[str, Any] | None = None) -> None:
+        self.calls: list[dict[str, Any]] = []
+        self.response = response or {
+            "success": True,
+            "errorCode": 0,
+            "errorMessage": None,
+            "contracts": [
+                {
+                    "id": "CON.F.US.MNQ.Z26",
+                    "name": "MNQZ6",
+                    "description": "Micro E-mini Nasdaq-100: December 2026",
+                    "tickSize": 0.25,
+                    "tickValue": 0.5,
+                    "activeContract": True,
+                    "symbolId": "F.US.MNQ",
+                }
+            ],
+        }
+
+    def post(
+        self,
+        url: str,
+        headers: Mapping[str, str],
+        payload: Mapping[str, Any],
+        timeout: float,
+    ) -> Mapping[str, Any]:
+        endpoint = url.split("api.topstepx.com")[-1] if "api.topstepx.com" in url else url
+        self.calls.append({"endpoint": endpoint, "payload": dict(payload)})
+
+        if endpoint == "/api/Contract/search":
+            # Real TopstepX rejects obsolete symbolId and onlyActive with HTTP 400
+            if "symbolId" in payload or "onlyActive" in payload:
+                raise PracticeOrderError("ProjectX HTTP error 400: obsolete params symbolId/onlyActive")
+            # Real TopstepX requires exact {"searchText": ..., "live": False}
+            if payload.get("searchText") != "MNQ" or payload.get("live") is not False:
+                raise PracticeOrderError(f"Unexpected payload: {payload}")
+            return self.response
+
+        return {"success": True}
+
+
+def test_resolve_active_contract_payload_and_http400_on_obsolete_params() -> None:
+    """RED 1: TopstepX rejects symbolId/onlyActive with HTTP 400; requires searchText and live=False."""
+    transport = StrictContractSearchTransport()
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=transport,
+        practice_execution_enabled=True,
+    )
+
+    contract_id = client.resolve_active_contract("MNQ")
+    assert contract_id == "CON.F.US.MNQ.Z26"
+    assert len(transport.calls) == 1
+    assert transport.calls[0]["endpoint"] == "/api/Contract/search"
+    assert transport.calls[0]["payload"] == {"searchText": "MNQ", "live": False}
+
+
+def test_resolve_active_contract_fails_on_unsuccessful_response() -> None:
+    """RED 2.1: Gateway returning success=False raises PracticeOrderError with actionable message."""
+    class ErrorTransport(JsonTransport):
+        def post(self, url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+            return {"success": False, "errorMessage": "Invalid search query", "errorCode": 400}
+
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=ErrorTransport(),
+        practice_execution_enabled=True,
+    )
+    with pytest.raises(PracticeOrderError, match="Contract/search failed: Invalid search query"):
+        client.resolve_active_contract("MNQ")
+
+
+@pytest.mark.parametrize(
+    "bad_contracts_payload",
+    [
+        {"success": True},  # missing contracts field
+        {"success": True, "contracts": "not-a-list"},  # string instead of list
+        {"success": True, "contracts": None},  # None instead of list
+        {"success": True, "contracts": [123, "invalid"]},  # non-dict items in list
+    ],
+)
+def test_resolve_active_contract_fails_on_missing_or_invalid_contracts_field(
+    bad_contracts_payload: Mapping[str, Any],
+) -> None:
+    """RED 2.2: Missing or invalid contracts field raises PracticeOrderError without raising TypeError."""
+    class BadEnvelopeTransport(JsonTransport):
+        def post(self, url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+            return bad_contracts_payload
+
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=BadEnvelopeTransport(),
+        practice_execution_enabled=True,
+    )
+    with pytest.raises(PracticeOrderError, match="Contract/search response missing or invalid 'contracts' list"):
+        client.resolve_active_contract("MNQ")
+
+
+def test_resolve_active_contract_fails_when_zero_active_contracts() -> None:
+    """RED 2.3: Zero active contracts raises PracticeOrderError."""
+    class InactiveTransport(JsonTransport):
+        def post(self, url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+            return {
+                "success": True,
+                "contracts": [
+                    {
+                        "id": "CON.INACTIVE",
+                        "name": "MNQU6",
+                        "activeContract": False,
+                        "symbolId": "F.US.MNQ",
+                    }
+                ],
+            }
+
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=InactiveTransport(),
+        practice_execution_enabled=True,
+    )
+    with pytest.raises(PracticeOrderError, match="no active contract found for symbol 'MNQ'"):
+        client.resolve_active_contract("MNQ")
+
+
+def test_resolve_active_contract_fails_when_ambiguous_active_contracts() -> None:
+    """RED 2.4: More than one active contract raises PracticeOrderError fail-closed."""
+    class AmbiguousTransport(JsonTransport):
+        def post(self, url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+            return {
+                "success": True,
+                "contracts": [
+                    {
+                        "id": "CON.MNQ.1",
+                        "name": "MNQZ6",
+                        "activeContract": True,
+                        "symbolId": "F.US.MNQ",
+                    },
+                    {
+                        "id": "CON.MNQ.2",
+                        "name": "MNQH7",
+                        "activeContract": True,
+                        "symbolId": "F.US.MNQ",
+                    },
+                ],
+            }
+
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=AmbiguousTransport(),
+        practice_execution_enabled=True,
+    )
+    with pytest.raises(PracticeOrderError, match="ambiguous active contracts for symbol 'MNQ'"):
+        client.resolve_active_contract("MNQ")
+
+
+def test_resolve_active_contract_requires_active_contract_field_ignoring_obsolete_active() -> None:
+    """RED 2.5: Must use activeContract field, ignoring obsolete active field."""
+    # Case A: active=True but activeContract=False -> must be rejected as inactive
+    class ObsoleteActiveTransport(JsonTransport):
+        def post(self, url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+            return {
+                "success": True,
+                "contracts": [
+                    {
+                        "id": "CON.OBSOLETE",
+                        "name": "MNQZ6",
+                        "active": True,  # obsolete field
+                        "activeContract": False,  # real field
+                        "symbolId": "F.US.MNQ",
+                    }
+                ],
+            }
+
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=ObsoleteActiveTransport(),
+        practice_execution_enabled=True,
+    )
+    with pytest.raises(PracticeOrderError, match="no active contract found for symbol 'MNQ'"):
+        client.resolve_active_contract("MNQ")
+
+    # Case B: active=False but activeContract=True -> must be accepted based on activeContract
+    class RealActiveContractTransport(JsonTransport):
+        def post(self, url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+            return {
+                "success": True,
+                "contracts": [
+                    {
+                        "id": "CON.VALID",
+                        "name": "MNQZ6",
+                        "active": False,  # obsolete field false
+                        "activeContract": True,  # real field true
+                        "symbolId": "F.US.MNQ",
+                    }
+                ],
+            }
+
+    client_b = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=RealActiveContractTransport(),
+        practice_execution_enabled=True,
+    )
+    assert client_b.resolve_active_contract("MNQ") == "CON.VALID"
+
+
+def test_resolve_active_contract_strict_symbol_matching_prevents_substring_matches() -> None:
+    """Matching: Search for MNQ must not match NQ, and search for NQ must not match MNQ."""
+    class MixedContractsTransport(JsonTransport):
+        def post(self, url: str, headers: Mapping[str, str], payload: Mapping[str, Any], timeout: float) -> Mapping[str, Any]:
+            return {
+                "success": True,
+                "contracts": [
+                    {
+                        "id": "CON.F.US.NQ.Z26",
+                        "name": "NQZ6",
+                        "activeContract": True,
+                        "symbolId": "F.US.NQ",
+                    },
+                    {
+                        "id": "CON.F.US.MNQ.Z26",
+                        "name": "MNQZ6",
+                        "activeContract": True,
+                        "symbolId": "F.US.MNQ",
+                    },
+                ],
+            }
+
+    client = PracticeOrderClient(
+        token_provider="dummy-token",
+        transport=MixedContractsTransport(),
+        practice_execution_enabled=True,
+    )
+
+    # Resolving MNQ must match ONLY the MNQ contract, not NQ
+    assert client.resolve_active_contract("MNQ") == "CON.F.US.MNQ.Z26"
+
+    # Resolving NQ must match ONLY the NQ contract, not MNQ
+    assert client.resolve_active_contract("NQ") == "CON.F.US.NQ.Z26"
 
