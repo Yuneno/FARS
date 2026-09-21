@@ -32,13 +32,14 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 | **Fases 11A–11C** (`agent/phases-night`) | datos de cuenta, reglas de fondeo, paths probabilísticos | ✅ **mergeado** (`b0f5e0b`) · **suite post-merge: 1586 passed, 2 skipped** ✓ |
 | **M10** (`bloque-m10-evaluacion`) | P(pasar) de evaluaciones Topstep con la foto limpia: C1 (SMC-FVG re-congelado), escalera C2, control C3, tabla económica | ✅ **MEDIDO — NO PAGAR** (C1 11,30 % ≈ control emparejado y peor que el zero-edge 27,9 %; gasto esperado $421–1.685). Acta `lab_artifacts/m10_protocol/HERMES_REVISION_M10.md` · merge `2e6fce1` |
 | **M11** (`bloque-m11-regimen-salidas`) | régimen horario + gestión de salida sobre la candidata EMA+zona+liquidez (3 etapas, 24 celdas) | ✅ **MEDIDO — NO** (0 celdas cruzan IC95; gate C0 exacto). Acta `lab_artifacts/m11_protocol/HERMES_REVISION_M11.md` · merge `ee9aaab` |
+| **O1** (`bloque-o1-comp-break`) | NR7(t-1) + ruptura Donchian L20/L55, 4 celdas DEV | ✅ **ARCHIVADO — NO_DEV_PULSE** (L20 −0,0627R/PF 0,846; L55 −0,0523R/PF 0,878; CBB superiores < 0). No abrir validation/final ni retunear. Acta `lab_artifacts/o1_protocol/ARCHIVO_O1.md` |
 
 ## 2. ABIERTOS (con nombre y siguiente paso)
 
 | Bloque | Qué falta | Siguiente paso |
 |---|---|---|
 | **S2** | sesión fantasma RTH con 50k/100k/150k + curva evolutiva | encargo listo: `E:\FARS-LAB\FARS_LAB_GEMINI_ENCARGO_BLOQUE_S2_CUENTA_FANTASMA.md` (hay una prueba de fontanería nocturna ya commiteada: `s2_protocol/`) |
-| **RT-9** | órdenes reales en cuenta **Practice** (place/cancel/search + brackets + kill-switch + límites de sesión + protocolo de aceptación) | **construcción + offline CERRADOS y verificados** (271/271; live path 7/7 con dobles; mock PASS; manifiesto 5/5; fail-closed de mercado OK) — **LISTO para la VENTANA EN VIVO** (dom 17:00 CT / 18:00 ET): doctor → `-m src.realtime.acceptance_rt9 --live`. Actas: `HERMES_REVISION_RT9.md` + `HERMES_REVISION_RT9_FIXES.md` |
+| **RT-9** | órdenes reales en cuenta **Practice** (place/cancel/search + brackets + kill-switch + límites de sesión + protocolo de aceptación) | Fix de `Contract/search` fusionado y verificado (suite 1660/1660); aceptación live anterior abortó pre-order con HTTP 400 y cero posiciones. Falta **una corrida nueva supervisada**: doctor fresco → cuenta Practice simulada plana → un solo proceso → confirmación explícita. Actas: `HERMES_REVISION_RT9.md` + `HERMES_REVISION_RT9_FIXES.md` |
 | **M10** | P(pasar) bajo reglas de Topstep (50k/100k/150k) con foto limpia + escalera de edge + control | ✅ **MEDIDO — NO PAGAR** (C1 ≈ control sintético; 2×F se cruza en +0,15 R). Ver §1. |
 | **Fase 11D** | primer adapter de proveedor | contrato aprobado, sin implementar |
 | **Fases 12/13** | validación temporal y estrés | contratos aprobados; **parámetros diferidos** (decidir antes de implementar) |

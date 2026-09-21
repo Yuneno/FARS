@@ -1,0 +1,140 @@
+{
+  "metadata": {
+    "protocol_version": "O1",
+    "block_id": "O1",
+    "experiment_id": "compression_breakout_dev",
+    "title": "O1 — Compression Breakout causal (DEV-only)",
+    "description": "Evaluación causal de la hipótesis de compresión NR7 seguida de ruptura Donchian L in {20, 55} en MNQ M5 sobre el periodo exclusivo de DEV (2019-05-06 a 2024-01-01) con costes realistas y de estrés.",
+    "preregistered_at_utc": "2026-09-20T21:00:00Z",
+    "git_branch": "bloque-o1-comp-break",
+    "base_commit": "e56e30abf47ac50bc046c7820001901a013cd808",
+    "runtime": "Python 3.13 (.venv-fars)",
+    "rules": {
+      "no_post_hoc_tuning": true,
+      "frozen_parameters": true,
+      "cbb_bootstrap_reps": 2000,
+      "cbb_seed": 42,
+      "max_workers": 4,
+      "decisive_scenario": "realista",
+      "stress_scenario": "estres"
+    }
+  },
+  "hypothesis": "En MNQ M5 real post-lanzamiento, una barra de compresión NR7 seguida por cierre fuera de un canal Donchian puede tener continuación suficiente para sobrevivir costes.",
+  "causal_signal_semantics": {
+    "1_nr7_condition": "La barra anterior cerrada t-1 es NR7 si su rango high-low es menor o igual al mínimo de los rangos de las siete barras cerradas que terminan en t-1 (history[-8:-1]). Empates califican. Prohibido volumen futuro o barra de fill.",
+    "2_donchian_channel": "Canal Donchian de longitud L en t: máximo high y mínimo low de las L barras cerradas inmediatamente anteriores a t (history[-L-1:-1]), excluyendo estrictamente la barra t.",
+    "3_direction_and_breakout": "LONG si bar[t].close > donchian_high; SHORT si bar[t].close < donchian_low; si ninguno o ambos (datos corruptos), señal nula (fail-closed). Requiere obligatoriamente que la barra t-1 sea NR7.",
+    "4_fill_execution": "Entrada market en el open de t+1 mediante el executor canónico run_backtest; nunca llenar en t.",
+    "5_risk_and_brackets": "ATR(14) causal de Wilder calculado únicamente con barras cerradas hasta t; stop = 1.0 * ATR, target = 2.0 * ATR (2R), redondeados a ticks mediante market_spec.tick_size.",
+    "6_exit_and_cooldown": "Time exit = 48 barras M5, market; cooldown = 6 barras M5 tras emitir señal.",
+    "7_exclusivity": "No más de una señal por barra; no short/long simultáneo."
+  },
+  "parameters": {
+    "symbol": "MNQ",
+    "lengths_tested": [20, 55],
+    "atr_period": 14,
+    "stop_atr_mult": 1.0,
+    "target_atr_mult": 2.0,
+    "max_bars_held": 48,
+    "cooldown_bars": 6,
+    "time_exit_mode": "market"
+  },
+  "data_and_partitions": {
+    "canonical_zip": "E:/FARS-LAB/databento.zip",
+    "member_name": "databento/MNQ_M5.csv",
+    "expected_raw_member_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+    "dev_partition": {
+      "start": "2019-05-06T00:00:00Z",
+      "end_exclusive": "2024-01-01T00:00:00Z",
+      "status": "ALLOWED"
+    },
+    "validation_partition": {
+      "start": "2024-01-01T00:00:00Z",
+      "end_exclusive": "2025-04-01T00:00:00Z",
+      "status": "STRICTLY_BLOCKED"
+    },
+    "final_holdout_partition": {
+      "start": "2025-04-01T00:00:00Z",
+      "status": "STRICTLY_BLOCKED"
+    }
+  },
+  "cost_scenarios": {
+    "realista": {
+      "commission_per_side": 0.62,
+      "slippage_ticks": 1.0,
+      "slippage_points": 0.25,
+      "description": "Comisión $0.62/side ($1.24 RT) y slippage 1 tick adverso solo en legs market (entry, stop, time_exit)"
+    },
+    "estres": {
+      "commission_per_side": 2.00,
+      "slippage_ticks": 1.0,
+      "slippage_points": 0.25,
+      "description": "Comisión institucional estresada $2.00/side ($4.00 RT) y slippage 1 tick adverso solo en legs market"
+    }
+  },
+  "closed_matrix_cells": [
+    {
+      "cell_id": "L20_realista",
+      "length": 20,
+      "cost_scenario": "realista",
+      "role": "evaluation"
+    },
+    {
+      "cell_id": "L20_estres",
+      "length": 20,
+      "cost_scenario": "estres",
+      "role": "stress_test"
+    },
+    {
+      "cell_id": "L55_realista",
+      "length": 55,
+      "cost_scenario": "realista",
+      "role": "evaluation"
+    },
+    {
+      "cell_id": "L55_estres",
+      "length": 55,
+      "cost_scenario": "estres",
+      "role": "stress_test"
+    }
+  ],
+  "walk_forward_design": {
+    "plan_type": "calendar_rolling",
+    "start_date": "2019-07-01",
+    "end_date": "2024-01-01",
+    "train_months": 6,
+    "test_months": 6,
+    "step_months": 6,
+    "warmup_bars": 500,
+    "purge_gap_bars": 54,
+    "expected_n_folds": 8,
+    "fold_test_ranges": [
+      {"fold_id": 0, "test_start": "2020-01-01", "test_end": "2020-07-01"},
+      {"fold_id": 1, "test_start": "2020-07-01", "test_end": "2021-01-01"},
+      {"fold_id": 2, "test_start": "2021-01-01", "test_end": "2021-07-01"},
+      {"fold_id": 3, "test_start": "2021-07-01", "test_end": "2022-01-01"},
+      {"fold_id": 4, "test_start": "2022-01-01", "test_end": "2022-07-01"},
+      {"fold_id": 5, "test_start": "2022-07-01", "test_end": "2023-01-01"},
+      {"fold_id": 6, "test_start": "2023-01-01", "test_end": "2023-07-01"},
+      {"fold_id": 7, "test_start": "2023-07-01", "test_end": "2024-01-01"}
+    ]
+  },
+  "multiple_testing_correction": {
+    "method": "Bonferroni",
+    "n_comparisons": 4,
+    "family_wise_alpha": 0.05,
+    "per_comparison_alpha": 0.0125,
+    "confidence_level": 0.9875,
+    "cbb_implementation": "arch.bootstrap.CircularBlockBootstrap con block_size = max(2, min(20, int(len(arr)**(1/3)))), reps=2000, method='percentile', size=0.9875, seed=42"
+  },
+  "selection_rule": "Si ambas longitudes (L=20 y L=55) superan los gates, la selección del campeón se realiza por menor fragilidad estructural: (1) mayor proporción de folds positivos en escenario realista; (2) ante empate, menor drawdown máximo en R; (3) ante empate persistente, mayor límite inferior del IC98.75% CBB. Queda prohibido seleccionar basándose únicamente en el máximo puntual de E[R].",
+  "preregistered_gates": {
+    "gate_1_sample_size": "total n_trades >= 300 en escenario realista",
+    "gate_2_dual_positive": "ambos L=20 y L=55 tienen mean_er > 0 y PF > 1.0 bajo realista",
+    "gate_3_cbb_ci_bonferroni": "al menos uno tiene CBB CI98.75% lower bound > 0 (alpha=0.0125 por Bonferroni)",
+    "gate_4_folds_consistency": "cada longitud tiene al menos 5/8 folds con mean_er > 0 bajo realista",
+    "gate_5_champion_stress": "el campeón mantiene mean_er > 0, PF > 1.0 y al menos 5/8 folds positivos bajo estrés",
+    "gate_6_causal_integrity": "cero posiciones sin resolver (unresolved_positions == 0) y cero entradas por gaps no contiguos inventadas (gap_rejections fielmente respetadas, 0 fills inventados)"
+  },
+  "verdict_rule": "Si y solo si todos los gates se satisfacen simultáneamente, el veredicto es DEV_PULSE. Si falla cualquier gate, el veredicto automático es NO_DEV_PULSE; queda terminantemente prohibido abrir validación o ajustar parámetros."
+}

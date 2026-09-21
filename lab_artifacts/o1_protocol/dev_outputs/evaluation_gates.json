@@ -1,0 +1,31 @@
+{
+  "verdict": "NO_DEV_PULSE",
+  "champion_length": null,
+  "gates": {
+    "gate_1_sample_size": {
+      "passed": true,
+      "detail": "L20=3614 (>=300: True), L55=2065 (>=300: True)"
+    },
+    "gate_2_dual_positive": {
+      "passed": false,
+      "detail": "L20: E[R]=-0.0627, PF=0.8464; L55: E[R]=-0.0523, PF=0.8779"
+    },
+    "gate_3_cbb_ci_bonferroni": {
+      "passed": false,
+      "detail": "L20 CI98.75% lo=-0.0965; L55 CI98.75% lo=-0.1039 (>0 req)"
+    },
+    "gate_4_folds_consistency": {
+      "passed": false,
+      "detail": "L20 positive_folds=2/8; L55 positive_folds=3/8"
+    },
+    "gate_5_champion_stress": {
+      "passed": false,
+      "champion_evaluated": 55,
+      "detail": "E[R]=-0.1049, PF=0.774, folds+=0/8"
+    },
+    "gate_6_causal_integrity": {
+      "passed": false,
+      "detail": "total unresolved=4 (0 req)"
+    }
+  }
+}
