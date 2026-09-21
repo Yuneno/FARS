@@ -18,6 +18,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Any, Callable
+import re
 import uuid
 from zoneinfo import ZoneInfo
 
@@ -194,6 +195,37 @@ def is_account_forbidden(account_id_or_name: str | int) -> bool:
     for pattern in FORBIDDEN_ACCOUNT_PATTERNS:
         if pattern in acc_str:
             return True
+    return False
+
+
+def _contract_matches_symbol(item: Mapping[str, Any], symbol: str) -> bool:
+    """Check if a contract item matches the requested symbol without substring confusion."""
+    sym = symbol.strip().upper()
+    if not sym:
+        return False
+
+    raw_symbol_id = str(item.get("symbolId") or "").strip().upper()
+    if raw_symbol_id:
+        tokens = raw_symbol_id.split(".")
+        if raw_symbol_id == sym or sym in tokens:
+            return True
+        return False
+
+    raw_id = str(item.get("id") or item.get("contractId") or "").strip().upper()
+    if raw_id:
+        id_tokens = re.split(r"[._]", raw_id)
+        if sym in id_tokens:
+            return True
+
+    raw_name = str(item.get("name") or "").strip().upper()
+    if raw_name:
+        if raw_name == sym:
+            return True
+        if raw_name.startswith(sym):
+            suffix = raw_name[len(sym):]
+            if suffix and suffix[0].isalpha() and (len(suffix) == 1 or suffix[1:].isdigit()):
+                return True
+
     return False
 
 
@@ -597,16 +629,44 @@ class PracticeOrderClient:
         return closed_contracts
 
     def resolve_active_contract(self, symbol_id: str = "MNQ") -> str:
-        """Resolve current active contract ID from TopstepX gateway."""
+        """Resolve current active contract ID from TopstepX gateway using searchText and live=False."""
+        if not symbol_id or not str(symbol_id).strip():
+            raise PracticeOrderError("symbol_id must not be empty")
+        search_text = str(symbol_id).strip()
+
         payload = {
-            "symbolId": str(symbol_id),
-            "onlyActive": True,
+            "searchText": search_text,
+            "live": False,
         }
         raw = self._post("/api/Contract/search", payload)
-        items = raw if isinstance(raw, list) else raw.get("contracts", raw.get("data", []))
-        for item in items:
-            if isinstance(item, dict) and item.get("active") is True:
-                cid = item.get("id") or item.get("contractId")
-                if cid:
-                    return str(cid)
-        raise PracticeOrderError(f"No active contract found for symbol {symbol_id!r}")
+        if not isinstance(raw, Mapping):
+            raise PracticeOrderError("invalid response format from Contract/search")
+
+        if raw.get("success") is not True:
+            err_msg = raw.get("errorMessage") or raw.get("error") or "Contract/search request unsuccessful"
+            raise PracticeOrderError(f"Contract/search failed: {err_msg}")
+
+        contracts_raw = raw.get("contracts")
+        if not isinstance(contracts_raw, list) or any(not isinstance(c, Mapping) for c in contracts_raw):
+            raise PracticeOrderError("Contract/search response missing or invalid 'contracts' list")
+
+        active_matches = [
+            item
+            for item in contracts_raw
+            if item.get("activeContract") is True and _contract_matches_symbol(item, search_text)
+        ]
+
+        if not active_matches:
+            raise PracticeOrderError(f"no active contract found for symbol {symbol_id!r}")
+
+        if len(active_matches) > 1:
+            c_ids = [str(c.get("id") or c.get("contractId") or "") for c in active_matches]
+            raise PracticeOrderError(
+                f"ambiguous active contracts for symbol {symbol_id!r}: {', '.join(c_ids)}"
+            )
+
+        contract = active_matches[0]
+        cid = contract.get("id") or contract.get("contractId")
+        if not cid or not str(cid).strip():
+            raise PracticeOrderError(f"active contract for symbol {symbol_id!r} has empty ID")
+        return str(cid).strip()
