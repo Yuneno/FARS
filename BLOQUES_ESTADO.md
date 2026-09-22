@@ -44,7 +44,10 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 | **Fases 12/13** | validación temporal y estrés | contratos aprobados; **parámetros diferidos** (decidir antes de implementar) |
 | **Fase 14** | reporting operativo (sin ejecución) | contrato aprobado, sin implementar |
 | **Entrega a Kai** | 5 docs `FARS_A_KAI_*` (motor de zonas, CPCV/PBO/DSR, `KAI_APEX_SPEC`, discrepancias de port, qué no se comparte) | cuando Ricardo diga; ahora **también aplica la vía inversa**: piezas de Kai que sirvan se portan a FARS con atribución |
+| **MNQ Priced-Intent Bridge** (`fix/mnq-priced-intent-bridge`) | Revisión final offline Hermes aprobada; commit local autorizado, integración pendiente (sin merge/push) | Evidencia offline: 12/12 específicos, 322/322 realtime, 1662 passed / 2 skipped / 10 deselected en suite repo; informes en `lab_artifacts/mnq_intent_bridge/CIERRE_TECNICO.md` e `IMPLEMENTACION.md`. **REVIEW PASSED (Hermes); cierre integrado pendiente.** Acta: `lab_artifacts/mnq_intent_bridge/HERMES_REVISION_CIERRE.md` |
 | **Menores** | (a) test de regresión del orden de parciales (`tp1` antes de `tp`); (b) auditar ambigüedad intrabarra de SMC-FVG y EMAS | sin fecha; no bloquean |
+
+*Nota de actualización puntual (2026-09-22): Se agregó la fila de MNQ Priced-Intent Bridge en ABIERTOS sin revalidar el ledger entero ni modificar el estado de otros bloques.*
 
 ## 3. Aviso aceptado (no bloquea)
 
