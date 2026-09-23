@@ -7,6 +7,10 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 
 ---
 
+## Actualización de integración — bridge y Wednesday
+
+Estado puntual posterior al ledger histórico: bridge ad4df41, W1 349cda0, W2 986bfd6 y W3 d0e90a9 integrados por fast-forward en main. Actas individuales conservan el estado histórico previo al landing; este apartado y INTEGRACION_WEDNESDAY.md lo sustituyen para el estado Git. W1/W2 son detector/adapter; W3 es caracterización legacy, NO estrategia ejecutable. Pendientes funcionales: target RR desde fill y política temporal, por separado. Encargo laptop: HANDOFF_LAPTOP_SHADOW.md, solo sombra sin órdenes.
+
 ## 1. CERRADOS (con evidencia)
 
 | Bloque | Qué era | Veredicto / evidencia |
@@ -44,7 +48,7 @@ veredicto, evidencia y merge (o archivo con tag). Lo que no esté en esta tabla,
 | **Fases 12/13** | validación temporal y estrés | contratos aprobados; **parámetros diferidos** (decidir antes de implementar) |
 | **Fase 14** | reporting operativo (sin ejecución) | contrato aprobado, sin implementar |
 | **Entrega a Kai** | 5 docs `FARS_A_KAI_*` (motor de zonas, CPCV/PBO/DSR, `KAI_APEX_SPEC`, discrepancias de port, qué no se comparte) | cuando Ricardo diga; ahora **también aplica la vía inversa**: piezas de Kai que sirvan se portan a FARS con atribución |
-| **MNQ Priced-Intent Bridge** (`fix/mnq-priced-intent-bridge`) | Revisión final offline Hermes aprobada; commit local autorizado, integración pendiente (sin merge/push) | Evidencia offline: 12/12 específicos, 322/322 realtime, 1662 passed / 2 skipped / 10 deselected en suite repo; informes en `lab_artifacts/mnq_intent_bridge/CIERRE_TECNICO.md` e `IMPLEMENTACION.md`. **REVIEW PASSED (Hermes); cierre integrado pendiente.** Acta: `lab_artifacts/mnq_intent_bridge/HERMES_REVISION_CIERRE.md` |
+| **MNQ Priced-Intent Bridge** | ✅ Integrado localmente en main por fast-forward junto a W1–W3; commit ad4df41 | Cierre técnico offline; publicación se verifica por SHA remoto. Ver INTEGRACION_WEDNESDAY.md. No habilita órdenes ni valida rentabilidad. |
 | **Menores** | (a) test de regresión del orden de parciales (`tp1` antes de `tp`); (b) auditar ambigüedad intrabarra de SMC-FVG y EMAS | sin fecha; no bloquean |
 
 *Nota de actualización puntual (2026-09-22): Se agregó la fila de MNQ Priced-Intent Bridge en ABIERTOS sin revalidar el ledger entero ni modificar el estado de otros bloques.*

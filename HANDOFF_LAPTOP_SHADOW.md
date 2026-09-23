@@ -1,0 +1,37 @@
+# Encargo para Hermes/DeepSeek — laptop, observación prolongada FARS
+
+## Autorización y objetivo de Ricardo
+Ricardo quiere dejar SU LAPTOP capturando feed real durante noche/madrugada y posiblemente el día siguiente; él pedirá parar al volver. Modo sombra EXCLUSIVO: cero órdenes al broker, incluso Practice. No es backtest ni aprobación de estrategia rentable. Este archivo es un encargo, NO evidencia de que la laptop esté lista o corriendo.
+
+## Antes de arrancar
+1. Localiza el repo con Ricardo si no está identificado; no asumas las rutas Windows del PC principal. Verifica origin Yuneno/FARS, rama main y commit actualizado. Si hay cambios locales, STOP antes de pull/checkout; no reset/stash/clean. Actualiza mediante fast-forward y registra SHA exacto. Lee AGENTS.md y las actas W1/W2/W3.
+2. Wednesday W1/W2/W3 NO es estrategia ejecutable: no activarla para esta sesión. Candidato existente para inspección: lab_artifacts/s2_protocol/session_runner_ghost.py y sus dependencias. Su cabecera aún dice S1 aunque vive en S2; lee implementación y CLI reales, no copies comandos de recuerdos. Usa --help solo tras comprobar que no dispara conexión en import. Revisa el diagnóstico histórico del runner nocturno: antes no recibió barras nuevas y murió silenciosamente. No reabrir investigación histórica grande.
+3. Determina estrategia/config realmente conectadas; candidato menciona M8FilteredStrategy arm atr_k050/MNQ M5. Es exploratoria, sin edge validado. Registra parámetros, horario/filtros y limitaciones; no desactivar filtros para fabricar entradas nocturnas. Si no se puede verificar una ruta ejecutable segura, captura datos sin señales y declara el bloqueo, no inventes fills.
+4. Garantía negativa verificable: ninguna ruta de órdenes, cancelaciones o flatten al broker. No usar acceptance_rt9 --live, comandos practice ni un doctor que pueda escribir. Solo cliente de datos/cuenta de lectura y simulación LOCAL. Comprueba seguridad de flags/rutas; no basta el nombre paper ni una constante. Verifica credenciales localmente sin imprimir valores, IDs privados ni tokens. Si faltan, usa entrada local segura, nunca chat ni commits. No instalar, modificar producción ni conectar apps sin autorización.
+5. Un consumidor API por cuenta. Comprueba que no haya otro runner y prueba una lectura acotada ANTES del proceso continuo: contrato correcto, permisos de feed, timestamps actuales, zona horaria, disponibilidad overnight, mercado abierto/cerrado. No lanzar otros probes mientras el runner consulta. Rate limits: backoff acotado, fail-closed; no bucles de login ni gastos externos nuevos.
+6. Smoke offline mínimo del runner si existe fixture, y smoke en feed read-only. Antes de certificar P&L, verifica qué representa PaperExecutionAdapter y si realmente modela stop, target, cierre, costes y órdenes temporalmente. Un reporte de fill instantáneo no prueba trade cerrado. Si no hay simulador verificado: registrar barras/señales/vetos, NO presentar P&L inventado. No portar una estrategia o construir un simulador esta noche.
+
+## Recursos de la laptop
+Ricardo informa que la laptop tiene 4 núcleos. Verificar localmente núcleos físicos/lógicos y memoria disponible, sin asumir que os.cpu_count() devuelve núcleos físicos. Para esta captura/observación, preferir UN proceso y 1 worker; polling y evaluación incremental no requieren un pool de backtest. Si el runner expone una opción real de workers, configurarla explícitamente en 1; no inventar --workers si no existe. Solo considerar 2 workers si una medición demuestra necesidad y deja capacidad para SO/logs; no usar automáticamente los 4 núcleos ni todos los hilos lógicos.
+
+Limitar hilos numéricos a 1 POR PROCESO mediante OMP_NUM_THREADS=1, OPENBLAS_NUM_THREADS=1, MKL_NUM_THREADS=1, NUMEXPR_NUM_THREADS=1 y VECLIB_MAXIMUM_THREADS=1 en el entorno del runner antes de importar librerías, sin modificar variables globales del sistema. No ejecutar backtests, suites completas, optimizadores ni modelos locales durante la captura. Verificar CPU/RAM durante el smoke y evitar acumulación ilimitada de historial o logs. Si el consumo crece o el proceso pierde barras por carga, declarar el problema y detener de forma segura; no reducir controles de seguridad para ganar velocidad.
+
+## Ejecución sin LLM permanente
+Python/runner debe funcionar como proceso independiente de la respuesta de Hermes. Nada de agente en bucle, cron de prompts, análisis LLM por vela ni otro modelo local cargado. Registrar si alguna dependencia llama a IA; no permitirla sin aprobación. El chat puede terminar y el programa seguir, pero comprueba la persistencia real del mecanismo usado: no confiar en procesos hijos que Hermes mata al cerrar sesión. Preferir mecanismo persistente ya disponible y probado; si requiere cambios de sistema, explicar y pedir permiso.
+
+Ricardo detendrá manualmente al volver: no inventes hora de fin ni prometas vigilancia humana. Sugiere límite de seguridad de 24h, pero confirma antes de imponerlo si desea más tiempo. Mientras no haya watchdog verificado, declarar que no existe reinicio automático; NO reiniciar ciegamente sesiones o duplicar consumo API. Abortar ante errores repetidos, datos inválidos, disco bajo o estado inseguro; no seguir simulando con feed obsoleto.
+
+Carpeta NUEVA por ejecución, no sobrescribir registros anteriores. Logs sin secretos, tamaño/rotación acotados; configuración efectiva, SHA, inicio UTC/local, heartbeat y último dato. Mantener laptop enchufada y ventilada. Confirmar suspensión/cierre de tapa: informar ajustes necesarios, no cambiarlos sin permiso. Desconexiones y mantenimiento de mercado deben quedar diferenciados de crash.
+
+## Verificación de arranque obligatoria
+Dar evidencia: PID vivo + log/heartbeat que avanza + timestamp de última barra cerrada + conteo real. Verificar después de recibir datos nuevos, no solo al lanzar comando. Proceso vivo sin nuevas barras = conectado o esperando, NO sesión productiva. Declarar warmup, señal si existe y 0 órdenes broker. Si no se reciben datos, registrar bloqueo y no decir que está funcionando. No prometer que habrá entradas nocturnas.
+
+## Parada manual y entrega
+Dejar ANTES de retirarte un comando exacto probado de parada y ruta de logs/PID, usable sin llamar al LLM. Si el runner vigila un centinela, comprobar ruta real y limpiar solo ese centinela tras confirmar proceso terminado; nunca taskkill global. Parada ordenada, vaciar logs y conservar estado. Posiciones simuladas abiertas se reportan abiertas/unresolved; no inventar cierre al último precio ni mandar flatten al broker.
+
+Cuando Ricardo diga parar: detener solo este proceso, comprobar que terminó y archivar resumen real de inicio/fin, actividad efectiva, barras, huecos/latencias/reconexiones, señales/vetos, trades simulados cerrados vs abiertos, costes y política de fills si fueron verificados. P&L solo si existe evidencia reproducible del simulador; una noche no demuestra edge. No commits/push de datos de cuenta o logs privados. No afirmar horas operativas contando simplemente desde el lanzamiento.
+
+## Formato de respuesta de Hermes laptop
+Antes: SHA, modo, estrategia/config, feed fresco o bloqueo, seguridad cero órdenes y qué se pudo verificar.
+Después del arranque: PID, última barra, heartbeat, ruta de resultados, comando exacto para parar; termina tu turno, no sigas gastando tokens en vigilancia.
+Si un requisito crítico no se cumple: no lanzar operación desatendida; decir el bloqueo exacto y alternativa segura de solo captura si está disponible.
