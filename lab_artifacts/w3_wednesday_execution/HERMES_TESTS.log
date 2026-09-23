@@ -1,0 +1,12 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: E:\FARS-LAB\FARS
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collected 69 items
+
+tests\test_wednesday_execution_contract.py ............                  [ 17%]
+tests\test_wednesday_detector.py ..............................          [ 60%]
+tests\test_wednesday_rth.py ...........................                  [100%]
+
+============================= 69 passed in 0.82s ==============================

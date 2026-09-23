@@ -1,0 +1,12 @@
+{
+  "scope": "Snapshot de cierre; W1/W2 coinciden con lectura Hermes previa a correcciones documentales. No baseline retrospectivo W2 anterior a Gemini.",
+  "sha256": {
+    "src/zones/wednesday.py": "2a98ac963c39599ff9cf179916961d5a74b03beef462d8de04bcbfba26baed25",
+    "tests/test_wednesday_detector.py": "7f9372671309837e538ae156efecaa6c3fd0067cbb76026d9eb149d27ec1bd4c",
+    "lab_artifacts/w1_wednesday_detector/IMPLEMENTACION.md": "54339f426a84c753507137ee28b65424ef8826593b489eaac9ac55fa9593af1e",
+    "src/zones/wednesday_rth.py": "a6c485e6dde23c9ec4977c68d421d73b716c531754bbaf0f01d6d2a93dcd8d93",
+    "tests/test_wednesday_rth.py": "2a6e4ad64019d01ab027de9da76d3426d71d9429f5200ad5e37e82537b850f12",
+    "lab_artifacts/w2_wednesday_rth/IMPLEMENTACION.md": "78da66bcb8f21666550649ef57b7c89a0fb0fbce6defb1d091fccec7f8ff6a00",
+    "tests/test_wednesday_execution_contract.py": "f729bbd177ba6a4a821fb169d2c6a9bae6f64ea0fa3f0829c5f0a002c7520e4c"
+  }
+}
