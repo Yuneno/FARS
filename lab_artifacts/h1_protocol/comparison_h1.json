@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "experiment": "H1",
+    "preregistro_sha256": "07140838b8f72757ddd099e561480a2c652156ba4979dd2254e7e391b3999a64",
+    "dataset_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+    "smoke_mode": false,
+    "ran_at_utc": "2026-09-24T02:13:45.111465+00:00"
+  },
+  "mean_er_mecanismo_f05": -0.0081,
+  "mean_er_targetpuro_f0": 0.034,
+  "ci95_mu_A": [
+    -0.0551,
+    0.038
+  ],
+  "ci95_mu_B": [
+    -0.0349,
+    0.1066
+  ],
+  "paired_delta": {
+    "n_pairs": 1820,
+    "n_orphans_mecanismo": 276,
+    "n_orphans_targetpuro": 146,
+    "mean_orphan_mecanismo": 0.0448,
+    "mean_orphan_targetpuro": 0.0918,
+    "delta_mean": -0.0454,
+    "ci95_delta": [
+      -0.0945,
+      0.0046
+    ]
+  },
+  "gates": {
+    "G1_signal_parity": {
+      "common_decision_bars": 13538,
+      "only_in_mecanismo": 1621,
+      "only_in_targetpuro": 1107,
+      "divergent_decisions_on_common_bars": 0,
+      "sample_divergences": [],
+      "signal_parity_PASS": true
+    },
+    "G2_mapping": {
+      "unmapped_mecanismo": 0,
+      "unmapped_targetpuro": 0,
+      "unmapped_h1_mecanismo_f05": 0,
+      "unmapped_h1_targetpuro_f0": 0,
+      "mapping_exact_PASS": true
+    },
+    "G3_determinism": "trades_sha256 por (brazo, política) en metrics_*",
+    "G4_sealed_folds": "fold_id 6..7 sin actividad (assert en runner)",
+    "G5_cbb_failfast": "PASS (arch disponible; CBB no devolvió None con n>=5)",
+    "all_PASS": true
+  },
+  "end_of_data_sensitivity": {
+    "h1_mecanismo_f05": {
+      "mean_er_unresolved": -0.0081,
+      "mean_er_close": -0.0078,
+      "abs_diff": 0.0003,
+      "exceeds_margin": false,
+      "margin_r": 0.02
+    },
+    "h1_targetpuro_f0": {
+      "mean_er_unresolved": 0.034,
+      "mean_er_close": 0.0343,
+      "abs_diff": 0.0003,
+      "exceeds_margin": false,
+      "margin_r": 0.02
+    }
+  },
+  "outcome": "INCONCLUSO/ZONA GRIS",
+  "decision_rule": "CONFIRMADO <=> lo(IC95 d)>0 y (hi(IC95 mu_B)<=0 o hi(IC95 mu_B)<=0.5*lo(IC95 mu_A)). FALSADO <=> hi(IC95 d)<=0 o hi(IC95 mu_A)<=0. INCONCLUSO = resto."
+}

@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "title": "Manifest H1",
+    "generated_at_utc": "2026-09-24T02:13:45.148138+00:00",
+    "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "preregistro_sha256": "07140838b8f72757ddd099e561480a2c652156ba4979dd2254e7e391b3999a64",
+    "smoke_mode": false
+  },
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "bars_count": 518237,
+    "first": "2019-05-06T00:00:00+00:00",
+    "last": "2026-09-03T23:55:00+00:00",
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge_gap_bars": 0,
+    "warmup_bars": 500,
+    "n_folds": 8,
+    "dev_folds_used": 6,
+    "validation_folds_sealed": [
+      6,
+      7
+    ]
+  },
+  "arms": {
+    "h1_mecanismo_f05": {
+      "config_f": 0.5,
+      "move_stop_to_break_even": true
+    },
+    "h1_targetpuro_f0": {
+      "config_f": 0.0,
+      "move_stop_to_break_even": false
+    }
+  },
+  "pinned_config_base": {
+    "initial_balance": 50000.0,
+    "risk_per_trade": 0.01,
+    "dollar_per_point": 2.0,
+    "tick_size": 0.25,
+    "max_contracts": 1000000,
+    "commission_per_side": 0.62,
+    "slippage_points": 0.25,
+    "time_exit_slippage_points": 0.25,
+    "profit_target_pct": 0.06,
+    "max_drawdown_pct": 0.06,
+    "daily_loss_limit_pct": 0.03,
+    "max_trades": null,
+    "max_bars_held": 1000000000,
+    "max_hold_minutes": null,
+    "fixed_quantity": null,
+    "bar_interval_seconds": 300,
+    "pending_limit_entry": false,
+    "pending_order_wait_bars": 0,
+    "cooldown_bars": 0,
+    "time_exit_mode": "market",
+    "session_date_for_ledger": false
+  },
+  "cost_scenario_realista": {
+    "commission_per_side": 0.62,
+    "slippage_points": 0.25,
+    "time_exit_slippage_points": 0.25
+  },
+  "artifacts_sha256": {
+    "comparison_h1.json": "06aa88205b61eda0009488172babb36a304c7178debae7f9b55a647a5d87800f",
+    "manifest.json": "2ea534af3f80f0ad7d2066ad7999da1bf5bb1054a4cfe1d265a5bc61258a82d4",
+    "metrics_MNQ_h1_mecanismo_f05_realista.json": "3c7a5beaca1f7dae9fdec113146fc5363a2a4030ee07742af1a3ca6a68fc364e",
+    "metrics_MNQ_h1_mecanismo_f05_realista_close_sensitivity.json": "c26bb9794a02b962d525506e128d6dfe5631e73ee1aae6b6c2dd31361ff6e9c1",
+    "metrics_MNQ_h1_targetpuro_f0_realista.json": "a2bd98d6bcd69aef384296156f6ce0fbec82ec043778ca40aa92cd1912bdad83",
+    "metrics_MNQ_h1_targetpuro_f0_realista_close_sensitivity.json": "5d0fe54e85493b897e30475754b1f6d62207dcea03a9a975565f8cd3a436c3ca"
+  }
+}
