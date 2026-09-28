@@ -518,9 +518,9 @@ def test_risk_within_limit_accepted_and_brackets_verified() -> None:
     assert payload["size"] == 1
     assert payload["contractId"] == MNQ_SYMBOL
     assert payload["limitPrice"] == 15000.0
-    # Stop bracket: 50 pts / 0.25 = 200 ticks
-    assert payload["stopLossBracket"] == {"ticks": 200, "type": ORDER_TYPE_STOP}
-    # Target bracket: 75 pts / 0.25 = 300 ticks
+    # Stop bracket: 50 pts / 0.25 = 200 ticks, signed negative for long (BUY)
+    assert payload["stopLossBracket"] == {"ticks": -200, "type": ORDER_TYPE_STOP}
+    # Target bracket: 75 pts / 0.25 = 300 ticks, signed positive for long (BUY)
     assert payload["takeProfitBracket"] == {"ticks": 300, "type": ORDER_TYPE_LIMIT}
 
 

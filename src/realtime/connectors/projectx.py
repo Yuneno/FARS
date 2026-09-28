@@ -418,7 +418,7 @@ class ProjectXClient:
         *,
         transport: JsonTransport | None = None,
         base_url: str = DEFAULT_API_URL,
-        timeout: float = 10.0,
+        timeout: float = 30.0,
     ) -> None:
         if LIVE_EXECUTION_ENABLED is not False:
             raise ProjectXError("live execution is locked; ProjectX stays read-only")

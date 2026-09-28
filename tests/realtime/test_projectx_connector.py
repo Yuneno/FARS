@@ -420,7 +420,7 @@ def test_real_http_transport_serializes_json_without_logging_secret(monkeypatch)
     decoded = json.loads(captured["body"])
     assert captured["url"] == "https://api.topstepx.com/api/Auth/loginKey"
     assert decoded == {"userName": "test-user", "apiKey": "super-secret"}
-    assert captured["timeout"] == 10.0
+    assert captured["timeout"] == 30.0
 
 
 def test_real_http_transport_maps_401_to_authentication_error(monkeypatch):

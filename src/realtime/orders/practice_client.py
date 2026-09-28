@@ -19,11 +19,13 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Any, Callable
 import re
+import time
 import uuid
 from zoneinfo import ZoneInfo
 
 from src.realtime.clock import Clock, SystemClock
 from src.realtime.connectors.projectx import (
+    _READ_ONLY_PATHS,
     DEFAULT_API_URL,
     JsonTransport,
     ProjectXAuthenticationError,
@@ -124,6 +126,36 @@ DEFAULT_PRACTICE_ACCOUNT_ALLOWLIST: tuple[str | int, ...] = (
 # Forbidden accounts (Combines, live, etc.)
 FORBIDDEN_ACCOUNT_PATTERNS = ("1.5KCHCR", "COMBINE", "LIVE")
 
+# RT-9 read-path retry hardening (gateway read timeouts, e.g. ssl read
+# timeouts on /api/Position/searchOpen and /api/Order/searchOpen).
+# Retries apply ONLY to idempotent read/search paths: the connector's real
+# read-only guard list plus the two order-search reads this client performs.
+# Write paths (/api/Order/place, /api/Order/cancel,
+# /api/Position/closeContract) are never retried here; place_order keeps its
+# own search-before-concluding ambiguity resolution with zero blind resends.
+DEFAULT_PRACTICE_TIMEOUT = 30.0
+READ_RETRY_MAX_ATTEMPTS = 3
+READ_RETRY_BACKOFF_SECONDS: tuple[float, ...] = (2.0, 4.0)
+_READ_RETRY_PATHS = frozenset(_READ_ONLY_PATHS) | {
+    "/api/Order/search",
+    "/api/Order/searchOpen",
+}
+
+
+def _is_retryable_read_error(exc: BaseException) -> bool:
+    """True only for transport-level timeouts.
+
+    Business rejections and HTTP errors (4xx, auth, rate-limit, malformed
+    responses) surface as ProjectXError subclasses or as plain ProjectXError
+    without a timeout message, and must never be retried.
+    """
+    if isinstance(exc, TimeoutError):
+        return True
+    if type(exc) is ProjectXError:
+        message = str(exc).lower()
+        return "timed out" in message or "request failed" in message
+    return False
+
 
 class PracticeOrderError(RuntimeError):
     """Base error for practice order operations."""
@@ -139,6 +171,18 @@ class UnauthorizedAccountError(PracticeOrderError):
 
 @dataclass(frozen=True)
 class BracketConfig:
+    """Bracket leg expressed as an UNSIGNED distance in ticks from entry.
+
+    Callers always pass a positive distance (``ticks > 0`` is enforced);
+    they must never pre-compute a sign. The gateway wire convention wants
+    ticks SIGNED relative to entry (RT-9 live run 4 rejection: stop-loss
+    ticks must be negative when longing), so
+    :meth:`PracticeOrderClient.place_order` signs the ticks at the single
+    payload-construction point:
+
+    - long (BUY): stop-loss ``-ticks``, take-profit ``+ticks``
+    - short (SELL): stop-loss ``+ticks``, take-profit ``-ticks``
+    """
     ticks: int
     order_type: int = ORDER_TYPE_STOP
 
@@ -149,10 +193,38 @@ class BracketConfig:
             raise ValueError(f"invalid bracket order type: {self.order_type}")
 
     def to_payload(self) -> dict[str, Any]:
+        """Unsigned base payload (distance only, no side information).
+
+        Side-dependent signing happens in :meth:`PracticeOrderClient.place_order`
+        via :func:`_signed_bracket_payload`, the single wire point.
+        """
         return {
             "ticks": int(self.ticks),
             "type": int(self.order_type),
         }
+
+
+def _signed_bracket_payload(
+    bracket: BracketConfig,
+    side: int,
+    *,
+    is_stop_loss: bool,
+) -> dict[str, Any]:
+    """Sign a bracket leg ticks for the gateway wire by entry side.
+
+    A stop-loss bracket (including a trailing-stop leg, which protects the
+    same side as a stop-loss) takes the adverse-direction sign; a
+    take-profit bracket takes the favourable-direction sign:
+
+    - long (BUY): SL ``-ticks``, TP ``+ticks``
+    - short (SELL): SL ``+ticks``, TP ``-ticks``
+    """
+    distance = int(bracket.ticks)
+    if side == ORDER_SIDE_BUY:
+        signed_ticks = -distance if is_stop_loss else distance
+    else:
+        signed_ticks = distance if is_stop_loss else -distance
+    return {"ticks": signed_ticks, "type": int(bracket.order_type)}
 
 
 @dataclass(frozen=True)
@@ -238,7 +310,7 @@ class PracticeOrderClient:
         token_provider: str | Callable[[], str],
         transport: JsonTransport | None = None,
         base_url: str = DEFAULT_API_URL,
-        timeout: float = 10.0,
+        timeout: float = DEFAULT_PRACTICE_TIMEOUT,
         practice_execution_enabled: bool = DEFAULT_PRACTICE_EXECUTION_ENABLED,
         account_allowlist: tuple[str | int, ...] = DEFAULT_PRACTICE_ACCOUNT_ALLOWLIST,
         clock: Clock | None = None,
@@ -308,7 +380,21 @@ class PracticeOrderClient:
             "Accept": "application/json",
         }
         url = f"{self._base_url}{path}"
-        return self._transport.post(url, headers, payload, self._timeout)
+        if path not in _READ_RETRY_PATHS:
+            # Write paths keep their exact current semantics: zero retries.
+            return self._transport.post(url, headers, payload, self._timeout)
+        last_error: BaseException | None = None
+        for attempt in range(READ_RETRY_MAX_ATTEMPTS):
+            try:
+                return self._transport.post(url, headers, payload, self._timeout)
+            except (TimeoutError, ProjectXError) as exc:
+                if not _is_retryable_read_error(exc):
+                    raise
+                last_error = exc
+                if attempt < READ_RETRY_MAX_ATTEMPTS - 1:
+                    time.sleep(READ_RETRY_BACKOFF_SECONDS[attempt])
+        assert last_error is not None  # set on every failed attempt above
+        raise last_error
 
     def place_order(
         self,
@@ -325,7 +411,13 @@ class PracticeOrderClient:
         stop_loss_bracket: BracketConfig | None = None,
         take_profit_bracket: BracketConfig | None = None,
     ) -> PracticeOrderResult:
-        """Place an order on the practice account with anti-OrderPending discipline."""
+        """Place an order on the practice account with anti-OrderPending discipline.
+
+        Bracket ticks go to the wire SIGNED relative to entry (gateway
+        convention): long (BUY) sends SL ``-ticks`` / TP ``+ticks``; short
+        (SELL) sends SL ``+ticks`` / TP ``-ticks``. A trailing-stop leg
+        passed as ``stop_loss_bracket`` follows the stop-loss sign.
+        """
         # 1. Permission checks
         if not self._practice_execution_enabled:
             raise PracticeOrderError("PRACTICE_EXECUTION_ENABLED is False; order placement denied")
@@ -363,9 +455,13 @@ class PracticeOrderClient:
         if stop_price is not None:
             payload["stopPrice"] = float(stop_price)
         if stop_loss_bracket is not None:
-            payload["stopLossBracket"] = stop_loss_bracket.to_payload()
+            payload["stopLossBracket"] = _signed_bracket_payload(
+                stop_loss_bracket, side, is_stop_loss=True
+            )
         if take_profit_bracket is not None:
-            payload["takeProfitBracket"] = take_profit_bracket.to_payload()
+            payload["takeProfitBracket"] = _signed_bracket_payload(
+                take_profit_bracket, side, is_stop_loss=False
+            )
 
         # 4. Transmission with anti-OrderPending timeout resolution
         try:

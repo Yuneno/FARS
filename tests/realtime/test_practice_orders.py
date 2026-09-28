@@ -267,7 +267,7 @@ def test_place_market_order_with_brackets_payload() -> None:
     assert payload["side"] == ORDER_SIDE_SELL
     assert payload["size"] == 1
     assert payload["stopLossBracket"] == {"ticks": 40, "type": ORDER_TYPE_STOP}
-    assert payload["takeProfitBracket"] == {"ticks": 80, "type": ORDER_TYPE_LIMIT}
+    assert payload["takeProfitBracket"] == {"ticks": -80, "type": ORDER_TYPE_LIMIT}
 
 
 def test_cancel_order_payload() -> None:
@@ -478,7 +478,7 @@ def test_practice_adapter_dispatches_through_order_client() -> None:
     assert p["contractId"] == TEST_CONTRACT_ID
     assert p["side"] == ORDER_SIDE_BUY
     assert p["size"] == 1
-    assert p["stopLossBracket"] == {"ticks": 200, "type": ORDER_TYPE_STOP}  # 50 pts / 0.25 = 200 ticks
+    assert p["stopLossBracket"] == {"ticks": -200, "type": ORDER_TYPE_STOP}  # 50 pts / 0.25 = 200 ticks, signed for long
 
 
 def test_practice_adapter_precheck_reduces_size_and_dispatches() -> None:
