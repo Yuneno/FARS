@@ -1,0 +1,184 @@
+================================================================================
+SIM-01A: TEST EXECUTION LOG & DETERMINISTIC BASELINE VERIFICATION
+================================================================================
+Date: 2026-09-23
+Repository: E:/FARS-LAB/FARS (branch: main)
+HEAD Commit: 56cc363f13d3ac141ca410fd6e196139cafd081a
+Python Interpreter: C:/Users/yo/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe
+Flags: -B (PYTHONDONTWRITEBYTECODE)
+Runner: unittest discover (-s "E:/FARS-LAB/FARS/tests" -p test_shadow_execution_baseline.py -v)
+
+--------------------------------------------------------------------------------
+1. VERIFICACION DE ESTADO INICIAL
+--------------------------------------------------------------------------------
+Command: git -C E:/FARS-LAB/FARS status --short --branch
+Output:
+## main...origin/main
+ M lab_artifacts/rt9_protocol/acceptance_mock_report.json
+ M lab_artifacts/rt9_protocol/acceptance_mock_session.jsonl
+?? lab_artifacts/_tmp_hermes_verify/
+?? lab_artifacts/rt9_protocol/acceptance_live_session.jsonl
+
+Command: git -C E:/FARS-LAB/FARS rev-parse HEAD
+Output:
+56cc363f13d3ac141ca410fd6e196139cafd081a
+
+Command: git -C E:/FARS-LAB/FARS diff --stat
+Output:
+ .../rt9_protocol/acceptance_mock_report.json       | 22 +++++++++++-----------
+ .../rt9_protocol/acceptance_mock_session.jsonl     | 16 ++++++++--------
+ 2 files changed, 19 insertions(+), 19 deletions(-)
+
+Command: git -C E:/FARS-LAB/FARS diff --name-only
+Output:
+lab_artifacts/rt9_protocol/acceptance_mock_report.json
+lab_artifacts/rt9_protocol/acceptance_mock_session.jsonl
+
+--------------------------------------------------------------------------------
+2. FASE RED: EJECUCION SIN BASELINE CONGELADO (INFRAESTRUCTURA DE REGRESION)
+--------------------------------------------------------------------------------
+Command: & "C:/Users/yo/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe" -B -m unittest discover -s "E:/FARS-LAB/FARS/tests" -p test_shadow_execution_baseline.py -v
+Exit Code: 1
+Output:
+test_00_baseline_fixture_congelado_match (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_00_baseline_fixture_congelado_match)
+Verifica igualdad bit-a-bit con el baseline congelado. Falla en RED si no existe. ... FAIL
+test_01_baseline_comparator_sensitivity (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_01_baseline_comparator_sensitivity)
+Prueba de sensibilidad: mutar un campo economico en memoria debe ser detectado. ... ok
+test_family_a_pending_limit_execution_long_and_short (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_a_pending_limit_execution_long_and_short)
+Familia A: el limite ejecuta exacto a su nivel y jamas como next-open market. ... ok
+test_family_b_gap_through_and_fill_or_expire (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_b_gap_through_and_fill_or_expire)
+Familia B: gap enteramente mas alla del limite no llena; llena luego o expira. ... ok
+test_family_c_exact_expiration_and_observable_hook (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_c_exact_expiration_and_observable_hook)
+Familia C: expiracion exacta al cumplir wait_bars y emision de hook. ... ok
+test_family_d_fillbar_tp_blocked_open_position (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_d_fillbar_tp_blocked_open_position)
+Familia D: fill-bar solo TP bloqueado; tp1 no genera parcial/BE; posicion queda abierta. ... ok
+test_family_e_fillbar_sl_priority_and_stop_gap (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_e_fillbar_sl_priority_and_stop_gap)
+Familia E: vela de fill con SL+TP resuelve stop; gap de stop usa convencion documentada. ... ok
+test_family_f_posterior_partial_be_and_costs (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_f_posterior_partial_be_and_costs)
+Familia F: parcial posterior + BE + salida final con comisiones no nulas. ... ok
+test_family_g_cooldown_and_causal_observation_hooks (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_g_cooldown_and_causal_observation_hooks)
+Familia G: cooldown_bars respeta ciclo causal y no evalua antes de tiempo. ... ok
+test_family_h_end_of_data_unresolved_vs_close_policy (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_h_end_of_data_unresolved_vs_close_policy)
+Familia H: fin de datos con politica unresolved vs close. ... ok
+test_family_i_qty1_fractional_vs_discrete_divergence (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_i_qty1_fractional_vs_discrete_divergence)
+Familia I: qty1 en fraccional vs discreto produce diferencia declarada. ... ok
+test_family_j_time_exit_modes_and_legacy_dispatch_control (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_j_time_exit_modes_and_legacy_dispatch_control)
+Familia J: time-exit por minutos, por barras, y despacho a legacy. ... ok
+
+======================================================================
+FAIL: test_00_baseline_fixture_congelado_match (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_00_baseline_fixture_congelado_match)
+Verifica igualdad bit-a-bit con el baseline congelado. Falla en RED si no existe.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "E:\FARS-LAB\FARS\tests\test_shadow_execution_baseline.py", line 1162, in test_00_baseline_fixture_congelado_match
+    self.fail(
+AssertionError: RED: Archivo baseline inexistente en E:\FARS-LAB\FARS\tests\fixtures\shadow_execution_baseline_v1.json. Ejecute con --write-baseline para congelar la referencia.
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.007s
+
+FAILED (failures=1)
+
+----------------------------------------------------------------------
+3. GENERACION DE BASELINE DETERMINISTA V1
+----------------------------------------------------------------------
+Command: & "C:/Users/yo/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe" -B "E:/FARS-LAB/FARS/tests/test_shadow_execution_baseline.py" --write-baseline
+Exit Code: 0
+Output:
+Baseline fixture successfully frozen at: E:\FARS-LAB\FARS\tests\fixtures\shadow_execution_baseline_v1.json
+
+----------------------------------------------------------------------
+4. FASE GREEN: PRIMERA EJECUCION DE VERIFICACION
+----------------------------------------------------------------------
+Command: & "C:/Users/yo/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe" -B -m unittest discover -s "E:/FARS-LAB/FARS/tests" -p test_shadow_execution_baseline.py -v
+Exit Code: 0
+Output:
+test_00_baseline_fixture_congelado_match (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_00_baseline_fixture_congelado_match)
+Verifica igualdad bit-a-bit con el baseline congelado. Falla en RED si no existe. ... ok
+test_01_baseline_comparator_sensitivity (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_01_baseline_comparator_sensitivity)
+Prueba de sensibilidad: mutar un campo economico en memoria debe ser detectado. ... ok
+test_family_a_pending_limit_execution_long_and_short (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_a_pending_limit_execution_long_and_short)
+Familia A: el limite ejecuta exacto a su nivel y jamas como next-open market. ... ok
+test_family_b_gap_through_and_fill_or_expire (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_b_gap_through_and_fill_or_expire)
+Familia B: gap enteramente mas alla del limite no llena; llena luego o expira. ... ok
+test_family_c_exact_expiration_and_observable_hook (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_c_exact_expiration_and_observable_hook)
+Familia C: expiracion exacta al cumplir wait_bars y emision de hook. ... ok
+test_family_d_fillbar_tp_blocked_open_position (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_d_fillbar_tp_blocked_open_position)
+Familia D: fill-bar solo TP bloqueado; tp1 no genera parcial/BE; posicion queda abierta. ... ok
+test_family_e_fillbar_sl_priority_and_stop_gap (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_e_fillbar_sl_priority_and_stop_gap)
+Familia E: vela de fill con SL+TP resuelve stop; gap de stop usa convencion documentada. ... ok
+test_family_f_posterior_partial_be_and_costs (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_f_posterior_partial_be_and_costs)
+Familia F: parcial posterior + BE + salida final con comisiones no nulas. ... ok
+test_family_g_cooldown_and_causal_observation_hooks (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_g_cooldown_and_causal_observation_hooks)
+Familia G: cooldown_bars respeta ciclo causal y no evalua antes de tiempo. ... ok
+test_family_h_end_of_data_unresolved_vs_close_policy (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_h_end_of_data_unresolved_vs_close_policy)
+Familia H: fin de datos con politica unresolved vs close. ... ok
+test_family_i_qty1_fractional_vs_discrete_divergence (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_i_qty1_fractional_vs_discrete_divergence)
+Familia I: qty1 en fraccional vs discreto produce diferencia declarada. ... ok
+test_family_j_time_exit_modes_and_legacy_dispatch_control (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_j_time_exit_modes_and_legacy_dispatch_control)
+Familia J: time-exit por minutos, por barras, y despacho a legacy. ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.009s
+
+OK
+
+----------------------------------------------------------------------
+5. FASE GREEN: SEGUNDA EJECUCION DE VERIFICACION (REPETIBILIDAD DETERMINISTA)
+----------------------------------------------------------------------
+Command: & "C:/Users/yo/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe" -B -m unittest discover -s "E:/FARS-LAB/FARS/tests" -p test_shadow_execution_baseline.py -v
+Exit Code: 0
+Output:
+test_00_baseline_fixture_congelado_match (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_00_baseline_fixture_congelado_match)
+Verifica igualdad bit-a-bit con el baseline congelado. Falla en RED si no existe. ... ok
+test_01_baseline_comparator_sensitivity (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_01_baseline_comparator_sensitivity)
+Prueba de sensibilidad: mutar un campo economico en memoria debe ser detectado. ... ok
+test_family_a_pending_limit_execution_long_and_short (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_a_pending_limit_execution_long_and_short)
+Familia A: el limite ejecuta exacto a su nivel y jamas como next-open market. ... ok
+test_family_b_gap_through_and_fill_or_expire (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_b_gap_through_and_fill_or_expire)
+Familia B: gap enteramente mas alla del limite no llena; llena luego o expira. ... ok
+test_family_c_exact_expiration_and_observable_hook (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_c_exact_expiration_and_observable_hook)
+Familia C: expiracion exacta al cumplir wait_bars y emision de hook. ... ok
+test_family_d_fillbar_tp_blocked_open_position (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_d_fillbar_tp_blocked_open_position)
+Familia D: fill-bar solo TP bloqueado; tp1 no genera parcial/BE; posicion queda abierta. ... ok
+test_family_e_fillbar_sl_priority_and_stop_gap (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_e_fillbar_sl_priority_and_stop_gap)
+Familia E: vela de fill con SL+TP resuelve stop; gap de stop usa convencion documentada. ... ok
+test_family_f_posterior_partial_be_and_costs (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_f_posterior_partial_be_and_costs)
+Familia F: parcial posterior + BE + salida final con comisiones no nulas. ... ok
+test_family_g_cooldown_and_causal_observation_hooks (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_g_cooldown_and_causal_observation_hooks)
+Familia G: cooldown_bars respeta ciclo causal y no evalua antes de tiempo. ... ok
+test_family_h_end_of_data_unresolved_vs_close_policy (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_h_end_of_data_unresolved_vs_close_policy)
+Familia H: fin de datos con politica unresolved vs close. ... ok
+test_family_i_qty1_fractional_vs_discrete_divergence (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_i_qty1_fractional_vs_discrete_divergence)
+Familia I: qty1 en fraccional vs discreto produce diferencia declarada. ... ok
+test_family_j_time_exit_modes_and_legacy_dispatch_control (test_shadow_execution_baseline.TestShadowExecutionBaseline.test_family_j_time_exit_modes_and_legacy_dispatch_control)
+Familia J: time-exit por minutos, por barras, y despacho a legacy. ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.009s
+
+OK
+
+----------------------------------------------------------------------
+6. AUDITORIA DE REPOSITORIO Y DIFF FINAL
+----------------------------------------------------------------------
+Command: git -C E:/FARS-LAB/FARS status --short --branch
+Output:
+## main...origin/main
+ M lab_artifacts/rt9_protocol/acceptance_mock_report.json
+ M lab_artifacts/rt9_protocol/acceptance_mock_session.jsonl
+?? lab_artifacts/_tmp_hermes_verify/
+?? lab_artifacts/rt9_protocol/acceptance_live_session.jsonl
+?? tests/fixtures/
+?? tests/test_shadow_execution_baseline.py
+
+Command: git -C E:/FARS-LAB/FARS diff --stat
+Output:
+ .../rt9_protocol/acceptance_mock_report.json       | 22 +++++++++++-----------
+ .../rt9_protocol/acceptance_mock_session.jsonl     | 16 ++++++++--------
+ 2 files changed, 19 insertions(+), 19 deletions(-)
+
+Command: git -C E:/FARS-LAB/FARS diff --name-only
+Output:
+lab_artifacts/rt9_protocol/acceptance_mock_report.json
+lab_artifacts/rt9_protocol/acceptance_mock_session.jsonl

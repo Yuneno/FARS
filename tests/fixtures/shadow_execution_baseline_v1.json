@@ -1,0 +1,2539 @@
+{
+  "cases": {
+    "case_a_long": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 111.0,
+          "high": 112.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_a_long",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Limite Long toca nivel y ejecuta exacto a 100.0 (no next-open)",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.037520000000000005,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "A",
+      "n_trades": 1,
+      "net_pnl": 18.76,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.037520000000000005,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 1.24,
+          "direction": "long",
+          "effective_r": 1.8760000000000001,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 110.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:32:00+00:00",
+          "gross_pnl": 20.0,
+          "net_pnl": 18.76,
+          "quantity": 1,
+          "r_result": 0.037520000000000005,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_a_short": {
+      "bars": [
+        {
+          "close": 98.0,
+          "high": 99.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 99.0,
+          "high": 101.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 89.0,
+          "high": 100.0,
+          "low": 88.0,
+          "open": 99.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_a_short",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Limite Short toca nivel y ejecuta exacto a 100.0 (no next-open)",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "short",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 105.0,
+          "target": 90.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.037520000000000005,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "A",
+      "n_trades": 1,
+      "net_pnl": 18.76,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.037520000000000005,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 1.24,
+          "direction": "short",
+          "effective_r": 1.8760000000000001,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 90.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:32:00+00:00",
+          "gross_pnl": 20.0,
+          "net_pnl": 18.76,
+          "quantity": 1,
+          "r_result": 0.037520000000000005,
+          "slippage_cost": 0.0,
+          "stop_price": 105.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 90.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_b_gap_expires": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 98.0,
+          "high": 99.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 97.0,
+          "high": 98.0,
+          "low": 96.0,
+          "open": 97.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 100.0,
+          "high": 101.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_b_gap_expires",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Gap-through no negocia nivel y expira sin orden ficticia",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "cooldown": 0,
+          "pending": true,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_order_expired"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        }
+      ],
+      "family": "B",
+      "n_trades": 0,
+      "net_pnl": 0,
+      "open_position": null,
+      "trades": [],
+      "unresolved_positions": 0
+    },
+    "case_b_long_fill_later": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 98.0,
+          "high": 99.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 100.0,
+          "high": 101.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 111.0,
+          "high": 112.0,
+          "low": 99.0,
+          "open": 100.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_b_long_fill_later",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 3,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Gap-through Long no llena hasta que barra posterior negocia el nivel",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "cooldown": 0,
+          "pending": true,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.037520000000000005,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 4,
+          "last_bar_time": "2026-09-23T13:33:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "B",
+      "n_trades": 1,
+      "net_pnl": 18.76,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.037520000000000005,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 1.24,
+          "direction": "long",
+          "effective_r": 1.8760000000000001,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:32:00+00:00",
+          "exit_price": 110.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:33:00+00:00",
+          "gross_pnl": 20.0,
+          "net_pnl": 18.76,
+          "quantity": 1,
+          "r_result": 0.037520000000000005,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_b_short_fill_later": {
+      "bars": [
+        {
+          "close": 98.0,
+          "high": 99.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 100.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 89.0,
+          "high": 101.0,
+          "low": 88.0,
+          "open": 100.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_b_short_fill_later",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 3,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Gap-through Short no llena hasta que barra posterior negocia el nivel",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "short",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 105.0,
+          "target": 90.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "cooldown": 0,
+          "pending": true,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.037520000000000005,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 4,
+          "last_bar_time": "2026-09-23T13:33:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "B",
+      "n_trades": 1,
+      "net_pnl": 18.76,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.037520000000000005,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 1.24,
+          "direction": "short",
+          "effective_r": 1.8760000000000001,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:32:00+00:00",
+          "exit_price": 90.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:33:00+00:00",
+          "gross_pnl": 20.0,
+          "net_pnl": 18.76,
+          "quantity": 1,
+          "r_result": 0.037520000000000005,
+          "slippage_cost": 0.0,
+          "stop_price": 105.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 90.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_c_expiration_exact": {
+      "bars": [
+        {
+          "close": 105.0,
+          "high": 106.0,
+          "low": 104.0,
+          "open": 105.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 103.0,
+          "high": 105.0,
+          "low": 102.0,
+          "open": 104.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 102.0,
+          "high": 104.0,
+          "low": 101.0,
+          "open": 103.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_c_expiration_exact",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Expiracion exacta a wait_bars=2 con notificacion de hook observable",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "cooldown": 0,
+          "pending": true,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_order_expired"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        }
+      ],
+      "family": "C",
+      "n_trades": 0,
+      "net_pnl": 0,
+      "open_position": null,
+      "trades": [],
+      "unresolved_positions": 0
+    },
+    "case_d_long_fillbar_tp": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 112.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_d_long_fillbar_tp",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": true,
+        "partial_take_profit_fraction": 0.5,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Fill-bar solo TP bloqueado en Long; tp1 y BE bloqueados; posicion queda abierta",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 90.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "D",
+      "n_trades": 0,
+      "net_pnl": 0,
+      "open_position": {
+        "direction": "long",
+        "entry_price": 100.0,
+        "entry_time": "2026-09-23T13:31:00+00:00",
+        "last_price": 101.0,
+        "last_time": "2026-09-23T13:31:00+00:00",
+        "quantity": 1,
+        "state": "open",
+        "stop_price": 90.0,
+        "target_price": 110.0,
+        "unrealized_gross_pnl": 2.0,
+        "unrealized_net_pnl": 2.0
+      },
+      "trades": [],
+      "unresolved_positions": 1
+    },
+    "case_d_short_fillbar_tp": {
+      "bars": [
+        {
+          "close": 98.0,
+          "high": 99.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 99.0,
+          "high": 101.0,
+          "low": 88.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_d_short_fillbar_tp",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": true,
+        "partial_take_profit_fraction": 0.5,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Fill-bar solo TP bloqueado en Short; posicion queda abierta",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "short",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 110.0,
+          "target": 90.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "D",
+      "n_trades": 0,
+      "net_pnl": 0,
+      "open_position": {
+        "direction": "short",
+        "entry_price": 100.0,
+        "entry_time": "2026-09-23T13:31:00+00:00",
+        "last_price": 99.0,
+        "last_time": "2026-09-23T13:31:00+00:00",
+        "quantity": 1,
+        "state": "open",
+        "stop_price": 110.0,
+        "target_price": 90.0,
+        "unrealized_gross_pnl": 2.0,
+        "unrealized_net_pnl": 2.0
+      },
+      "trades": [],
+      "unresolved_positions": 1
+    },
+    "case_e_long_sl_tp": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 100.0,
+          "high": 108.0,
+          "low": 93.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_e_long_sl_tp",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Fill-bar Long toca SL y TP simultaneos; resuelve por stop_loss",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 105.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "r_result": -0.02,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "E",
+      "n_trades": 1,
+      "net_pnl": -10.0,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": -0.02,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 0.0,
+          "direction": "long",
+          "effective_r": -1.0,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 95.0,
+          "exit_reason": "stop_loss",
+          "exit_time": "2026-09-23T13:31:00+00:00",
+          "gross_pnl": -10.0,
+          "net_pnl": -10.0,
+          "quantity": 1,
+          "r_result": -0.02,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 105.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_e_short_sl_tp": {
+      "bars": [
+        {
+          "close": 98.0,
+          "high": 99.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 100.0,
+          "high": 107.0,
+          "low": 92.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_e_short_sl_tp",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Fill-bar Short toca SL y TP simultaneos; resuelve por stop_loss",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "short",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 105.0,
+          "target": 95.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "r_result": -0.02,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "E",
+      "n_trades": 1,
+      "net_pnl": -10.0,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": -0.02,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 0.0,
+          "direction": "short",
+          "effective_r": -1.0,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 105.0,
+          "exit_reason": "stop_loss",
+          "exit_time": "2026-09-23T13:31:00+00:00",
+          "gross_pnl": -10.0,
+          "net_pnl": -10.0,
+          "quantity": 1,
+          "r_result": -0.02,
+          "slippage_cost": 0.0,
+          "stop_price": 105.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 95.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_e_stop_gap_convention": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 92.0,
+          "high": 93.0,
+          "low": 91.0,
+          "open": 92.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_e_stop_gap_convention",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.25,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Stop gap convention: fill al open adverso y slippage_cost nulo (absorbido)",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": -0.032,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "E",
+      "n_trades": 1,
+      "net_pnl": -16.0,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": -0.032,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 0.0,
+          "direction": "long",
+          "effective_r": -1.6,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 92.0,
+          "exit_reason": "stop_loss",
+          "exit_time": "2026-09-23T13:32:00+00:00",
+          "gross_pnl": -16.0,
+          "net_pnl": -16.0,
+          "quantity": 1,
+          "r_result": -0.032,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_f_long_partial_be": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 105.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 112.0,
+          "high": 115.0,
+          "low": 101.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 131.0,
+          "high": 132.0,
+          "low": 108.0,
+          "open": 112.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_f_long_partial_be",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": true,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 2,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": true,
+        "partial_take_profit_fraction": 0.5,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.25,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Parcial posterior + BE + salida final con comisiones en Long",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 90.0,
+          "target": 130.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.15503999999999998,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 4,
+          "last_bar_time": "2026-09-23T13:33:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "F",
+      "n_trades": 1,
+      "net_pnl": 77.52,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.15503999999999998,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 2.48,
+          "direction": "long",
+          "effective_r": 1.938,
+          "effective_risk_dollars": 40.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 120.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:33:00+00:00",
+          "gross_pnl": 80.0,
+          "net_pnl": 77.52,
+          "quantity": 2,
+          "r_result": 0.15503999999999998,
+          "slippage_cost": 0.0,
+          "stop_price": 100.0,
+          "stop_risk_dollars": 40.0,
+          "target_price": 130.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_f_short_partial_be": {
+      "bars": [
+        {
+          "close": 98.0,
+          "high": 99.0,
+          "low": 97.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 99.0,
+          "high": 101.0,
+          "low": 95.0,
+          "open": 98.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 88.0,
+          "high": 99.0,
+          "low": 85.0,
+          "open": 99.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 69.0,
+          "high": 92.0,
+          "low": 68.0,
+          "open": 88.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_f_short_partial_be",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": true,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 2,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": true,
+        "partial_take_profit_fraction": 0.5,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.25,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Parcial posterior + BE + salida final con comisiones en Short",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "short",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 110.0,
+          "target": 70.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.15503999999999998,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 4,
+          "last_bar_time": "2026-09-23T13:33:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "F",
+      "n_trades": 1,
+      "net_pnl": 77.52,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.15503999999999998,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 2.48,
+          "direction": "short",
+          "effective_r": 1.938,
+          "effective_risk_dollars": 40.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 80.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:33:00+00:00",
+          "gross_pnl": 80.0,
+          "net_pnl": 77.52,
+          "quantity": 2,
+          "r_result": 0.15503999999999998,
+          "slippage_cost": 0.0,
+          "stop_price": 100.0,
+          "stop_risk_dollars": 40.0,
+          "target_price": 70.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_g_cooldown_causal_hooks": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 111.0,
+          "high": 112.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 111.0,
+          "high": 112.0,
+          "low": 110.0,
+          "open": 111.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 111.0,
+          "high": 112.0,
+          "low": 110.0,
+          "open": 111.0,
+          "timestamp": "2026-09-23T13:34:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 112.0,
+          "high": 113.0,
+          "low": 110.0,
+          "open": 111.0,
+          "timestamp": "2026-09-23T13:35:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 105.0,
+          "high": 113.0,
+          "low": 99.0,
+          "open": 112.0,
+          "timestamp": "2026-09-23T13:36:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_g_cooldown_causal_hooks",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 2,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Cooldown de 2 barras con observacion causal de historial sin fuga temporal",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.04,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        },
+        {
+          "history_len": 4,
+          "last_bar_time": "2026-09-23T13:33:00+00:00",
+          "type": "observe"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 5,
+          "last_bar_time": "2026-09-23T13:34:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "cooldown": 0,
+          "pending": true,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "timestamp": "2026-09-23T13:36:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 7,
+          "last_bar_time": "2026-09-23T13:36:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "G",
+      "n_trades": 1,
+      "net_pnl": 20.0,
+      "open_position": {
+        "direction": "long",
+        "entry_price": 100.0,
+        "entry_time": "2026-09-23T13:36:00+00:00",
+        "last_price": 105.0,
+        "last_time": "2026-09-23T13:36:00+00:00",
+        "quantity": 1,
+        "state": "open",
+        "stop_price": 95.0,
+        "target_price": 110.0,
+        "unrealized_gross_pnl": 10.0,
+        "unrealized_net_pnl": 10.0
+      },
+      "trades": [
+        {
+          "budgeted_r": 0.04,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 0.0,
+          "direction": "long",
+          "effective_r": 2.0,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 110.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:32:00+00:00",
+          "gross_pnl": 20.0,
+          "net_pnl": 20.0,
+          "quantity": 1,
+          "r_result": 0.04,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 1
+    },
+    "case_h_close": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_h_close",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "close",
+        "end_of_data_slippage_points": 0.25,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Politica close: liquidacion forzada a fin de datos por end_of_data",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.0005200000000000001,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_trade"
+        }
+      ],
+      "family": "H",
+      "n_trades": 1,
+      "net_pnl": 0.26,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.0005200000000000001,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 1.24,
+          "direction": "long",
+          "effective_r": 0.026000000000000002,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 100.75,
+          "exit_reason": "end_of_data",
+          "exit_time": "2026-09-23T13:31:00+00:00",
+          "gross_pnl": 1.5,
+          "net_pnl": 0.26,
+          "quantity": 1,
+          "r_result": 0.0005200000000000001,
+          "slippage_cost": 0.5,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_h_unresolved": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_h_unresolved",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.25,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Politica unresolved: posicion no cerrada, marcada a mercado en open_position",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "H",
+      "n_trades": 0,
+      "net_pnl": 0,
+      "open_position": {
+        "direction": "long",
+        "entry_price": 100.0,
+        "entry_time": "2026-09-23T13:31:00+00:00",
+        "last_price": 101.0,
+        "last_time": "2026-09-23T13:31:00+00:00",
+        "quantity": 1,
+        "state": "open",
+        "stop_price": 95.0,
+        "target_price": 110.0,
+        "unrealized_gross_pnl": 2.0,
+        "unrealized_net_pnl": 0.76
+      },
+      "trades": [],
+      "unresolved_positions": 1
+    },
+    "case_i_qty1_discrete": {
+      "bars": [
+        {
+          "close": 104.0,
+          "high": 105.0,
+          "low": 103.0,
+          "open": 104.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 112.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 110.0,
+          "high": 111.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_i_qty1_discrete",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": true,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": true,
+        "partial_take_profit_fraction": 0.5,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.25,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Qty=1 discreto: contratos enteros indivisibles (q_tp1=0, q_rem=1)",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.037520000000000005,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "I",
+      "n_trades": 1,
+      "net_pnl": 18.76,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.037520000000000005,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 1.24,
+          "direction": "long",
+          "effective_r": 1.8760000000000001,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 110.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:32:00+00:00",
+          "gross_pnl": 20.0,
+          "net_pnl": 18.76,
+          "quantity": 1,
+          "r_result": 0.037520000000000005,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_i_qty1_fractional": {
+      "bars": [
+        {
+          "close": 104.0,
+          "high": 105.0,
+          "low": 103.0,
+          "open": 104.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 112.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 110.0,
+          "high": 111.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_i_qty1_fractional",
+      "config": {
+        "commission_per_side": 0.62,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": true,
+        "partial_take_profit_fraction": 0.5,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.25,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Qty=1 fraccional: liquida medio contrato en tp1 y medio en target",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.02752,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "I",
+      "n_trades": 1,
+      "net_pnl": 13.76,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.02752,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 1.24,
+          "direction": "long",
+          "effective_r": 1.376,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 107.5,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:32:00+00:00",
+          "gross_pnl": 15.0,
+          "net_pnl": 13.76,
+          "quantity": 1,
+          "r_result": 0.02752,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_j_legacy_dispatch": {
+      "bars": [
+        {
+          "close": 100.0,
+          "high": 101.0,
+          "low": 99.0,
+          "open": 100.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 102.0,
+          "high": 112.0,
+          "low": 99.0,
+          "open": 100.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_j_legacy_dispatch",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": false,
+        "pending_order_wait_bars": 0,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.0
+      },
+      "description": "Control legacy market sin opt-in resuelve via dispatch clasico",
+      "events": [
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 105.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "r_result": 0.02,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_trade"
+        }
+      ],
+      "family": "J",
+      "n_trades": 1,
+      "net_pnl": 10.0,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.02,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 0.0,
+          "direction": "long",
+          "effective_r": 1.0,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 105.0,
+          "exit_reason": "take_profit",
+          "exit_time": "2026-09-23T13:31:00+00:00",
+          "gross_pnl": 10.0,
+          "net_pnl": 10.0,
+          "quantity": 1,
+          "r_result": 0.02,
+          "slippage_cost": 0.0,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 105.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_j_time_exit_bars": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 102.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:32:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 102.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_j_time_exit_bars",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 2,
+        "max_hold_minutes": null,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.25
+      },
+      "description": "Time-exit por conteo de barras held; resuelve al close",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:31:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:31:00+00:00",
+          "type": "observe"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:32:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.003,
+          "timestamp": "2026-09-23T13:33:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 4,
+          "last_bar_time": "2026-09-23T13:33:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "J",
+      "n_trades": 1,
+      "net_pnl": 1.5,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.003,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 0.0,
+          "direction": "long",
+          "effective_r": 0.15,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:31:00+00:00",
+          "exit_price": 100.75,
+          "exit_reason": "time_exit",
+          "exit_time": "2026-09-23T13:33:00+00:00",
+          "gross_pnl": 1.5,
+          "net_pnl": 1.5,
+          "quantity": 1,
+          "r_result": 0.003,
+          "slippage_cost": 0.5,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    },
+    "case_j_time_exit_minutes": {
+      "bars": [
+        {
+          "close": 102.0,
+          "high": 103.0,
+          "low": 101.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:30:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 103.0,
+          "low": 99.0,
+          "open": 102.0,
+          "timestamp": "2026-09-23T13:35:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 102.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:40:00+00:00",
+          "volume": 10.0
+        },
+        {
+          "close": 101.0,
+          "high": 102.0,
+          "low": 100.0,
+          "open": 101.0,
+          "timestamp": "2026-09-23T13:45:00+00:00",
+          "volume": 10.0
+        }
+      ],
+      "case_id": "case_j_time_exit_minutes",
+      "config": {
+        "commission_per_side": 0.0,
+        "cooldown_bars": 0,
+        "discrete_partial_contracts": false,
+        "dollar_per_point": 2.0,
+        "end_of_data_policy": "unresolved",
+        "end_of_data_slippage_points": 0.0,
+        "fixed_quantity": 1,
+        "initial_balance": 50000.0,
+        "max_bars_held": 100,
+        "max_hold_minutes": 10,
+        "move_stop_to_break_even": false,
+        "partial_take_profit_fraction": 0.0,
+        "pending_limit_entry": true,
+        "pending_order_wait_bars": 2,
+        "risk_per_trade": 0.01,
+        "slippage_points": 0.0,
+        "tick_size": 0.25,
+        "time_exit_mode": "market",
+        "time_exit_slippage_points": 0.25
+      },
+      "description": "Time-exit por minutos cumplidos; resuelve al open de la barra",
+      "events": [
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "cooldown": 0,
+          "pending": false,
+          "position": false,
+          "type": "set_execution_state"
+        },
+        {
+          "direction": "long",
+          "entry": 100.0,
+          "history_len": 1,
+          "last_bar_time": "2026-09-23T13:30:00+00:00",
+          "stop": 95.0,
+          "target": 110.0,
+          "type": "evaluate_signal"
+        },
+        {
+          "timestamp": "2026-09-23T13:35:00+00:00",
+          "type": "note_order_filled"
+        },
+        {
+          "history_len": 2,
+          "last_bar_time": "2026-09-23T13:35:00+00:00",
+          "type": "observe"
+        },
+        {
+          "history_len": 3,
+          "last_bar_time": "2026-09-23T13:40:00+00:00",
+          "type": "observe"
+        },
+        {
+          "r_result": 0.003,
+          "timestamp": "2026-09-23T13:45:00+00:00",
+          "type": "note_trade"
+        },
+        {
+          "history_len": 4,
+          "last_bar_time": "2026-09-23T13:45:00+00:00",
+          "type": "observe"
+        }
+      ],
+      "family": "J",
+      "n_trades": 1,
+      "net_pnl": 1.5,
+      "open_position": null,
+      "trades": [
+        {
+          "budgeted_r": 0.003,
+          "budgeted_risk_dollars": 500.0,
+          "commission": 0.0,
+          "direction": "long",
+          "effective_r": 0.15,
+          "effective_risk_dollars": 10.0,
+          "entry_price": 100.0,
+          "entry_time": "2026-09-23T13:35:00+00:00",
+          "exit_price": 100.75,
+          "exit_reason": "time_exit",
+          "exit_time": "2026-09-23T13:45:00+00:00",
+          "gross_pnl": 1.5,
+          "net_pnl": 1.5,
+          "quantity": 1,
+          "r_result": 0.003,
+          "slippage_cost": 0.5,
+          "stop_price": 95.0,
+          "stop_risk_dollars": 10.0,
+          "target_price": 110.0,
+          "trade_id": "bt-1"
+        }
+      ],
+      "unresolved_positions": 0
+    }
+  },
+  "description": "SIM-01A deterministic shadow execution baseline",
+  "provenance": {
+    "files_sha256": {
+      "src/backtest/executor.py": "22fb67c1109aaaf6e84361a19d462e13667947bdf4ac28c543fee83e096f5ee5",
+      "src/backtest/smc_fvg.py": "ebd7caf0db732fe9e04889e580dae688a263d78cf1e8373ebbe83ab237edeb74",
+      "src/backtest/strategy.py": "ed362075fbcc2f63c0d7f3dcb04745ae681b673f70530900d2886a12eb41c056"
+    },
+    "git_head": "56cc363f13d3ac141ca410fd6e196139cafd081a"
+  },
+  "version": "v1"
+}
