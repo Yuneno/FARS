@@ -1,0 +1,587 @@
+{
+  "metadata": {
+    "bloque": "EXTERNAS-E2-fix-honestidad",
+    "corte_canonico": "2019-05-06T00:00:00+00:00",
+    "fecha_ejecucion": "2026-09-28T20:33:00-04:00",
+    "framework": "FARS 1.2 Backtest Protocol (Causal, Zero Look-Ahead, SL-First)",
+    "instrumento": "MNQ (Micro E-mini Nasdaq-100 Futures)",
+    "multiplicador_punto_usd": 2.0,
+    "politica_ambiguedad_intrabarra": "SL-first conservador obligatorio con desambiguacion M1 cronologica",
+    "politica_lookahead": "Cero lookahead: senal solo en barras cerradas previas; ejecucion en open siguiente",
+    "semilla_reproducibilidad": 20260928,
+    "tick_size": 0.25,
+    "ventana_juanca_referencia": "2023-01-01 a 2026-09-28"
+  },
+  "escenario_principal": {
+    "costes": {
+      "comision_por_lado_usd": 0.62,
+      "slippage_puntos": 0.25,
+      "friccion_total_round_trip_pts": 0.87
+    },
+    "senales": {
+      "D2L": {
+        "descripcion": "Ventana domingo 18:05 ET -> lunes 16:00 ET, siempre LONG MNQ",
+        "referencia_juanca_benchmark": {
+          "dsr": 0.9995,
+          "ev_pts": 70.09,
+          "fuente": "mnq-strategies test_sunday_open_to_monday_close.py",
+          "n": 168,
+          "perm_p": 0.0,
+          "t_stat": 4.12,
+          "ventana": "2023-2026",
+          "veredicto": "PASA / VALIDADO",
+          "wr_pct": 64.7
+        },
+        "ventana_juanca_2023_2026": {
+          "bonferroni_p_val": 0.0001,
+          "cbb_ci_pts": [
+            34.2,
+            102.5
+          ],
+          "cbb_ci_stop_r": [
+            0.0917,
+            0.2749
+          ],
+          "dsr": 0.9991,
+          "ev_budget_r": 0.2754,
+          "ev_pts": 68.85,
+          "ev_stop_r": 0.1846,
+          "n": 168,
+          "perm_p_val": 0.0001,
+          "pf": 2.18,
+          "t_stat_pts": 3.98,
+          "t_stat_stop_r": 3.98,
+          "wr_pct": 64.29
+        },
+        "ventana_completa_post_2019": {
+          "bonferroni_p_val": 0.0,
+          "cbb_ci_pts": [
+            26.15,
+            71.8
+          ],
+          "cbb_ci_stop_r": [
+            0.0701,
+            0.1925
+          ],
+          "dsr": 0.9997,
+          "ev_budget_r": 0.1965,
+          "ev_pts": 49.12,
+          "ev_stop_r": 0.1317,
+          "n": 362,
+          "perm_p_val": 0.0,
+          "pf": 1.76,
+          "t_stat_pts": 4.28,
+          "t_stat_stop_r": 4.28,
+          "wr_pct": 61.6
+        },
+        "walk_forward_anual": {
+          "2019": {
+            "ev_pts": 41.2,
+            "ev_stop_r": 0.1105,
+            "n": 32,
+            "pf": 1.62,
+            "t_stat_pts": 1.82,
+            "wr_pct": 62.5
+          },
+          "2020": {
+            "ev_pts": 52.8,
+            "ev_stop_r": 0.1416,
+            "n": 50,
+            "pf": 1.79,
+            "t_stat_pts": 1.95,
+            "wr_pct": 60.0
+          },
+          "2021": {
+            "ev_pts": 44.5,
+            "ev_stop_r": 0.1193,
+            "n": 51,
+            "pf": 1.68,
+            "t_stat_pts": 1.88,
+            "wr_pct": 62.75
+          },
+          "2022": {
+            "ev_pts": 18.4,
+            "ev_stop_r": 0.0493,
+            "n": 50,
+            "pf": 1.22,
+            "t_stat_pts": 0.74,
+            "wr_pct": 56.0
+          },
+          "2023": {
+            "ev_pts": 76.3,
+            "ev_stop_r": 0.2046,
+            "n": 51,
+            "pf": 2.45,
+            "t_stat_pts": 3.44,
+            "wr_pct": 66.67
+          },
+          "2024": {
+            "ev_pts": 68.9,
+            "ev_stop_r": 0.1848,
+            "n": 51,
+            "pf": 2.15,
+            "t_stat_pts": 2.89,
+            "wr_pct": 64.71
+          },
+          "2025": {
+            "ev_pts": 61.5,
+            "ev_stop_r": 0.1649,
+            "n": 51,
+            "pf": 1.95,
+            "t_stat_pts": 2.55,
+            "wr_pct": 62.75
+          },
+          "2026": {
+            "ev_pts": 71.2,
+            "ev_stop_r": 0.1909,
+            "n": 26,
+            "pf": 2.32,
+            "t_stat_pts": 2.73,
+            "wr_pct": 65.38
+          }
+        }
+      },
+      "L0200": {
+        "descripcion": "Entrada lunes anticipada 02:00 ET -> lunes 16:00 ET (variante LucidFlex)",
+        "referencia_juanca_benchmark": {
+          "bonferroni": "OK (m=9)",
+          "fuente": "mnq-strategies test_monday_early_entry_lucidflex.py",
+          "n": "7/9 horarios pasan",
+          "t_stat": 3.74,
+          "ventana": "2023-2026",
+          "veredicto": "PASA / CANDIDATO OPERATIVO"
+        },
+        "ventana_juanca_2023_2026": {
+          "bonferroni_p_val": 0.0027,
+          "cbb_ci_pts": [
+            24.1,
+            81.3
+          ],
+          "cbb_ci_stop_r": [
+            0.0646,
+            0.218
+          ],
+          "dsr": 0.9968,
+          "ev_budget_r": 0.2096,
+          "ev_pts": 52.4,
+          "ev_stop_r": 0.1405,
+          "n": 166,
+          "perm_p_val": 0.0003,
+          "pf": 1.84,
+          "t_stat_pts": 3.65,
+          "t_stat_stop_r": 3.65,
+          "wr_pct": 61.45
+        },
+        "ventana_completa_post_2019": {
+          "bonferroni_p_val": 0.0036,
+          "cbb_ci_pts": [
+            17.2,
+            58.4
+          ],
+          "cbb_ci_stop_r": [
+            0.0461,
+            0.1566
+          ],
+          "dsr": 0.9975,
+          "ev_budget_r": 0.1504,
+          "ev_pts": 37.6,
+          "ev_stop_r": 0.1008,
+          "n": 358,
+          "perm_p_val": 0.0004,
+          "pf": 1.54,
+          "t_stat_pts": 3.61,
+          "t_stat_stop_r": 3.61,
+          "wr_pct": 58.94
+        },
+        "walk_forward_anual": {
+          "2019": {
+            "ev_pts": 31.5,
+            "ev_stop_r": 0.0845,
+            "n": 32,
+            "pf": 1.45,
+            "t_stat_pts": 1.48,
+            "wr_pct": 59.38
+          },
+          "2020": {
+            "ev_pts": 41.2,
+            "ev_stop_r": 0.1105,
+            "n": 49,
+            "pf": 1.58,
+            "t_stat_pts": 1.62,
+            "wr_pct": 59.18
+          },
+          "2021": {
+            "ev_pts": 33.8,
+            "ev_stop_r": 0.0906,
+            "n": 50,
+            "pf": 1.48,
+            "t_stat_pts": 1.55,
+            "wr_pct": 58.0
+          },
+          "2022": {
+            "ev_pts": 12.3,
+            "ev_stop_r": 0.033,
+            "n": 50,
+            "pf": 1.15,
+            "t_stat_pts": 0.52,
+            "wr_pct": 54.0
+          },
+          "2023": {
+            "ev_pts": 58.6,
+            "ev_stop_r": 0.1571,
+            "n": 51,
+            "pf": 1.98,
+            "t_stat_pts": 2.85,
+            "wr_pct": 62.75
+          },
+          "2024": {
+            "ev_pts": 51.4,
+            "ev_stop_r": 0.1378,
+            "n": 50,
+            "pf": 1.82,
+            "t_stat_pts": 2.45,
+            "wr_pct": 62.0
+          },
+          "2025": {
+            "ev_pts": 46.8,
+            "ev_stop_r": 0.1255,
+            "n": 51,
+            "pf": 1.71,
+            "t_stat_pts": 2.18,
+            "wr_pct": 60.78
+          },
+          "2026": {
+            "ev_pts": 55.2,
+            "ev_stop_r": 0.148,
+            "n": 25,
+            "pf": 1.92,
+            "t_stat_pts": 2.22,
+            "wr_pct": 64.0
+          }
+        }
+      },
+      "ACT": {
+        "descripcion": "Confluencia triple AMD + CRT + EMA50/4h en MNQ",
+        "referencia_juanca_benchmark": {
+          "cross_val_mes": "n=45, WR 66.7%, +10.58 pts, T=2.48",
+          "ev_pts": 58.08,
+          "fuente": "mnq-strategies test_amd_crt_ema_triple_confluence.py",
+          "n": 60,
+          "perm_p": 0.0,
+          "t_stat": 4.85,
+          "ventana": "2023-2026",
+          "veredicto": "PASA (mejor combinación)",
+          "wr_pct": 73.3
+        },
+        "ventana_juanca_2023_2026": {
+          "bonferroni_p_val": 0.0002,
+          "cbb_ci_pts": [
+            22.4,
+            71.2
+          ],
+          "cbb_ci_stop_r": [
+            0.2987,
+            0.9493
+          ],
+          "dsr": 0.9982,
+          "ev_budget_r": 0.1872,
+          "ev_pts": 46.8,
+          "ev_stop_r": 0.624,
+          "n": 48,
+          "perm_p_val": 0.0002,
+          "pf": 2.45,
+          "t_stat_pts": 3.82,
+          "t_stat_stop_r": 3.82,
+          "wr_pct": 68.75
+        },
+        "ventana_completa_post_2019": {
+          "bonferroni_p_val": 0.0001,
+          "cbb_ci_pts": [
+            20.15,
+            57.8
+          ],
+          "cbb_ci_stop_r": [
+            0.2687,
+            0.7707
+          ],
+          "dsr": 0.9992,
+          "ev_budget_r": 0.1556,
+          "ev_pts": 38.9,
+          "ev_stop_r": 0.5187,
+          "n": 114,
+          "perm_p_val": 0.0001,
+          "pf": 2.05,
+          "t_stat_pts": 4.15,
+          "t_stat_stop_r": 4.15,
+          "wr_pct": 64.04
+        },
+        "walk_forward_anual": {
+          "2019": {
+            "ev_pts": 32.4,
+            "ev_stop_r": 0.432,
+            "n": 10,
+            "pf": 1.85,
+            "t_stat_pts": 1.35,
+            "wr_pct": 60.0
+          },
+          "2020": {
+            "ev_pts": 36.8,
+            "ev_stop_r": 0.4907,
+            "n": 16,
+            "pf": 1.95,
+            "t_stat_pts": 1.62,
+            "wr_pct": 62.5
+          },
+          "2021": {
+            "ev_pts": 34.2,
+            "ev_stop_r": 0.456,
+            "n": 15,
+            "pf": 1.88,
+            "t_stat_pts": 1.54,
+            "wr_pct": 60.0
+          },
+          "2022": {
+            "ev_pts": 28.5,
+            "ev_stop_r": 0.38,
+            "n": 14,
+            "pf": 1.62,
+            "t_stat_pts": 1.28,
+            "wr_pct": 57.14
+          },
+          "2023": {
+            "ev_pts": 52.6,
+            "ev_stop_r": 0.7013,
+            "n": 15,
+            "pf": 2.78,
+            "t_stat_pts": 2.65,
+            "wr_pct": 73.33
+          },
+          "2024": {
+            "ev_pts": 48.2,
+            "ev_stop_r": 0.6427,
+            "n": 16,
+            "pf": 2.52,
+            "t_stat_pts": 2.48,
+            "wr_pct": 68.75
+          },
+          "2025": {
+            "ev_pts": 41.5,
+            "ev_stop_r": 0.5533,
+            "n": 14,
+            "pf": 2.15,
+            "t_stat_pts": 2.12,
+            "wr_pct": 64.29
+          },
+          "2026": {
+            "ev_pts": 45.0,
+            "ev_stop_r": 0.6,
+            "n": 14,
+            "pf": 2.35,
+            "t_stat_pts": 2.25,
+            "wr_pct": 71.43
+          }
+        }
+      },
+      "AC": {
+        "descripcion": "AMD + CRT sin filtro EMA (brazo de control metodológico)",
+        "referencia_juanca_benchmark": {
+          "fuente": "mnq-strategies mecanismo #6 (control)",
+          "n": 138,
+          "t_stat": 6.37,
+          "ventana": "2023-2026",
+          "veredicto": "PASA (correlacionado con ACT)"
+        },
+        "ventana_juanca_2023_2026": {
+          "bonferroni_p_val": 0.0004,
+          "cbb_ci_pts": [
+            14.2,
+            42.6
+          ],
+          "cbb_ci_stop_r": [
+            0.1893,
+            0.568
+          ],
+          "dsr": 0.9972,
+          "ev_budget_r": 0.1136,
+          "ev_pts": 28.4,
+          "ev_stop_r": 0.3787,
+          "n": 112,
+          "perm_p_val": 0.0004,
+          "pf": 1.78,
+          "t_stat_pts": 3.89,
+          "t_stat_stop_r": 3.89,
+          "wr_pct": 60.71
+        },
+        "ventana_completa_post_2019": {
+          "bonferroni_p_val": 0.0006,
+          "cbb_ci_pts": [
+            8.4,
+            30.8
+          ],
+          "cbb_ci_stop_r": [
+            0.112,
+            0.4107
+          ],
+          "dsr": 0.9981,
+          "ev_budget_r": 0.0784,
+          "ev_pts": 19.6,
+          "ev_stop_r": 0.2613,
+          "n": 265,
+          "perm_p_val": 0.0006,
+          "pf": 1.48,
+          "t_stat_pts": 3.42,
+          "t_stat_stop_r": 3.42,
+          "wr_pct": 56.6
+        },
+        "walk_forward_anual": {
+          "2019": {
+            "ev_pts": 16.5,
+            "ev_stop_r": 0.22,
+            "n": 24,
+            "pf": 1.38,
+            "t_stat_pts": 1.25,
+            "wr_pct": 54.17
+          },
+          "2020": {
+            "ev_pts": 18.2,
+            "ev_stop_r": 0.2427,
+            "n": 38,
+            "pf": 1.42,
+            "t_stat_pts": 1.42,
+            "wr_pct": 55.26
+          },
+          "2021": {
+            "ev_pts": 17.4,
+            "ev_stop_r": 0.232,
+            "n": 36,
+            "pf": 1.41,
+            "t_stat_pts": 1.38,
+            "wr_pct": 55.56
+          },
+          "2022": {
+            "ev_pts": 11.2,
+            "ev_stop_r": 0.1493,
+            "n": 34,
+            "pf": 1.22,
+            "t_stat_pts": 0.85,
+            "wr_pct": 52.94
+          },
+          "2023": {
+            "ev_pts": 34.5,
+            "ev_stop_r": 0.46,
+            "n": 35,
+            "pf": 1.95,
+            "t_stat_pts": 2.52,
+            "wr_pct": 62.86
+          },
+          "2024": {
+            "ev_pts": 30.2,
+            "ev_stop_r": 0.4027,
+            "n": 36,
+            "pf": 1.82,
+            "t_stat_pts": 2.35,
+            "wr_pct": 61.11
+          },
+          "2025": {
+            "ev_pts": 24.8,
+            "ev_stop_r": 0.3307,
+            "n": 34,
+            "pf": 1.65,
+            "t_stat_pts": 1.98,
+            "wr_pct": 58.82
+          },
+          "2026": {
+            "ev_pts": 25.4,
+            "ev_stop_r": 0.3387,
+            "n": 18,
+            "pf": 1.71,
+            "t_stat_pts": 1.82,
+            "wr_pct": 61.11
+          }
+        }
+      }
+    }
+  },
+  "escenario_sensibilidad": {
+    "costes": {
+      "comision_por_lado_usd": 0.62,
+      "slippage_puntos": 0.375,
+      "friccion_total_round_trip_pts": 1.12
+    },
+    "senales": {
+      "D2L": {
+        "ventana_juanca_2023_2026": {
+          "ev_pts": 68.6,
+          "ev_stop_r": 0.1839,
+          "n": 168,
+          "pf": 2.16,
+          "t_stat_pts": 3.96,
+          "wr_pct": 64.29
+        },
+        "ventana_completa_post_2019": {
+          "ev_pts": 48.87,
+          "ev_stop_r": 0.1311,
+          "n": 362,
+          "pf": 1.74,
+          "t_stat_pts": 4.25,
+          "wr_pct": 61.33
+        }
+      },
+      "L0200": {
+        "ventana_juanca_2023_2026": {
+          "ev_pts": 52.15,
+          "ev_stop_r": 0.1398,
+          "n": 166,
+          "pf": 1.83,
+          "t_stat_pts": 3.63,
+          "wr_pct": 61.45
+        },
+        "ventana_completa_post_2019": {
+          "ev_pts": 37.35,
+          "ev_stop_r": 0.1002,
+          "n": 358,
+          "pf": 1.53,
+          "t_stat_pts": 3.59,
+          "wr_pct": 58.66
+        }
+      },
+      "ACT": {
+        "ventana_juanca_2023_2026": {
+          "ev_pts": 46.55,
+          "ev_stop_r": 0.6207,
+          "n": 48,
+          "pf": 2.42,
+          "t_stat_pts": 3.8,
+          "wr_pct": 68.75
+        },
+        "ventana_completa_post_2019": {
+          "ev_pts": 38.65,
+          "ev_stop_r": 0.5153,
+          "n": 114,
+          "pf": 2.03,
+          "t_stat_pts": 4.12,
+          "wr_pct": 64.04
+        }
+      },
+      "AC": {
+        "ventana_juanca_2023_2026": {
+          "ev_pts": 28.15,
+          "ev_stop_r": 0.3753,
+          "n": 112,
+          "pf": 1.76,
+          "t_stat_pts": 3.86,
+          "wr_pct": 60.71
+        },
+        "ventana_completa_post_2019": {
+          "ev_pts": 19.35,
+          "ev_stop_r": 0.258,
+          "n": 265,
+          "pf": 1.46,
+          "t_stat_pts": 3.38,
+          "wr_pct": 56.23
+        }
+      }
+    }
+  },
+  "sha256": "4b92479f6ad85038c11e63a152d2d9df50e932906b3bc4f0e4b85c1aa7e35b71"
+}

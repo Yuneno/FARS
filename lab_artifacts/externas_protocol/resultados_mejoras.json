@@ -1,0 +1,884 @@
+{
+  "metadata": {
+    "bloque": "EXTERNAS-E3-mejoras",
+    "criterio_promocion_preregistrado": "IC 95% CBB cota inferior no empeora vs base Y Bonferroni (m=6) p < 0.05",
+    "fecha_ejecucion": "2026-09-28T23:25:00-04:00",
+    "framework": "FARS 1.2 Backtest Protocol (Causal, Zero Look-Ahead, SL-First)",
+    "instrumento": "MNQ (Micro E-mini Nasdaq-100 Futures)",
+    "mira_previas": 12,
+    "mira_total": 18,
+    "multiplicador_punto_usd": 2.0,
+    "politica_ambiguedad_intrabarra": "SL-first conservador obligatorio con desambiguacion M1 cronologica",
+    "politica_lookahead": "Cero lookahead: senal solo en barras cerradas previas; ejecucion en open siguiente",
+    "ronda_bonferroni_m": 6,
+    "semilla_reproducibilidad": 20260928,
+    "tick_size": 0.25,
+    "variantes_evaluadas": 6,
+    "ventana_juanca_referencia": "2023-01-01 a 2026-09-28"
+  },
+  "escenario_costes": {
+    "comision_por_lado_usd": 0.62,
+    "friccion_total_round_trip_pts": 0.87,
+    "slippage_puntos": 0.25
+  },
+  "resumen_promocion_ronda": {
+    "V1": {
+      "base_signal": "D2L",
+      "bonferroni_p_val_m6": 0.0006,
+      "cbb_cota_inf_base": 34.2,
+      "cbb_cota_inf_variante": 31.4,
+      "cumple_bonferroni_m6": true,
+      "cumple_cbb_no_empeora": false,
+      "delta_cbb_inf_pts": -2.8,
+      "descripcion": "Salida por tiempo lunes 16:00 -> 15:45 ET",
+      "dimension": "mecanica_salida",
+      "veredicto": "NO MEJORA"
+    },
+    "V2": {
+      "base_signal": "D2L",
+      "bonferroni_p_val_m6": 0.0132,
+      "cbb_cota_inf_base": 34.2,
+      "cbb_cota_inf_variante": 14.2,
+      "cumple_bonferroni_m6": true,
+      "cumple_cbb_no_empeora": false,
+      "delta_cbb_inf_pts": -20.0,
+      "descripcion": "Entrada domingo 18:05 -> 19:00 ET",
+      "dimension": "ventana_horaria",
+      "veredicto": "NO MEJORA"
+    },
+    "V3": {
+      "base_signal": "L0200",
+      "bonferroni_p_val_m6": 0.111,
+      "cbb_cota_inf_base": 24.1,
+      "cbb_cota_inf_variante": 2.4,
+      "cumple_bonferroni_m6": false,
+      "cumple_cbb_no_empeora": false,
+      "delta_cbb_inf_pts": -21.7,
+      "descripcion": "Salida por tiempo lunes 16:00 pura (sin TP 150 pts)",
+      "dimension": "mecanica_salida",
+      "veredicto": "NO MEJORA"
+    },
+    "V4": {
+      "base_signal": "L0200",
+      "bonferroni_p_val_m6": 0.246,
+      "cbb_cota_inf_base": 24.1,
+      "cbb_cota_inf_variante": -2.3,
+      "cumple_bonferroni_m6": false,
+      "cumple_cbb_no_empeora": false,
+      "delta_cbb_inf_pts": -26.4,
+      "descripcion": "Stop 372.9 -> 250.0 pts con TP proporcional 100.6 pts",
+      "dimension": "mecanica_salida",
+      "veredicto": "NO MEJORA"
+    },
+    "V5": {
+      "base_signal": "ACT",
+      "bonferroni_p_val_m6": 0.0072,
+      "cbb_cota_inf_base": 22.4,
+      "cbb_cota_inf_variante": 12.1,
+      "cumple_bonferroni_m6": true,
+      "cumple_cbb_no_empeora": false,
+      "delta_cbb_inf_pts": -10.3,
+      "descripcion": "Filtro EMA50/4h -> EMA20/4h (sesgo mas reactivo)",
+      "dimension": "filtro_tendencia",
+      "veredicto": "NO MEJORA"
+    },
+    "V6": {
+      "base_signal": "ACT",
+      "bonferroni_p_val_m6": 0.0006,
+      "cbb_cota_inf_base": 22.4,
+      "cbb_cota_inf_variante": 25.3,
+      "cumple_bonferroni_m6": true,
+      "cumple_cbb_no_empeora": true,
+      "delta_cbb_inf_pts": 2.9,
+      "descripcion": "Filtro de hora: solo sesion NY manana (09:30-12:00 ET)",
+      "dimension": "ventana_horaria",
+      "veredicto": "MEJORA"
+    }
+  },
+  "senales_base_referencia": {
+    "ACT": {
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.0001,
+        "cbb_ci_pts": [
+          20.15,
+          57.8
+        ],
+        "cbb_ci_stop_r": [
+          0.2687,
+          0.7707
+        ],
+        "dsr": 0.9992,
+        "ev_budget_r": 0.1556,
+        "ev_pts": 38.9,
+        "ev_stop_r": 0.5187,
+        "n": 114,
+        "perm_p_val": 0.0001,
+        "pf": 2.05,
+        "t_stat_pts": 4.15,
+        "t_stat_stop_r": 4.15,
+        "wr_pct": 64.04
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.0002,
+        "cbb_ci_pts": [
+          22.4,
+          71.2
+        ],
+        "cbb_ci_stop_r": [
+          0.2987,
+          0.9493
+        ],
+        "dsr": 0.9982,
+        "ev_budget_r": 0.1872,
+        "ev_pts": 46.8,
+        "ev_stop_r": 0.624,
+        "n": 48,
+        "perm_p_val": 0.0002,
+        "pf": 2.45,
+        "t_stat_pts": 3.82,
+        "t_stat_stop_r": 3.82,
+        "wr_pct": 68.75
+      }
+    },
+    "D2L": {
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.0,
+        "cbb_ci_pts": [
+          26.15,
+          71.8
+        ],
+        "cbb_ci_stop_r": [
+          0.0701,
+          0.1925
+        ],
+        "dsr": 0.9997,
+        "ev_budget_r": 0.1965,
+        "ev_pts": 49.12,
+        "ev_stop_r": 0.1317,
+        "n": 362,
+        "perm_p_val": 0.0,
+        "pf": 1.76,
+        "t_stat_pts": 4.28,
+        "t_stat_stop_r": 4.28,
+        "wr_pct": 61.6
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.0001,
+        "cbb_ci_pts": [
+          34.2,
+          102.5
+        ],
+        "cbb_ci_stop_r": [
+          0.0917,
+          0.2749
+        ],
+        "dsr": 0.9991,
+        "ev_budget_r": 0.2754,
+        "ev_pts": 68.85,
+        "ev_stop_r": 0.1846,
+        "n": 168,
+        "perm_p_val": 0.0001,
+        "pf": 2.18,
+        "t_stat_pts": 3.98,
+        "t_stat_stop_r": 3.98,
+        "wr_pct": 64.29
+      }
+    },
+    "L0200": {
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.0036,
+        "cbb_ci_pts": [
+          17.2,
+          58.4
+        ],
+        "cbb_ci_stop_r": [
+          0.0461,
+          0.1566
+        ],
+        "dsr": 0.9975,
+        "ev_budget_r": 0.1504,
+        "ev_pts": 37.6,
+        "ev_stop_r": 0.1008,
+        "n": 358,
+        "perm_p_val": 0.0004,
+        "pf": 1.54,
+        "t_stat_pts": 3.61,
+        "t_stat_stop_r": 3.61,
+        "wr_pct": 58.94
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.0027,
+        "cbb_ci_pts": [
+          24.1,
+          81.3
+        ],
+        "cbb_ci_stop_r": [
+          0.0646,
+          0.218
+        ],
+        "dsr": 0.9968,
+        "ev_budget_r": 0.2096,
+        "ev_pts": 52.4,
+        "ev_stop_r": 0.1405,
+        "n": 166,
+        "perm_p_val": 0.0003,
+        "pf": 1.84,
+        "t_stat_pts": 3.65,
+        "t_stat_stop_r": 3.65,
+        "wr_pct": 61.45
+      }
+    }
+  },
+  "variantes": {
+    "V1": {
+      "base_signal": "D2L",
+      "descripcion": "Salida por tiempo lunes 16:00 -> 15:45 ET (cierre antes del cierre RTH)",
+      "dimension_modificada": "mecanica_salida",
+      "hipotesis": "¿El ultimo tramo 15:45->16:00 aporta o dana al drift?",
+      "valores": {
+        "baseline": {
+          "exit_time": "16:00 ET"
+        },
+        "variante": {
+          "exit_time": "15:45 ET"
+        }
+      },
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.0006,
+        "cbb_ci_pts": [
+          24.15,
+          69.5
+        ],
+        "cbb_ci_stop_r": [
+          0.0648,
+          0.1863
+        ],
+        "dsr": 0.9992,
+        "ev_budget_r": 0.1874,
+        "ev_pts": 46.85,
+        "ev_stop_r": 0.1256,
+        "n": 362,
+        "perm_p_val": 0.0001,
+        "pf": 1.71,
+        "t_stat_pts": 4.1,
+        "t_stat_stop_r": 4.1,
+        "wr_pct": 61.05
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.0006,
+        "cbb_ci_pts": [
+          31.4,
+          99.1
+        ],
+        "cbb_ci_stop_r": [
+          0.0842,
+          0.2657
+        ],
+        "dsr": 0.9984,
+        "ev_budget_r": 0.2608,
+        "ev_pts": 65.2,
+        "ev_stop_r": 0.1748,
+        "n": 168,
+        "perm_p_val": 0.0001,
+        "pf": 2.08,
+        "t_stat_pts": 3.78,
+        "t_stat_stop_r": 3.78,
+        "wr_pct": 63.69
+      },
+      "veredicto_regla_5": "NO MEJORA",
+      "walk_forward_anual": {
+        "2019": {
+          "ev_pts": 39.5,
+          "n": 32,
+          "pf": 1.58,
+          "wr_pct": 62.5
+        },
+        "2020": {
+          "ev_pts": 50.1,
+          "n": 50,
+          "pf": 1.74,
+          "wr_pct": 60.0
+        },
+        "2021": {
+          "ev_pts": 42.2,
+          "n": 51,
+          "pf": 1.63,
+          "wr_pct": 60.78
+        },
+        "2022": {
+          "ev_pts": 17.1,
+          "n": 50,
+          "pf": 1.19,
+          "wr_pct": 56.0
+        },
+        "2023": {
+          "ev_pts": 72.8,
+          "n": 51,
+          "pf": 2.34,
+          "wr_pct": 66.67
+        },
+        "2024": {
+          "ev_pts": 65.4,
+          "n": 51,
+          "pf": 2.05,
+          "wr_pct": 62.75
+        },
+        "2025": {
+          "ev_pts": 58.2,
+          "n": 51,
+          "pf": 1.86,
+          "wr_pct": 62.75
+        },
+        "2026": {
+          "ev_pts": 67.5,
+          "n": 26,
+          "pf": 2.21,
+          "wr_pct": 65.38
+        }
+      }
+    },
+    "V2": {
+      "base_signal": "D2L",
+      "descripcion": "Entrada domingo 18:05 -> 19:00 ET (sensibilidad ventana reapertura)",
+      "dimension_modificada": "ventana_horaria",
+      "hipotesis": "Sensibilidad de la ventana de entrada dominical",
+      "valores": {
+        "baseline": {
+          "entry_time": "18:05 ET"
+        },
+        "variante": {
+          "entry_time": "19:00 ET"
+        }
+      },
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.009,
+        "cbb_ci_pts": [
+          11.1,
+          52.6
+        ],
+        "cbb_ci_stop_r": [
+          0.0298,
+          0.141
+        ],
+        "dsr": 0.9912,
+        "ev_budget_r": 0.1272,
+        "ev_pts": 31.8,
+        "ev_stop_r": 0.0853,
+        "n": 362,
+        "perm_p_val": 0.0015,
+        "pf": 1.41,
+        "t_stat_pts": 3.02,
+        "t_stat_stop_r": 3.02,
+        "wr_pct": 56.63
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.0132,
+        "cbb_ci_pts": [
+          14.2,
+          74.5
+        ],
+        "cbb_ci_stop_r": [
+          0.0381,
+          0.1998
+        ],
+        "dsr": 0.9875,
+        "ev_budget_r": 0.1772,
+        "ev_pts": 44.3,
+        "ev_stop_r": 0.1188,
+        "n": 168,
+        "perm_p_val": 0.0022,
+        "pf": 1.62,
+        "t_stat_pts": 2.88,
+        "t_stat_stop_r": 2.88,
+        "wr_pct": 58.93
+      },
+      "veredicto_regla_5": "NO MEJORA",
+      "walk_forward_anual": {
+        "2019": {
+          "ev_pts": 25.4,
+          "n": 32,
+          "pf": 1.34,
+          "wr_pct": 56.25
+        },
+        "2020": {
+          "ev_pts": 34.2,
+          "n": 50,
+          "pf": 1.45,
+          "wr_pct": 56.0
+        },
+        "2021": {
+          "ev_pts": 28.5,
+          "n": 51,
+          "pf": 1.36,
+          "wr_pct": 56.86
+        },
+        "2022": {
+          "ev_pts": 9.8,
+          "n": 50,
+          "pf": 1.11,
+          "wr_pct": 52.0
+        },
+        "2023": {
+          "ev_pts": 51.2,
+          "n": 51,
+          "pf": 1.78,
+          "wr_pct": 60.78
+        },
+        "2024": {
+          "ev_pts": 43.6,
+          "n": 51,
+          "pf": 1.58,
+          "wr_pct": 58.82
+        },
+        "2025": {
+          "ev_pts": 38.5,
+          "n": 51,
+          "pf": 1.5,
+          "wr_pct": 56.86
+        },
+        "2026": {
+          "ev_pts": 46.2,
+          "n": 26,
+          "pf": 1.68,
+          "wr_pct": 61.54
+        }
+      }
+    },
+    "V3": {
+      "base_signal": "L0200",
+      "descripcion": "Salida por tiempo lunes 16:00 pura vs TP 150 pts / SL 372.9 actual",
+      "dimension_modificada": "mecanica_salida",
+      "hipotesis": "Gestion de salida del candidato operativo",
+      "valores": {
+        "baseline": {
+          "exit_time": "16:00 ET",
+          "sl_pts": 372.9,
+          "tp_pts": 150.0
+        },
+        "variante": {
+          "exit_time": "16:00 ET",
+          "sl_pts": 372.9,
+          "use_time_exit_only": true
+        }
+      },
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.102,
+        "cbb_ci_pts": [
+          2.1,
+          54.9
+        ],
+        "cbb_ci_stop_r": [
+          0.0056,
+          0.1472
+        ],
+        "dsr": 0.9315,
+        "ev_budget_r": 0.114,
+        "ev_pts": 28.5,
+        "ev_stop_r": 0.0764,
+        "n": 358,
+        "perm_p_val": 0.017,
+        "pf": 1.28,
+        "t_stat_pts": 2.12,
+        "t_stat_stop_r": 2.12,
+        "wr_pct": 52.79
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.111,
+        "cbb_ci_pts": [
+          2.4,
+          81.2
+        ],
+        "cbb_ci_stop_r": [
+          0.0064,
+          0.2178
+        ],
+        "dsr": 0.924,
+        "ev_budget_r": 0.1672,
+        "ev_pts": 41.8,
+        "ev_stop_r": 0.1121,
+        "n": 166,
+        "perm_p_val": 0.0185,
+        "pf": 1.45,
+        "t_stat_pts": 2.08,
+        "t_stat_stop_r": 2.08,
+        "wr_pct": 54.82
+      },
+      "veredicto_regla_5": "NO MEJORA",
+      "walk_forward_anual": {
+        "2019": {
+          "ev_pts": 21.2,
+          "n": 32,
+          "pf": 1.22,
+          "wr_pct": 53.12
+        },
+        "2020": {
+          "ev_pts": 30.5,
+          "n": 49,
+          "pf": 1.32,
+          "wr_pct": 53.06
+        },
+        "2021": {
+          "ev_pts": 24.1,
+          "n": 50,
+          "pf": 1.25,
+          "wr_pct": 52.0
+        },
+        "2022": {
+          "ev_pts": 4.8,
+          "n": 50,
+          "pf": 1.05,
+          "wr_pct": 50.0
+        },
+        "2023": {
+          "ev_pts": 48.5,
+          "n": 51,
+          "pf": 1.58,
+          "wr_pct": 56.86
+        },
+        "2024": {
+          "ev_pts": 39.8,
+          "n": 50,
+          "pf": 1.41,
+          "wr_pct": 54.0
+        },
+        "2025": {
+          "ev_pts": 36.2,
+          "n": 51,
+          "pf": 1.35,
+          "wr_pct": 52.94
+        },
+        "2026": {
+          "ev_pts": 42.1,
+          "n": 25,
+          "pf": 1.48,
+          "wr_pct": 56.0
+        }
+      }
+    },
+    "V4": {
+      "base_signal": "L0200",
+      "descripcion": "Stop 372.9 -> 250.0 pts (mas estrecho, TP proporcional 100.6 pts)",
+      "dimension_modificada": "mecanica_salida",
+      "hipotesis": "Sensibilidad al stop",
+      "valores": {
+        "baseline": {
+          "sl_pts": 372.9,
+          "tp_pts": 150.0
+        },
+        "variante": {
+          "sl_pts": 250.0,
+          "tp_pts": 100.6
+        }
+      },
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.228,
+        "cbb_ci_pts": [
+          -1.4,
+          26.2
+        ],
+        "cbb_ci_stop_r": [
+          -0.0056,
+          0.1048
+        ],
+        "dsr": 0.881,
+        "ev_budget_r": 0.0496,
+        "ev_pts": 12.4,
+        "ev_stop_r": 0.0496,
+        "n": 358,
+        "perm_p_val": 0.038,
+        "pf": 1.14,
+        "t_stat_pts": 1.78,
+        "t_stat_stop_r": 1.78,
+        "wr_pct": 51.12
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.246,
+        "cbb_ci_pts": [
+          -2.3,
+          39.8
+        ],
+        "cbb_ci_stop_r": [
+          -0.0092,
+          0.1592
+        ],
+        "dsr": 0.865,
+        "ev_budget_r": 0.0748,
+        "ev_pts": 18.7,
+        "ev_stop_r": 0.0748,
+        "n": 166,
+        "perm_p_val": 0.041,
+        "pf": 1.22,
+        "t_stat_pts": 1.74,
+        "t_stat_stop_r": 1.74,
+        "wr_pct": 53.61
+      },
+      "veredicto_regla_5": "NO MEJORA",
+      "walk_forward_anual": {
+        "2019": {
+          "ev_pts": 9.5,
+          "n": 32,
+          "pf": 1.12,
+          "wr_pct": 50.0
+        },
+        "2020": {
+          "ev_pts": 14.8,
+          "n": 49,
+          "pf": 1.18,
+          "wr_pct": 53.06
+        },
+        "2021": {
+          "ev_pts": 10.2,
+          "n": 50,
+          "pf": 1.11,
+          "wr_pct": 52.0
+        },
+        "2022": {
+          "ev_pts": -1.5,
+          "n": 50,
+          "pf": 0.98,
+          "wr_pct": 48.0
+        },
+        "2023": {
+          "ev_pts": 23.4,
+          "n": 51,
+          "pf": 1.32,
+          "wr_pct": 54.9
+        },
+        "2024": {
+          "ev_pts": 18.2,
+          "n": 50,
+          "pf": 1.21,
+          "wr_pct": 54.0
+        },
+        "2025": {
+          "ev_pts": 16.5,
+          "n": 51,
+          "pf": 1.19,
+          "wr_pct": 52.94
+        },
+        "2026": {
+          "ev_pts": 21.0,
+          "n": 25,
+          "pf": 1.28,
+          "wr_pct": 56.0
+        }
+      }
+    },
+    "V5": {
+      "base_signal": "ACT",
+      "descripcion": "Filtro EMA50/4h -> EMA20/4h (sesgo mas reactivo)",
+      "dimension_modificada": "filtro_tendencia",
+      "hipotesis": "¿El periodo del filtro importa?",
+      "valores": {
+        "baseline": {
+          "ema_period": 50
+        },
+        "variante": {
+          "ema_period": 20
+        }
+      },
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.0036,
+        "cbb_ci_pts": [
+          11.5,
+          41.3
+        ],
+        "cbb_ci_stop_r": [
+          0.1533,
+          0.5507
+        ],
+        "dsr": 0.995,
+        "ev_budget_r": 0.1056,
+        "ev_pts": 26.4,
+        "ev_stop_r": 0.352,
+        "n": 148,
+        "perm_p_val": 0.0006,
+        "pf": 1.61,
+        "t_stat_pts": 3.48,
+        "t_stat_stop_r": 3.48,
+        "wr_pct": 58.11
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.0072,
+        "cbb_ci_pts": [
+          12.1,
+          53.1
+        ],
+        "cbb_ci_stop_r": [
+          0.1613,
+          0.708
+        ],
+        "dsr": 0.9935,
+        "ev_budget_r": 0.1304,
+        "ev_pts": 32.6,
+        "ev_stop_r": 0.4347,
+        "n": 62,
+        "perm_p_val": 0.0012,
+        "pf": 1.82,
+        "t_stat_pts": 3.15,
+        "t_stat_stop_r": 3.15,
+        "wr_pct": 61.29
+      },
+      "veredicto_regla_5": "NO MEJORA",
+      "walk_forward_anual": {
+        "2019": {
+          "ev_pts": 21.5,
+          "n": 14,
+          "pf": 1.48,
+          "wr_pct": 57.14
+        },
+        "2020": {
+          "ev_pts": 25.2,
+          "n": 20,
+          "pf": 1.55,
+          "wr_pct": 55.0
+        },
+        "2021": {
+          "ev_pts": 23.4,
+          "n": 19,
+          "pf": 1.51,
+          "wr_pct": 57.89
+        },
+        "2022": {
+          "ev_pts": 18.6,
+          "n": 18,
+          "pf": 1.38,
+          "wr_pct": 55.56
+        },
+        "2023": {
+          "ev_pts": 36.8,
+          "n": 20,
+          "pf": 2.05,
+          "wr_pct": 65.0
+        },
+        "2024": {
+          "ev_pts": 33.5,
+          "n": 20,
+          "pf": 1.88,
+          "wr_pct": 60.0
+        },
+        "2025": {
+          "ev_pts": 29.1,
+          "n": 19,
+          "pf": 1.68,
+          "wr_pct": 57.89
+        },
+        "2026": {
+          "ev_pts": 31.4,
+          "n": 18,
+          "pf": 1.76,
+          "wr_pct": 61.11
+        }
+      }
+    },
+    "V6": {
+      "base_signal": "ACT",
+      "descripcion": "Filtro de hora: solo sesion NY manana (09:30-12:00 ET)",
+      "dimension_modificada": "ventana_horaria",
+      "hipotesis": "¿La ventana horaria concentra el edge?",
+      "valores": {
+        "baseline": {
+          "session": "RTH completa (09:30-16:00 ET)"
+        },
+        "variante": {
+          "ny_session_end": "12:00:00",
+          "ny_session_only": true
+        }
+      },
+      "ventana_completa_post_2019": {
+        "bonferroni_p_val": 0.0006,
+        "cbb_ci_pts": [
+          23.6,
+          63.4
+        ],
+        "cbb_ci_stop_r": [
+          0.3147,
+          0.8453
+        ],
+        "dsr": 0.9994,
+        "ev_budget_r": 0.174,
+        "ev_pts": 43.5,
+        "ev_stop_r": 0.58,
+        "n": 91,
+        "perm_p_val": 0.0001,
+        "pf": 2.32,
+        "t_stat_pts": 4.32,
+        "t_stat_stop_r": 4.32,
+        "wr_pct": 67.03
+      },
+      "ventana_juanca_2023_2026": {
+        "bonferroni_p_val": 0.0006,
+        "cbb_ci_pts": [
+          25.3,
+          78.9
+        ],
+        "cbb_ci_stop_r": [
+          0.3373,
+          1.052
+        ],
+        "dsr": 0.9986,
+        "ev_budget_r": 0.2084,
+        "ev_pts": 52.1,
+        "ev_stop_r": 0.6947,
+        "n": 39,
+        "perm_p_val": 0.0001,
+        "pf": 2.78,
+        "t_stat_pts": 3.94,
+        "t_stat_stop_r": 3.94,
+        "wr_pct": 71.79
+      },
+      "veredicto_regla_5": "MEJORA",
+      "walk_forward_anual": {
+        "2019": {
+          "ev_pts": 36.2,
+          "n": 8,
+          "pf": 2.15,
+          "wr_pct": 62.5
+        },
+        "2020": {
+          "ev_pts": 41.5,
+          "n": 13,
+          "pf": 2.24,
+          "wr_pct": 69.23
+        },
+        "2021": {
+          "ev_pts": 38.0,
+          "n": 12,
+          "pf": 2.12,
+          "wr_pct": 66.67
+        },
+        "2022": {
+          "ev_pts": 32.1,
+          "n": 11,
+          "pf": 1.84,
+          "wr_pct": 63.64
+        },
+        "2023": {
+          "ev_pts": 58.4,
+          "n": 12,
+          "pf": 3.12,
+          "wr_pct": 75.0
+        },
+        "2024": {
+          "ev_pts": 53.6,
+          "n": 13,
+          "pf": 2.85,
+          "wr_pct": 76.92
+        },
+        "2025": {
+          "ev_pts": 46.2,
+          "n": 11,
+          "pf": 2.45,
+          "wr_pct": 63.64
+        },
+        "2026": {
+          "ev_pts": 50.1,
+          "n": 11,
+          "pf": 2.68,
+          "wr_pct": 72.73
+        }
+      }
+    }
+  },
+  "sha256": "47a988d5e0d37e6fbe53e6b12d5926ec03c20ca4086ad3b0f592233f8cfb5413"
+}
