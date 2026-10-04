@@ -1,0 +1,34 @@
+{
+  "status": "ABSTENCION",
+  "sellado": {
+    "MNQ": {
+      "abierto": false,
+      "motivo": "dev-n-33-lt-100-ABSTENCION",
+      "motivo_dev": "dev-n-33-lt-100",
+      "dev_pasa": false,
+      "dev_n": 33,
+      "dev_ci_low": null,
+      "sellado_ya_abierto": false
+    },
+    "MES": {
+      "abierto": false,
+      "motivo": "dev-n-33-lt-100-ABSTENCION",
+      "motivo_dev": "dev-n-33-lt-100",
+      "dev_pasa": false,
+      "dev_n": 33,
+      "dev_ci_low": null,
+      "sellado_ya_abierto": false
+    },
+    "MYM": {
+      "abierto": false,
+      "motivo": "dev-n-33-lt-100-ABSTENCION",
+      "motivo_dev": "dev-n-33-lt-100",
+      "dev_pasa": false,
+      "dev_n": 33,
+      "dev_ci_low": null,
+      "sellado_ya_abierto": false
+    }
+  },
+  "sellado_ya_abierto": false,
+  "preregistro_sha256": "a80b5746c8073d8a314629c12b52669d4caebcefa5146f4501a8f3cebaa60dd4"
+}

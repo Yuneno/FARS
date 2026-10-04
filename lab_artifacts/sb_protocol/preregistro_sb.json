@@ -1,0 +1,79 @@
+{
+  "block_id": "SB",
+  "title": "Strategy B (nq-strategy-b-bot) como generador externo de senales — medicion desde cero sobre MNQ",
+  "status": "FROZEN — reglas y parametros congelados ANTES de la evaluacion final (2026-09-28)",
+  "created_utc": "2026-09-28T14:20:00Z",
+  "purpose": "Probar si una estrategia publica puede servir como generador de trades externo para FARS (FARS no genera senales: consume ledgers). NO es una validacion de rentabilidad del autor.",
+
+  "source": {
+    "repo": "github.com/prashanthaitha24/nq-strategy-b-bot",
+    "commit": "bc199e7",
+    "license": "MIT",
+    "author_claims": "432 trades 2023-01..2026-05, WR 53.5%, PF ~2.3, net +$17,187, maxDD $786 (1 MNQ). AFIRMACIONES, no evidencia. El repo NO reproduce esos numeros: faltan signals/fvg.py y analysis/atb_refinement_backtest.py, load_data() busca nq_extended_5min.csv / nq_7mo_5min.csv (no el dataset publicado) y trae 3 titulares contradictorios (+17,187 / +16,468 / +22,900).",
+    "rules_transcribed_from": "analysis/ict_fvg_backtest.py:210-350 (run_strategy_b) + analysis/smc_breakout_backtest.py:41-45 (constantes)",
+    "reproduction_status": "IMPOSIBLE sin modificar el repo (2 modulos ausentes). Reportado, no parcheado."
+  },
+
+  "selection_caveat": "ESTA ESTRATEGIA SE SELECCIONO TRAS VER LOS RESULTADOS PUBLICADOS DEL AUTOR (2023-2026). Por tanto 2010-2022 no es una prueba completamente independiente: hay sesgo de seleccion del generador. Es evidencia fuera de SU muestra publicada, no evidencia sin seleccion.",
+
+  "rules": {
+    "direction": "long-only (configuracion desplegada por el autor) + variante both-sides como sub-analisis",
+    "setup": "FVG alcista 5m (gap >= 3 pts) contenido en un FVG alcista 15m activo (buffer 5 pts al tope); la barra 5m mete el low dentro del FVG 5m (bottom <= low <= top) y cierra por encima del tope del FVG 5m",
+    "entry": "market al open de la SIGUIENTE barra 5m + slippage de entrada",
+    "stop": "fondo del FVG 5m - 2.0 pts (long); riesgo = entrada - stop",
+    "target": "entrada + 2.0 * riesgo",
+    "exit": "primera barra posterior a la de fill que toque SL o TP; SL gana si ambos se tocan en la misma vela (conservador); salida forzada al open de la primera barra >= 15:45 ET; si no, cierre de la ultima barra RTH del dia",
+    "windows": {"signal_bar_before": "12:00 ET", "hard_exit": "15:45 ET", "fvg5_window": "06:00-16:00 ET (como el autor)", "max_trades_day": 1},
+    "fvg_ages": {"fvg5": "24 barras x 300 s", "fvg15": "96 barras x 900 s"},
+    "mitigation": "check simplificado del autor: FVG muerto si el precio actual esta en el lado equivocado de su mid",
+    "min_gap_pts": 3.0,
+    "target_R": 2.0,
+    "stop_buffer_pts": 2.0
+  },
+
+  "fill_semantics": {
+    "fillbar_mode_autor": "ni SL ni TP se evaluan en la vela de fill (walk desde j+2) — reproduccion del autor",
+    "fillbar_mode_a1": "en la vela de fill SOLO cuenta SL; TP desde la vela siguiente (regla A1 de FARS)",
+    "same_bar_sl_tp": "conservador: gana SL",
+    "gap_stop": "si la vela abre a traves del stop, fill al open (peor que el precio del stop)",
+    "gap_target": "si la vela abre mas alla del target, se cobra el target (conservador, sin bono de gap)"
+  },
+
+  "costs": {
+    "autor": {"comision_usd_rt": 1.18, "comision_pts": 0.59, "slip_entry_pts": 0.25, "slip_exit_pts": 0.0, "note": "para comparar con las afirmaciones del autor"},
+    "fars_realista": {"comision_usd_rt": 1.24, "comision_pts": 0.62, "slip_entry_pts": 0.25, "slip_exit_pts": 0.25, "note": "escenario decisorio: 0.62 USD/side + 0.25 pt en entrada y en salidas no-target"},
+    "missing": "sin modelo de slippage por liquidez ni de impacto de volumen; el MNQ micro puede tener fills peores en barras extremas. Declarado."
+  },
+
+  "metrics_definitions": {
+    "r_result": "(PnL neto en puntos MNQ) / (riesgo en puntos = |entrada_fill - stop|). PnL neto = movimiento - comision_pts - slip_de_salida(si aplica). El slippage de entrada YA va en el precio de entrada, no se suma otra vez.",
+    "E_R": "media aritmetica de r_result sobre los trades del periodo",
+    "DD": "maximo drawdown de la curva de PnL neto acumulado (USD y en R), con ancla en cero",
+    "win_rate": "fraccion de trades con PnL neto > 0",
+    "profit_factor": "suma de ganancias netas / suma de perdidas netas (USD)"
+  },
+
+  "evaluation_plan": {
+    "instruments": ["MNQ (unico; los buffers fijos en puntos estan calibrados a escala NQ — no transfieren a MES/MGC)"],
+    "data": "databento/MNQ_M5.csv del zip canonico de FARS; sha256 registrado antes de leer",
+    "periods_reported_separately": {
+      "2010-2022": "fuera de la muestra publicada del autor (con la salvedad de seleccion del generador)",
+      "2023-2026": "periodo publicado por el autor — NO cuenta como validacion independiente"
+    },
+    "variants": ["autor/long_only/autor", "autor/long_only/a1", "fars_realista/long_only/a1 (decisorio)", "fars_realista/long_only/autor", "y las 4 equivalentes both-sides como sub-analisis"],
+    "primary": "fars_realista_long_only_a1 (semantica FARS, fill-bar A1) — el resto es comparabilidad o sub-analisis",
+    "no_tuning": "cero ajuste de parametros; todos los valores vienen del repo del autor y se congelan aqui"
+  },
+
+  "audit_fixes_applied": [
+    "B1 look-ahead FVG 15m (y 5m): un FVG solo es usable al cerrar su tercera barra (fvg_usable_at). El autor lo activaba con f.time < ts (ict_fvg_backtest.py:95) => hasta 25 min de futuro en el filtro 15m.",
+    "B2 gap-stop: fill al open cuando la vela abre a traves del stop (el autor llenaba al precio del stop, ict_fvg_backtest.py:309).",
+    "B3 costes: slippage de entrada ya esta en el precio de entrada; no se vuelve a restar como coste (el runner inicial lo contaba dos veces).",
+    "B4 FVGs entre sesiones: se exige misma sesion ET para las 3 barras del FVG (el slice 06:00-16:00 del autor creaba FVGs sobre el gap nocturno).",
+    "B5 SL y TP en la misma vela: conservador (gana SL), fijado por test."
+  ],
+
+  "tests": "lab_artifacts/sb_protocol/test_sb.py (T1-T8: fill-bar, SL+TP misma vela, gap-stop, gap-target, look-ahead 5m/15m, costes, determinismo) — 8/8 verdes antes de congelar",
+
+  "forbidden": "sin tocar src/ ni specs de FARS Core; sin commit/merge/push; sin optimizar parametros; sin presentar los resultados del autor como evidencia"
+}

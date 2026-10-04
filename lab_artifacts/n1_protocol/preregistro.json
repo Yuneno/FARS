@@ -1,0 +1,93 @@
+{
+  "block_id": "N1",
+  "title": "N1 — Familia nueva: NY 9:00-9:30 sweep-reversal (A) y OR-breakout x regime (C)",
+  "status": "FROZEN_CANDIDATE — congelado tras co-auditoria Muse 2026-09-27 (plan critic, ultra); pendiente OK de Ricardo para correr",
+  "created_utc": "2026-09-28T02:00:00Z",
+  "attribution": {
+    "candidate_A": "Mecanismo del consenso de 3 lentes de la mega auditoria de la org de Juanca (E:/FARS-LAB/jita_org_review/LENS1_MUSE_LOGICA.md): 'rango 9:00-9:30 NY -> barrido y reversal'. Numeros de la org NO evidencia (pre-fill evaluation, leakage, p-hacking). Medimos desde cero.",
+    "candidate_C": "Propuesta de Claude (2a opinion 2026-09-27, Fase 3). Previa en contra declarada: breakouts crudos muertos en M9 (MOM-BREAK, VOL-BREAK); ORB archivada en la org. Solo la interaccion regime x breakout esta viva."
+  },
+  "doctrine": {
+    "semantics": "post-fix fill-bar: fills next-open + slip + tick; regla A1 solo SL en vela de fill; gap-stop al open; gap-entry -> rechazo (PRIORIDAD sobre gap-stop: si hay gap de entrada, no se entra; el gap-stop solo aplica a posiciones ya abiertas)",
+    "costs": {"primary": "0.62 USD/side + 0.25 pt slippage (realista)", "sensitivity": "2.0 pts RT canonico"},
+    "headline": "budget-R + stop-R",
+    "gates": "G1-G5 (paridad senal, mapeo trade->senal, determinismo, tramos sellados, CBB fail-fast)",
+    "control": "aleatorio pareado: mismo N y misma distribucion de R que la candidata; semilla control_seed; construction = permutacion de signos de R sobre mismos timestamps de entrada",
+    "no_src_changes": true
+  },
+  "data": {
+    "canonical": "dataset MNQ M5 del plan C1 (misma fuente que lab_artifacts/m8_protocol/metrics_MNQ_*); sha256 del archivo exacto se registra en manifest.json ANTES de la primera lectura por el runner",
+    "range": "2019-2025 (todo lo disponible del canonico)",
+    "folds": "plan C1 (folds 0..7) + tramo sellado final de 6 meses (UNA sola corrida, se abre al final)",
+    "markets": {"confirmatory": ["MNQ"], "exploratory": ["MES", "MYM", "MGC"], "note": "MNQ unico confirmatorio (critica C6 de Muse: no mezclar microestructuras como confirmacion); los otros 3 son exploratorios y NO cuentan como afirmacion"}
+  },
+  "candidate_A": {
+    "mechanism": "El rango de 9:00-9:30 ET acumula liquidez en sus extremos; el barrido de un extremo SIN aceptacion seguido de rechazo predice reversión hacia el interior/lado opuesto del rango.",
+    "hypothesis_H_A": "operar el reversal tras sweep+rechazo produce E[R] > 0 neto de costes por pierna en MNQ M5",
+    "rules": {
+      "range": "high/low de barras M5 9:00-9:30 ET (convencion half-open [09:00,09:30) ET), solo barras cerradas, minimo 5 barras validas; si menos, dia no operable (declarado)",
+      "sweep": "cierre de barra que excede el extremo del rango en profundidad >= k_d * ATR(14), k_d = 0.10 (PIN)",
+      "rejection_entry": "la barra siguiente al sweep cierra de vuelta dentro del rango -> entrada market al siguiente open, lado contrario al barrido; ventana de rechazo: antes de las 11:00 ET; maximo UNA entrada por dia",
+      "stop": "extremo del barrido + k_stop * ATR(14), k_stop = 0.25 (PIN); sin target R fijo",
+      "exit_primary": "cierre market en la primera barra con timestamp >= 12:00 ET (salida TEMPORAL unica)",
+      "exit_sensitivity": "N barras = 60 M5 desde entrada (sensibilidad, NO segunda primaria); variante 2R droppeada como primaria (solo sensibilidad declarada)"
+    },
+    "stage_1_screen": {
+      "type": "event-study (sin contabilidad de stops/salidas): retorno firmado de K=20 barras M5 post-rechazo",
+      "gate": "IC95 CBB (bootstrap causal, seed cbb_seed) del retorno medio > 0; si NO, se abstiene y NO se corre stage 2",
+      "n_min": "100 eventos; por debajo -> abstencion declarada"
+    },
+    "tests": ["H_A: E[R] neto > 0 (stage 2, escenario realista)", "Delta ablacion k_d (sweep-depth ON vs OFF) > 0"]
+  },
+  "candidate_C": {
+    "mechanism": "El breakout del rango de apertura predice continuacion solo cuando la volatilidad realizada reciente esta alta; fuera de ese regimen el breakout es ruido.",
+    "hypothesis_H_C": "(a) pendiente beta de regresion trade-R vs percentil de vol realizada > 0; (b) la variante operable (breakout solo si percentil > 50) tiene E[R] > 0 neto",
+    "rules": {
+      "range": "high/low de barras M5 9:30-10:00 ET (half-open [09:30,10:00))",
+      "breakout": "cierre mas alla del extremo del rango entre 10:00 y 11:00 ET; entrada market al siguiente open, lado del breakout; maximo UNA entrada por dia",
+      "regime": "vol realizada = desv. estandar de retornos M5 de 20 sesiones (20d PIN); percentil respecto a los ultimos 120 dias (120d PIN); SIN umbral p80 (critica S2: huele a snooping) — se testea interaccion CONTINUA (regresion) + split fijo en percentil 50",
+      "stop": "k_stop * ATR(14), k_stop = 0.25 (PIN)",
+      "exit_primary": "cierre market en la primera barra >= 12:00 ET (igual que A, critica S3)",
+      "exit_sensitivity": "N barras = 60 (sensibilidad unica)"
+    },
+    "tests": ["H_Ca: beta > 0 (regresion interaccion)", "H_Cb: E[R] neto variante percentil>50 > 0"]
+  },
+  "calendar_and_microstructure": {
+    "half_days": "se excluyen dias de sesion corta RTH (barras validas 9:30-16:00 ET < 78 -> dia no operable)",
+    "holidays": "sin datos = sin operacion; no se fabrican",
+    "dst": "todos los horarios en America/New_York con DST nativo del exchange; el runner debe anclar tz por barra, no por offset fijo",
+    "rolls": "no se abren entradas en la fecha de roll del contrato continuo (declarado en manifest al correr)",
+    "min_bars_range": 5
+  },
+  "stop_conditions": {
+    "n_min_per_candidate": "150 trades en MNQ para leer IC95; por debajo -> abstencion declarada (no conclusion)",
+    "gates": "G1-G5 deben pasar antes de leer resultados; cualquier fallo = bloque INVALIDO sin mirar metricas"
+  },
+  "test_counter": {
+    "this_block_confirmatory": 4,
+    "exploratory_not_counted": "MES/MYM/MGC (etiquetados exploratorios, sin afirmacion)",
+    "project_accumulated": ">120 comparaciones (M7-M11, Z5, H1, N1); TODO futuro positivo requiere ajuste Bonferroni/DSR antes de celebrarse"
+  },
+  "seeds": {"cbb_seed": 20260928, "control_seed": 20260929},
+  "pins_summary": {
+    "k_d": 0.10, "k_stop": 0.25, "atr": "ATR(14) Wilder, sobre barras M5 cerradas",
+    "vol_window": "20 sesiones", "vol_percentile_window": "120 dias",
+    "entry_window_A": "rechazo antes 11:00 ET", "entry_window_C": "breakout 10:00-11:00 ET",
+    "exit_primary": "primera barra >= 12:00 ET", "exit_sensitivity_bars": 60,
+    "event_study_K": 20
+  },
+  "semantic_deltas_org_to_N1": [
+    {"org": "evaluacion de senal posiblemente pre-fill (runner de jita-bot)", "N1": "evaluacion post-fill: next-open + regla A1"},
+    {"org": "sin costes por pierna en sus numeros", "N1": "0.62/side + 0.25 pt (realista) y 2.0 pts RT (sensibilidad)"},
+    {"org": "TZ ambigua en ventanas 9:00/9:30", "N1": "America/New_York anclado por barra, half-open [09:00,09:30)"},
+    {"org": "sin regla de gap declarada", "N1": "gap-entry -> rechazo con PRIORIDAD sobre gap-stop"},
+    {"org": "sweep-depth implicito/ajustable", "N1": "k_d = 0.10 fijo, ablacion ON/OFF declarada"},
+    {"org": "backtest con leakage/p-hacking documentados", "N1": "preregistro congelado + gates G1-G5 + tramos sellados + control pareado"}
+  ],
+  "implementation": {
+    "runner": "lab_artifacts/n1_protocol/run_n1.py (+ tests deterministas del bloque)",
+    "python": "E:/FARS-LAB/.venv-fars/Scripts/python.exe",
+    "writer": "Muse (encargo acotado) implementa; Codex revisa fase; Hermes verifica y corre",
+    "forbidden": "sin tocar src/, sin dependencias nuevas, sin commits sin Ricardo"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "dataset_member": "databento/MNQ_M5.csv",
+  "dataset_sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+  "bars_total": 990452,
+  "source_repo": "github.com/prashanthaitha24/nq-strategy-b-bot",
+  "source_commit": "bc199e7",
+  "license": "MIT",
+  "rules_transcribed_from": "analysis/ict_fvg_backtest.py:210-350 (run_strategy_b)",
+  "constants": {
+    "MIN_FVG_PTS": 3.0,
+    "ENTRY_CUTOFF": "12:00:00",
+    "HARD_EXIT": "15:45:00",
+    "STOP_BUFFER_PTS": 2.0,
+    "TARGET_R": 2.0,
+    "FVG15_BUFFER_PTS": 5.0,
+    "MAX_TRADES_DAY": 1,
+    "FVG5_MAX_AGE_BARS": 24,
+    "FVG15_MAX_AGE_BARS": 96
+  },
+  "audit_fixes": [
+    "B1 look-ahead FVG15 (known_at)",
+    "B2 gap-stop al open",
+    "B3 coste sin doble slippage",
+    "B4 FVG solo misma sesión",
+    "B5 SL>TP conservador en misma vela"
+  ],
+  "scenarios": {
+    "autor": {
+      "comm_pts": 0.59,
+      "slip_entry_pts": 0.25,
+      "slip_exit_pts": 0.0
+    },
+    "fars_realista": {
+      "comm_pts": 0.62,
+      "slip_entry_pts": 0.25,
+      "slip_exit_pts": 0.25
+    }
+  }
+}

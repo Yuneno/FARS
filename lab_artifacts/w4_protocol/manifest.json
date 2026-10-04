@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "title": "Manifest W4",
+    "status": "ABSTENCION",
+    "generated_at_utc": "2026-09-28T13:15:49.146880+00:00",
+    "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "preregistro_sha256": "a80b5746c8073d8a314629c12b52669d4caebcefa5146f4501a8f3cebaa60dd4",
+    "smoke_mode": false
+  },
+  "datasets": {
+    "MNQ": {
+      "member": "databento/MNQ_M5.csv",
+      "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+      "n_bars": 990452,
+      "first": "2010-06-07T00:00:00+00:00",
+      "last": "2026-09-03T23:55:00+00:00"
+    },
+    "MES": {
+      "member": "databento/MES_M5.csv",
+      "sha256": "343c94c44cee038c1965fc068b078f2cb90cd32d0d04fed3ecaf97d196003c44",
+      "n_bars": 991638,
+      "first": "2010-06-07T00:00:00+00:00",
+      "last": "2026-09-03T23:55:00+00:00"
+    },
+    "MYM": {
+      "member": "databento/MYM_M5.csv",
+      "sha256": "c3a7d21573d4acda8ebd0441aac3d2532de3f99626df7bd4188964805cc6f2bd",
+      "n_bars": 990234,
+      "first": "2010-06-07T00:00:00+00:00",
+      "last": "2026-09-03T23:55:00+00:00"
+    }
+  },
+  "zip_sha256": "c3d8ebdfbcdedeb50cc188c5f7f189348e8a820d32f60b987819e1b57e8f45f7",
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge_gap_bars": 0,
+    "warmup_bars": 500,
+    "dev_folds": "0..5",
+    "sealed_folds": "6..7",
+    "final_sealed": "ultimos-6-meses-1-corrida-al-final"
+  },
+  "aclaraciones_implementacion": [
+    "Lectura canonica de tramos sellados: dev = folds 0..5; sellado = folds 6..7 + tramo final 6 meses, abierto UNA vez al final."
+  ],
+  "pins": {
+    "target_R": 1.5,
+    "quantity": 1,
+    "headline_R": "stop-R",
+    "signal_fill_clock": "signal 09:25 ET / fill 09:30 ET / 300 s",
+    "session_slots": 78,
+    "n_min": 100,
+    "cbb_seed": 20260930,
+    "control_seed": 20261001,
+    "ticks": {
+      "MNQ": 0.25,
+      "MES": 0.25,
+      "MYM": 1.0
+    },
+    "signal_min": 565,
+    "fill_min": 570,
+    "bar_seconds": 300
+  },
+  "seeds": {
+    "cbb_seed": 20260930,
+    "control_seed": 20261001
+  },
+  "roll_dates": {
+    "MNQ": "no-provistas",
+    "MES": "no-provistas",
+    "MYM": "no-provistas"
+  },
+  "cost_scenarios": {
+    "realista": {
+      "commission_per_side": 0.62,
+      "slip_pts": 0.25
+    },
+    "sensibilidad": {
+      "commission_per_side_pts": 1.0,
+      "slip_pts": 0.0
+    }
+  },
+  "artifacts_sha256": {
+    "metrics_MES_W4.json": "eaf54d0b8b588574fb81ab10370dc01aab0b0138caee52b506f2c77d44c8a759",
+    "metrics_MNQ_W4.json": "d2c4dd4b447714f4c52193e48ac3758ce3e3bbd42ac99e6fdf613ae128896b2a",
+    "metrics_MYM_W4.json": "7ae816fa4e7a1d36345b50f0d03e12f5d221281fb2bcb23906922dc2acc49c0d"
+  }
+}

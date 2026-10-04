@@ -1,0 +1,99 @@
+{
+  "block_id": "W4",
+  "title": "W4 — Candidata B: Wednesday Weekly Cycle (medicion de la hipotesis)",
+  "status": "FROZEN_CANDIDATE — congelado tras co-auditoria Muse 2026-09-28 (plan critic, meta/ultra) y resolucion Hermes (PASO2_RESOLUCION_W4.md); pendiente OK de Ricardo para correr",
+  "created_utc": "2026-09-28T04:45:00Z",
+  "attribution": {
+    "candidate_B": "Wednesday Model del snapshot jita-bot-review (org de Juanca), formalizado para FARS en FARS_WEDNESDAY_CONTRATO_CAUSAL.md (W0, 2026-09-22). Numeros de la org NO son evidencia (pre-fill evaluation, leakage, p-hacking documentados). Medimos desde cero. Infraestructura previa ya en main: W1 detector (349cda0), W2 adapter RTH (986bfd6), W3 caracterizacion de ejecucion (d0e90a9). W4 = primera MEDICION de la hipotesis."
+  },
+  "doctrine": {
+    "semantics": "post-fix fill-bar: fills next-open + slip + tick; regla A1 solo SL en vela de fill; gap-stop al open; gap-entry -> rechazo (PRIORIDAD sobre gap-stop)",
+    "costs": {"primary": "0.62 USD/side + 0.25 pt slippage (realista)", "sensitivity": "1.0 pt/side (=2.0 pts RT canonico), slippage 0"},
+    "headline": "stop-R (net_pnl / stop_risk_dollars) como PRIMARIO; budget-R secundario; sizing = cantidad fija 1 contrato",
+    "gates": "G1-G5 (paridad senal, mapeo trade->senal, determinismo, tramos sellados, CBB fail-fast)",
+    "control": "aleatorio pareado: mismo N y misma distribucion de |R|, permutacion de signos originales con semilla control_seed",
+    "no_src_changes": true
+  },
+  "data": {
+    "canonical": "miembros databento/<MKT>_M5.csv del zip E:/FARS-LAB/databento.zip (mismo loader que run_n1.py); sha256 del archivo exacto se registra en manifest.json ANTES de la primera lectura",
+    "range": "2019-2025 (todo lo disponible del canonico)",
+    "folds": "plan C1 (folds 0..7) + tramo sellado final de 6 meses; dev = folds 0..5; sellado = folds 6..7 + cola 6 meses (UNA sola corrida, se abre SOLO si dev pasa)",
+    "markets": {
+      "confirmatory": ["MNQ"],
+      "exploratory": ["MES", "MYM"],
+      "excluded": ["MGC: sesion 08:20-13:30 ET incompatible con salida 16:00 ET, tick 0.1, y W2 adapter es exclusivamente MNQ RTH (critica B3 de Muse)"],
+      "note": "cada mercado con su tick_size, dollar_per_point y coste propios; robustez exige IC95>0 en MNQ (test) Y >=1 de los 2 exploratorios"
+    }
+  },
+  "candidate_B": {
+    "mechanism": "El barrido de un extremo del rango del lunes por el martes, seguido de cierre de vuelta DENTRO del rango del lunes (la manipulacion es rechazada), predice expansion del miercoles en el lado opuesto al barrido.",
+    "hypothesis_H_B": "operar el ciclo Wednesday produce E[stop-R] > 0 neto de costes por pierna en MNQ M5, escenario realista, sobre folds dev (0..5) de 2019-2025",
+    "rules": {
+      "sessions": "session_date(ts, tz='America/New_York', reset_hour=17); lunes y martes = sesiones RTH completas y consecutivas de la misma semana; lookup por FECHAS EXACTAS (no 'ultimos dos resumenes'); si falta una o esta rota -> NO_SIGNAL (fail-closed); festivos: sin parches de sustitucion",
+      "session_completeness": "78 slots exactos [09:30,16:00) ET por sesion de referencia, session_basis = RTH_SESSION_BASIS identico en lunes y martes",
+      "D1": "LONG: tue_low < mon_low AND mon_low < tue_close < mon_high. SHORT: tue_high > mon_high AND mon_low < tue_close < mon_high. Igualdad (==) no cuenta como barrido ni como cierre interior. Doble sweep -> NO_SIGNAL. Sin cierre interior -> NO_SIGNAL. Sin barrido -> NO_SIGNAL.",
+      "week_dedup": "clave (iso_year, iso_week); maximo UNA entrada por semana (dedup interanual incluido; test con semana 2025-W01)",
+      "entry": "market al open de la barra 09:30 ET del miercoles; decision con la barra 09:25-09:30 ET cerrada; signal_ts=09:25 ET, fill_ts=09:30 ET, bar_interval=300 s (PIN anti-lookahead)",
+      "stop": "extremo del barrido del martes (tue_low para long, tue_high para short); margen adicional = 0; redondeo a tick del mercado con polaridad estricta stop<entry<target; colapso tras redondeo -> NO_SIGNAL",
+      "target": "1.5R nominal desde entry estimado (close de la barra 09:25-09:30 ET), semantica Alt B: target absoluto; el drift de R real por slippage/gap se mide POR TRADE (R nominal vs R efectivo: media, p5, p95, min, max) y NUNCA se corrige; se retira el claim escalar '0.006R conservador'",
+      "exit_primary": "salida temporal: primera barra con timestamp >= 16:00 ET del mismo dia de sesion (max_hold_minutes=390), ejecutada al open de esa barra sin consultar H/L/C; sliceado estilo N1: exit_idx fijado y pre-chequeado ANTES de correr; si la barra no existe -> trade NO corrido, contador 'unresolved' (reconcilia en G2), sin fill inventado y SIN reclasificar como NO_SIGNAL",
+      "entry_gap_rules": "pre-chequeo mirror_valid_levels: fill que cruza el STOP -> gap_reject; fill que cruza el TARGET -> gap_reject_beyond_target (evita TP instantaneo espurio); ambos con contador diag y sin corrida de motor",
+      "risk_telemetry": "risk_dollars por trade y elegibilidad Practice <=200 USD a 1 micro: SOLO telemetria contable, nunca filtro de senal",
+      "ablation_primary": "flip de direccion: misma D1, lado opuesto al emitido; mismo N, mismos timestamps, apareada trade a trade; falsifica 'lado opuesto al barrido'",
+      "comparators_declared": [
+        "temporal puro (sin target 1.5R): misma senal, salida temporal unica — sub-analisis de las MISMAS corridas",
+        "require_inside_close=OFF (barrido sin exigir cierre interior): sub-analisis con N por brazo + resultado en dias comunes, SIN estatus de test",
+        "escenario sensibilidad 2.0 pts RT",
+        "exploratorios MES/MYM"
+      ]
+    },
+    "tests": [
+      "H_B: E[stop-R] > 0 (MNQ, dev, realista; CBB IC95 low > 0; n >= 100)",
+      "H_B_flip: E[stop-R]_on - E[stop-R]_flip > 0 (MNQ, dev, apareada por trade)"
+    ]
+  },
+  "calendar_and_microstructure": {
+    "half_days": "early-close/festivos: sin calendario ex-ante; se detectan post-hoc por ausencia de la barra 16:00 -> 'unresolved' (limitacion declarada, critica I1)",
+    "holidays": "sin datos = sin operacion; no se fabrican",
+    "dst": "todos los horarios en America/New_York con DST nativo; anclaje tz por barra, no por offset fijo",
+    "rolls": "sin entradas en fecha de roll del contrato continuo; lista POR MERCADO via --roll-dates (declarada en manifest); lista vacia = limitacion declarada en INFORME",
+    "ticks": {"MNQ": 0.25, "MES": 0.25, "MYM": 1.0},
+    "min_n": "100 trades por mercado para publicar IC95; por debajo -> ABSTENCION declarada; si DEV (folds 0..5) tiene n < 100 -> ABSTENCION y NO se abre el sellado"
+  },
+  "gates_series_G5": {
+    "fail_fast_series": ["stop_R_dev_MNQ", "stop_R_tail_MNQ"],
+    "excluded_from_fail_fast": ["comparador_temporal_puro", "require_inside_close_OFF", "exploratorios_MES_MYM", "escenario_sensibilidad", "drift_telemetria"],
+    "note": "critica M5: G5 solo fail-fast sobre las series de las afirmaciones"
+  },
+  "test_counter": {
+    "this_block_confirmatory": 2,
+    "exploratory_not_counted": "MES/MYM (exploratorios, sin afirmacion), comparador temporal puro, require_inside_close OFF, sensibilidad 2.0 pts RT",
+    "project_accumulated": ">130 comparaciones (M7-M11, Z5, H1, N1, W4); TODO futuro positivo requiere ajuste Bonferroni/DSR antes de celebrarse"
+  },
+  "seeds": {"cbb_seed": 20260930, "control_seed": 20261001},
+  "pins_summary": {
+    "target_R": 1.5, "target_mode": "Alt B (absoluto desde entry estimado; drift medido por trade)",
+    "exit_primary": "primera barra >= 16:00 ET del dia (390 min)",
+    "quantity": 1,
+    "headline_R": "stop-R",
+    "signal_fill_clock": "signal 09:25 ET / fill 09:30 ET / 300 s",
+    "session_slots": 78,
+    "n_min": 100
+  },
+  "semantic_deltas_org_to_W4": [
+    {"org": "stop fijado con iloc[:6].min() de los primeros 30 min del miercoles (LOOKAHEAD)", "W4": "stop = extremo del barrido del martes, conocido antes de la entrada"},
+    {"org": "target dinamico post-fill con ratio 1.5R", "W4": "Alt B: target absoluto desde entry estimado; drift por trade medido y declarado"},
+    {"org": "salida 15:10 CT sin justificacion", "W4": "salida temporal 16:00 ET (cierre RTH canónico)"},
+    {"org": "filtros ad-hoc (15:10 CT, noticias, ATR absoluto)", "W4": "cero filtros; solo telemetria ATR(14) y risk_dollars"},
+    {"org": "semanas incompletas tratadas con parches", "W4": "fail-closed: lunes/martes incompletos -> NO_SIGNAL"},
+    {"org": "sin costes por pierna", "W4": "0.62/side + 0.25 pt (realista) y 2.0 pts RT (sensibilidad)"},
+    {"org": "backtest con leakage/p-hacking documentados", "W4": "preregistro congelado + gates G1-G5 + tramos sellados + control pareado + flip apareado"}
+  ],
+  "implementation": {
+    "runner": "lab_artifacts/w4_protocol/run_w4.py (+ test_w4.py deterministas del bloque)",
+    "reuse": "FORK del subconjunto auditado de lab_artifacts/n1_protocol/run_n1.py (sha fail-closed de preregistro, parse/dedup, costes, CBB/control, summarize_r, sellado dev/sellado, manifest/status, mirror_valid_levels, gates) con lista explicita de deltas; PROHIBIDO importar compute_signal_* / event-study / vol de N1",
+    "python": "E:/FARS-LAB/.venv-fars/Scripts/python.exe",
+    "writer": "Muse (encargo acotado) implementa; Codex revisa fase; Hermes verifica y corre",
+    "forbidden": "sin tocar src/, sin dependencias nuevas, sin commits sin Ricardo, sin correr el dataset completo (eso lo lanza Hermes)"
+  }
+}

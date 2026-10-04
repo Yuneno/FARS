@@ -1,0 +1,292 @@
+{
+  "metadata": {
+    "market": "MYM",
+    "status": "ABSTENCION",
+    "market_role": "exploratorio",
+    "preregistro_sha256": "f9a1a419fe96d46f072db89c97190f6cff0620cf12985c88d911b3dc98babd16",
+    "dataset_sha256": "c3a7d21573d4acda8ebd0441aac3d2532de3f99626df7bd4188964805cc6f2bd",
+    "smoke_mode": false,
+    "ran_at_utc": "2026-09-28T03:13:08.696284+00:00"
+  },
+  "market": "MYM",
+  "market_role": "exploratorio",
+  "diag": {
+    "dias_media_sesion_excluidos": 464,
+    "A_sweep_sin_rechazo": 28843,
+    "A_sin_sweep": 1338,
+    "C_vol_warmup_skip": 94,
+    "A_senal": 2252,
+    "C_sin_breakout": 402,
+    "C_senal": 1299,
+    "dias_roll_excluidos": 27
+  },
+  "gates": {
+    "G1_signal_parity": {
+      "common": 575,
+      "divergent": 0,
+      "empty_decisions": false,
+      "PASS": true
+    },
+    "G2_mapping": {
+      "unmapped_trades": 0,
+      "reconciled": true,
+      "PASS": true
+    },
+    "G3_determinism": {
+      "PASS": true,
+      "detail": "corrida-completa-todos-los-candidatos"
+    },
+    "G4_sealed": {
+      "sealed_runs": 1,
+      "expected_sealed_runs": 1,
+      "reopen_detected": false,
+      "order_violated": false,
+      "audit": [
+        {
+          "action": "skip_dev_stage1_fail",
+          "arm": "A_on"
+        },
+        {
+          "action": "skip_dev_stage1_fail",
+          "arm": "A_off"
+        },
+        {
+          "action": "open_dev",
+          "arm": "C",
+          "days": 933
+        },
+        {
+          "action": "skip_sealed_abstained",
+          "arm": "A_on"
+        },
+        {
+          "action": "skip_sealed_abstained",
+          "arm": "A_off"
+        },
+        {
+          "action": "open_sealed",
+          "arm": "C",
+          "days": 369
+        }
+      ],
+      "PASS": true
+    },
+    "G5_cbb": {
+      "status": "PASS",
+      "detail": "ok"
+    }
+  },
+  "tail": {
+    "tail_start": "2026-04-01",
+    "sealed_runs": 1,
+    "audit": [
+      {
+        "action": "skip_dev_stage1_fail",
+        "arm": "A_on"
+      },
+      {
+        "action": "skip_dev_stage1_fail",
+        "arm": "A_off"
+      },
+      {
+        "action": "open_dev",
+        "arm": "C",
+        "days": 933
+      },
+      {
+        "action": "skip_sealed_abstained",
+        "arm": "A_on"
+      },
+      {
+        "action": "skip_sealed_abstained",
+        "arm": "A_off"
+      },
+      {
+        "action": "open_sealed",
+        "arm": "C",
+        "days": 369
+      }
+    ]
+  },
+  "A": {
+    "status": "ABSTENCION",
+    "reason": "ABSTENCION-stage1(CI-no->0)",
+    "signals_dev": 434,
+    "event_study_stage1": {
+      "K_barras": 20,
+      "n_events": 434,
+      "mean_signed_pts": 0.8894,
+      "cbb_ci95": [
+        -11.0511,
+        12.7725
+      ],
+      "gate": "ABSTENCION-stage1(CI-no->0)"
+    }
+  },
+  "C": {
+    "status": "OK",
+    "signals_dev": 575,
+    "realista": {
+      "n_trades": 575,
+      "mean_budget_r": -0.0374,
+      "mean_stop_r": -0.2118,
+      "net_budget_r": -21.49,
+      "net_pnl": -10745.0,
+      "win_rate": 0.0696,
+      "profit_factor": 0.7105,
+      "max_drawdown_r": 26.9296,
+      "cbb_ci95_mean_budget_r": [
+        -0.0704,
+        -0.0022
+      ],
+      "trades_sha256": "bcb0ac67431fe3997434d2e6176bb3cc603cf50a1ec5678bd0ad393dacb3f5c5"
+    },
+    "sensibilidad": {
+      "n_trades": 575,
+      "mean_budget_r": -0.0326,
+      "mean_stop_r": -0.1628,
+      "net_budget_r": -18.73,
+      "net_pnl": -9365.0,
+      "win_rate": 0.0696,
+      "profit_factor": 0.7387,
+      "max_drawdown_r": 24.76,
+      "cbb_ci95_mean_budget_r": [
+        -0.0656,
+        0.0026
+      ],
+      "trades_sha256": "407eccfe6ee799e721c6bb0c16c9ce37bb20a97f736c48c9869fe24d8a4148f3"
+    },
+    "sens60": {
+      "n_trades": 575,
+      "mean_budget_r": -0.0313,
+      "mean_stop_r": -0.1219,
+      "net_budget_r": -17.97,
+      "net_pnl": -8985.0,
+      "win_rate": 0.0417,
+      "profit_factor": 0.7639,
+      "max_drawdown_r": 27.8684,
+      "cbb_ci95_mean_budget_r": [
+        -0.0741,
+        0.0163
+      ],
+      "trades_sha256": "56600e14aff221cd65d4d95eec3825244841024bb4df4d1732857086989647a6"
+    },
+    "regresion_interaccion": {
+      "n": 575,
+      "beta": -0.02635517745949269,
+      "se": 0.057932882055032026,
+      "t": -0.45492605450661316,
+      "p_one_sided": 0.6753326271053488,
+      "alpha": -0.02477766605421522
+    },
+    "variante_pct_gt_50": {
+      "n_trades": 251,
+      "mean_budget_r": -0.0443,
+      "cbb_ci95": [
+        -0.0973,
+        0.0171
+      ]
+    },
+    "control_pareado": {
+      "n": 575,
+      "mean": -0.1958,
+      "cbb_ci95": [
+        -0.233,
+        -0.1629
+      ],
+      "seed": 20260929
+    },
+    "gap_rejections": 0,
+    "collapsed": 0,
+    "unresolved": 0,
+    "folds": {
+      "0": {
+        "n_trades": 96,
+        "mean_budget_r": 0.0307,
+        "mean_stop_r": 0.3688,
+        "net_budget_r": 2.9492,
+        "net_pnl": 1474.6,
+        "win_rate": 0.1042,
+        "profit_factor": 1.2118,
+        "max_drawdown_r": 4.4764,
+        "cbb_ci95_mean_budget_r": null,
+        "trades_sha256": "990b3f2625ea838a26c951f699993fa664e5a511f51ccbc585d5341aeb527f44"
+      },
+      "1": {
+        "n_trades": 103,
+        "mean_budget_r": -0.0472,
+        "mean_stop_r": -0.0966,
+        "net_budget_r": -4.8644,
+        "net_pnl": -2432.2,
+        "win_rate": 0.0583,
+        "profit_factor": 0.6192,
+        "max_drawdown_r": 5.6552,
+        "cbb_ci95_mean_budget_r": null,
+        "trades_sha256": "1c18c9b555539a51abdcdaeda9cbfc81e3a98a3f712719e3c079a304ae38b6dc"
+      },
+      "2": {
+        "n_trades": 95,
+        "mean_budget_r": -0.038,
+        "mean_stop_r": -0.4702,
+        "net_budget_r": -3.606,
+        "net_pnl": -1803.0,
+        "win_rate": 0.0842,
+        "profit_factor": 0.6183,
+        "max_drawdown_r": 5.1676,
+        "cbb_ci95_mean_budget_r": null,
+        "trades_sha256": "338e5980243cf97dccaeb6807ef5c1e742b2f981f39b96a6f7a4845c5e9c49f3"
+      },
+      "3": {
+        "n_trades": 97,
+        "mean_budget_r": -0.0391,
+        "mean_stop_r": -0.1388,
+        "net_budget_r": -3.7956,
+        "net_pnl": -1897.8,
+        "win_rate": 0.0928,
+        "profit_factor": 0.6239,
+        "max_drawdown_r": 3.7956,
+        "cbb_ci95_mean_budget_r": null,
+        "trades_sha256": "aec95f30bd27230bb91d21985728371f8d904e8caec285d2503fb646bb5e2894"
+      },
+      "4": {
+        "n_trades": 92,
+        "mean_budget_r": -0.0353,
+        "mean_stop_r": -0.4492,
+        "net_budget_r": -3.2516,
+        "net_pnl": -1625.8,
+        "win_rate": 0.0435,
+        "profit_factor": 0.7361,
+        "max_drawdown_r": 7.0404,
+        "cbb_ci95_mean_budget_r": null,
+        "trades_sha256": "98172a64e61229525463e615e904425b5a86d4d5b251a9fc66636aed63171330"
+      },
+      "5": {
+        "n_trades": 92,
+        "mean_budget_r": -0.097,
+        "mean_stop_r": -0.5191,
+        "net_budget_r": -8.9216,
+        "net_pnl": -4460.8,
+        "win_rate": 0.0326,
+        "profit_factor": 0.4309,
+        "max_drawdown_r": 9.964,
+        "cbb_ci95_mean_budget_r": null,
+        "trades_sha256": "5195cbca615a80e02cdd78fa397fb29fab804f0222fb0ff9325092c040bd4161"
+      }
+    },
+    "tail": {
+      "n_trades": 218,
+      "mean_budget_r": -0.0258,
+      "mean_stop_r": -0.2146,
+      "net_budget_r": -5.6264,
+      "net_pnl": -2813.2,
+      "win_rate": 0.0872,
+      "profit_factor": 0.8344,
+      "max_drawdown_r": 12.5116,
+      "cbb_ci95_mean_budget_r": [
+        -0.0889,
+        0.0415
+      ],
+      "trades_sha256": "548657e1bf5a4154988831eeedecc5677058ef59e3e2f3e63fc9239d998d42df"
+    }
+  }
+}

@@ -1,0 +1,974 @@
+{
+  "results": {
+    "autor_long_only_autor": {
+      "n": 649,
+      "win_rate": 0.3852,
+      "expectancy_R": -0.0317,
+      "std_R": 1.4966,
+      "net_usd": 1838.18,
+      "profit_factor": 1.097,
+      "max_dd_usd": 2069.5,
+      "max_dd_R": 52.3052,
+      "avg_win_R": 1.7404,
+      "avg_loss_R": -1.1421,
+      "max_losing_streak": 8,
+      "by_year": {
+        "2010": {
+          "n": 2,
+          "net_usd": -26.86,
+          "net_r": -2.1947,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 1,
+          "net_usd": -13.18,
+          "net_r": -1.0983,
+          "win_rate": 0.0
+        },
+        "2012": {
+          "n": 10,
+          "net_usd": 72.2,
+          "net_r": 4.7811,
+          "win_rate": 0.6
+        },
+        "2013": {
+          "n": 13,
+          "net_usd": -13.34,
+          "net_r": -0.8273,
+          "win_rate": 0.4615
+        },
+        "2014": {
+          "n": 19,
+          "net_usd": -17.42,
+          "net_r": -1.3279,
+          "win_rate": 0.4737
+        },
+        "2015": {
+          "n": 30,
+          "net_usd": 11.6,
+          "net_r": 1.9007,
+          "win_rate": 0.3667
+        },
+        "2016": {
+          "n": 34,
+          "net_usd": -239.62,
+          "net_r": -7.646,
+          "win_rate": 0.3235
+        },
+        "2017": {
+          "n": 32,
+          "net_usd": -21.26,
+          "net_r": -1.8086,
+          "win_rate": 0.375
+        },
+        "2018": {
+          "n": 51,
+          "net_usd": 605.32,
+          "net_r": 23.7232,
+          "win_rate": 0.5294
+        },
+        "2019": {
+          "n": 59,
+          "net_usd": 41.88,
+          "net_r": -9.6791,
+          "win_rate": 0.339
+        },
+        "2020": {
+          "n": 57,
+          "net_usd": 190.24,
+          "net_r": 4.879,
+          "win_rate": 0.4035
+        },
+        "2021": {
+          "n": 57,
+          "net_usd": 568.24,
+          "net_r": -8.0949,
+          "win_rate": 0.3684
+        },
+        "2022": {
+          "n": 51,
+          "net_usd": 444.82,
+          "net_r": 6.5148,
+          "win_rate": 0.3922
+        },
+        "2023": {
+          "n": 56,
+          "net_usd": -519.58,
+          "net_r": -10.4921,
+          "win_rate": 0.3214
+        },
+        "2024": {
+          "n": 77,
+          "net_usd": 70.14,
+          "net_r": -13.5839,
+          "win_rate": 0.3506
+        },
+        "2025": {
+          "n": 57,
+          "net_usd": 394.74,
+          "net_r": 1.0804,
+          "win_rate": 0.386
+        },
+        "2026": {
+          "n": 43,
+          "net_usd": 290.26,
+          "net_r": -6.7184,
+          "win_rate": 0.3953
+        }
+      }
+    },
+    "autor_long_only_a1": {
+      "n": 649,
+      "win_rate": 0.3744,
+      "expectancy_R": 0.0081,
+      "std_R": 1.3772,
+      "net_usd": 2070.68,
+      "profit_factor": 1.1147,
+      "max_dd_usd": 1602.5,
+      "max_dd_R": 30.0886,
+      "avg_win_R": 1.7337,
+      "avg_loss_R": -1.0246,
+      "max_losing_streak": 8,
+      "by_year": {
+        "2010": {
+          "n": 2,
+          "net_usd": -26.86,
+          "net_r": -2.1947,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 1,
+          "net_usd": -13.18,
+          "net_r": -1.0983,
+          "win_rate": 0.0
+        },
+        "2012": {
+          "n": 10,
+          "net_usd": 72.2,
+          "net_r": 4.7811,
+          "win_rate": 0.6
+        },
+        "2013": {
+          "n": 13,
+          "net_usd": -12.34,
+          "net_r": -0.7364,
+          "win_rate": 0.4615
+        },
+        "2014": {
+          "n": 19,
+          "net_usd": -17.42,
+          "net_r": -1.3279,
+          "win_rate": 0.4737
+        },
+        "2015": {
+          "n": 30,
+          "net_usd": 14.1,
+          "net_r": 2.0323,
+          "win_rate": 0.3667
+        },
+        "2016": {
+          "n": 34,
+          "net_usd": -236.62,
+          "net_r": -7.5493,
+          "win_rate": 0.3235
+        },
+        "2017": {
+          "n": 32,
+          "net_usd": -21.26,
+          "net_r": -1.8086,
+          "win_rate": 0.375
+        },
+        "2018": {
+          "n": 51,
+          "net_usd": 605.32,
+          "net_r": 23.7232,
+          "win_rate": 0.5294
+        },
+        "2019": {
+          "n": 59,
+          "net_usd": 67.88,
+          "net_r": -7.6791,
+          "win_rate": 0.339
+        },
+        "2020": {
+          "n": 57,
+          "net_usd": 290.24,
+          "net_r": 9.3482,
+          "win_rate": 0.4035
+        },
+        "2021": {
+          "n": 57,
+          "net_usd": 436.24,
+          "net_r": -6.9977,
+          "win_rate": 0.3333
+        },
+        "2022": {
+          "n": 51,
+          "net_usd": 391.32,
+          "net_r": 4.6044,
+          "win_rate": 0.3725
+        },
+        "2023": {
+          "n": 56,
+          "net_usd": -347.08,
+          "net_r": -4.5382,
+          "win_rate": 0.3214
+        },
+        "2024": {
+          "n": 77,
+          "net_usd": 185.64,
+          "net_r": -2.9576,
+          "win_rate": 0.3377
+        },
+        "2025": {
+          "n": 57,
+          "net_usd": 305.24,
+          "net_r": 1.7173,
+          "win_rate": 0.3684
+        },
+        "2026": {
+          "n": 43,
+          "net_usd": 377.26,
+          "net_r": -4.0384,
+          "win_rate": 0.3488
+        }
+      }
+    },
+    "autor_both_autor": {
+      "n": 1136,
+      "win_rate": 0.3583,
+      "expectancy_R": -0.077,
+      "std_R": 1.4392,
+      "net_usd": -1738.48,
+      "profit_factor": 0.9531,
+      "max_dd_usd": 3413.7,
+      "max_dd_R": 99.3124,
+      "avg_win_R": 1.7551,
+      "avg_loss_R": -1.0999,
+      "max_losing_streak": 13,
+      "by_year": {
+        "2010": {
+          "n": 4,
+          "net_usd": -72.22,
+          "net_r": -4.305,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 7,
+          "net_usd": 47.74,
+          "net_r": 2.5073,
+          "win_rate": 0.4286
+        },
+        "2012": {
+          "n": 15,
+          "net_usd": 48.3,
+          "net_r": 3.6127,
+          "win_rate": 0.5333
+        },
+        "2013": {
+          "n": 38,
+          "net_usd": -139.84,
+          "net_r": -8.5016,
+          "win_rate": 0.3421
+        },
+        "2014": {
+          "n": 40,
+          "net_usd": -137.2,
+          "net_r": -6.9466,
+          "win_rate": 0.4
+        },
+        "2015": {
+          "n": 56,
+          "net_usd": -331.58,
+          "net_r": -10.8628,
+          "win_rate": 0.2857
+        },
+        "2016": {
+          "n": 71,
+          "net_usd": -329.78,
+          "net_r": -11.9346,
+          "win_rate": 0.338
+        },
+        "2017": {
+          "n": 59,
+          "net_usd": 23.38,
+          "net_r": 2.2213,
+          "win_rate": 0.4068
+        },
+        "2018": {
+          "n": 82,
+          "net_usd": 581.24,
+          "net_r": 22.8922,
+          "win_rate": 0.4634
+        },
+        "2019": {
+          "n": 100,
+          "net_usd": -182.5,
+          "net_r": -20.1437,
+          "win_rate": 0.31
+        },
+        "2020": {
+          "n": 98,
+          "net_usd": -867.64,
+          "net_r": -9.9967,
+          "win_rate": 0.3367
+        },
+        "2021": {
+          "n": 95,
+          "net_usd": 672.9,
+          "net_r": -9.1374,
+          "win_rate": 0.3789
+        },
+        "2022": {
+          "n": 107,
+          "net_usd": -339.76,
+          "net_r": 6.9859,
+          "win_rate": 0.3738
+        },
+        "2023": {
+          "n": 102,
+          "net_usd": -618.36,
+          "net_r": -12.5391,
+          "win_rate": 0.3333
+        },
+        "2024": {
+          "n": 111,
+          "net_usd": -587.98,
+          "net_r": -17.5945,
+          "win_rate": 0.3333
+        },
+        "2025": {
+          "n": 87,
+          "net_usd": 164.84,
+          "net_r": -11.6618,
+          "win_rate": 0.3333
+        },
+        "2026": {
+          "n": 64,
+          "net_usd": 329.98,
+          "net_r": -2.071,
+          "win_rate": 0.3906
+        }
+      }
+    },
+    "autor_both_a1": {
+      "n": 1136,
+      "win_rate": 0.3477,
+      "expectancy_R": -0.0577,
+      "std_R": 1.3579,
+      "net_usd": -1631.98,
+      "profit_factor": 0.9544,
+      "max_dd_usd": 3165.32,
+      "max_dd_R": 79.0294,
+      "avg_win_R": 1.7486,
+      "avg_loss_R": -1.0206,
+      "max_losing_streak": 15,
+      "by_year": {
+        "2010": {
+          "n": 4,
+          "net_usd": -72.22,
+          "net_r": -4.305,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 7,
+          "net_usd": 47.74,
+          "net_r": 2.5073,
+          "win_rate": 0.4286
+        },
+        "2012": {
+          "n": 15,
+          "net_usd": 48.3,
+          "net_r": 3.6127,
+          "win_rate": 0.5333
+        },
+        "2013": {
+          "n": 38,
+          "net_usd": -138.84,
+          "net_r": -8.4107,
+          "win_rate": 0.3421
+        },
+        "2014": {
+          "n": 40,
+          "net_usd": -137.2,
+          "net_r": -6.9466,
+          "win_rate": 0.4
+        },
+        "2015": {
+          "n": 56,
+          "net_usd": -326.58,
+          "net_r": -10.6428,
+          "win_rate": 0.2857
+        },
+        "2016": {
+          "n": 71,
+          "net_usd": -327.28,
+          "net_r": -11.7679,
+          "win_rate": 0.338
+        },
+        "2017": {
+          "n": 59,
+          "net_usd": 24.88,
+          "net_r": 2.2838,
+          "win_rate": 0.4068
+        },
+        "2018": {
+          "n": 82,
+          "net_usd": 531.74,
+          "net_r": 20.3013,
+          "win_rate": 0.4512
+        },
+        "2019": {
+          "n": 100,
+          "net_usd": -203.5,
+          "net_r": -20.9151,
+          "win_rate": 0.3
+        },
+        "2020": {
+          "n": 98,
+          "net_usd": -701.64,
+          "net_r": -2.7589,
+          "win_rate": 0.3367
+        },
+        "2021": {
+          "n": 95,
+          "net_usd": 202.4,
+          "net_r": -12.2057,
+          "win_rate": 0.3368
+        },
+        "2022": {
+          "n": 107,
+          "net_usd": -170.76,
+          "net_r": 7.7887,
+          "win_rate": 0.3645
+        },
+        "2023": {
+          "n": 102,
+          "net_usd": -357.86,
+          "net_r": -3.5071,
+          "win_rate": 0.3333
+        },
+        "2024": {
+          "n": 111,
+          "net_usd": -438.48,
+          "net_r": -8.864,
+          "win_rate": 0.3243
+        },
+        "2025": {
+          "n": 87,
+          "net_usd": -82.16,
+          "net_r": -12.6587,
+          "win_rate": 0.3103
+        },
+        "2026": {
+          "n": 64,
+          "net_usd": 469.48,
+          "net_r": 0.9017,
+          "win_rate": 0.3594
+        }
+      }
+    },
+    "fars_realista_long_only_autor": {
+      "n": 649,
+      "win_rate": 0.3852,
+      "expectancy_R": -0.0458,
+      "std_R": 1.5044,
+      "net_usd": 1576.74,
+      "profit_factor": 1.0822,
+      "max_dd_usd": 2113.5,
+      "max_dd_R": 55.7942,
+      "avg_win_R": 1.735,
+      "avg_loss_R": -1.1616,
+      "max_losing_streak": 8,
+      "by_year": {
+        "2010": {
+          "n": 2,
+          "net_usd": -27.98,
+          "net_r": -2.2871,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 1,
+          "net_usd": -13.74,
+          "net_r": -1.145,
+          "win_rate": 0.0
+        },
+        "2012": {
+          "n": 10,
+          "net_usd": 68.1,
+          "net_r": 4.5415,
+          "win_rate": 0.6
+        },
+        "2013": {
+          "n": 13,
+          "net_usd": -19.62,
+          "net_r": -1.2341,
+          "win_rate": 0.4615
+        },
+        "2014": {
+          "n": 19,
+          "net_usd": -26.56,
+          "net_r": -1.8695,
+          "win_rate": 0.4737
+        },
+        "2015": {
+          "n": 30,
+          "net_usd": 0.3,
+          "net_r": 1.3152,
+          "win_rate": 0.3667
+        },
+        "2016": {
+          "n": 34,
+          "net_usd": -256.16,
+          "net_r": -8.3955,
+          "win_rate": 0.3235
+        },
+        "2017": {
+          "n": 32,
+          "net_usd": -35.18,
+          "net_r": -2.6026,
+          "win_rate": 0.375
+        },
+        "2018": {
+          "n": 51,
+          "net_usd": 588.26,
+          "net_r": 23.0459,
+          "win_rate": 0.5294
+        },
+        "2019": {
+          "n": 59,
+          "net_usd": 16.84,
+          "net_r": -10.816,
+          "win_rate": 0.339
+        },
+        "2020": {
+          "n": 57,
+          "net_usd": 169.32,
+          "net_r": 4.2185,
+          "win_rate": 0.4035
+        },
+        "2021": {
+          "n": 57,
+          "net_usd": 545.32,
+          "net_r": -8.832,
+          "win_rate": 0.3684
+        },
+        "2022": {
+          "n": 51,
+          "net_usd": 425.76,
+          "net_r": 6.1641,
+          "win_rate": 0.3922
+        },
+        "2023": {
+          "n": 56,
+          "net_usd": -542.44,
+          "net_r": -11.0414,
+          "win_rate": 0.3214
+        },
+        "2024": {
+          "n": 77,
+          "net_usd": 39.02,
+          "net_r": -14.3775,
+          "win_rate": 0.3506
+        },
+        "2025": {
+          "n": 57,
+          "net_usd": 372.82,
+          "net_r": 0.6207,
+          "win_rate": 0.386
+        },
+        "2026": {
+          "n": 43,
+          "net_usd": 272.68,
+          "net_r": -7.0305,
+          "win_rate": 0.3953
+        }
+      }
+    },
+    "fars_realista_long_only_a1": {
+      "n": 649,
+      "win_rate": 0.3744,
+      "expectancy_R": -0.0061,
+      "std_R": 1.3849,
+      "net_usd": 1805.74,
+      "profit_factor": 1.0988,
+      "max_dd_usd": 1646.5,
+      "max_dd_R": 33.1612,
+      "avg_win_R": 1.7282,
+      "avg_loss_R": -1.0441,
+      "max_losing_streak": 8,
+      "by_year": {
+        "2010": {
+          "n": 2,
+          "net_usd": -27.98,
+          "net_r": -2.2871,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 1,
+          "net_usd": -13.74,
+          "net_r": -1.145,
+          "win_rate": 0.0
+        },
+        "2012": {
+          "n": 10,
+          "net_usd": 68.1,
+          "net_r": 4.5415,
+          "win_rate": 0.6
+        },
+        "2013": {
+          "n": 13,
+          "net_usd": -18.62,
+          "net_r": -1.1432,
+          "win_rate": 0.4615
+        },
+        "2014": {
+          "n": 19,
+          "net_usd": -26.56,
+          "net_r": -1.8695,
+          "win_rate": 0.4737
+        },
+        "2015": {
+          "n": 30,
+          "net_usd": 2.8,
+          "net_r": 1.4468,
+          "win_rate": 0.3667
+        },
+        "2016": {
+          "n": 34,
+          "net_usd": -253.16,
+          "net_r": -8.2987,
+          "win_rate": 0.3235
+        },
+        "2017": {
+          "n": 32,
+          "net_usd": -35.18,
+          "net_r": -2.6026,
+          "win_rate": 0.375
+        },
+        "2018": {
+          "n": 51,
+          "net_usd": 588.26,
+          "net_r": 23.0459,
+          "win_rate": 0.5294
+        },
+        "2019": {
+          "n": 59,
+          "net_usd": 42.84,
+          "net_r": -8.816,
+          "win_rate": 0.339
+        },
+        "2020": {
+          "n": 57,
+          "net_usd": 269.32,
+          "net_r": 8.6877,
+          "win_rate": 0.4035
+        },
+        "2021": {
+          "n": 57,
+          "net_usd": 412.32,
+          "net_r": -7.7582,
+          "win_rate": 0.3333
+        },
+        "2022": {
+          "n": 51,
+          "net_usd": 371.76,
+          "net_r": 4.2399,
+          "win_rate": 0.3725
+        },
+        "2023": {
+          "n": 56,
+          "net_usd": -369.94,
+          "net_r": -5.0875,
+          "win_rate": 0.3214
+        },
+        "2024": {
+          "n": 77,
+          "net_usd": 154.02,
+          "net_r": -3.7575,
+          "win_rate": 0.3377
+        },
+        "2025": {
+          "n": 57,
+          "net_usd": 282.82,
+          "net_r": 1.2511,
+          "win_rate": 0.3684
+        },
+        "2026": {
+          "n": 43,
+          "net_usd": 358.68,
+          "net_r": -4.3803,
+          "win_rate": 0.3488
+        }
+      }
+    },
+    "fars_realista_both_autor": {
+      "n": 1136,
+      "win_rate": 0.3583,
+      "expectancy_R": -0.0907,
+      "std_R": 1.4466,
+      "net_usd": -2204.14,
+      "profit_factor": 0.9412,
+      "max_dd_usd": 3668.26,
+      "max_dd_R": 114.4331,
+      "avg_win_R": 1.7504,
+      "avg_loss_R": -1.1186,
+      "max_losing_streak": 13,
+      "by_year": {
+        "2010": {
+          "n": 4,
+          "net_usd": -74.46,
+          "net_r": -4.4497,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 7,
+          "net_usd": 45.32,
+          "net_r": 2.366,
+          "win_rate": 0.4286
+        },
+        "2012": {
+          "n": 15,
+          "net_usd": 41.9,
+          "net_r": 3.2603,
+          "win_rate": 0.5333
+        },
+        "2013": {
+          "n": 38,
+          "net_usd": -157.62,
+          "net_r": -9.6267,
+          "win_rate": 0.3421
+        },
+        "2014": {
+          "n": 40,
+          "net_usd": -156.1,
+          "net_r": -8.0227,
+          "win_rate": 0.4
+        },
+        "2015": {
+          "n": 56,
+          "net_usd": -355.44,
+          "net_r": -11.9793,
+          "win_rate": 0.2857
+        },
+        "2016": {
+          "n": 71,
+          "net_usd": -362.04,
+          "net_r": -13.4479,
+          "win_rate": 0.338
+        },
+        "2017": {
+          "n": 59,
+          "net_usd": -0.66,
+          "net_r": 1.0025,
+          "win_rate": 0.4068
+        },
+        "2018": {
+          "n": 82,
+          "net_usd": 551.82,
+          "net_r": 21.7622,
+          "win_rate": 0.4634
+        },
+        "2019": {
+          "n": 100,
+          "net_usd": -226.0,
+          "net_r": -22.0011,
+          "win_rate": 0.31
+        },
+        "2020": {
+          "n": 98,
+          "net_usd": -906.52,
+          "net_r": -11.0536,
+          "win_rate": 0.3367
+        },
+        "2021": {
+          "n": 95,
+          "net_usd": 634.2,
+          "net_r": -10.2066,
+          "win_rate": 0.3789
+        },
+        "2022": {
+          "n": 107,
+          "net_usd": -379.68,
+          "net_r": 6.3215,
+          "win_rate": 0.3738
+        },
+        "2023": {
+          "n": 102,
+          "net_usd": -658.98,
+          "net_r": -13.5156,
+          "win_rate": 0.3333
+        },
+        "2024": {
+          "n": 111,
+          "net_usd": -633.64,
+          "net_r": -18.6438,
+          "win_rate": 0.3333
+        },
+        "2025": {
+          "n": 87,
+          "net_usd": 128.62,
+          "net_r": -12.3462,
+          "win_rate": 0.3333
+        },
+        "2026": {
+          "n": 64,
+          "net_usd": 305.14,
+          "net_r": -2.4687,
+          "win_rate": 0.3906
+        }
+      }
+    },
+    "fars_realista_both_a1": {
+      "n": 1136,
+      "win_rate": 0.3477,
+      "expectancy_R": -0.0716,
+      "std_R": 1.3652,
+      "net_usd": -2103.64,
+      "profit_factor": 0.9419,
+      "max_dd_usd": 3623.76,
+      "max_dd_R": 94.3093,
+      "avg_win_R": 1.7438,
+      "avg_loss_R": -1.0393,
+      "max_losing_streak": 15,
+      "by_year": {
+        "2010": {
+          "n": 4,
+          "net_usd": -74.46,
+          "net_r": -4.4497,
+          "win_rate": 0.0
+        },
+        "2011": {
+          "n": 7,
+          "net_usd": 45.32,
+          "net_r": 2.366,
+          "win_rate": 0.4286
+        },
+        "2012": {
+          "n": 15,
+          "net_usd": 41.9,
+          "net_r": 3.2603,
+          "win_rate": 0.5333
+        },
+        "2013": {
+          "n": 38,
+          "net_usd": -156.62,
+          "net_r": -9.5358,
+          "win_rate": 0.3421
+        },
+        "2014": {
+          "n": 40,
+          "net_usd": -156.1,
+          "net_r": -8.0227,
+          "win_rate": 0.4
+        },
+        "2015": {
+          "n": 56,
+          "net_usd": -350.44,
+          "net_r": -11.7593,
+          "win_rate": 0.2857
+        },
+        "2016": {
+          "n": 71,
+          "net_usd": -359.54,
+          "net_r": -13.2812,
+          "win_rate": 0.338
+        },
+        "2017": {
+          "n": 59,
+          "net_usd": 0.84,
+          "net_r": 1.065,
+          "win_rate": 0.4068
+        },
+        "2018": {
+          "n": 82,
+          "net_usd": 501.82,
+          "net_r": 19.1435,
+          "win_rate": 0.4512
+        },
+        "2019": {
+          "n": 100,
+          "net_usd": -247.5,
+          "net_r": -22.802,
+          "win_rate": 0.3
+        },
+        "2020": {
+          "n": 98,
+          "net_usd": -740.52,
+          "net_r": -3.8158,
+          "win_rate": 0.3367
+        },
+        "2021": {
+          "n": 95,
+          "net_usd": 161.7,
+          "net_r": -13.3132,
+          "win_rate": 0.3368
+        },
+        "2022": {
+          "n": 107,
+          "net_usd": -211.18,
+          "net_r": 7.1104,
+          "win_rate": 0.3645
+        },
+        "2023": {
+          "n": 102,
+          "net_usd": -398.48,
+          "net_r": -4.4835,
+          "win_rate": 0.3333
+        },
+        "2024": {
+          "n": 111,
+          "net_usd": -484.64,
+          "net_r": -9.9196,
+          "win_rate": 0.3243
+        },
+        "2025": {
+          "n": 87,
+          "net_usd": -119.38,
+          "net_r": -13.3567,
+          "win_rate": 0.3103
+        },
+        "2026": {
+          "n": 64,
+          "net_usd": 443.64,
+          "net_r": 0.474,
+          "win_rate": 0.3594
+        }
+      }
+    }
+  },
+  "diag": {
+    "autor_long_only_autor_salidas_stop_loss": 390,
+    "autor_long_only_autor_salidas_take_profit": 204,
+    "autor_long_only_autor_salidas_time_exit_1545": 53,
+    "autor_long_only_autor_salidas_eod_close": 2,
+    "autor_long_only_a1_salidas_stop_loss": 397,
+    "autor_long_only_a1_salidas_take_profit": 197,
+    "autor_long_only_a1_salidas_time_exit_1545": 53,
+    "autor_long_only_a1_salidas_eod_close": 2,
+    "autor_both_autor_salidas_stop_loss": 708,
+    "autor_both_autor_salidas_take_profit": 341,
+    "autor_both_autor_salidas_time_exit_1545": 83,
+    "autor_both_autor_salidas_eod_close": 4,
+    "autor_both_a1_salidas_stop_loss": 720,
+    "autor_both_a1_salidas_take_profit": 329,
+    "autor_both_a1_salidas_time_exit_1545": 83,
+    "autor_both_a1_salidas_eod_close": 4,
+    "fars_realista_long_only_autor_salidas_stop_loss": 390,
+    "fars_realista_long_only_autor_salidas_take_profit": 204,
+    "fars_realista_long_only_autor_salidas_time_exit_1545": 53,
+    "fars_realista_long_only_autor_salidas_eod_close": 2,
+    "fars_realista_long_only_a1_salidas_stop_loss": 397,
+    "fars_realista_long_only_a1_salidas_take_profit": 197,
+    "fars_realista_long_only_a1_salidas_time_exit_1545": 53,
+    "fars_realista_long_only_a1_salidas_eod_close": 2,
+    "fars_realista_both_autor_salidas_stop_loss": 708,
+    "fars_realista_both_autor_salidas_take_profit": 341,
+    "fars_realista_both_autor_salidas_time_exit_1545": 83,
+    "fars_realista_both_autor_salidas_eod_close": 4,
+    "fars_realista_both_a1_salidas_stop_loss": 720,
+    "fars_realista_both_a1_salidas_take_profit": 329,
+    "fars_realista_both_a1_salidas_time_exit_1545": 83,
+    "fars_realista_both_a1_salidas_eod_close": 4
+  }
+}

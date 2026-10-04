@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "title": "Manifest N1",
+    "status": "ABSTENCION",
+    "generated_at_utc": "2026-09-28T03:13:08.713658+00:00",
+    "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "preregistro_sha256": "f9a1a419fe96d46f072db89c97190f6cff0620cf12985c88d911b3dc98babd16",
+    "smoke_mode": false
+  },
+  "datasets": {
+    "MNQ": {
+      "member": "databento/MNQ_M5.csv",
+      "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96",
+      "n_bars": 518237,
+      "first": "2019-05-06T00:00:00+00:00",
+      "last": "2026-09-03T23:55:00+00:00",
+      "filter_start": "2019-05-06"
+    },
+    "MES": {
+      "member": "databento/MES_M5.csv",
+      "sha256": "343c94c44cee038c1965fc068b078f2cb90cd32d0d04fed3ecaf97d196003c44",
+      "n_bars": 518359,
+      "first": "2019-05-06T00:00:00+00:00",
+      "last": "2026-09-03T23:55:00+00:00",
+      "filter_start": "2019-05-06"
+    },
+    "MYM": {
+      "member": "databento/MYM_M5.csv",
+      "sha256": "c3a7d21573d4acda8ebd0441aac3d2532de3f99626df7bd4188964805cc6f2bd",
+      "n_bars": 517831,
+      "first": "2019-05-06T00:00:00+00:00",
+      "last": "2026-09-03T23:55:00+00:00",
+      "filter_start": "2019-05-06"
+    },
+    "MGC": {
+      "member": "databento/MGC_M5.csv",
+      "sha256": "f4a5159c027dbb53e01a8ab69d7bf01c43ea76c2ac6c5305654ac2fc7c780e4f",
+      "n_bars": 517646,
+      "first": "2019-05-06T00:00:00+00:00",
+      "last": "2026-09-03T23:55:00+00:00",
+      "filter_start": "2019-05-06"
+    }
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge_gap_bars": 0,
+    "warmup_bars": 500,
+    "dev_folds": "0..5",
+    "sealed_folds": "6..7",
+    "final_sealed": "ultimos-6-meses-1-corrida-al-final"
+  },
+  "aclaraciones_implementacion": [
+    "Lectura canonica de tramos sellados (coherente con protocolo H1): dev = folds 0..5; sellado = folds 6..7 + tramo final 6 meses, abierto UNA vez al final."
+  ],
+  "pins": {
+    "k_d": 0.1,
+    "k_stop": 0.25,
+    "atr_period": 14,
+    "vol_window": 20,
+    "vol_pct_window": 120,
+    "exit_sens_bars": 60,
+    "event_K": 20,
+    "cbb_seed": 20260928,
+    "control_seed": 20260929,
+    "min_bars_range": 5,
+    "n_min_trades": 150,
+    "n_min_events": 100
+  },
+  "seeds": {
+    "cbb_seed": 20260928,
+    "control_seed": 20260929
+  },
+  "roll_dates": [
+    "2019-03-15",
+    "2019-06-21",
+    "2019-09-20",
+    "2019-12-20",
+    "2020-03-20",
+    "2020-06-19",
+    "2020-09-18",
+    "2020-12-18",
+    "2021-03-19",
+    "2021-06-18",
+    "2021-09-17",
+    "2021-12-17",
+    "2022-03-18",
+    "2022-06-17",
+    "2022-09-16",
+    "2022-12-16",
+    "2023-03-17",
+    "2023-06-16",
+    "2023-09-15",
+    "2023-12-15",
+    "2024-03-15",
+    "2024-06-21",
+    "2024-09-20",
+    "2024-12-20",
+    "2025-03-21",
+    "2025-06-20",
+    "2025-09-19",
+    "2025-12-19"
+  ],
+  "cost_scenarios": {
+    "realista": {
+      "commission_per_side": 0.62,
+      "slip_pts": 0.25
+    },
+    "sensibilidad": {
+      "commission_per_side_pts": 1.0,
+      "slip_pts": 0.0
+    }
+  },
+  "artifacts_sha256": {
+    "metrics_MES_N1.json": "e97683d644ae5a99e06c2feee0d97b17e0a57c8dfca70ff42dd04a3fd010a9e0",
+    "metrics_MGC_N1.json": "dbed1205ed806e08eaa86b22f2a06224a8799e47b0e6f436158f54bf5de9703f",
+    "metrics_MNQ_N1.json": "949281c0627c8da31fa64e17c5e75e8ce865e04c5e69f81df7126cf0e4441e4e",
+    "metrics_MYM_N1.json": "22ea3a6d586dc89881bb4441eabeee274031de2dc0d5605f605b867373dbf8e9"
+  }
+}
