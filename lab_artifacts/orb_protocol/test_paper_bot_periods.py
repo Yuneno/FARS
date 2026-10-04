@@ -23,6 +23,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, r"E:\FARS-LAB\FARS")
 sys.path.insert(0, str(HERE))
 
+import pandas as pd
 import paper_bot as pb  # noqa: E402
 from src.realtime.events import AccountSnapshot, Signal  # noqa: E402
 from src.realtime.risk import AccountAwareRiskEngine, REASON_DRAWDOWN  # noqa: E402
@@ -307,44 +308,87 @@ def test_e_trailing_drawdown_tracks_peak_equity():
 
 
 def test_f_causality_no_lookahead_and_effective_stop():
-    """(f) Fix B1: La señal no usa datos de la barra de ejecución y el stop se ancla al precio efectivo de entrada."""
-    strat = pb.OrbSignalGenerator(max_trades_day=2, max_trades_month=42)
+    """(f) Fix B1 & CRITICAL 1: Causalidad estricta y anclaje efectivo en producción con run_replay real.
 
-    # Ventana 08:30 - 10:00 (Rango: [950.0, 1050.0])
+    Verifica:
+    1. Invariancia ante inversión de datos futuros en run_replay real (no look-ahead).
+    2. Evaluación inmediata de stop/target en la propia barra de ejecución t+1 (Fix CRITICAL 1).
+    3. Rechazo de entradas cuyo fill caería fuera de sesión (14:30 / 14:35).
+    """
+    rules = make_rules(max_trades=None)
+
+    # 1. Dataset normal vs Dataset con futuro invertido
+    # Ambas series comparten la ventana (09:00) y la barra de decisión (10:15) y el open de ejecución (10:20)
+    bars_base = [
+        {"date": "2026-06-29 09:00:00", "open": 1000.0, "high": 1050.0, "low": 950.0, "close": 1000.0},
+        {"date": "2026-06-29 10:15:00", "open": 1045.0, "high": 1060.0, "low": 1040.0, "close": 1055.0},
+    ]
+
+    bars_normal = bars_base + [
+        {"date": "2026-06-29 10:20:00", "open": 1058.0, "high": 1070.0, "low": 1055.0, "close": 1065.0},
+        {"date": "2026-06-29 10:25:00", "open": 1065.0, "high": 1080.0, "low": 1060.0, "close": 1075.0},
+        {"date": "2026-06-29 10:30:00", "open": 1075.0, "high": 1090.0, "low": 1070.0, "close": 1085.0},
+    ]
+
+    bars_future_inverted = bars_base + [
+        {"date": "2026-06-29 10:20:00", "open": 1058.0, "high": 1060.0, "low": 1050.0, "close": 1052.0},
+        {"date": "2026-06-29 10:25:00", "open": 1052.0, "high": 1055.0, "low": 1010.0, "close": 1015.0},
+        {"date": "2026-06-29 10:30:00", "open": 1015.0, "high": 1020.0, "low": 980.0, "close": 985.0},
+    ]
+
+    df_norm = pd.DataFrame(bars_normal)
+    df_inv = pd.DataFrame(bars_future_inverted)
+
+    res_norm = pb.run_replay(0, rules, df=df_norm)
+    res_inv = pb.run_replay(0, rules, df=df_inv)
+
+    # Ambas ejecuciones deben haber tomado EXACTAMENTE la misma decisión de entrada
+    entry_norm = [j for j in res_norm["journal_tail"] if j.get("action") == "long" and "entry_price" in j][0]
+    entry_inv = [j for j in res_inv["journal_tail"] if j.get("action") == "long" and "entry_price" in j][0]
+
+    assert entry_norm["t"] == "2026-06-29T10:20:00-05:00"
+    assert entry_inv["t"] == "2026-06-29T10:20:00-05:00"
+    assert entry_norm["entry_price"] == 1058.0
+    assert entry_inv["entry_price"] == 1058.0
+    assert entry_norm["stop"] == 958.0
+    assert entry_inv["stop"] == 958.0
+    assert entry_norm["decision_bar_time"] == "2026-06-29T10:15:00-05:00"
+    assert entry_inv["decision_bar_time"] == "2026-06-29T10:15:00-05:00"
+
+    # 2. Fix CRITICAL 1: Stop intrabarra en la propia barra de ejecución t+1
+    # Entrada long a 1058, pero en esa MISMA barra 10:20 el low cae a 850 (stop = 958)
+    bars_immediate_stop = bars_base + [
+        {"date": "2026-06-29 10:20:00", "open": 1058.0, "high": 1060.0, "low": 850.0, "close": 900.0},
+        {"date": "2026-06-29 10:25:00", "open": 900.0, "high": 920.0, "low": 890.0, "close": 910.0},
+    ]
+    df_stop = pd.DataFrame(bars_immediate_stop)
+    res_stop = pb.run_replay(0, rules, df=df_stop)
+
+    # Debe haber evento de TRADE_EXIT en la misma barra 10:20 con reason="stop" y exit_price=958.0
+    exits = [j for j in res_stop["journal_tail"] if j.get("event") == "TRADE_EXIT"]
+    assert len(exits) >= 1, "El stop intrabarra debió ejecutarse en la propia barra de entrada"
+    exit_event = exits[0]
+    assert exit_event["t"] == "2026-06-29T10:20:00-05:00", f"Salida debió ser a las 10:20, fue {exit_event['t']}"
+    assert exit_event["reason"] == "stop", f"Razón debió ser stop, fue {exit_event['reason']}"
+    assert exit_event["exit_price"] == 958.0, f"Precio de stop debió ser 958.0, fue {exit_event['exit_price']}"
+
+    # 3. Rechazo de ejecución fuera de sesión (señal que intentaría entrar tras TRADE_END 14:30)
+    strat = pb.OrbSignalGenerator()
     t_win = datetime(2026, 6, 29, 9, 0, tzinfo=CT)
     strat.on_bar(t_win, 1000.0, 1050.0, 950.0, 1000.0)
-    assert strat.win_high == 1050.0 and strat.win_low == 950.0
+    # A las 14:30 (fin de sesión) no debe emitir señal de entrada porque el fill caería fuera de sesión
+    sig_eod = strat.on_bar(datetime(2026, 6, 29, 14, 30, tzinfo=CT), 1045.0, 1065.0, 1040.0, 1060.0)
+    assert sig_eod is None, "A las 14:30 no debe emitir señal: el fill caería a las 14:35 fuera de sesión"
 
-    # 1. Barra de decisión (10:15): High rompe la ventana a 1060.0
-    t_dec = datetime(2026, 6, 29, 10, 15, tzinfo=CT)
-    sig = strat.on_bar(t_dec, 1045.0, 1060.0, 1040.0, 1055.0)
-    assert sig is not None and sig[0] == "long", "La barra de decisión debe emitir señal long al cierre"
-
-    # 2. Prueba causal estricta: cambiar o invertir los datos de la barra de EJECUCIÓN (10:20)
-    # NO cambia la decisión tomada previamente al cierre de la barra 10:15.
-    # Caso normal: barra de ejecución con open=1058.0, high=1070.0, low=1050.0, close=1065.0
-    entry_price_normal = 1058.0
-    stop_normal = strat.effective_stop(sig[0], entry_price_normal)
-    assert stop_normal == 958.0, f"Stop long debe ser 958.0 (entrada - 100), obtuvo {stop_normal}"
-    assert (entry_price_normal - stop_normal) == pb.STOP_PTS, "La distancia de stop debe ser exactamente STOP_PTS (100 pts)"
-
-    # Caso adverso/invertido: en la barra de ejecución el precio cae drásticamente (high=900, low=850)
-    # La señal generada en 10:15 ya fue decidida y entra al open=1058.0 sin look-ahead de los extremos de 10:20
-    entry_price_adverse = 1058.0
-    stop_adverse = strat.effective_stop(sig[0], entry_price_adverse)
-    assert stop_adverse == 958.0, "La decisión previa no depende del high/low de la barra de ejecución"
-
-    # Verificación en sentido opuesto: si invertimos el high de la barra de decisión a 1040 (sin breakout)
-    strat_no_breakout = pb.OrbSignalGenerator(max_trades_day=2, max_trades_month=42)
-    strat_no_breakout.on_bar(t_win, 1000.0, 1050.0, 950.0, 1000.0)
-    sig_none = strat_no_breakout.on_bar(t_dec, 1045.0, 1040.0, 1030.0, 1035.0)  # high=1040 <= win_high=1050
-    assert sig_none is None, "Sin ruptura de ventana en barra de decisión no debe existir señal"
-
-    # 3. Stop anclado al precio efectivo para posición short (100 pts por encima)
-    short_entry = 942.0
-    short_stop = strat.effective_stop("short", short_entry)
-    assert short_stop == 1042.0, f"Stop short debe ser 1042.0 (entrada + 100), obtuvo {short_stop}"
-    assert (short_stop - short_entry) == pb.STOP_PTS, "Distancia de stop short debe ser exactamente STOP_PTS"
+    # Si llegara una señal pendiente para las 14:35, run_replay debe rechazarla
+    bars_late = [
+        {"date": "2026-06-29 09:00:00", "open": 1000.0, "high": 1050.0, "low": 950.0, "close": 1000.0},
+        {"date": "2026-06-29 14:25:00", "open": 1045.0, "high": 1065.0, "low": 1040.0, "close": 1060.0},
+        {"date": "2026-06-29 14:35:00", "open": 1062.0, "high": 1065.0, "low": 1058.0, "close": 1060.0},
+    ]
+    res_late = pb.run_replay(0, rules, df=pd.DataFrame(bars_late))
+    rejects = [j for j in res_late["journal_tail"] if j.get("event") == "REJECT_SESSION"]
+    assert len(rejects) == 1, "Debe rechazar la entrada si el fill cae a las 14:35 fuera de sesión"
 
 
 def test_g_multimonth_bot_operates_across_month_boundary():
@@ -429,75 +473,147 @@ def test_g_multimonth_bot_operates_across_month_boundary():
 
 
 def test_h_symmetric_eod_exit_for_long_and_short():
-    """(h) Fix H9: Verifica salida temporal simétrica al fin de sesión (14:30 CT) para AMBOS lados (long y short)."""
-    # 1. Simulación para posición LONG
-    open_trade_long = {
-        "action": "long",
-        "entry_time": datetime(2026, 6, 29, 10, 20, tzinfo=CT),
-        "entry_price": 1050.0,
-        "stop": 950.0,
-        "target": 1250.0,
-        "size": 1,
-    }
+    """(h) Fix H9: Verifica salida temporal simétrica al fin de sesión (14:30 CT) para AMBOS lados (long y short) usando la función de producción."""
+    # 1. Posición LONG a mediodía (12:00) dentro de rango -> No sale
+    p_exit, r_exit = pb.check_trade_exit(
+        direction="long",
+        stop=950.0,
+        target=1250.0,
+        open_p=1060.0,
+        high_p=1065.0,
+        low_p=1055.0,
+        close_p=1062.0,
+        t_now=dtime(12, 0),
+    )
+    assert p_exit is None and r_exit is None, "A las 12:00 la posición long debe permanecer abierta"
 
-    # Barra intradía a las 12:00 dentro de límites (no toca stop ni target)
-    ts_mid = datetime(2026, 6, 29, 12, 0, tzinfo=CT)
-    exit_price = None
-    exit_reason = None
-    row_mid = (1060.0, 1065.0, 1055.0, 1062.0)  # open, high, low, close
-    # Stop / target check
-    if row_mid[0] <= open_trade_long["stop"]:
-        exit_price, exit_reason = row_mid[0], "stop"
-    elif row_mid[2] <= open_trade_long["stop"]:
-        exit_price, exit_reason = open_trade_long["stop"], "stop"
-    elif row_mid[0] >= open_trade_long["target"]:
-        exit_price, exit_reason = row_mid[0], "target"
-    elif row_mid[1] >= open_trade_long["target"]:
-        exit_price, exit_reason = open_trade_long["target"], "target"
-    if exit_price is None and ts_mid.time() >= pb.TRADE_END:
-        exit_price, exit_reason = row_mid[3], f"eod_{open_trade_long['action']}"
-    assert exit_price is None, "A las 12:00 la posición long debe permanecer abierta"
+    # Posición LONG al fin de sesión (14:30) -> Salida simétrica al close con eod_long
+    p_exit_long, r_exit_long = pb.check_trade_exit(
+        direction="long",
+        stop=950.0,
+        target=1250.0,
+        open_p=1060.0,
+        high_p=1062.0,
+        low_p=1058.0,
+        close_p=1061.0,
+        t_now=pb.TRADE_END,
+    )
+    assert p_exit_long == 1061.0, f"Posición long debe cerrarse al close en TRADE_END, obtuvo {p_exit_long}"
+    assert r_exit_long == "eod_long", f"Motivo de salida long debe ser eod_long, obtuvo {r_exit_long}"
 
-    # Barra de fin de sesión a las 14:30 (TRADE_END)
-    ts_eod = datetime(2026, 6, 29, 14, 30, tzinfo=CT)
-    row_eod = (1060.0, 1062.0, 1058.0, 1061.0)
-    if row_eod[0] <= open_trade_long["stop"]:
-        exit_price, exit_reason = row_eod[0], "stop"
-    elif row_eod[2] <= open_trade_long["stop"]:
-        exit_price, exit_reason = open_trade_long["stop"], "stop"
-    elif row_eod[0] >= open_trade_long["target"]:
-        exit_price, exit_reason = row_eod[0], "target"
-    elif row_eod[1] >= open_trade_long["target"]:
-        exit_price, exit_reason = open_trade_long["target"], "target"
-    if exit_price is None and ts_eod.time() >= pb.TRADE_END:
-        exit_price, exit_reason = float(row_eod[3]), f"eod_{open_trade_long['action']}"
-    assert exit_price == 1061.0, f"Posición long debe cerrarse al close en TRADE_END, obtuvo {exit_price}"
-    assert exit_reason == "eod_long", f"Motivo de salida long debe ser eod_long, obtuvo {exit_reason}"
+    # 2. Posición SHORT al fin de sesión (14:30) -> Salida simétrica al close con eod_short
+    p_exit_short, r_exit_short = pb.check_trade_exit(
+        direction="short",
+        stop=1040.0,
+        target=740.0,
+        open_p=935.0,
+        high_p=938.0,
+        low_p=932.0,
+        close_p=936.0,
+        t_now=pb.TRADE_END,
+    )
+    assert p_exit_short == 936.0, f"Posición short debe cerrarse al close en TRADE_END, obtuvo {p_exit_short}"
+    assert r_exit_short == "eod_short", f"Motivo de salida short debe ser eod_short, obtuvo {r_exit_short}"
 
-    # 2. Simulación para posición SHORT
-    open_trade_short = {
-        "action": "short",
-        "entry_time": datetime(2026, 6, 29, 10, 20, tzinfo=CT),
-        "entry_price": 940.0,
-        "stop": 1040.0,
-        "target": 740.0,
-        "size": 1,
-    }
-    exit_price_s = None
-    exit_reason_s = None
-    row_eod_s = (935.0, 938.0, 932.0, 936.0)
-    if row_eod_s[0] >= open_trade_short["stop"]:
-        exit_price_s, exit_reason_s = row_eod_s[0], "stop"
-    elif row_eod_s[1] >= open_trade_short["stop"]:
-        exit_price_s, exit_reason_s = open_trade_short["stop"], "stop"
-    elif row_eod_s[0] <= open_trade_short["target"]:
-        exit_price_s, exit_reason_s = row_eod_s[0], "target"
-    elif row_eod_s[2] <= open_trade_short["target"]:
-        exit_price_s, exit_reason_s = open_trade_short["target"], "target"
-    if exit_price_s is None and ts_eod.time() >= pb.TRADE_END:
-        exit_price_s, exit_reason_s = float(row_eod_s[3]), f"eod_{open_trade_short['action']}"
-    assert exit_price_s == 936.0, f"Posición short debe cerrarse al close en TRADE_END, obtuvo {exit_price_s}"
-    assert exit_reason_s == "eod_short", f"Motivo de salida short debe ser eod_short, obtuvo {exit_reason_s}"
+    # 3. Barras ambiguas (ambos stop y target tocados en la misma barra) -> STOP PRIMERO (convención conservadora FARS)
+    # Long: toca stop (800 <= 950) y target (1300 >= 1250)
+    p_amb_long, r_amb_long = pb.check_trade_exit(
+        direction="long", stop=950.0, target=1250.0,
+        open_p=1050.0, high_p=1300.0, low_p=800.0, close_p=1000.0, t_now=dtime(11, 0)
+    )
+    assert p_amb_long == 950.0 and r_amb_long == "stop", "En barra ambigua long debe prevalecer el stop"
+
+    # Short: toca stop (1100 >= 1040) y target (700 <= 740)
+    p_amb_short, r_amb_short = pb.check_trade_exit(
+        direction="short", stop=1040.0, target=740.0,
+        open_p=900.0, high_p=1100.0, low_p=700.0, close_p=900.0, t_now=dtime(11, 0)
+    )
+    assert p_amb_short == 1040.0 and r_amb_short == "stop", "En barra ambigua short debe prevalecer el stop"
+
+
+def test_i_terminal_trailing_drawdown_breach_halts_replay(tmp_path=None):
+    """(i) Fix CRITICAL 1: Verifica que cruzar el piso trailing drawdown declara breach terminal, pone halted=True y detiene el replay."""
+    from pathlib import Path
+    import json
+    if tmp_path is None:
+        import tempfile
+        tmp_path = Path(tempfile.mkdtemp(prefix="orb_breach_test_"))
+    else:
+        tmp_path = Path(tmp_path)
+
+    # Reglas con drawdown trailing de 1.000 USD (piso en 99.000 USD) y pérdida diaria amplia
+    rules = make_rules(
+        initial_balance=100_000.0,
+        max_drawdown_usd=1_000.0,
+        drawdown_mode="trailing",
+        daily_loss_limit_usd=50_000.0,
+        daily_loss_limit_pct=0.50,
+        max_trades=None,
+    )
+
+    # 1. Barra ventana (09:00)
+    # 2. Barra señal breakout long (10:15)
+    # 3. Barra ejecución (10:20): entrada long a 1058, toca stop 958 (pérdida 100 pts * $2/pt * 5 ctos = $1.000)
+    #    Equity cae a 99.000 USD <= piso 99.000 USD -> BREACH TERMINAL
+    # 4. Barras posteriores que NO deben procesarse
+    bars = [
+        {"date": "2026-06-29 09:00:00", "open": 1000.0, "high": 1050.0, "low": 950.0, "close": 1000.0},
+        {"date": "2026-06-29 10:15:00", "open": 1045.0, "high": 1060.0, "low": 1040.0, "close": 1055.0},
+        {"date": "2026-06-29 10:20:00", "open": 1058.0, "high": 1060.0, "low": 950.0, "close": 955.0},
+        # Barras posteriores
+        {"date": "2026-06-29 10:25:00", "open": 955.0, "high": 1070.0, "low": 950.0, "close": 1065.0},
+        {"date": "2026-06-29 10:30:00", "open": 1065.0, "high": 1080.0, "low": 1060.0, "close": 1075.0},
+    ]
+    df = pd.DataFrame(bars)
+    json_path = tmp_path / "paper_run_breach.json"
+    res = pb.run_replay(0, rules, df=df, export_path=json_path)
+
+    # Afirmar breach terminal
+    assert res["halted"] is True, "El bot debe quedar en halted=True tras breach de trailing drawdown"
+    assert res["terminal_condition"] == "max_drawdown", f"terminal_condition debe ser max_drawdown, obtuvo {res.get('terminal_condition')}"
+    # Pérdida: 100 pts * $2/pt * 5 ctos = $1.000 + costes RT ($2.74 * 5 = $13.70) -> PnL -$1.013,70
+    assert res["final_equity"] == 98_986.3
+    assert res["trades_accepted"] == 1
+
+    # Verificar evento de BREACH en el journal
+    breach_events = [j for j in res["journal_tail"] if j.get("event") == "BREACH"]
+    assert len(breach_events) == 1, "Debe existir exactamente 1 evento de BREACH en el journal"
+    b_ev = breach_events[0]
+    assert b_ev["terminal_condition"] == "max_drawdown"
+    assert b_ev["equity"] == 98_986.3
+    assert b_ev["floor"] == 99_000.0
+
+    # Verificar exportación real en JSON
+    assert json_path.exists()
+    saved = json.loads(json_path.read_text(encoding="utf-8"))
+    assert saved["halted"] is True
+    assert saved["terminal_condition"] == "max_drawdown"
+    assert saved["final_equity"] == 98_986.3
+
+
+def test_j_unresolved_signal_at_replay_end():
+    """(j) Fix WARNING 4: Verifica que una señal pendiente en la última barra recibe estado unresolved / replay_end."""
+    rules = make_rules(max_trades=None)
+
+    # 1. Barra ventana (09:00)
+    # 2. Barra señal breakout (10:15) — última barra del dataset
+    bars = [
+        {"date": "2026-06-29 09:00:00", "open": 1000.0, "high": 1050.0, "low": 950.0, "close": 1000.0},
+        {"date": "2026-06-29 10:15:00", "open": 1045.0, "high": 1060.0, "low": 1040.0, "close": 1055.0},
+    ]
+    df = pd.DataFrame(bars)
+    res = pb.run_replay(0, rules, df=df)
+
+    assert res["signals"] == 1, "Debe contarse 1 señal"
+    assert res["trades_accepted"] == 0, "No debe haber órdenes ejecutadas porque se terminó el replay"
+
+    unres_events = [j for j in res["journal_tail"] if j.get("event") == "UNRESOLVED_SIGNAL"]
+    assert len(unres_events) == 1, "Debe registrarse evento UNRESOLVED_SIGNAL en journal"
+    unres = unres_events[0]
+    assert unres["status"] == "unresolved"
+    assert unres["reason"] == "replay_end"
+    assert unres["action"] == "long"
+    assert "2026-06-29T10:15:00" in unres["signal_bar_time"]
 
 
 if __name__ == "__main__":
@@ -511,6 +627,8 @@ if __name__ == "__main__":
         test_f_causality_no_lookahead_and_effective_stop,
         test_g_multimonth_bot_operates_across_month_boundary,
         test_h_symmetric_eod_exit_for_long_and_short,
+        test_i_terminal_trailing_drawdown_breach_halts_replay,
+        test_j_unresolved_signal_at_replay_end,
     ]
     for func in test_funcs:
         try:
@@ -521,4 +639,5 @@ if __name__ == "__main__":
             print(f"FAIL {func.__name__}: {type(exc).__name__}: {exc}")
     print(f"\n{'TODAS VERDES' if fails == 0 else f'{fails} FALLANDO'}")
     sys.exit(1 if fails else 0)
+
 

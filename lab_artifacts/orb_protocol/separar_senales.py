@@ -50,7 +50,11 @@ def default_rules(max_trades: int | None = None) -> FundedAccountRules:
 
 
 def get_trade_exit_time(trade: Trade) -> datetime:
-    """Determina el timestamp de salida efectivo para atribuir el PnL al día correcto (Fix H6)."""
+    """Determina el timestamp de salida efectivo para atribuir el PnL al momento real (Fix H6).
+
+    Usa el exit_time real del ledger. No aplica fallback a 14:30 salvo cuando la
+    operación realmente cerró a fin de sesión (exit_reason EOD).
+    """
     if hasattr(trade, "metadata") and isinstance(trade.metadata, dict):
         unknown = trade.metadata.get("unknown_fields", {})
         raw_exit = unknown.get("exit_time")
@@ -64,9 +68,18 @@ def get_trade_exit_time(trade: Trade) -> datetime:
                 pass
     if hasattr(trade, "exit_time") and getattr(trade, "exit_time"):
         return getattr(trade, "exit_time")
-    # Convención ORB de sesión: salida a fin de sesión (14:30 CT) de su día de operación (Fix H9)
-    entry_ts = trade.timestamp or datetime(2010, 6, 1, 10, 0, tzinfo=CT)
-    return entry_ts.replace(hour=14, minute=30, second=0, microsecond=0)
+
+    # Salida a fin de sesión (14:30 CT) ÚNICAMENTE si la operación realmente cerró por fin de sesión (EOD)
+    unknown = trade.metadata.get("unknown_fields", {}) if hasattr(trade, "metadata") and isinstance(trade.metadata, dict) else {}
+    exit_reason = str(unknown.get("exit_reason", "")).lower()
+    if "eod" in exit_reason:
+        entry_ts = trade.timestamp or datetime(2010, 6, 1, 10, 0, tzinfo=CT)
+        return entry_ts.replace(hour=14, minute=30, second=0, microsecond=0)
+
+    # Si no tiene exit_time exportado ni indicación EOD, usar el propio timestamp del trade
+    if trade.timestamp:
+        return trade.timestamp
+    return datetime(2010, 6, 1, 14, 30, tzinfo=CT)
 
 
 def run_separation(csv_path: Path, max_trades_month: int = 42,
@@ -258,6 +271,7 @@ def run_separation(csv_path: Path, max_trades_month: int = 42,
         "peak_equity": round(peak_equity, 2),
         "realized_pnl": round(realized, 2),
         "accepted_trades": accepted_trades,
+        "rejected_trades": rejected_trades,
         "export_accepted_path": str(export_accepted_path) if export_accepted_path else None,
     }
 

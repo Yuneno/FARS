@@ -29,6 +29,8 @@ import separar_senales as ss  # noqa: E402
 import sensibilidad_costes as sc  # noqa: E402
 from run_orb import MNQ_CFG  # noqa: E402
 from src.metrics import compute_metrics  # noqa: E402
+from src.types import FundedAccountRules  # noqa: E402
+from zoneinfo import ZoneInfo  # noqa: E402
 
 LEDGER_CSV = HERE / "ledger_orb_fars_stop.csv"
 ACCEPTED_CSV = HERE / "ledger_orb_fars_accepted.csv"
@@ -211,61 +213,70 @@ def test_separacion_sar_consistente():
     assert ma.n_trades == a
 
 
-def test_atribucion_pnl_timestamp_salida():
-    """5. Fix H6: Verifica que el PnL se atribuye en el timestamp de SALIDA y no en el de ENTRADA."""
-    from zoneinfo import ZoneInfo
-    from src.types import Trade
-    CT = ZoneInfo("America/Chicago")
+def test_atribucion_pnl_timestamp_salida(tmp_path=None):
+    """5. Fix H6 & CRITICAL 5: Prueba atribución de PnL en función de producción run_separation.
 
-    # Trade sintético que entra a las 10:15 y sale a las 14:30
-    t1 = Trade(
-        trade_id="test-h6-1",
-        timestamp=datetime(2026, 6, 1, 10, 15, tzinfo=CT),
-        asset="MNQ",
-        direction="long",
-        entry_price=18000.0,
-        stop_price=17900.0,
-        exit_price=18200.0,
-        r_result=2.0,
-        strategy="test",
-    )
+    Verifica que run_separation procesa los exits según su exit_time real:
+    - Trade 1 entra a las 10:15 y sale a las 10:45 con pérdida severa (-11R).
+    - Trade 2 llega a las 11:30.
+    Como Trade 1 salió a las 10:45 (antes de las 11:30), el PnL se liquida antes de evaluar Trade 2,
+    por lo que Trade 2 ve la cuenta en pérdida diaria y es RECHAZADO por el motor de riesgo.
+    En cambio, si Trade 1 saliera a las 14:30 (después de 11:30), Trade 2 sería aprobado al momento de su evaluación.
+    """
+    if tmp_path is None:
+        import tempfile
+        temp_dir = Path(tempfile.mkdtemp())
+    else:
+        temp_dir = tmp_path
 
-    exit_ts = ss.get_trade_exit_time(t1)
-    assert exit_ts == datetime(2026, 6, 1, 14, 30, tzinfo=CT), f"Salida esperada 14:30, obtenida {exit_ts}"
-    assert exit_ts > t1.timestamp, "El timestamp de salida debe ser posterior al de entrada"
+    csv_file = temp_dir / "test_trades.csv"
 
-    # En momento intermedio (12:00): el trade sigue en curso, la salida pendiente aún no se ejecuta
-    pending_exits = [(exit_ts, 400.0)]
-    initial_equity = 100_000.0
-    equity = initial_equity
-    ts_mid = datetime(2026, 6, 1, 12, 0, tzinfo=CT)
+    # Caso 1: Trade 1 sale temprano (10:45) -> PnL se aplica antes de Trade 2 (11:30)
+    lines_early = [
+        "trade_id,timestamp,exit_time,asset,direction,entry_price,stop_price,exit_price,r_result,strategy",
+        "T1,2026-06-01T10:15:00-05:00,2026-06-01T10:45:00-05:00,MNQ,long,18000.0,17900.0,16900.0,-11.0,orb",
+        "T2,2026-06-01T11:30:00-05:00,2026-06-01T12:00:00-05:00,MNQ,long,18000.0,17900.0,18200.0,2.0,orb",
+    ]
+    csv_file.write_text("\n".join(lines_early), encoding="utf-8")
 
-    # Simular flush hasta 12:00
-    while pending_exits and pending_exits[0][0] <= ts_mid:
-        equity += pending_exits.pop(0)[1]
-    assert equity == initial_equity, "A las 12:00 el trade sigue abierto; equity no debe cambiar"
-    assert len(pending_exits) == 1
+    res_early = ss.run_separation(csv_file, max_trades_month=42)
+    assert res_early["n_signals"] == 2
+    assert res_early["n_accepted"] == 1, "Solo Trade 1 debió ser aceptado"
+    assert res_early["n_rejected"] == 1, "Trade 2 debió ser rechazado por pérdida diaria previa de T1"
+    assert res_early["rejected_trades"][0]["trade_id"] == "T2"
 
-    # Simular flush al cierre del día (14:30)
-    ts_exit = datetime(2026, 6, 1, 14, 30, tzinfo=CT)
-    while pending_exits and pending_exits[0][0] <= ts_exit:
-        equity += pending_exits.pop(0)[1]
-    assert equity == initial_equity + 400.0, f"A las 14:30 se debe aplicar el PnL, equity={equity}"
-    assert len(pending_exits) == 0
+    # Caso 2: Trade 1 sale a las 14:30 (EOD) -> A las 11:30 Trade 1 sigue abierto y Trade 2 no ve la pérdida
+    lines_late = [
+        "trade_id,timestamp,exit_time,asset,direction,entry_price,stop_price,exit_price,r_result,strategy",
+        "T1,2026-06-01T10:15:00-05:00,2026-06-01T14:30:00-05:00,MNQ,long,18000.0,17900.0,16900.0,-11.0,orb",
+        "T2,2026-06-01T11:30:00-05:00,2026-06-01T12:00:00-05:00,MNQ,long,18000.0,17900.0,18200.0,2.0,orb",
+    ]
+    csv_file.write_text("\n".join(lines_late), encoding="utf-8")
+    res_late = ss.run_separation(csv_file, max_trades_month=42)
+    assert res_late["n_accepted"] == 2, "A las 11:30 Trade 1 sigue abierto, ambos trades deben ser aceptados"
 
 
 def test_reporte_metodo_real_bootstrap():
-    """6. Fix H7: Verifica que el reporte de bootstrap indica el método que realmente se usó (IID o CBB)."""
+    """6. Fix H7 & WARNING 1: Verifica que el reporte de bootstrap indica el método real y no confunde unsupported con CBB."""
+    # 1. Verificación de clasificación canónica FARS
+    assert bc.classify_bootstrap_method("iid_eligible") == "IID"
+    assert bc.classify_bootstrap_method("dependent_resampling_candidate") == "CBB (dependent_resampling_candidate)"
+    unsupported_label = bc.classify_bootstrap_method("unsupported_or_inconclusive")
+    assert unsupported_label == "unsupported (unsupported_or_inconclusive)"
+    assert "CBB" not in unsupported_label, "unsupported_or_inconclusive NUNCA debe etiquetarse como CBB"
+
+    # 2. Verificación en ejecución real sobre ledger
     assert LEDGER_CSV.exists()
     res = bc.run_full_bootstrap(LEDGER_CSV, master_seed=20260928, B=2000)
-    state = res["gross"]["fars_bootstrap"]["eligibility"]["state"]
-    method_used = res["gross"]["method_used"]
-    if state == "iid_eligible":
-        assert method_used == "IID"
-    else:
-        assert "CBB" in method_used
-    assert res["method_used_gross"] == method_used
-    assert res["method_used_allowed"] in ("IID", f"CBB ({res['allowed']['fars_bootstrap']['eligibility']['state']})")
+    state_g = res["gross"]["fars_bootstrap"]["eligibility"]["state"]
+    method_used_g = res["gross"]["method_used"]
+    assert method_used_g == bc.classify_bootstrap_method(state_g)
+    assert res["method_used_gross"] == method_used_g
+
+    state_a = res["allowed"]["fars_bootstrap"]["eligibility"]["state"]
+    method_used_a = res["allowed"]["method_used"]
+    assert method_used_a == bc.classify_bootstrap_method(state_a)
+    assert res["method_used_allowed"] == method_used_a
 
 
 def test_camino_doble_bruto_y_permitido():
@@ -298,6 +309,312 @@ def test_camino_doble_bruto_y_permitido():
         assert 0.0 <= lp["p_daily_loss_limit_exceeded"] <= 1.0
         assert 0.0 <= lp["p_max_ops_limit_exceeded"] <= 1.0
 
+        # Semántica terminal mutuamente excluyente (Fix CRITICAL 1, 2)
+        assert "p_target" in lp
+        assert "p_breach_trailing" in lp
+        assert "p_breach_daily" in lp
+        assert "p_horizon_exhausted" in lp
+        assert "p_breach_total" in lp
+        p_sum = lp["p_target"] + lp["p_breach_trailing"] + lp["p_breach_daily"] + lp["p_horizon_exhausted"]
+        assert abs(p_sum - 1.0) < 1e-6, f"Las 4 categorías terminales deben sumar 1.0 en {path_key}, suman {p_sum}"
+        assert abs(lp["p_breach_total"] - (lp["p_breach_trailing"] + lp["p_breach_daily"])) < 1e-6, (
+            f"P(breach total) debe ser la suma exacta de trailing + daily en {path_key}"
+        )
+
+
+
+def test_b3_probabilidades_responden_a_datos():
+    """8. Fix B3 (CRITICAL 1 y 2): Verifica que las probabilidades de camino respondan a los datos y cumplan exclusión mutua."""
+    # 1. Pérdidas severas diarias (-5R por trade) -> Daily loss limit se activa en trade 1 (PnL = -$5.000 <= -$2.000).
+    # Con stop_on_daily_loss=True, la réplica se detiene de inmediato en breach_daily (hit_daily=True, hit_dd=False).
+    r_loss_daily = np.full(50, -5.0)
+    dates_loss_daily = np.asarray([f"2026-06-{(i % 20) + 1:02d}" for i in range(50)])
+    _, _, acts_daily = bc.run_unwrapped_mbb(r_loss_daily, block_size=5, B=100, seed=123, dates=dates_loss_daily)
+    p_daily = sum(x["hit_daily"] for x in acts_daily) / 100
+    p_dd = sum(x["hit_dd"] for x in acts_daily) / 100
+    p_target_loss = sum(x["passed"] for x in acts_daily) / 100
+    assert p_daily == 1.0, f"Con pérdidas intradía severas P(Daily) debe ser 1.0, obtuvo {p_daily}"
+    assert p_dd == 0.0, f"P(DD) debe ser 0.0 porque la parada diaria detiene la réplica antes de $8k DD, obtuvo {p_dd}"
+    assert p_target_loss == 0.0, f"P(Target) debe ser 0.0 ante pérdidas severas, obtuvo {p_target_loss}"
+    for x in acts_daily:
+        assert x["terminal_condition"] == "breach_daily"
+        assert (int(x["passed"]) + int(x["hit_dd"]) + int(x["hit_daily"]) + int(x["terminal_condition"] == "horizon_exhausted")) == 1
+
+    # 1b. Pérdidas moderadas multi-día (-0.5R por trade, 1 trade/día) -> Daily loss NUNCA se activa (-$500 > -$2.000),
+    # pero el drawdown acumulado alcanza el límite trailing ($8.000 USD), resultando en breach_trailing.
+    r_loss_dd = np.full(30, -0.5)
+    dates_loss_dd = np.asarray([f"2026-06-{i + 1:02d}" for i in range(30)])
+    _, _, acts_dd = bc.run_unwrapped_mbb(r_loss_dd, block_size=5, B=100, seed=123, dates=dates_loss_dd)
+    p_daily_b = sum(x["hit_daily"] for x in acts_dd) / 100
+    p_dd_b = sum(x["hit_dd"] for x in acts_dd) / 100
+    assert p_daily_b == 0.0, f"Con pérdidas diarias moderadas P(Daily) debe ser 0.0, obtuvo {p_daily_b}"
+    assert p_dd_b == 1.0, f"Con DD acumulado >= $8.000 P(DD) debe ser 1.0, obtuvo {p_dd_b}"
+    for x in acts_dd:
+        assert x["terminal_condition"] == "breach_trailing"
+        assert (int(x["passed"]) + int(x["hit_dd"]) + int(x["hit_daily"]) + int(x["terminal_condition"] == "horizon_exhausted")) == 1
+
+    # 2. Ganancias continuas (+2R por trade) -> Drawdown y Daily loss limit NUNCA deben activarse (0.0),
+    # y el Profit Target (+6.000 USD) se alcanza con éxito (1.0).
+    r_gain = np.full(50, 2.0)
+    dates_gain = np.asarray([f"2026-06-{(i % 20) + 1:02d}" for i in range(50)])
+    _, _, acts_gain = bc.run_unwrapped_mbb(r_gain, block_size=5, B=100, seed=123, dates=dates_gain)
+    p_dd_gain = sum(x["hit_dd"] for x in acts_gain) / 100
+    p_daily_gain = sum(x["hit_daily"] for x in acts_gain) / 100
+    p_target_gain = sum(x["passed"] for x in acts_gain) / 100
+    assert p_dd_gain == 0.0, f"Con ganancias puras P(DD) debe ser 0.0, obtuvo {p_dd_gain}"
+    assert p_daily_gain == 0.0, f"Con ganancias puras P(Daily) debe ser 0.0, obtuvo {p_daily_gain}"
+    assert p_target_gain == 1.0, f"Con ganancias puras P(Target) debe ser 1.0, obtuvo {p_target_gain}"
+    for x in acts_gain:
+        assert x["terminal_condition"] == "target"
+        assert (int(x["passed"]) + int(x["hit_dd"]) + int(x["hit_daily"]) + int(x["terminal_condition"] == "horizon_exhausted")) == 1
+
+    # 3. Cupo mensual calendario: 50 operaciones en Junio 2026 (> 42 ops en mes calendario) -> P(max_ops) DEBE ser 1.0
+    r_ops_high = np.full(50, 0.1)
+    dates_ops_high = np.full(50, "2026-06-15")
+    _, _, acts_high = bc.run_unwrapped_mbb(r_ops_high, block_size=5, B=100, seed=123, dates=dates_ops_high)
+    p_ops_high = sum(x["hit_max_ops"] for x in acts_high) / 100
+    assert p_ops_high == 1.0, f"Con 50 ops en mes calendario P(max_ops) debe ser 1.0, obtuvo {p_ops_high}"
+
+    # 4. Cupo mensual calendario: 10 operaciones en Junio 2026 (<= 42 ops) -> P(max_ops) DEBE ser 0.0
+    r_ops_low = np.full(10, 0.1)
+    dates_ops_low = np.full(10, "2026-06-15")
+    _, _, acts_low = bc.run_unwrapped_mbb(r_ops_low, block_size=5, B=100, seed=123, dates=dates_ops_low)
+    p_ops_low = sum(x["hit_max_ops"] for x in acts_low) / 100
+    assert p_ops_low == 0.0, f"Con 10 ops en mes calendario P(max_ops) debe ser 0.0, obtuvo {p_ops_low}"
+
+    # 5. Sizing monetario dependiente de equity (Fix WARNING 3):
+    # A $100.000: riesgo 1% = $1.000 -> 5 contratos ($1.000 por 1R).
+    # Al caer a $99.000: riesgo 1% = $990 -> 4 contratos ($800 por 1R).
+    r_sizing = np.array([-1.0, -1.0])
+    dates_sizing = np.array(["2026-06-01", "2026-06-02"])
+    _, _, acts_sz = bc.run_unwrapped_mbb(r_sizing, block_size=2, B=1, seed=42, dates=dates_sizing)
+    assert not acts_sz[0]["hit_dd"]
+    assert not acts_sz[0]["hit_daily"]
+    assert acts_sz[0]["sizes"] == [5, 4], f"Esperaba escalonamiento de contratos [5, 4], obtuvo {acts_sz[0].get('sizes')}"
+
+
+
+def test_ledger_export_exit_time_real(tmp_path=None):
+    """Regresión R4/CR4: ledger_fars exporta el exit_time real (sin fallback 14:30
+    inventado) y sobrevive a timestamps NaT — el bug tz_localize(ambiguous='infer')
+    de los exports pesados no tenía cobertura de tests."""
+    from types import SimpleNamespace
+
+    import run_orb
+
+    if tmp_path is None:
+        import tempfile
+        tmp_path = Path(tempfile.mkdtemp(prefix="orb_ledger_test_"))
+    trades = pd.DataFrame([
+        {"entry_time": datetime(2026, 7, 2, 9, 35), "exit_time": datetime(2026, 7, 2, 10, 45),
+         "direction": "long", "entry_price": 20000.0, "exit_price": 20050.0, "stop_points": 100.0},
+        {"entry_time": datetime(2026, 7, 6, 10, 5), "exit_time": pd.NaT,
+         "direction": "short", "entry_price": 20100.0, "exit_price": 20080.0, "stop_points": 100.0},
+        # fold DST (hora ambigua 01:30 del fin del DST): convención determinista
+        {"entry_time": datetime(2026, 11, 1, 0, 30), "exit_time": datetime(2026, 11, 1, 1, 30),
+         "direction": "long", "entry_price": 20200.0, "exit_price": 20210.0, "stop_points": 100.0},
+        # input ya tz-aware: no debe tronar ni re-localizar
+        {"entry_time": pd.Timestamp("2026-07-07 09:35", tz="America/Chicago"),
+         "exit_time": pd.Timestamp("2026-07-07 12:00", tz="America/Chicago"),
+         "direction": "long", "entry_price": 20300.0, "exit_price": 20330.0, "stop_points": 100.0},
+        # input tz-aware en UTC: debe normalizarse con tz_convert a America/Chicago (Fix WARNING 4)
+        {"entry_time": pd.Timestamp("2026-07-08 14:00:00+00:00"),
+         "exit_time": pd.Timestamp("2026-07-08 15:30:00+00:00"),
+         "direction": "long", "entry_price": 20400.0, "exit_price": 20450.0, "stop_points": 100.0},
+    ])
+    res = SimpleNamespace(trades=trades)
+    out = Path(tmp_path) / "ledger_test.csv"
+    n = run_orb.ledger_fars(res, run_orb.MNQ_CFG, out, "test")
+    assert n == 5
+    df = pd.read_csv(out)
+    assert "exit_time" in df.columns
+    # exit_time REAL de la primera operación, no el fallback 14:30
+    assert str(df.loc[0, "exit_time"]).startswith("2026-07-02T10:45:00")
+    assert "T14:30" not in str(df.loc[0, "exit_time"])
+    # timestamps tz-aware (offset CT, CDT en julio)
+    assert str(df.loc[0, "timestamp"])[-6:] == "-05:00"
+    # fila sin exit_time → vacío en el CSV, NUNCA inventado
+    assert pd.isna(df.loc[1, "exit_time"]) or str(df.loc[1, "exit_time"]).strip() == ""
+    # fold DST: convención determinista ambiguous=False → hora estándar (-06:00)
+    assert str(df.loc[2, "exit_time"]).startswith("2026-11-01T01:30:00")
+    assert str(df.loc[2, "exit_time"])[-6:] == "-06:00"
+    # input tz-aware Chicago: se respeta su offset, sin crash de re-localización
+    assert str(df.loc[3, "exit_time"]).startswith("2026-07-07T12:00:00")
+    assert str(df.loc[3, "exit_time"])[-6:] == "-05:00"
+    # input tz-aware UTC: se normaliza a America/Chicago (-05:00 en verano CDT) (Fix WARNING 4)
+    assert str(df.loc[4, "timestamp"]).startswith("2026-07-08T09:00:00")
+    assert str(df.loc[4, "timestamp"])[-6:] == "-05:00"
+    assert str(df.loc[4, "exit_time"]).startswith("2026-07-08T10:30:00")
+    assert str(df.loc[4, "exit_time"])[-6:] == "-05:00"
+
+
+def test_mc_fondeo_dos_replicas_juguete_calculables_a_mano():
+    """10. Fix CRITICAL 1, 2: Monte Carlo de Fondeo con réplicas de juguete calculables a mano.
+
+    Verifica la semántica terminal mutuamente excluyente (Apex-like):
+      - Réplica 1 (Éxito / Profit Target): parada terminal inmediata al alcanzar +$6.000 USD.
+      - Réplica 2 (Fracaso / Daily Loss Breach): parada terminal inmediata al cruzar -$2.000 USD en el día.
+      - Réplica 3 (Fracaso / Trailing DD Breach): parada terminal inmediata al cruzar $8.000 USD de DD acumulado.
+      - Réplica 4 (Horizonte Agotado): finalización sin alcanzar target ni ningún breach.
+      - Réplica 5 (Capa de Riesgo FARS pareada): veto de riesgo descarta la operación y la réplica continúa.
+      - Exclusión mutua estricta: exactamente un estado terminal por réplica.
+    """
+    from datetime import datetime
+
+    # Réplica 1: Profit Target alcanzado y parada estricta
+    r_rep1 = np.array([2.0, 2.0, 2.0, -5.0])
+    tl_rep1 = [
+        datetime(2026, 6, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 3, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 4, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    res1 = bc.simulate_funded_trajectory(r_rep1, tl_rep1, profit_target_usd=6_000.0)
+    assert res1["passed"] is True
+    assert res1["terminal_condition"] == "target"
+    assert res1["final_equity"] == 106_000.0
+    assert res1["peak_equity"] == 106_000.0
+    assert res1["trades_executed"] == 3  # El 4to trade (-5R) no se ejecutó tras parada terminal
+    assert res1["sizes"] == [5, 5, 5]
+    assert res1["hit_dd"] is False
+    assert res1["hit_daily"] is False
+
+    # Réplica 2: Pérdida diaria terminal (Apex hard stop: primer breach detiene la simulación)
+    # Trade 1: r=-1.0, size 5, PnL=-$1000, equity=$99k, day_pnl=-$1000
+    # Trade 2: r=-1.0, size 4, PnL=-$800, equity=$98.2k, day_pnl=-$1800
+    # Trade 3: r=-1.0, size 4, PnL=-$800, equity=$97.4k, day_pnl=-$2600 <= -$2000 -> BREACH DIARIO TERMINAL
+    r_rep2 = np.array([-1.0, -1.0, -1.0, -5.0, -5.0, 10.0])
+    tl_rep2 = [
+        datetime(2026, 6, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 1, 10, 15, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 1, 10, 30, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 3, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 4, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    res2 = bc.simulate_funded_trajectory(r_rep2, tl_rep2, profit_target_usd=6_000.0)
+    assert res2["passed"] is False
+    assert res2["hit_daily"] is True
+    assert res2["hit_dd"] is False  # Estrictamente False: se detiene de inmediato sin solapamiento
+    assert res2["terminal_condition"] == "breach_daily"
+    assert res2["final_equity"] == 97_400.0
+    assert res2["peak_equity"] == 100_000.0
+    assert res2["trades_executed"] == 3  # Trades 4, 5, 6 NUNCA se ejecutan tras breach diario
+    assert res2["sizes"] == [5, 4, 4]  # Sizing 5 -> 4 -> 4 contratos
+
+    # Réplica 3: Trailing Drawdown terminal sin violar límite diario
+    # Multi-día (1 trade/día): pérdidas diarias <= $2.000, pero DD acumulado alcanza $8.000 USD
+    # Trade 1: r=-1.5, size 5, PnL=-$1500, eq=$98.500, DD=$1.500, day=-$1500
+    # Trade 2: r=-2.0, size 4, PnL=-$1600, eq=$96.900, DD=$3.100, day=-$1600
+    # Trade 3: r=-2.0, size 4, PnL=-$1600, eq=$95.300, DD=$4.700, day=-$1600
+    # Trade 4: r=-2.0, size 4, PnL=-$1600, eq=$93.700, DD=$6.300, day=-$1600
+    # Trade 5: r=-2.2, size 4, PnL=-$1760, eq=$91.940, DD=$8.060 >= $8.000 -> BREACH TRAILING TERMINAL
+    r_rep3 = np.array([-1.5, -2.0, -2.0, -2.0, -2.2, 10.0])
+    tl_rep3 = [
+        datetime(2026, 6, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 3, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 4, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 5, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 8, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    res3 = bc.simulate_funded_trajectory(r_rep3, tl_rep3, profit_target_usd=6_000.0)
+    assert res3["passed"] is False
+    assert res3["hit_daily"] is False
+    assert res3["hit_dd"] is True
+    assert res3["terminal_condition"] == "breach_trailing"
+    assert res3["final_equity"] == 91_940.0
+    assert res3["trades_executed"] == 5  # El 6to trade (+10R) no se ejecutó
+    assert res3["sizes"] == [5, 4, 4, 4, 4]
+
+    # Réplica 4: Horizonte agotado sin target ni breach
+    r_rep4 = np.array([0.5, 0.5])
+    tl_rep4 = [
+        datetime(2026, 6, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    res4 = bc.simulate_funded_trajectory(r_rep4, tl_rep4, profit_target_usd=6_000.0)
+    assert res4["passed"] is False
+    assert res4["hit_daily"] is False
+    assert res4["hit_dd"] is False
+    assert res4["terminal_condition"] == "horizon_exhausted"
+    assert res4["trades_executed"] == 2
+    assert res4["final_equity"] == 101_000.0
+
+    # Réplica 5: Capa de riesgo FARS pareada (use_risk_engine=True):
+    # Un veto de riesgo descarta la operación (trades_vetoed=1), la réplica continúa sin cambio en equity
+    r_rep5 = np.array([2.0, 2.0, 2.0])
+    tl_rep5 = [
+        datetime(2026, 6, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 1, 10, 15, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    custom_rules = FundedAccountRules(
+        initial_balance=100_000.0,
+        profit_target_pct=0.10,
+        max_drawdown_pct=0.08,
+        daily_loss_limit_pct=0.02,
+        risk_per_trade=0.01,
+        daily_loss_base="initial",
+        drawdown_mode="trailing",
+        max_trades=None,
+        daily_profit_target_usd=1_500.0,  # Tras Trade 1 (+2k), veta Trade 2 en el mismo día
+        daily_loss_limit_usd=2_000.0,
+        max_drawdown_usd=8_000.0,
+        max_risk_dollars_per_order=1_000.0,
+    )
+    res5 = bc.simulate_funded_trajectory(
+        r_rep5, tl_rep5, profit_target_usd=10_000.0,
+        use_risk_engine=True, rules=custom_rules,
+    )
+    assert res5["trades_vetoed"] == 1, f"Trade 2 debió ser vetado por daily profit target, vetados: {res5['trades_vetoed']}"
+    assert res5["trades_executed"] == 2, f"Debieron ejecutarse Trade 1 y Trade 3, ejecutados: {res5['trades_executed']}"
+
+    # Réplica 6 (Regresión Fix R9): cambio de día NO debe producir vetos falsos.
+    # Día 1: -1.5R (-$1.500, sin breach). Día 2: -0.8R (-$800) y luego +2.0R.
+    # Pérdida real del día 2 = $800 < $2.000 → el trade ganador NO puede vetarse.
+    # Sin el snapshot POSTERIOR al cierre, el engine tomaba como start_of_day la
+    # equity pre-cierre del día 1 ($100.000) y vetaba por "pérdida diaria" de $2.300.
+    r_rep6 = np.array([-1.5, -0.8, 2.0])
+    tl_rep6 = [
+        datetime(2026, 6, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 6, 2, 10, 15, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    rules_rep6 = FundedAccountRules(
+        initial_balance=100_000.0,
+        profit_target_pct=0.10,
+        max_drawdown_pct=0.08,
+        daily_loss_limit_pct=0.02,
+        risk_per_trade=0.01,
+        daily_loss_base="initial",
+        drawdown_mode="trailing",
+        max_trades=None,
+        daily_profit_target_usd=None,
+        daily_loss_limit_usd=2_000.0,
+        max_drawdown_usd=8_000.0,
+        max_risk_dollars_per_order=1_000.0,
+    )
+    res6 = bc.simulate_funded_trajectory(
+        r_rep6, tl_rep6, profit_target_usd=10_000.0,
+        use_risk_engine=True, rules=rules_rep6,
+    )
+    assert res6["trades_vetoed"] == 0, (
+        f"Veto falso al cambiar de día (pérdida real día 2 = $640): {res6['trades_vetoed']}"
+    )
+    assert res6["trades_executed"] == 3, f"Las 3 debieron ejecutarse: {res6['trades_executed']}"
+    assert res6["sizes"] == [5, 4, 4]  # step-down de sizing: 100k→5, 98.5k→4, 97.86k→4
+    # 100.000 -1.500 (5×200×-1.5) -640 (4×200×-0.8) +1.600 (4×200×+2.0) = 99.460
+    assert res6["final_equity"] == 99_460.0
+    assert res6["terminal_condition"] == "horizon_exhausted"
+
+    # Verificación de exclusión mutua estricta en todas las réplicas de prueba
+    for r in [res1, res2, res3, res4, res5, res6]:
+        tc_valid = r["terminal_condition"] in ("target", "breach_trailing", "breach_daily", "horizon_exhausted")
+        assert tc_valid, f"Estado terminal no reconocido: {r['terminal_condition']}"
+        assert (int(r["passed"]) + int(r["hit_dd"]) + int(r["hit_daily"]) + int(r["terminal_condition"] == "horizon_exhausted")) == 1
+
+
 
 if __name__ == "__main__":
     fails = 0
@@ -309,6 +626,9 @@ if __name__ == "__main__":
         test_atribucion_pnl_timestamp_salida,
         test_reporte_metodo_real_bootstrap,
         test_camino_doble_bruto_y_permitido,
+        test_b3_probabilidades_responden_a_datos,
+        test_ledger_export_exit_time_real,
+        test_mc_fondeo_dos_replicas_juguete_calculables_a_mano,
     ]
     for func in test_funcs:
         try:

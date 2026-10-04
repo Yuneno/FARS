@@ -18,9 +18,11 @@ muestra completa nuestra (2010-06..2026-09).
 from __future__ import annotations
 
 import json
+import math
 import sys
 from dataclasses import replace
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -61,25 +63,50 @@ WINDOWS = {
 }
 
 
+def _clean_float(val: Any, decimals: int = 4) -> float | None:
+    if val is None:
+        return None
+    try:
+        fv = float(val)
+        return round(fv, decimals) if math.isfinite(fv) else None
+    except (ValueError, TypeError):
+        return None
+
+
 def metrics_block(res, cfg: Config) -> dict:
     eq = res.equity
     if eq.empty:
         return {"trades": 0}
     m = compute_metrics(eq)                      # Sharpe/Vol/DD%/DD$/CAGR
     t = trade_pnl_tstat(res.trades) if len(res.trades) else {}
+    t_stat_val = _clean_float(t.get("t_stat")) if t else None
     return {
         "trades": int(len(res.trades)),
-        "sharpe": round(float(m["Sharpe"]), 4),
-        "volatility_pct": round(float(m["Volatility"]) * 100, 4),
-        "max_dd_pct": round(float(m["Max Drawdown %"]) * 100, 4),
-        "t_stat": round(float(t.get("t_stat", float("nan"))), 4) if t else None,
-        "cagr_pct": round(float(m["CAGR"]) * 100, 4),
+        "sharpe": _clean_float(m.get("Sharpe")),
+        "volatility_pct": _clean_float(float(m["Volatility"]) * 100) if "Volatility" in m else None,
+        "max_dd_pct": _clean_float(float(m["Max Drawdown %"]) * 100) if "Max Drawdown %" in m else None,
+        "t_stat": t_stat_val,
+        "cagr_pct": _clean_float(float(m["CAGR"]) * 100) if "CAGR" in m else None,
         "net_pnl_usd": round(float(res.trades["pnl"].sum()), 2) if len(res.trades) else 0.0,
         "pnl_per_contract_mean": round(float(res.trades["pnl_per_contract"].mean()), 2) if len(res.trades) else None,
         "round_turn_cost_usd": round(cfg.round_turn_cost, 2),
         "first": str(eq.index[0].date()),
         "last": str(eq.index[-1].date()),
     }
+
+
+def _ct_iso(val: Any) -> str | None:
+    """ISO tz-aware America/Chicago. Determinista en el fold DST
+    (ambiguous=False = hora estándar); acepta inputs naive o ya tz-aware."""
+    if val is None or not pd.notna(val):
+        return None
+    ts = pd.Timestamp(val)
+    if ts.tzinfo is None:
+        ts = ts.tz_localize("America/Chicago", ambiguous=False,
+                            nonexistent="shift_forward")
+    else:
+        ts = ts.tz_convert("America/Chicago")
+    return ts.isoformat()
 
 
 def ledger_fars(res, cfg: Config, path: Path, tag: str) -> int:
@@ -91,12 +118,15 @@ def ledger_fars(res, cfg: Config, path: Path, tag: str) -> int:
         gross_pts = sign * (t.exit_price - t.entry_price)
         cost_pts = cfg.round_turn_cost / cfg.point_value
         r = (gross_pts - cost_pts) / stop_pts
+        # Convención determinista: los exits del backtest pueden caer durante
+        # Globex, incluida la hora ambigua DST — ambiguous=False puede desplazar
+        # un exit una hora (el test cubre el fold 2026-11-01 01:30). El
+        # tz_localize de Timestamp escalar NO acepta ambiguous="infer".
+        exit_time_str = _ct_iso(getattr(t, "exit_time", None))
         rows.append({
             "trade_id": f"{tag}-{t.entry_time}-{len(rows)+1:05d}",
-            "timestamp": (pd.Timestamp(t.entry_time)
-                          .tz_localize("America/Chicago", ambiguous="infer",
-                                       nonexistent="shift_forward")
-                          .isoformat()),
+            "timestamp": _ct_iso(t.entry_time),
+            "exit_time": exit_time_str,
             "asset": "MNQ",
             "direction": t.direction,
             "entry_price": round(float(t.entry_price), 4),
@@ -129,7 +159,7 @@ def main() -> None:
                 n = ledger_fars(res, cfg, HERE / f"ledger_orb_{sname}.csv", sname)
                 print(f"      ledger FARS: {n} trades -> ledger_orb_{sname}.csv")
 
-    (HERE / "metrics_orb.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+    (HERE / "metrics_orb.json").write_text(json.dumps(out, indent=2, allow_nan=False), encoding="utf-8")
     print(f"\nEscrito metrics_orb.json con {len(out)} escenarios")
 
 

@@ -75,6 +75,51 @@ ROUND_TURN_COST = 2 * COMMISSION_PER_SIDE + 2 * SLIPPAGE_TICKS_PER_SIDE * TICK_V
 ENTRY_MODE = "stop"            # convención conservadora (la corregida del autor)
 
 
+def check_trade_exit(
+    direction: str,
+    stop: float,
+    target: float,
+    open_p: float,
+    high_p: float,
+    low_p: float,
+    close_p: float,
+    t_now: dtime,
+) -> tuple[float | None, str | None]:
+    """Evalúa salidas de una posición según reglas FARS.
+
+    Convención conservadora FARS:
+    1. Si hay gap en open que cruza stop, se llena al open.
+    2. En barras ambiguas donde se tocan stop y target, STOP PRIMERO.
+    3. Si se toca target, salida al target (o open si hubo gap favorable).
+    4. Al fin de sesión (t_now >= TRADE_END), salida simétrica al close (eod_long / eod_short).
+    """
+    exit_price = None
+    exit_reason = None
+    if direction == "long":
+        if open_p <= stop:
+            exit_price, exit_reason = float(open_p), "stop"
+        elif low_p <= stop:
+            exit_price, exit_reason = float(stop), "stop"
+        elif open_p >= target:
+            exit_price, exit_reason = float(open_p), "target"
+        elif high_p >= target:
+            exit_price, exit_reason = float(target), "target"
+    else:  # short
+        if open_p >= stop:
+            exit_price, exit_reason = float(open_p), "stop"
+        elif high_p >= stop:
+            exit_price, exit_reason = float(stop), "stop"
+        elif open_p <= target:
+            exit_price, exit_reason = float(open_p), "target"
+        elif low_p <= target:
+            exit_price, exit_reason = float(target), "target"
+
+    if exit_price is None and t_now >= TRADE_END:
+        exit_price, exit_reason = float(close_p), f"eod_{direction}"
+
+    return exit_price, exit_reason
+
+
 def compute_trade_pnl(direction: str, entry_price: float, exit_price: float, contracts: int) -> tuple[float, float]:
     """Calcula (pnl_usd, r_result) de un trade con costes MNQ realistas."""
     sign = 1.0 if direction.lower() == "long" else -1.0
@@ -147,7 +192,7 @@ class OrbSignalGenerator:
             return None
         if (self.win_high is None or self.trades_today >= self.max_trades_day
                 or self.trades_this_month >= self.max_trades_month
-                or not (TRADE_START <= t <= TRADE_END)):
+                or not (TRADE_START <= t < TRADE_END)):
             return None
         if h > self.win_high:
             self.trades_today += 1
@@ -239,18 +284,40 @@ def position_size(equity: float, rules: FundedAccountRules) -> int:
     return max(0, int(risk_usd / per_contract))
 
 
-def run_replay(months: int, rules: FundedAccountRules) -> dict:
+def check_drawdown_breach(equity: float, peak_equity: float, rules: FundedAccountRules) -> tuple[bool, float]:
+    """Calcula si el equity viola el piso de drawdown (trailing o static).
+
+    Devuelve (breached, floor_value).
+    """
+    ref = peak_equity if rules.drawdown_mode == "trailing" else rules.initial_balance
+    if rules.max_drawdown_usd is not None:
+        floor = ref - rules.max_drawdown_usd
+    else:
+        floor = ref - ref * rules.max_drawdown_pct
+    return equity <= floor, floor
+
+
+def run_replay(months: int, rules: FundedAccountRules, df: pd.DataFrame | None = None,
+               export_path: Path | None = None) -> dict:
     from nq_breakout.data import load_nq_1min, resample_5min
 
-    DATA = Path("E:/FARS-LAB/ext_review2/data_adapted/mnq_1min_multicharts.csv.gz")
-    print("Cargando barras …")
-    df = resample_5min(load_nq_1min(DATA))
-    end = df["date"].max()
-    start = (end - pd.DateOffset(months=months)).to_pydatetime()
-    sub = df[df["date"] >= start]
-    print(f"  replay {sub['date'].iloc[0]} → {sub['date'].iloc[-1]}  ({len(sub):,} barras)")
+    if df is not None:
+        sub = df
+        start_ts = pd.Timestamp(sub["date"].iloc[0])
+        if start_ts.tzinfo is None:
+            start_ts = start_ts.tz_localize(CT)
+        start = start_ts.to_pydatetime()
+        print(f"  replay custom df: {sub['date'].iloc[0]} → {sub['date'].iloc[-1]}  ({len(sub):,} barras)")
+    else:
+        DATA = Path("E:/FARS-LAB/ext_review2/data_adapted/mnq_1min_multicharts.csv.gz")
+        print("Cargando barras …")
+        df_all = resample_5min(load_nq_1min(DATA))
+        end = df_all["date"].max()
+        start = (end - pd.DateOffset(months=months)).to_pydatetime()
+        sub = df_all[df_all["date"] >= start]
+        print(f"  replay {sub['date'].iloc[0]} → {sub['date'].iloc[-1]}  ({len(sub):,} barras)")
 
-    clock = StepClock(pd.Timestamp(start).tz_localize(CT).to_pydatetime())
+    clock = StepClock(pd.Timestamp(start).tz_localize(CT) if start.tzinfo is None else start)
     guard = RiskGuard(rules, clock)
     paper = PaperExecutionAdapter(clock, PaperAssumptions(
         latency=pd.Timedelta(seconds=0).to_pytimedelta(),
@@ -268,6 +335,7 @@ def run_replay(months: int, rules: FundedAccountRules) -> dict:
     trades_applied = 0
     journal: list[dict] = []
     halted = False
+    terminal_condition: str | None = None
     open_trade: dict | None = None
     pending_signal: tuple[str, datetime] | None = None
     signals_count = 0
@@ -288,39 +356,21 @@ def run_replay(months: int, rules: FundedAccountRules) -> dict:
         if halted:
             break
 
-        # 1. Revisar salidas de posición abierta
+        # 1. Revisar salidas de posición abierta preexistente
         if open_trade is not None and ts > open_trade["entry_time"]:
-            exit_price = None
-            exit_reason = None
-            direction = open_trade["action"]
-            stop = open_trade["stop"]
-            target = open_trade["target"]
-            if direction == "long":
-                if row.open <= stop:
-                    exit_price, exit_reason = float(row.open), "stop"
-                elif row.low <= stop:
-                    exit_price, exit_reason = stop, "stop"
-                elif row.open >= target:
-                    exit_price, exit_reason = float(row.open), "target"
-                elif row.high >= target:
-                    exit_price, exit_reason = target, "target"
-            else:
-                if row.open >= stop:
-                    exit_price, exit_reason = float(row.open), "stop"
-                elif row.high >= stop:
-                    exit_price, exit_reason = stop, "stop"
-                elif row.open <= target:
-                    exit_price, exit_reason = float(row.open), "target"
-                elif row.low <= target:
-                    exit_price, exit_reason = target, "target"
-
-            t_now = ts.time()
-            # Fix H9: Salida simétrica al fin de sesión para AMBOS lados
-            if exit_price is None and t_now >= TRADE_END:
-                exit_price, exit_reason = float(row.close), f"eod_{direction}"
+            exit_price, exit_reason = check_trade_exit(
+                open_trade["action"],
+                open_trade["stop"],
+                open_trade["target"],
+                float(row.open),
+                float(row.high),
+                float(row.low),
+                float(row.close),
+                ts.time(),
+            )
 
             if exit_price is not None:
-                pnl, r_mult = compute_trade_pnl(direction, open_trade["entry_price"],
+                pnl, r_mult = compute_trade_pnl(open_trade["action"], open_trade["entry_price"],
                                                 exit_price, open_trade["size"])
                 realized += pnl
                 equity += pnl
@@ -328,7 +378,7 @@ def run_replay(months: int, rules: FundedAccountRules) -> dict:
                 journal.append({
                     "t": ts.isoformat(),
                     "event": "TRADE_EXIT",
-                    "action": direction,
+                    "action": open_trade["action"],
                     "entry_price": open_trade["entry_price"],
                     "exit_price": exit_price,
                     "reason": exit_reason,
@@ -339,59 +389,138 @@ def run_replay(months: int, rules: FundedAccountRules) -> dict:
                 })
                 open_trade = None
 
+                # Fix CRITICAL 1: Declarar breach terminal si equity <= piso trailing
+                breached, floor = check_drawdown_breach(equity, peak_equity, rules)
+                if breached:
+                    terminal_condition = "max_drawdown"
+                    halted = True
+                    guard.halt(ts, f"terminal breach max_drawdown: equity={equity:.2f} <= floor={floor:.2f} (peak={peak_equity:.2f})")
+                    journal.append({
+                        "t": ts.isoformat(),
+                        "event": "BREACH",
+                        "terminal_condition": "max_drawdown",
+                        "detail": f"terminal breach max_drawdown: equity={equity:.2f} <= floor={floor:.2f} (peak={peak_equity:.2f})",
+                        "floor": round(floor, 2),
+                        "equity": round(equity, 2),
+                        "peak_equity": round(peak_equity, 2),
+                    })
+
         guard.snapshot(ts, equity, peak_equity, realized, trades_applied)
+        if halted:
+            break
 
         # 2. Fix B1: Ejecutar la señal pendiente al OPEN de la barra actual (sin look-ahead)
-        if pending_signal is not None and open_trade is None:
+        if pending_signal is not None and open_trade is None and not halted:
             action, sig_ts = pending_signal
             pending_signal = None
+            t_now = ts.time()
 
-            entry_price = float(row.open)
-            sign = 1.0 if action == "long" else -1.0
-            stop_price = strat.effective_stop(action, entry_price)
-            size = position_size(equity, rules)
-            if size <= 0:
+            # Fix CRITICAL 1: Rechazar entradas cuyo fill caería fuera de sesión o cruza día
+            if not (TRADE_START <= t_now <= TRADE_END) or ts.date() != sig_ts.date():
                 journal.append({
                     "t": ts.isoformat(),
-                    "event": "SKIP_SIZING",
-                    "detail": "tamaño de posición 0 por límite de riesgo",
+                    "event": "REJECT_SESSION",
+                    "detail": f"fill a las {t_now} fuera de sesión permitida ({TRADE_START}-{TRADE_END})",
                 })
             else:
-                signal, decision, intent = guard.authorize(ts, action, "MNQ", stop_price)
-                entry = {
-                    "t": ts.isoformat(),
-                    "action": action,
-                    "entry_price": entry_price,
-                    "stop": stop_price,
-                    "size": size,
-                    "risk_decision": decision.approved,
-                    "reason": decision.reason,
-                    "decision_bar_time": sig_ts.isoformat(),
-                }
-                if intent is not None:
-                    intent = OrderIntent(
-                        **{**intent.__dict__, "size": size, "entry_price": entry_price}
+                entry_price = float(row.open)
+                sign = 1.0 if action == "long" else -1.0
+                stop_price = strat.effective_stop(action, entry_price)
+                size = position_size(equity, rules)
+                if size <= 0:
+                    journal.append({
+                        "t": ts.isoformat(),
+                        "event": "SKIP_SIZING",
+                        "detail": "tamaño de posición 0 por límite de riesgo",
+                    })
+                else:
+                    signal, decision, intent = guard.authorize(ts, action, "MNQ", stop_price)
+                    entry = {
+                        "t": ts.isoformat(),
+                        "action": action,
+                        "entry_price": entry_price,
+                        "stop": stop_price,
+                        "size": size,
+                        "risk_decision": decision.approved,
+                        "reason": decision.reason,
+                        "decision_bar_time": sig_ts.isoformat(),
+                    }
+                    if intent is not None:
+                        intent = OrderIntent(
+                            **{**intent.__dict__, "size": size, "entry_price": entry_price}
+                        )
+                        report = paper.submit(signal, decision, intent)
+                        entry["execution"] = getattr(report, "status", "unknown")
+                        if getattr(report, "status", "") in ("filled", "accepted"):
+                            trades_applied += 1
+                            open_trade = {
+                                "action": action,
+                                "entry_time": ts,
+                                "entry_price": entry_price,
+                                "stop": stop_price,
+                                "target": round(entry_price + sign * TARGET_PTS, 4),
+                                "size": size,
+                            }
+                    journal.append(entry)
+                    print(
+                        f"  [{ts:%Y-%m-%d %H:%M}] {action:5} entry={entry_price:9.2f} stop={stop_price:9.2f} "
+                        f"size={size} risk={'OK' if decision.approved else 'DENEGADO'} ({decision.reason})"
                     )
-                    report = paper.submit(signal, decision, intent)
-                    entry["execution"] = getattr(report, "status", "unknown")
-                    if getattr(report, "status", "") in ("filled", "accepted"):
-                        trades_applied += 1
-                        open_trade = {
-                            "action": action,
-                            "entry_time": ts,
-                            "entry_price": entry_price,
-                            "stop": stop_price,
-                            "target": round(entry_price + sign * TARGET_PTS, 4),
-                            "size": size,
-                        }
-                journal.append(entry)
-                print(
-                    f"  [{ts:%Y-%m-%d %H:%M}] {action:5} entry={entry_price:9.2f} stop={stop_price:9.2f} "
-                    f"size={size} risk={'OK' if decision.approved else 'DENEGADO'} ({decision.reason})"
-                )
+
+                    # Fix CRITICAL 1: Evaluar stop/target intrabarra en la propia barra de ejecución t+1
+                    if open_trade is not None:
+                        exit_price, exit_reason = check_trade_exit(
+                            open_trade["action"],
+                            open_trade["stop"],
+                            open_trade["target"],
+                            float(row.open),
+                            float(row.high),
+                            float(row.low),
+                            float(row.close),
+                            ts.time(),
+                        )
+                        if exit_price is not None:
+                            pnl, r_mult = compute_trade_pnl(open_trade["action"], open_trade["entry_price"],
+                                                            exit_price, open_trade["size"])
+                            realized += pnl
+                            equity += pnl
+                            peak_equity = max(peak_equity, equity)
+                            journal.append({
+                                "t": ts.isoformat(),
+                                "event": "TRADE_EXIT",
+                                "action": open_trade["action"],
+                                "entry_price": open_trade["entry_price"],
+                                "exit_price": exit_price,
+                                "reason": exit_reason,
+                                "pnl": round(pnl, 2),
+                                "r_result": round(r_mult, 4),
+                                "equity": round(equity, 2),
+                                "peak_equity": round(peak_equity, 2),
+                            })
+                            open_trade = None
+
+                            # Fix CRITICAL 1: Declarar breach terminal si equity <= piso trailing
+                            breached, floor = check_drawdown_breach(equity, peak_equity, rules)
+                            if breached:
+                                terminal_condition = "max_drawdown"
+                                halted = True
+                                guard.halt(ts, f"terminal breach max_drawdown: equity={equity:.2f} <= floor={floor:.2f} (peak={peak_equity:.2f})")
+                                journal.append({
+                                    "t": ts.isoformat(),
+                                    "event": "BREACH",
+                                    "terminal_condition": "max_drawdown",
+                                    "detail": f"terminal breach max_drawdown: equity={equity:.2f} <= floor={floor:.2f} (peak={peak_equity:.2f})",
+                                    "floor": round(floor, 2),
+                                    "equity": round(equity, 2),
+                                    "peak_equity": round(peak_equity, 2),
+                                })
+
+                            guard.snapshot(ts, equity, peak_equity, realized, trades_applied)
+                            if halted:
+                                break
 
         # 3. Fix B1: Al CIERRE de la barra actual, evaluar si se genera señal para la SIGUIENTE barra
-        if open_trade is None and pending_signal is None:
+        if open_trade is None and pending_signal is None and not halted:
             sig = strat.on_bar(ts, row.open, row.high, row.low, row.close)
             if sig is not None:
                 pending_signal = (sig[0], ts)
@@ -413,6 +542,36 @@ def run_replay(months: int, rules: FundedAccountRules) -> dict:
         })
         open_trade = None
 
+        # Fix CRITICAL 1: Declarar breach terminal en cierre forzado si cruza piso trailing
+        breached, floor = check_drawdown_breach(equity, peak_equity, rules)
+        if breached:
+            terminal_condition = "max_drawdown"
+            halted = True
+            guard.halt(ts, f"terminal breach max_drawdown: equity={equity:.2f} <= floor={floor:.2f} (peak={peak_equity:.2f})")
+            journal.append({
+                "t": ts.isoformat(),
+                "event": "BREACH",
+                "terminal_condition": "max_drawdown",
+                "detail": f"terminal breach max_drawdown: equity={equity:.2f} <= floor={floor:.2f} (peak={peak_equity:.2f})",
+                "floor": round(floor, 2),
+                "equity": round(equity, 2),
+                "peak_equity": round(peak_equity, 2),
+            })
+        guard.snapshot(ts, equity, peak_equity, realized, trades_applied)
+
+    # Fix WARNING 4: Señal pendiente al final de barras recibe estado unresolved / replay_end
+    if pending_signal is not None:
+        action, sig_ts = pending_signal
+        pending_signal = None
+        journal.append({
+            "t": ts.isoformat(),
+            "event": "UNRESOLVED_SIGNAL",
+            "action": action,
+            "signal_bar_time": sig_ts.isoformat(),
+            "reason": "replay_end" if not halted else "halted",
+            "status": "unresolved",
+        })
+
     out = {"rules": {k: v for k, v in asdict(rules).items()},
            "bars_replayed": int(len(sub)),
            "signals": signals_count,
@@ -421,12 +580,21 @@ def run_replay(months: int, rules: FundedAccountRules) -> dict:
            "peak_equity": round(peak_equity, 2),
            "realized_pnl": round(realized, 2),
            "halted": halted,
+           "terminal_condition": terminal_condition,
            "journal_tail": journal[-25:],
            "live_execution_enabled": False}
-    (HERE / "paper_run.json").write_text(json.dumps(out, indent=2, default=str),
-                                         encoding="utf-8")
-    print(f"\nResumen: {len(journal)} eventos, {trades_applied} órdenes aceptadas, "
-          f"equity=${equity:,.2f}, peak=${peak_equity:,.2f}, halted={halted} → paper_run.json")
+
+    target_out_path = export_path if export_path is not None else (HERE / "paper_run.json" if df is None else None)
+    if target_out_path is not None:
+        target_out_path.write_text(json.dumps(out, indent=2, default=str, allow_nan=False),
+                                   encoding="utf-8")
+        print(f"\nResumen: {len(journal)} eventos, {trades_applied} órdenes aceptadas, "
+              f"equity=${equity:,.2f}, peak=${peak_equity:,.2f}, halted={halted}, "
+              f"terminal_condition={terminal_condition} → {target_out_path.name}")
+    else:
+        print(f"\nResumen: {len(journal)} eventos, {trades_applied} órdenes aceptadas, "
+              f"equity=${equity:,.2f}, peak=${peak_equity:,.2f}, halted={halted}, "
+              f"terminal_condition={terminal_condition}")
     return out
 
 

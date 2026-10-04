@@ -77,7 +77,7 @@ Nuestro escenario completo con costes del autor (NQ $20/pt): Sharpe 0,71, DD −
 
 **Salvedad de selección (obligatoria):** esta estrategia se eligió **tras ver los resultados publicados del autor** (2015–2025, Sharpe ~1,0). 2010–2026 no es una prueba completamente independiente; sí aporta 5 años (2010–2014) que el autor nunca vio.
 
-## 6. Estado exacto del bot en paper trading
+## 6. Estado exacto del bot en paper trading y Replay de Producción
 
 `lab_artifacts/orb_protocol/paper_bot.py` — tres componentes separados:
 - **estrategia**: reglas ORB del autor (ventana 08:30–10:00 CT, romper alto/bajo, stop 100 pts, target 200 pts, máx 2/día) leyendo solo barras ya cerradas
@@ -87,28 +87,50 @@ Nuestro escenario completo con costes del autor (NQ $20/pt): Sharpe 0,71, DD −
 **Controles configurados:** pérdida diaria 2.000 USD (y 2%), drawdown máximo 8.000 USD / 8% **trailing**, máx 42 operaciones/mes, riesgo por trade 1%, riesgo máximo por orden 1.000 USD, **stop obligatorio** (sin `stop_price` el intent se bloquea en origen), **apagado seguro** por kill-switch (`--kill`) que emite `system_halted` y corta todo.
 
 **Verificado ejecutando:**
-- Replay 3 meses (2026-06 → 2026-09, 18.121 barras): **56 señales → 42 órdenes en paper**, y las restantes **denegadas por `MAX_TRADES_REACHED`** al llegar al límite.
-- Antes de alimentar el `peak_equity`, todo salía denegado con `UNKNOWN_CRITICAL_STATE`: **fail-closed confirmado** (estado desconocido → DENY, como manda la spec).
-- Kill-switch: `HALT` inmediato, 0 órdenes, `halted=True`.
-- Tests `test_paper_bot.py` **6/6**: stop obligatorio, kill-switch, pérdida diaria, máx operaciones, drawdown trailing sin peak, sizing.
+- **Replay 3 meses (2026-06 → 2026-09, 18.121 barras):**
+  - Motor de riesgo configurado con `max_trades=None` (sin techo global que bloquee indefinidamente entre meses). El cupo de 42 operaciones/mes se aplica en la capa de estrategia (`OrbSignalGenerator`), reiniciándose limpiamente al cruzar la frontera de cada mes calendario.
+  - En la corrida canónica reproducida (`paper_run.json`), de 42 señales generadas, **42 fueron aceptadas y ejecutadas** hasta que la cuenta alcanzó el breach terminal en la operación 42.
+  - PnL realizado acumulado: +2.514,60 USD, pico de equity alcanzado: 111.330,80 USD.
+  - **Breach terminal declarado (Fix CRITICAL 1):** Tras alcanzar el pico de 111.330,80 USD, el piso de trailing drawdown (buffer $8.000 USD) subió a 103.330,80 USD. Las operaciones perdedoras posteriores llevaron el equity a 102.514,60 USD, cruzando el piso. En el sistema corregido se declara formalmente `terminal_condition="max_drawdown"`, `halted=True`, se registra el evento `BREACH` en el journal y se detiene el bot. La cuenta queda terminalmente descalificada bajo reglas tipo Apex.
+  - **Semántica de fin de datos:** La gestión de señal pendiente en la última barra del replay (`UNRESOLVED_SIGNAL`, motivo `replay_end` y estado `unresolved`) está implementada y verificada mediante test unitario (`test_j_unresolved_signal_at_replay_end`); en la corrida canónica de `paper_run.json` dicho evento no ocurre debido a la terminación anticipada por breach de trailing drawdown en la operación 42.
+- **Separación de Señales S-A-R (`separar_senales.py`):**
+  - 2.444 señales totales evaluadas: **379 aceptadas (15,5%) y 2.065 rechazadas (84,5%)**.
+  - Causa predominante de rechazo: 2.064 señales denegadas por `DRAWDOWN_BUFFER_TOO_LOW` al subir el piso trailing con los máximos de equity.
+  - E[R] bruto = +0,0573R vs E[R] riesgo-permitido = +0,0030R (en esa única trayectoria histórica particular).
+- **Bootstrap y Monte Carlo de Fondeo (`bootstrap_camino.py`):**
+  - **Funcionales de media (FARS Core Phase 10A):** E[R] bruto = +0,0573R, IC 95% [+0,0132, +0,1025] R. Diagnósticos de dependencia (familia m=13, alpha_b=0,003846): Ljung–Box h10 (stat=5,1782, p=0,87896), Ljung–Box sobre cuadrados h10 (stat=337,4670, p<0,00001) y Runs test (stat=1,0648, p=0,28698), con tests de régimen de varianza también en contra. Clasificación formal: `dependent_resampling_candidate`.
+  - **Funcionales de camino (MBB no circular sin envoltura):** Max Drawdown IC 95% = [19,01, 59,50] R frente al observado de 22,61 R. Max Losing Streak IC 95% = [9, 18] operaciones.
+  - **Monte Carlo de Fondeo (Fix CRITICAL 1 y 2):**
+    - Remuestreo pareado: Cada réplica remuestrea siempre el camino BRUTO (2.444 oportunidades) y corre en paralelo sobre el MISMO remuestreo: (i) sin capa de riesgo y (ii) con capa de riesgo FARS (`AccountAwareRiskEngine`), donde cada veto descarta la operación y la réplica continúa.
+    - **Por qué las dos columnas son idénticas (causalidad, no horizonte):** con estos límites, la parada terminal al primer breach corta la réplica antes de que llegue cualquier señal posterior al engine; los vetos solo pueden darse en señales ANTERIORES al primer breach y en la práctica no se dan. Cero vetos es estructural a cualquier horizonte, no un efecto de las ~35 ops/réplica. La comparación (i)/(ii) es por tanto redundante con estos límites. Los 2.064 vetos históricos de `separar_senales.py` no contradicen esto: esa simulación sigue evaluando señales DESPUÉS del primer breach (no corta la secuencia).
+    - Sizing entero dependiente de equity (min($1000, 1%)/$200), cupo mensual calendario sintético (proceso de interarribos monótono, P(>42/mes)=0/2000 con cota <3/2000 por regla de tres).
+    - **Aproximación por cierres declarada:** Trailing sobre equity a cierre de operación; excursiones intratrade no realizadas no elevan el piso.
+    - **Semántica terminal mutuamente excluyente (Apex-like):** Cada réplica termina en exactamente uno de 4 estados disjuntos: `target`, `breach_trailing`, `breach_daily`, `horizon_exhausted`. P(target) representa la probabilidad de alcanzar el profit target antes del primer breach. P(breach total) = P(breach_trailing) + P(breach_daily) (estrictamente disjuntos). Parada inmediata al primer breach.
+- **Tests automatizados (26/26 pasando):**
+  - `test_paper_bot.py`: 6/6
+  - `test_paper_bot_periods.py`: 10/10 (incluye test de breach terminal de trailing drawdown y test de señal pendiente no resuelta a fin de datos)
+  - `test_investigacion.py`: 10/10 (incluye MBB sin costura, semillas reproducibles, sensibilidad a costes, separación S-A-R, export de exit_time real con normalización UTC, sizing 5->4 contratos, camino doble bruto y permitido con 4 estados disjuntos, y réplicas de Monte Carlo calculables a mano con parada Apex estricta)
 
 **Lo que NO está hecho (declarado):**
 1. El bot corre en **replay sobre barras históricas**. Para paper en vivo falta el conector de datos real (RT-1 de la spec) y el daemon. **No hay credenciales, no hay broker, no hay órdenes reales** — por diseño.
-2. Sin Bootstrap/Monte Carlo de FARS sobre el ledger (es el paso natural para poner un intervalo alrededor de ese E[R]).
-3. La convención de fill de entrada sigue sin reconciliarse contra el original MultiCharts (pendiente del roadmap del propio autor).
-4. El PnL del paper bot no se marca contra mercado (equity constante en el replay): para un run de paper real hay que enlazar el ExecutionReport con el equity.
+2. La convención de fill de entrada sigue sin reconciliarse contra el original MultiCharts (pendiente del roadmap del propio autor).
+3. El PnL en replay evalúa barras cerradas OHLC a 5 minutos; un entorno live de tick continuo requiere reconciliación intrabarra completa.
 
-## 7. Recomendación
+## 7. Recomendación y Veredicto de Fondeo
 
-**Sí avanzar con esta estrategia**, pero con expectativas medidas:
-- Es el primer generador externo que, medido con costes honestos y sin look-ahead, mantiene **E[R] positivo y estable** en 16 años y en 4 cortes cronológicos.
-- El pipeline completo ya está probado: estrategia → señales → **riesgo FARS con veto** → paper. Ese cableado es reutilizable para cualquier otra estrategia.
-- Siguiente paso natural, en este orden: (1) Bootstrap/Monte Carlo de FARS sobre `ledger_orb_fars_stop.csv` para poner intervalos a ese +0,057R; (2) marcar el equity del paper bot contra mercado y correr paper en modo daemon con el conector de datos; (3) recién después, si los intervalos aguantan, considerar una cuenta practice.
+**Recomendación condicionada con cautela estadística:**
+- La estrategia ORB en su camino bruto presenta una expectativa positiva modesta pero genuina (+0,057R) y estable en 16 años y 4 cortes cronológicos.
+- **Sin embargo, bajo la arquitectura de evaluación de fondeo Apex ($100k capital, trailing drawdown de $8.000 USD, 1% de riesgo):**
+  - El replay real de 3 meses **terminó en breach de trailing drawdown** tras haber alcanzado un pico de +$11.330 USD de equity.
+  - La separación S-A-R sobre el ledger completo rechaza el 84,5% de las señales por buffer de drawdown insuficiente, y el Monte Carlo de fondeo evidencia que la persistencia de pérdidas en bloques contiguos genera una probabilidad sustancial de cruzar el piso trailing antes de consolidar el profit target.
+- **Veredicto para cuenta financiada:** No operar con tamaño estándar (1% / 5 contratos MNQ) en una evaluación con trailing drawdown rígido de $8.000 USD. Se requiere:
+  1. Reducir el riesgo por trade a 0,5% o 0,25% (1 o 2 contratos MNQ en vez de 5) para ampliar el margen de supervivencia ante rachas de 10-15 pérdidas consecutivas.
+  2. Evaluar reglas de trailing drawdown estático (como en cuentas ya fondeadas / paso 2) en lugar de trailing intradiario; se declara formalmente la aproximación del estudio por cierres de operación (excursiones favorables intratrade no realizadas no elevan el piso en este modelo de simulación).
 
 ## 8. Trazabilidad
 
 - Repos clonados sin modificar: `E:\FARS-LAB\ext_review2\{nq-intraday-breakout, nq-es-trader-5k-payout, nq-atb-bot-archived}`; el repo de Strategy B en `E:\FARS-LAB\ext_review\nq-strategy-b-bot`.
-- Código propio: `FARS/lab_artifacts/orb_protocol/` → `adapter_data.py` (adaptación de datos), `run_orb.py` (motor del autor + ledger), `verify_legacy.py`, `fix_ledger_tz.py`, `periodos_orb.py`, `paper_bot.py`, `test_paper_bot.py`, `metrics_orb.json`, `paper_run.json`, ledgers `ledger_orb_*.csv`, este informe.
+- Código propio: `FARS/lab_artifacts/orb_protocol/` → `adapter_data.py`, `run_orb.py`, `verify_legacy.py`, `fix_ledger_tz.py`, `periodos_orb.py`, `paper_bot.py`, `separar_senales.py`, `bootstrap_camino.py`, `test_paper_bot.py`, `test_paper_bot_periods.py`, `test_investigacion.py`, `paper_run.json`, ledgers `ledger_orb_*.csv`, este informe.
 - Datos adaptados: `ext_review2/data_adapted/mnq_1min_multicharts.csv.gz` (4.812.017 barras 1-min) — fuera del repo del autor.
-- Verificación realmente ejecutada: 75 tests del autor verdes, reproducción contra sus números, `fars audit` 2.444/2.444, `fars metrics` por periodos, replay de 3 meses del bot, 6 tests de controles, kill-switch probado.
+- Verificación ejecutada: Suite pytest completa verde (26/26 tests passed en 88.58s), auditoría causal sin look-ahead, replicación cuantitativa de reglas.
 - FARS Core y especificaciones **sin cambios**; sin commits, merge ni push.
