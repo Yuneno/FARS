@@ -1,0 +1,29 @@
+{
+  "rules": {
+    "initial_balance": 100000.0,
+    "profit_target_pct": 0.05,
+    "max_drawdown_pct": 0.08,
+    "daily_loss_limit_pct": 0.02,
+    "risk_per_trade": 0.01,
+    "daily_loss_base": "initial",
+    "drawdown_mode": "trailing",
+    "max_trades": 42,
+    "daily_profit_target_pct": null,
+    "daily_profit_target_usd": null,
+    "daily_loss_limit_usd": 2000.0,
+    "max_drawdown_usd": 8000.0,
+    "max_risk_dollars_per_order": 1000.0
+  },
+  "bars_replayed": 18121,
+  "signals": 1,
+  "trades_accepted": 0,
+  "halted": true,
+  "journal_tail": [
+    {
+      "t": "2026-06-03T18:55:00-05:00",
+      "event": "HALT",
+      "detail": "kill-switch detectado: apagado seguro"
+    }
+  ],
+  "live_execution_enabled": false
+}

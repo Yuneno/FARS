@@ -1,0 +1,80 @@
+{
+  "muestra_autor_repro_stop": {
+    "trades": 1788,
+    "sharpe": 0.9895,
+    "volatility_pct": 13.9376,
+    "max_dd_pct": -16.7764,
+    "t_stat": 3.183,
+    "cagr_pct": 13.9293,
+    "net_pnl_usd": 2765105.0,
+    "pnl_per_contract_mean": 170.63,
+    "round_turn_cost_usd": 20.0,
+    "first": "2015-03-02",
+    "last": "2025-05-01"
+  },
+  "muestra_autor_repro_close": {
+    "trades": 1798,
+    "sharpe": 1.8372,
+    "volatility_pct": 19.3553,
+    "max_dd_pct": -12.2131,
+    "t_stat": 4.0628,
+    "cagr_pct": 18.0517,
+    "net_pnl_usd": 4325999.4,
+    "pnl_per_contract_mean": 209.32,
+    "round_turn_cost_usd": 9.2,
+    "first": "2015-03-11",
+    "last": "2025-04-30"
+  },
+  "muestra_autor_fars_stop": {
+    "trades": 1788,
+    "sharpe": 0.9418,
+    "volatility_pct": 13.9284,
+    "max_dd_pct": -16.8257,
+    "t_stat": 3.0449,
+    "cagr_pct": 13.153,
+    "net_pnl_usd": 251232.94,
+    "pnl_per_contract_mean": 16.32,
+    "round_turn_cost_usd": 2.74,
+    "first": "2015-03-02",
+    "last": "2025-05-01"
+  },
+  "muestra_nuestra_repro_stop": {
+    "trades": 2444,
+    "sharpe": 0.7101,
+    "volatility_pct": 13.4785,
+    "max_dd_pct": -19.9711,
+    "t_stat": 2.7369,
+    "cagr_pct": 7.9694,
+    "net_pnl_usd": 2478740.0,
+    "pnl_per_contract_mean": 121.95,
+    "round_turn_cost_usd": 20.0,
+    "first": "2010-06-07",
+    "last": "2026-09-04"
+  },
+  "muestra_nuestra_repro_close": {
+    "trades": 2413,
+    "sharpe": 1.5178,
+    "volatility_pct": 19.2382,
+    "max_dd_pct": -12.3936,
+    "t_stat": 3.9099,
+    "cagr_pct": 11.9608,
+    "net_pnl_usd": 5147567.8,
+    "pnl_per_contract_mean": 171.49,
+    "round_turn_cost_usd": 9.2,
+    "first": "2010-07-05",
+    "last": "2026-09-03"
+  },
+  "muestra_nuestra_fars_stop": {
+    "trades": 2444,
+    "sharpe": 0.6759,
+    "volatility_pct": 13.4258,
+    "max_dd_pct": -20.2036,
+    "t_stat": 2.5709,
+    "cagr_pct": 7.5033,
+    "net_pnl_usd": 224256.1,
+    "pnl_per_contract_mean": 11.46,
+    "round_turn_cost_usd": 2.74,
+    "first": "2010-06-07",
+    "last": "2026-09-04"
+  }
+}
