@@ -3,9 +3,11 @@
     "title": "Manifest del Bloque M8",
     "protocol": "C1",
     "experiment": "§12 #8",
-    "generated_at_utc": "2026-09-24T01:00:48.387463+00:00",
-    "workers_used": 3,
-    "preregistro_sha256": "810eb94181fbfd2535d7b532143b31838607d402d14ec8049223bfe75a8ed767"
+    "generated_at_utc": "2026-09-17T13:49:48.277400+00:00",
+    "workers_used": 4,
+    "preregistro_sha256": "0813065b6e3a190da675fba7e27473cfa5d5508807aab6c78044d0ce747e0051",
+    "updated_at_utc": "2026-09-17T13:53:37.094310+00:00",
+    "total_artifacts": 101
   },
   "datasets": {
     "MNQ": {
@@ -17,19 +19,53 @@
       "friction_points": 2.0,
       "dollar_per_point": 2.0,
       "tick_size": 0.25
+    },
+    "MES": {
+      "data_file": "databento/MES_M5.csv",
+      "n_bars": 518359,
+      "first_timestamp": "2019-05-06T00:00:00+00:00",
+      "last_timestamp": "2026-09-03T23:55:00+00:00",
+      "sha256": "343c94c44cee038c1965fc068b078f2cb90cd32d0d04fed3ecaf97d196003c44",
+      "friction_points": null,
+      "dollar_per_point": 5.0,
+      "tick_size": 0.25
+    },
+    "MYM": {
+      "data_file": "databento/MYM_M5.csv",
+      "n_bars": 517831,
+      "first_timestamp": "2019-05-06T00:00:00+00:00",
+      "last_timestamp": "2026-09-03T23:55:00+00:00",
+      "sha256": "c3a7d21573d4acda8ebd0441aac3d2532de3f99626df7bd4188964805cc6f2bd",
+      "friction_points": null,
+      "dollar_per_point": 0.5,
+      "tick_size": 1.0
+    },
+    "MGC": {
+      "data_file": "databento/MGC_M5.csv",
+      "n_bars": 517646,
+      "first_timestamp": "2019-05-06T00:00:00+00:00",
+      "last_timestamp": "2026-09-03T23:55:00+00:00",
+      "sha256": "f4a5159c027dbb53e01a8ab69d7bf01c43ea76c2ac6c5305654ac2fc7c780e4f",
+      "friction_points": null,
+      "dollar_per_point": 10.0,
+      "tick_size": 0.1
     }
   },
   "artifacts_sha256": {
-    "audit_causality.json": "865c82b973ae8272a4d56fbb3c9525da38c43736c4f8598192d3f6a47a8e26d3",
+    "audit_causality.json": "dfede048328e295b4d738c6abea153599f5eb452807871df8ad9d1902e567539",
+    "BLOCKERS.md": "0fa2af9e2f9a8d3babf25d12a953ae360a5f7692dd8478369db8b79a8f49c0ce",
+    "build_resultados_md.py": "8e9f29ea3576b205eca18f7fb46966aa6f95394e7c7b76e318bf1cda14546457",
     "equivalence_m7_control_MES.json": "d2675890a4b0f16735f0925d1b0d3a729f8175381b8319071ce26a37aef40ff2",
     "equivalence_m7_control_MGC.json": "2a2fb7c50746f342462be3ceb26214940d32392076a3020cee9f949c7bde9378",
-    "equivalence_m7_control_MNQ.json": "18ba000bef6d450254dfc7ac50f5e8e5efdc6ce8fd3dbe6a84c4c575f345d81d",
+    "equivalence_m7_control_MNQ.json": "c32b814551aea2cc723a3e6f598c63d0e39de75b6b4359bb861d004f67b79004",
     "equivalence_m7_control_MYM.json": "59b777b1a59df16fdfb5e09311c896b6017a4b349deb47b916c7c52c2a28478d",
     "equivalence_wrapper_MES.json": "1f21b28bddf5d7641ae390979f973a0fa86455716797456e7b2181d87b996a9d",
     "equivalence_wrapper_MGC.json": "a3a99181ab547f0f9a174bb5dc06c8f41757c0cc8a87890b1fe9a00374d230d8",
-    "equivalence_wrapper_MNQ.json": "722400d5e8e92e131b18389ec4aec5eb20682b01d5a3eecc9996c5323fa97446",
+    "equivalence_wrapper_MNQ.json": "c827aa13c9cdfb8b944909589c56237eaee843e54d3cd1f3b7e1327794e850af",
     "equivalence_wrapper_MYM.json": "ebe348e064ee0fc30207e08f84fcd65cced45e60fe63642b2d79b4ca1e462877",
-    "manifest.json": "a492a9d4f8fa07d67532bcc7e52bfc2a32b1dfca16ad969481409a4f6aa1f76e",
+    "filters.py": "5c5acba325439c584dc8954db22aad24b4df11a96abafa55bdec953a3ca0c3f9",
+    "generate_tables.py": "4220fd3e41ed60dead66033f7a18382c36b135e2f5717c8fa78c6e163790acef",
+    "INFORME.md": "c4f7121fb552ff9949bd315e1fb83b6acb376a179518d426e89b4adbee8c2e3d",
     "metrics_MES_atr_k050_canonico.json": "85cba862324792b55b8826ba940395dded32d66e37dffbfe2a127e22835ec845",
     "metrics_MES_atr_k050_canonico_mas_1tick.json": "c57727604782e363e037592d5842dbb8f118c29f84a952673c19a5fcbdb9f8e6",
     "metrics_MES_atr_k050_ote_band_canonico.json": "be9377abf092c27e76095b434ab486d1fe05de974b59f939790c4e7ce98a4803",
@@ -80,7 +116,7 @@
     "metrics_MNQ_atr_k050_premium_discount_canonico.json": "15b49d785dc9d5c3ef01d5421b02171381bc8aa82a5df197eafd60f7361333bb",
     "metrics_MNQ_atr_k050_premium_discount_canonico_mas_1tick.json": "a1c0354204050dfcf17f2fd1446281354181e01626cd457403533e28f8eab712",
     "metrics_MNQ_atr_k050_premium_discount_realista.json": "905c687f19594d08066faeda1f5daeb7a5fe7217ba264ec4222c7f9bc34c3c7e",
-    "metrics_MNQ_atr_k050_realista.json": "a67f24dd6ba725dd9edb4a8f55a48e598392dd5ee1af25bb2194ef810310de32",
+    "metrics_MNQ_atr_k050_realista.json": "0e38ce35f7a515be8df44f68ad95e77a2b31e44e21f7d861efc90d4ec41e458c",
     "metrics_MNQ_atr_k050_trend_kai_canonico.json": "48c10bc4d40122999ff4f401d43c2b4b9fad494792d927ed77d4b704393bdbf5",
     "metrics_MNQ_atr_k050_trend_kai_canonico_mas_1tick.json": "bb64305d64276b9ad982d8484349c21f100dc8b42aad4ed7feb783b51c71ee5e",
     "metrics_MNQ_atr_k050_trend_kai_realista.json": "9da9f0f294c79f6a6487dcb94e6a5b12e770203941ccc2789386c67dd8c89a71",
@@ -89,10 +125,10 @@
     "metrics_MNQ_atr_k100_realista.json": "e49c3ff009690419dac12b5312d6ec3ef52db946491bd3690a94bda83656937f",
     "metrics_MNQ_control_m7_canonico.json": "3244e771a6d55dd6a2680fb0dc6948b3a6c0a1e395209e5210694005a1219858",
     "metrics_MNQ_control_m7_canonico_mas_1tick.json": "dc7989b608f7eb7dfc7941d2ab0641048602c9d5660538dad16f883ca340fd28",
-    "metrics_MNQ_control_m7_realista.json": "c28cdfb099682e0f0bd9270bd1a5e70470732a7e017d55495906ef9ce2f3281e",
+    "metrics_MNQ_control_m7_realista.json": "0e679cd393adaf17fad292bd0570b4565651ffb91754d6408e46dc54976a6505",
     "metrics_MNQ_wrapper_trivial_canonico.json": "85cd60632cf57b07c1e8ecc990a57dda72fb01a182567dae4944575cf0583a23",
     "metrics_MNQ_wrapper_trivial_canonico_mas_1tick.json": "0cadb4abfc212bdcadb80be6456c9912567d7ab6eff04ec38dd9fa3a474cd958",
-    "metrics_MNQ_wrapper_trivial_realista.json": "c35733ff91b36fdc513c1b8b2d8020be23e552ce0d0faed1d542594f20bd1755",
+    "metrics_MNQ_wrapper_trivial_realista.json": "4d8b6be1da478c593e7d225ac6429b0326ca2d1cc638e2994beeb118879ae96f",
     "metrics_MYM_atr_k050_canonico.json": "39868ecb6717b7eab1148d46507fc0c3089a0d84c0d8b87a9545d2f21e033451",
     "metrics_MYM_atr_k050_canonico_mas_1tick.json": "331cc3ffde2bde51687393c7f468ccbaca61767afa3c6914e3b384f946ed8dc4",
     "metrics_MYM_atr_k050_ote_band_canonico.json": "e505c53cfd5dda012f896d48c675c8d42b6d5fb3b46487624d0ddbc6c8c52d72",
@@ -114,6 +150,8 @@
     "metrics_MYM_wrapper_trivial_canonico.json": "81883de500413878bd535e0580a440d7eedd6e1057d022ae1a41de241821daa1",
     "metrics_MYM_wrapper_trivial_canonico_mas_1tick.json": "d83560581cf0c53c426b4c953f8bd0d8d23b6789d2a3587e11503b6b41baac1c",
     "metrics_MYM_wrapper_trivial_realista.json": "f2b4a274310f98e92d1cf414b62596e65ebeccd21b239a73ccf9c01de55d44a2",
-    "preregistro.json": "810eb94181fbfd2535d7b532143b31838607d402d14ec8049223bfe75a8ed767"
+    "preregistro.json": "0813065b6e3a190da675fba7e27473cfa5d5508807aab6c78044d0ce747e0051",
+    "RESULTADOS.md": "ceab256a93f574ae894b585dcbde8182acec6347d3a67d4070b15616b3a5a0f8",
+    "run_m8.py": "ba9dd9bc5cdf9985a50f16b2eb02d461b4a5c2c3162ac2355ebab53cd95f72be"
   }
 }

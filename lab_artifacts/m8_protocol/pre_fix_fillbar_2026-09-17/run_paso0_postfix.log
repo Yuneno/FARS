@@ -1,0 +1,29 @@
+=== INICIANDO RUNNER BLOQUE M8 (Workers: 3) ===
+Preregistro verificado (SHA256: 810eb94181fbfd2535d7b532143b31838607d402d14ec8049223bfe75a8ed767)
+Mercados seleccionados: ['MNQ']
+Arms seleccionados: ['atr_k050', 'wrapper_trivial', 'control_m7']
+Escenarios seleccionados: ['realista']
+
+[1/5] Cargando datasets multi-mercado desde databento.zip...
+  [MNQ] 518237 barras M5 cargadas en 2.7s | 2019-05-06T00:00:00+00:00 -> 2026-09-03T23:55:00+00:00 | SHA256: fbed6061205b8299...
+
+[2/5] Ejecutando matriz experimental (3 celdas en total con 3 workers)...
+  [01/03] MNQ  | control_m7                 | realista           | n=3543  | E[R]=-0.1139 | PF=0.806 | WR=45.3% | DD=419.5R | folds+=0/8 | CI95=[-0.151, -0.075]
+  [02/03] MNQ  | wrapper_trivial            | realista           | n=4774  | E[R]=-0.1606 | PF=0.737 | WR=46.1% | DD=792.3R | folds+=0/8 | CI95=[-0.196, -0.125]
+  [03/03] MNQ  | atr_k050                   | realista           | n=4774  | E[R]=-0.1606 | PF=0.737 | WR=46.1% | DD=792.3R | folds+=0/8 | CI95=[-0.196, -0.125]
+
+Matriz experimental completada en 2.5s.
+
+[3/5] Verificando control anti-fraude (wrapper_trivial == atr_k050)...
+  [MNQ | realista] Anti-fraude wrapper vs atr_k050: PASS (100% IDENTICO BIT A BIT) | SHA: 34396ff6493959c8
+
+[4/5] Verificando continuidad metodológica (control_m7 == M7 baseline)...
+  [MNQ | realista] Continuidad M8 control vs M7 baseline: FAIL (DISCREPANCIA)
+
+Auditoría causal point-in-time...
+  [MNQ] Causalidad: PASS (0 VIOLACIONES) (14 decisiones auditadas)
+
+[5/5] Generando manifest.json...
+Manifest escrito en E:\FARS-LAB\FARS\lab_artifacts\m8_protocol\manifest.json (95 artefactos registrados).
+
+=== EJECUCION EXITOSA DEL RUNNER M8 ===
