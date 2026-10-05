@@ -1,0 +1,74 @@
+==============================================================================
+FOCO 50k — economía de la evaluación (contraste 25k / 100k)
+==============================================================================
+  Cadencia real del ledger: 2444 trades / 194.9 meses = 12.54 trades/mes
+
+══ Apex 25k · 1 contrato(s) (riesgo $200/trade) ══
+  P(pasar) = 52.70%  |  P(reventar) = 47.30%
+  Si PASA: trades mediana 32 (p25-p75: 19-52) → meses mediana 2.6 (1.5-4.1)
+    P(pasar dentro de  3 meses | pasa) = 57.6%  → P(pasar en ≤3 meses) = 30.4%
+    P(pasar dentro de  6 meses | pasa) = 90.5%  → P(pasar en ≤6 meses) = 47.7%
+    P(pasar dentro de 12 meses | pasa) = 99.7%  → P(pasar en ≤12 meses) = 52.6%
+  Si MUERE: meses mediana 2.7 (p25-p75: 1.8-4.2)
+  Reintentos (independientes, misma p): 1 intento(s) → 52.7% · 2 intento(s) → 77.6% · 3 intento(s) → 89.4% · 4 intento(s) → 95.0%
+  Intentos esperados hasta el primer pase: 1.90
+
+══ Apex 25k · 2 contrato(s) (riesgo $400/trade) ══
+  P(pasar) = 49.50%  |  P(reventar) = 50.50%
+  Si PASA: trades mediana 9 (p25-p75: 5-15) → meses mediana 0.7 (0.4-1.2)
+    P(pasar dentro de  3 meses | pasa) = 99.1%  → P(pasar en ≤3 meses) = 49.1%
+    P(pasar dentro de  6 meses | pasa) = 100.0%  → P(pasar en ≤6 meses) = 49.5%
+    P(pasar dentro de 12 meses | pasa) = 100.0%  → P(pasar en ≤12 meses) = 49.5%
+  Si MUERE: meses mediana 0.9 (p25-p75: 0.6-1.4)
+  Reintentos (independientes, misma p): 1 intento(s) → 49.5% · 2 intento(s) → 74.5% · 3 intento(s) → 87.1% · 4 intento(s) → 93.5%
+  Intentos esperados hasta el primer pase: 2.02
+
+══ Apex 50k · 1 contrato(s) (riesgo $200/trade) ══
+  P(pasar) = 48.90%  |  P(reventar) = 51.10%
+  Si PASA: trades mediana 89 (p25-p75: 57-132) → meses mediana 7.1 (4.5-10.5)
+    P(pasar dentro de  3 meses | pasa) = 9.4%  → P(pasar en ≤3 meses) = 4.6%
+    P(pasar dentro de  6 meses | pasa) = 41.1%  → P(pasar en ≤6 meses) = 20.1%
+    P(pasar dentro de 12 meses | pasa) = 81.6%  → P(pasar en ≤12 meses) = 39.9%
+  Si MUERE: meses mediana 5.3 (p25-p75: 3.4-8.2)
+  Reintentos (independientes, misma p): 1 intento(s) → 48.9% · 2 intento(s) → 73.9% · 3 intento(s) → 86.7% · 4 intento(s) → 93.2%
+  Intentos esperados hasta el primer pase: 2.04
+
+══ Apex 50k · 2 contrato(s) (riesgo $400/trade) ══
+  P(pasar) = 37.25%  |  P(reventar) = 62.75%
+  Si PASA: trades mediana 24 (p25-p75: 15-36) → meses mediana 1.9 (1.2-2.9)
+    P(pasar dentro de  3 meses | pasa) = 76.9%  → P(pasar en ≤3 meses) = 28.7%
+    P(pasar dentro de  6 meses | pasa) = 99.1%  → P(pasar en ≤6 meses) = 36.9%
+    P(pasar dentro de 12 meses | pasa) = 100.0%  → P(pasar en ≤12 meses) = 37.2%
+  Si MUERE: meses mediana 1.6 (p25-p75: 1.0-2.5)
+  Reintentos (independientes, misma p): 1 intento(s) → 37.3% · 2 intento(s) → 60.6% · 3 intento(s) → 75.3% · 4 intento(s) → 84.5%
+  Intentos esperados hasta el primer pase: 2.68
+
+══ Apex 100k · 1 contrato(s) (riesgo $200/trade) ══
+  P(pasar) = 54.90%  |  P(reventar) = 45.10%
+  Si PASA: trades mediana 269 (p25-p75: 183-386) → meses mediana 21.4 (14.6-30.8)
+    P(pasar dentro de  3 meses | pasa) = 0.0%  → P(pasar en ≤3 meses) = 0.0%
+    P(pasar dentro de  6 meses | pasa) = 1.4%  → P(pasar en ≤6 meses) = 0.8%
+    P(pasar dentro de 12 meses | pasa) = 13.5%  → P(pasar en ≤12 meses) = 7.4%
+  Si MUERE: meses mediana 11.5 (p25-p75: 7.1-19.1)
+  Reintentos (independientes, misma p): 1 intento(s) → 54.9% · 2 intento(s) → 79.7% · 3 intento(s) → 90.8% · 4 intento(s) → 95.9%
+  Intentos esperados hasta el primer pase: 1.82
+
+══ Apex 100k · 2 contrato(s) (riesgo $400/trade) ══
+  P(pasar) = 37.30%  |  P(reventar) = 62.70%
+  Si PASA: trades mediana 75 (p25-p75: 52-114) → meses mediana 6.0 (4.1-9.1)
+    P(pasar dentro de  3 meses | pasa) = 12.3%  → P(pasar en ≤3 meses) = 4.6%
+    P(pasar dentro de  6 meses | pasa) = 51.1%  → P(pasar en ≤6 meses) = 19.1%
+    P(pasar dentro de 12 meses | pasa) = 88.6%  → P(pasar en ≤12 meses) = 33.1%
+  Si MUERE: meses mediana 3.4 (p25-p75: 2.2-5.6)
+  Reintentos (independientes, misma p): 1 intento(s) → 37.3% · 2 intento(s) → 60.7% · 3 intento(s) → 75.4% · 4 intento(s) → 84.5%
+  Intentos esperados hasta el primer pase: 2.68
+
+==============================================================================
+Resumen P(pasar):
+  Apex 25k · 1 contr: 52.70%
+  Apex 25k · 2 contr: 49.50%
+  Apex 50k · 1 contr: 48.90%
+  Apex 50k · 2 contr: 37.25%
+  Apex 100k · 1 contr: 54.90%
+  Apex 100k · 2 contr: 37.30%
+Aproximaciones declaradas arriba (cadencia ≈ real; reintentos independientes).
