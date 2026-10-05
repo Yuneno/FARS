@@ -1,0 +1,39 @@
+==============================================================================
+V2-POOL (fix R15) — churn MC pool MNQ+MGC | eventos ordenados por CIERRE
+==============================================================================
+  MNQ: 2444 trades | paridad V1 ASSERT OK (n y E[R])
+  MGC: 2013 trades | paridad V1 ASSERT OK (n y E[R])
+  POOL: 4457 trades | posiciones que cambian entre órdenes: 2582
+  E[R] pool = +0.0633 | t = +4.06
+  MBB bloque=1 | seed=2602526572 | B=2000
+  NOTA: THROUGHPUT TEÓRICO — sin cuotas, sin espera de retiro, sin
+    reinicio/compra de cuenta, reintentos IID secuenciales.
+
+══ ORDEN POR CIERRE (PRIMARIO) ══
+  Apex 25k · 1 contr | P(pasar)= 56.9% | mediana si PASA 1.48m · si MUERE 1.68m | ciclo 3.28m | **3.7 cuentas/año** | P(≤1m)=18.0% P(≤2m)=37.7% P(≤3m)=47.7%
+  Apex 25k · 2 contr | P(pasar)= 50.1% | mediana si PASA 0.46m · si MUERE 0.46m | ciclo 1.11m | **10.8 cuentas/año** | P(≤1m)=43.0% P(≤2m)=49.6% P(≤3m)=50.0%
+  Apex 25k · 3 contr | P(pasar)= 46.8% | mediana si PASA 0.20m · si MUERE 0.23m | ciclo 0.61m | **19.8 cuentas/año** | P(≤1m)=45.8% P(≤2m)=46.8% P(≤3m)=46.8%
+  Apex 25k · 5 contr | P(pasar)= 47.4% | mediana si PASA 0.03m · si MUERE 0.10m | ciclo 0.24m | **49.7 cuentas/año** | P(≤1m)=47.4% P(≤2m)=47.4% P(≤3m)=47.4%
+  Apex 50k · 1 contr | P(pasar)= 52.5% | mediana si PASA 4.14m · si MUERE 3.12m | ciclo 8.03m | **1.5 cuentas/año** | P(≤1m)=1.1% P(≤2m)=7.5% P(≤3m)=16.2%
+  Apex 50k · 2 contr | P(pasar)= 41.9% | mediana si PASA 1.15m · si MUERE 0.89m | ciclo 2.83m | **4.2 cuentas/año** | P(≤1m)=17.7% P(≤2m)=34.8% P(≤3m)=40.0%
+
+══ ORDEN POR ENTRADA (SENSIBILIDAD — el orden importa cuando hay solape) ══
+  Apex 25k · 1 contr | P(pasar)= 57.6% | ciclo 3.24m | 3.7 cuentas/año
+  Apex 25k · 2 contr | P(pasar)= 50.5% | ciclo 1.11m | 10.8 cuentas/año
+  Apex 25k · 3 contr | P(pasar)= 48.1% | ciclo 0.59m | 20.3 cuentas/año
+  Apex 25k · 5 contr | P(pasar)= 49.9% | ciclo 0.23m | 51.5 cuentas/año
+  Apex 50k · 1 contr | P(pasar)= 53.1% | ciclo 8.05m | 1.5 cuentas/año
+  Apex 50k · 2 contr | P(pasar)= 41.1% | ciclo 2.93m | 4.1 cuentas/año
+
+══ VEREDICTOS (reglas congeladas del PREREGISTRO_V2_POOL.md) ══
+  H3 (25k ≤6 semanas mediana si pasa · 50k ≤3 meses · P(25k@≤3 contr) ≥ 50%):
+    - P(25k@3) = 46.8% (< 50%) → **H3 FALSADA** por la regla P(25k@≤3)≥50%.
+    - Ambigüedad del preregistro señalada por Codex R15: 'las dos medianas 50k'
+      no fija contrato — 50k@1 da 4.1m (no cumple) y 50k@2 da 1.15m (cumple).
+    - El churn 25k@2-5 es hallazgo real PERO no confirma H3.
+  H1 (V1-MULTI, V-EOD): NO CONFIRMADA / INCONCLUSA — E[R]=+0.0134 con IC95
+    [-0.009,+0.036] y cadencia 1.47x: no confirma (requería ≥1.5x) y tampoco
+    satisface la falsación congelada (exigía puntual ≤0). Sin efecto práctico:
+    la variante EOD no entrega velocidad utilizable.
+  H2 (V1-MULTI, multi-mercado): FALSADA por regla estricta (≥2 mercados con
+    t≥2; solo MGC, t=3.28 con Bonferroni). Pool MNQ+MGC = hallazgo posterior.

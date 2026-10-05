@@ -1,0 +1,121 @@
+
+══ Adaptando MES: databento/MES_M1.csv → mes_1min_multicharts.csv.gz ══
+  chunk 0: 500,000 filas (2010-06-06 19:00:00 → 2013-08-02 07:24:00)
+  chunk 1: 1,000,000 filas (2013-08-02 07:25:00 → 2015-06-11 01:41:00)
+  chunk 2: 1,500,000 filas (2015-06-11 01:42:00 → 2016-12-06 13:18:00)
+  chunk 3: 2,000,000 filas (2016-12-06 13:19:00 → 2018-05-18 02:43:00)
+  chunk 4: 2,500,000 filas (2018-05-18 02:44:00 → 2019-10-22 12:06:00)
+  chunk 5: 3,000,000 filas (2019-10-22 12:07:00 → 2021-03-30 01:45:00)
+  chunk 6: 3,500,000 filas (2021-03-30 01:46:00 → 2022-08-25 04:59:00)
+  chunk 7: 4,000,000 filas (2022-08-25 05:00:00 → 2024-01-24 07:29:00)
+  chunk 8: 4,500,000 filas (2024-01-24 07:30:00 → 2025-06-24 08:57:00)
+  chunk 9: 4,924,584 filas (2025-06-24 08:58:00 → 2026-09-03 18:59:00)
+
+Escrito E:\FARS-LAB\ext_review2\data_adapted\mes_1min_multicharts.csv.gz con 4,924,584 barras 1-min
+  cobertura CT: 2010-06-06 19:00:00 → 2026-09-03 18:59:00
+
+1-min: 4,924,584 barras | 5-min: 991,638 barras
+== Timezone check ==
+Largest average-volume jump starts at 16:00:00 (x2763.4 vs the previous half hour).
+WARNING: unexpected open at 16:00:00; inspect the feed manually.
+
+== Roll / splice check ==
+Median |overnight gap|: 0.25 pts. Gaps beyond 20 pts: 122 (39 in quarterly roll months, 32%; ~33% expected by chance).
+No roll-month clustering detected. Note this is only absence of evidence: it does not confirm the series IS back-adjusted, since a correctly adjusted series and a lightly spliced one look alike at this resolution. Confirm with the vendor.
+day
+2025-04-06   -89.75
+2020-03-01   -88.00
+2026-04-12   -83.75
+2025-02-02   -83.25
+2022-02-27   -81.00
+2025-10-12    80.00
+2026-03-22   -78.50
+2025-05-11    77.00
+2011-08-09    74.75
+2026-04-19   -61.75
+
+== Overnight gap risk ==
+Sessions opening more than 100 pts (the stop distance) away from the prior close: 0 of 5041 (0.0%).
+The feed averages 977 bars/day — consistent with near-continuous Globex coverage. run_backtest walks every bar, including overnight ones, so stops/targets are caught at the exact crossing rather than approximated by these opening gaps.
+
+══ Adaptando MGC: databento/MGC_M1.csv → mgc_1min_multicharts.csv.gz ══
+  chunk 0: 500,000 filas (2010-06-06 19:00:00 → 2011-11-11 00:23:00)
+  chunk 1: 1,000,000 filas (2011-11-11 00:24:00 → 2013-04-30 00:56:00)
+  chunk 2: 1,500,000 filas (2013-04-30 00:57:00 → 2014-10-21 11:41:00)
+  chunk 3: 2,000,000 filas (2014-10-21 11:42:00 → 2016-05-19 08:28:00)
+  chunk 4: 2,500,000 filas (2016-05-19 08:29:00 → 2017-10-24 20:15:00)
+  chunk 5: 3,000,000 filas (2017-10-24 20:16:00 → 2019-04-07 18:14:00)
+  chunk 6: 3,500,000 filas (2019-04-07 18:15:00 → 2020-09-10 15:44:00)
+  chunk 7: 4,000,000 filas (2020-09-10 15:45:00 → 2022-02-15 19:44:00)
+  chunk 8: 4,500,000 filas (2022-02-15 19:45:00 → 2023-07-25 09:54:00)
+  chunk 9: 5,000,000 filas (2023-07-25 09:55:00 → 2024-12-26 18:29:00)
+  chunk 10: 5,500,000 filas (2024-12-26 18:30:00 → 2026-06-02 09:44:00)
+  chunk 11: 5,591,398 filas (2026-06-02 09:45:00 → 2026-09-03 18:59:00)
+
+Escrito E:\FARS-LAB\ext_review2\data_adapted\mgc_1min_multicharts.csv.gz con 5,591,398 barras 1-min
+  cobertura CT: 2010-06-06 19:00:00 → 2026-09-03 18:59:00
+
+1-min: 5,591,398 barras | 5-min: 1,137,422 barras
+== Timezone check ==
+Largest average-volume jump starts at 16:30:00 (x8238.9 vs the previous half hour).
+WARNING: unexpected open at 16:30:00; inspect the feed manually.
+
+== Roll / splice check ==
+Median |overnight gap|: 0.10 pts. Gaps beyond 20 pts: 23 (6 in quarterly roll months, 26%; ~33% expected by chance).
+No roll-month clustering detected. Note this is only absence of evidence: it does not confirm the series IS back-adjusted, since a correctly adjusted series and a lightly spliced one look alike at this resolution. Confirm with the vendor.
+day
+2026-02-01   -91.5
+2026-03-01    63.6
+2026-04-12   -61.0
+2026-06-14    49.5
+2025-05-11   -48.1
+2026-03-22   -42.0
+2026-07-26    41.8
+2026-04-19   -37.6
+2026-08-02    36.6
+2020-03-15    34.9
+
+== Overnight gap risk ==
+Sessions opening more than 100 pts (the stop distance) away from the prior close: 0 of 5043 (0.0%).
+The feed averages 1109 bars/day — consistent with near-continuous Globex coverage. run_backtest walks every bar, including overnight ones, so stops/targets are caught at the exact crossing rather than approximated by these opening gaps.
+
+══ Adaptando MYM: databento/MYM_M1.csv → mym_1min_multicharts.csv.gz ══
+  chunk 0: 500,000 filas (2010-06-06 19:00:00 → 2013-10-16 08:47:00)
+  chunk 1: 1,000,000 filas (2013-10-16 08:48:00 → 2015-09-29 04:19:00)
+  chunk 2: 1,500,000 filas (2015-09-29 04:20:00 → 2017-04-04 18:38:00)
+  chunk 3: 2,000,000 filas (2017-04-04 18:39:00 → 2018-09-18 11:41:00)
+  chunk 4: 2,500,000 filas (2018-09-18 11:42:00 → 2020-02-25 11:55:00)
+  chunk 5: 3,000,000 filas (2020-02-25 11:56:00 → 2021-08-02 15:17:00)
+  chunk 6: 3,500,000 filas (2021-08-02 15:18:00 → 2022-12-30 03:12:00)
+  chunk 7: 4,000,000 filas (2022-12-30 03:13:00 → 2024-06-04 05:37:00)
+  chunk 8: 4,500,000 filas (2024-06-04 05:38:00 → 2025-11-11 19:35:00)
+  chunk 9: 4,782,024 filas (2025-11-11 19:36:00 → 2026-09-03 18:59:00)
+
+Escrito E:\FARS-LAB\ext_review2\data_adapted\mym_1min_multicharts.csv.gz con 4,782,024 barras 1-min
+  cobertura CT: 2010-06-06 19:00:00 → 2026-09-03 18:59:00
+
+1-min: 4,782,024 barras | 5-min: 990,234 barras
+== Timezone check ==
+Largest average-volume jump starts at 16:00:00 (x2193.2 vs the previous half hour).
+WARNING: unexpected open at 16:00:00; inspect the feed manually.
+
+== Roll / splice check ==
+Median |overnight gap|: 1.00 pts. Gaps beyond 20 pts: 706 (235 in quarterly roll months, 33%; ~33% expected by chance).
+No roll-month clustering detected. Note this is only absence of evidence: it does not confirm the series IS back-adjusted, since a correctly adjusted series and a lightly spliced one look alike at this resolution. Confirm with the vendor.
+day
+2025-04-06   -676.0
+2011-08-09    600.0
+2026-03-22   -505.0
+2026-04-12   -504.0
+2020-03-01   -495.0
+2011-11-30    494.0
+2011-08-10   -493.0
+2020-03-29   -484.0
+2011-08-04   -481.0
+2025-05-11    470.0
+
+== Overnight gap risk ==
+Sessions opening more than 100 pts (the stop distance) away from the prior close: 232 of 5046 (4.6%).
+The feed averages 947 bars/day — consistent with near-continuous Globex coverage. run_backtest walks every bar, including overnight ones, so stops/targets are caught at the exact crossing rather than approximated by these opening gaps.
+
+Listo.

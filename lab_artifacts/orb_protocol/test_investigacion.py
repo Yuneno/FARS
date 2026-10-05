@@ -478,6 +478,8 @@ def test_mc_fondeo_dos_replicas_juguete_calculables_a_mano():
     assert res1["sizes"] == [5, 5, 5]
     assert res1["hit_dd"] is False
     assert res1["hit_daily"] is False
+    # Fix R15: consumidas = oportunidades examinadas (se para en el target: 3 de 4)
+    assert res1["consumed_opportunities"] == 3
 
     # Réplica 2: Pérdida diaria terminal (Apex hard stop: primer breach detiene la simulación)
     # Trade 1: r=-1.0, size 5, PnL=-$1000, equity=$99k, day_pnl=-$1000

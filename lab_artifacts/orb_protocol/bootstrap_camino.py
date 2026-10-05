@@ -230,12 +230,14 @@ def simulate_funded_trajectory(
 
     per_contract_risk = stop_pts * point_value  # $200.0 por contrato
     sizes: list[int] = []
-    trades_executed = 0
-    trades_vetoed = 0
+    trades_executed: int = 0
+    trades_vetoed: int = 0
+    consumed_opportunities: int = 0
 
     target_equity = initial_balance + profit_target_usd
 
     for r_val, dt in zip(r_series, timeline):
+        consumed_opportunities += 1  # oportunidad EXAMINADA (aunque se descarte)
         t_date = dt.date() if isinstance(dt, datetime) else dt
         if t_date != current_day:
             current_day = t_date
@@ -367,6 +369,7 @@ def simulate_funded_trajectory(
         "peak_equity": peak_equity,
         "trades_executed": trades_executed,
         "trades_vetoed": trades_vetoed,
+        "consumed_opportunities": consumed_opportunities,
         "sizes": sizes,
     }
 
