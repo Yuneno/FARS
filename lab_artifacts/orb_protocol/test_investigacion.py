@@ -616,10 +616,58 @@ def test_mc_fondeo_dos_replicas_juguete_calculables_a_mano():
 
 
 
+def test_apex_floor_lock_trailing(tmp_path=None):
+    """Regla real Apex (spec 2026-07-29): el piso del trailing se CONGELA en
+    start + $100 una vez que peak alcanza DD + $100, y tocar el piso = breach."""
+    from datetime import datetime
+
+    tl = [
+        datetime(2026, 7, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 7, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 7, 3, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    kw = dict(
+        profit_target_usd=10_000.0,
+        max_dd_limit_usd=3_000.0,
+        daily_loss_limit_usd=100_000.0,   # Apex real: sin límite diario en evaluación
+        dd_floor_ceiling=100_100.0,       # start + $100 (lockBuffer)
+    )
+
+    # Caso A: el lock SALVA. +5.0R (size 5 → +5.000, peak 105k, piso congelado
+    # en 100.100), luego -4.0R (-4.000 → 101.000). Drawdown real 4.000 > 3.000,
+    # PERO el piso está congelado → NO breach. Luego -0.45R (-450 → 100.550) y fin.
+    res = bc.simulate_funded_trajectory(
+        np.array([5.0, -4.0, -0.45]), tl, **kw
+    )
+    assert res["terminal_condition"] == "horizon_exhausted", res
+    assert res["hit_dd"] is False
+    assert res["sizes"] == [5, 5, 5]
+    assert res["final_equity"] == 100_550.0
+
+    # Caso B: tocar el piso exactamente = breach (boundary '<='). +5.0R → 105k,
+    # luego -4.9R (-4.900 → 100.100) = piso congelado EXACTO → breach_trailing.
+    res2 = bc.simulate_funded_trajectory(
+        np.array([5.0, -4.9]), tl[:2], **kw
+    )
+    assert res2["terminal_condition"] == "breach_trailing", res2
+    assert res2["hit_dd"] is True
+    assert res2["final_equity"] == 100_100.0
+
+    # Caso C (control): sin dd_floor_ceiling el trailing clásico sí revienta en el
+    # caso A (drawdown 4.000 >= 3.000 desde el pico) — el default queda intacto.
+    res3 = bc.simulate_funded_trajectory(
+        np.array([5.0, -4.0, -0.45]), tl,
+        profit_target_usd=10_000.0, max_dd_limit_usd=3_000.0,
+        daily_loss_limit_usd=100_000.0,
+    )
+    assert res3["terminal_condition"] == "breach_trailing", res3
+
+
 if __name__ == "__main__":
     fails = 0
     test_funcs = [
         test_mbb_sin_costura,
+        test_apex_floor_lock_trailing,
         test_semillas_reproducibles,
         test_sensibilidad_costes_monotona,
         test_separacion_sar_consistente,

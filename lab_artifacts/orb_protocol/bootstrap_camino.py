@@ -164,8 +164,15 @@ def simulate_funded_trajectory(
     stop_on_daily_loss: bool = True,
     use_risk_engine: bool = False,
     rules: FundedAccountRules | None = None,
+    dd_floor_ceiling: float | None = None,
 ) -> dict:
     """Simula la trayectoria monetaria y límites de cuenta dentro de una réplica (Fix CRITICAL 1 y 2).
+
+    dd_floor_ceiling: si se fija (p.ej. Apex: starting_balance + $100), el piso del
+    trailing drawdown = min(peak - max_dd_limit_usd, dd_floor_ceiling) y se congela
+    al alcanzarlo (regla real de Apex 2026-07-29: "floor freezes when peak reaches
+    DD + $100"). None = trailing clásico sin techo (comportamiento previo intacto).
+    Tocar el piso exactamente = breach (boundary '<='), como en la spec de Apex.
 
     Reglas aplicadas dentro de la réplica:
     1. Sizing entero: min(equity * 1%, $1000) / ($200 por contrato).
@@ -328,11 +335,22 @@ def simulate_funded_trajectory(
                 terminal_condition = "breach_daily"
                 break
 
-        trailing_dd_usd = peak_equity - equity
-        if trailing_dd_usd >= max_dd_limit_usd:
-            hit_dd = True
-            terminal_condition = "breach_trailing"
-            break
+        if dd_floor_ceiling is None:
+            # Rama default: predicado ORIGINAL bit a bit (peak-equity >= max_dd).
+            # NO reemplazar por `equity <= peak-max_dd`: bajo IEEE-754 divergen en
+            # bordes exactos (contraejemplo Codex R13: peak=30179.25,
+            # max_dd=1763.85, equity=28415.40 → viejo False, nuevo True).
+            trailing_dd_usd = peak_equity - equity
+            if trailing_dd_usd >= max_dd_limit_usd:
+                hit_dd = True
+                terminal_condition = "breach_trailing"
+                break
+        else:
+            floor = min(peak_equity - max_dd_limit_usd, dd_floor_ceiling)
+            if equity <= floor:
+                hit_dd = True
+                terminal_condition = "breach_trailing"
+                break
 
         if equity >= target_equity:
             passed = True
