@@ -1,0 +1,47 @@
+========================================================================
+CURVA DE RIESGO ORB — supuestos declarados (autocontenido)
+========================================================================
+  Ledger: ledger_orb_fars_stop.csv (n=2444 trades, 2010-06..2026-09)
+  Cuenta: $100k Apex-like — target +$6.000 | trailing $8.000 | diaria $2.000
+  Sizing: entero por contrato MNQ (stop 100 pts = $200/contrato de riesgo)
+  MC: B=2000 réplicas | remuestreo MBB sobre el camino bruto (bloque=optimal_block_length)
+  Semilla maestra: 20260928 (hijas SeedSequence.spawn(4)[0])
+  Cupo: 42 ops/mes calendario sintético (proceso de interarribos)
+  Horizonte por réplica: hasta 2.444 oportunidades remuestreadas
+  INCERTIDUMBRE MONTE CARLO: con B=2000, el error típico de una probabilidad
+    ~50% es ~1,1 pts porcentuales (1 desv. = sqrt(p(1-p)/B)); los extremos
+    (0% / 100%) tienen cota ~3/B = 0,15% por regla de tres.
+  APROXIMACIÓN POR CIERRES: trailing sobre equity al cierre de cada trade;
+    es OPTIMISTA para supervivencia (excursiones intratrade favorables
+    elevarían el piso y sumarían breaches => las P(pasar) aquí son techo).
+  Costes: ya netos en r_result (0,62 USD/side + 1,5 ticks/side).
+========================================================================
+n=2444 trades | block=2 | seed_mbb=2602526572 | B=2000
+
+== VALIDACION 1%       ==
+  P(target +$6k)      :  45.40%
+  P(breach_trailing)  :  19.60%
+  P(breach_daily)     :  35.00%
+  P(horizon_exhausted):   0.00%
+  ops/réplica (media) : 34.6 | size medio: 4.43 contratos
+
+== LEYENDA 0.15%       ==
+  P(target +$6k)      :   0.00%
+  P(breach_trailing)  :   0.00%
+  P(breach_daily)     :   0.00%
+  P(horizon_exhausted): 100.00%
+  ops/réplica (media) : 0.0 | size medio: 0.00 contratos
+
+== 1 CONTRATO (0.2%)   ==
+  P(target +$6k)      :  94.90%
+  P(breach_trailing)  :   5.00%
+  P(breach_daily)     :   0.00%
+  P(horizon_exhausted):   0.10%
+  ops/réplica (media) : 492.2 | size medio: 1.00 contratos
+
+== 2 CONTRATOS (0.4%)  ==
+  P(target +$6k)      :  79.70%
+  P(breach_trailing)  :  20.00%
+  P(breach_daily)     :   0.30%
+  P(horizon_exhausted):   0.00%
+  ops/réplica (media) : 175.5 | size medio: 2.00 contratos
