@@ -1,0 +1,28 @@
+==============================================================================
+T4 — POOL MNQ+MGC · reglas Topstep 50K · flat 15:10 CT (V-EOD)
+==============================================================================
+  MNQ: 3619 trades | E[R]=+0.0128 | PARIDAD_V2 PENDIENTE de captura (ANTES n=3594, E[R]=+0.0134)
+  MGC: 3498 trades | E[R]=+0.0013 | PARIDAD_V2 PENDIENTE de captura (ANTES n=3489, E[R]=-0.0003)
+  POOL: 7117 trades | E[R]=+0.0071 | t=+0.99
+  MBB bloque=2 | seed_mbb=2602526572 | seed_iid=1656862755 | B=2000
+  NOTA M8: el 'edge' de MGC fue artefacto de escala una vez — leer con desconfianza.
+
+══ ESCENARIOS PREDECLARADOS (pool MNQ+MGC, flat 15:10 CT) ══
+  A · 1 contr · cons 0.55, min2                  | P(pasar)= 35.5% | P(quemar)= 64.5% | mediana si pasa 7.98m | si muere 5.26m | {'breach_trailing': 1289, 'target': 711}
+  A · 2 contr · cons 0.55, min2                  | P(pasar)= 31.1% | P(quemar)= 69.0% | mediana si pasa 2.30m | si muere 1.54m | {'breach_trailing': 1379, 'target': 621}
+  B · 1 contr · cons 0.50, min2                  | P(pasar)= 35.5% | P(quemar)= 64.5% | mediana si pasa 7.98m | si muere 5.26m | {'breach_trailing': 1289, 'target': 711}
+  B · 2 contr · cons 0.50, min2                  | P(pasar)= 30.9% | P(quemar)= 69.2% | mediana si pasa 2.37m | si muere 1.54m | {'breach_trailing': 1383, 'target': 617}
+  C · 2 contr · cons 0.50 + DLL $1,000 terminal  | P(pasar)= 28.4% | P(quemar)= 71.6% | mediana si pasa 2.30m | si muere 1.45m | {'breach_trailing': 1142, 'breach_daily': 290, 'target': 568}
+
+══ CONTROLES ══
+  sin-deriva: media=-0.0000 · iid emparejado: N(+0.0071,0.6065)
+  CTRL sin-deriva · 1 contr                      | P(pasar)= 26.4% | P(quemar)= 73.7% | mediana si pasa 8.05m | si muere 5.06m | {'breach_trailing': 1473, 'target': 527}
+  CTRL iid emparejado · 1 contr                  | P(pasar)= 28.4% | P(quemar)= 71.5% | mediana si pasa 8.44m | si muere 5.09m | {'breach_trailing': 1431, 'target': 569}
+  CTRL sin-deriva · 2 contr                      | P(pasar)= 26.7% | P(quemar)= 73.4% | mediana si pasa 2.30m | si muere 1.51m | {'breach_trailing': 1467, 'target': 533}
+  CTRL iid emparejado · 2 contr                  | P(pasar)= 28.8% | P(quemar)= 71.2% | mediana si pasa 2.07m | si muere 1.40m | {'breach_trailing': 1424, 'target': 576}
+
+══ DELTAS (control − candidato, escenario A) ══
+  1 contr: Δ(sin-deriva)=-9.2 pp · Δ(iid emparejado)=-7.1 pp
+  2 contr: Δ(sin-deriva)=-4.4 pp · Δ(iid emparejado)=-2.3 pp
+
+FIN T4 — cifras crudas; análisis en T4_POOL_MNQ_MGC_TOPSTEP.md

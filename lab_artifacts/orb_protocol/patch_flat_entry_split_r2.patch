@@ -1,0 +1,59 @@
+diff --git a/src/nq_breakout/backtest.py b/src/nq_breakout/backtest.py
+index 6e11804..8e32ddd 100644
+--- a/src/nq_breakout/backtest.py
++++ b/src/nq_breakout/backtest.py
+@@ -208,10 +208,15 @@ def run_backtest(df_5min: pd.DataFrame, config: Config,
+     df = df.sort_values('date').reset_index(drop=True)
+     df['time'] = df['date'].dt.time
+ 
++    # F1 Fix B (ronda 2, Codex §4.1 + MEDIO 6): el fin de la ventana de
++    # ENTRADAS y el cierre plano de SESION son cortes distintos.
++    entry_cutoff = config.entry_end if config.entry_end is not None else config.trade_end
++    flat_cutoff = config.flat_time if config.flat_time is not None else config.trade_end
++
+     if not flags.scan_overnight_bars:
+         # The original notebook filtered the feed to session hours before
+         # running, so overnight bars were never examined at all.
+-        df = df[(df['time'] >= config.window_start) & (df['time'] <= config.trade_end)].copy()
++        df = df[(df['time'] >= config.window_start) & (df['time'] <= flat_cutoff)].copy()
+ 
+     df['trading_day'] = df['date'].map(lambda ts: _trading_day(ts, config, flags))
+     if df.empty:
+@@ -221,10 +226,10 @@ def run_backtest(df_5min: pd.DataFrame, config: Config,
+     day_index = {day: i for i, day in enumerate(trading_days)}
+     first_trading_day = trading_days[0]
+ 
+-    session_mask = (df['time'] >= config.window_start) & (
+-        df['time'] <= (config.flat_time if config.flat_time is not None else config.trade_end)
+-    )
++    session_mask = (df['time'] >= config.window_start) & (df['time'] <= flat_cutoff)
+     session_close_bar = df[session_mask].groupby('trading_day')['date'].max().to_dict()
++    entry_mask = (df['time'] >= config.window_start) & (df['time'] <= entry_cutoff)
++    entry_close_bar = df[entry_mask].groupby('trading_day')['date'].max().to_dict()
+ 
+     trades: list[dict] = []
+     day_marks: list[tuple] = []
+@@ -281,6 +286,7 @@ def run_backtest(df_5min: pd.DataFrame, config: Config,
+         row_trading_day = row.trading_day
+         row_time = row.time
+         is_last_bar = session_close_bar.get(row_trading_day) == row_timestamp
++        is_last_entry_bar = entry_close_bar.get(row_trading_day) == row_timestamp
+ 
+         if current_trading_day is None:
+             current_trading_day = row_trading_day
+@@ -343,13 +349,11 @@ def run_backtest(df_5min: pd.DataFrame, config: Config,
+                 exited_this_bar = True
+ 
+         # ---- entries ----
+-        allowed_bar = not (flags.block_last_bar_entry and is_last_bar)
++        allowed_bar = not (flags.block_last_bar_entry and is_last_entry_bar)
+         session_ok = not (flags.require_prev_session and row_trading_day == first_trading_day)
+         if (open_trade is None and not exited_this_bar and window_ready
+                 and daily_trade_count < config.max_trades_per_day
+-                and config.trade_start <= row_time <= (
+-                    config.entry_end if config.entry_end is not None else config.trade_end
+-                )
++                and config.trade_start <= row_time <= entry_cutoff
+                 and allowed_bar and session_ok):
+             direction = None
+             entry_price = None

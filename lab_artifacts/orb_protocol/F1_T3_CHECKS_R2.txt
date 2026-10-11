@@ -1,0 +1,10 @@
+n_trades=3594
+entry_bar_stop_touched=16
+entry_bar_target_touched=1
+entry_bar_both_touched=1
+entry_bar_any_exit_touched=16
+max_exit_clock=15:10
+exits_at_14_30=20
+exits_at_15_10=2159
+extra_1_tick_per_side_rt_usd=1.00
+extra_1_tick_per_side_R=0.005000

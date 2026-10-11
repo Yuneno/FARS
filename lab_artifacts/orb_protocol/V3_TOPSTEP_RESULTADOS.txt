@@ -1,0 +1,24 @@
+==============================================================================
+V3-TOPSTEP — churn MC con reglas REALES de Topstep (pool MNQ+MGC, orden CIERRE)
+==============================================================================
+  MNQ: 2444 trades | paridad ASSERT OK
+  MGC: 2013 trades | paridad ASSERT OK
+  POOL: 4457 trades | E[R]=+0.0633 | t=+4.06
+  MBB bloque=1 | seed=2602526572 | B=2000
+  THROUGHPUT TEÓRICO — sin cuotas/esperas/reinicio; reintentos IID.
+
+══ PRIMARIOS (5 días mín conservador, sin DLL, consistencia activa) ══
+  Topstep 50k · 1 contr | P(pasar)= 53.0% | mediana si PASA 4.17m | ciclo 8.02m | **1.5 cuentas/año** | P(≤1m)=1.1% P(≤2m)=7.4% | estados {'target': 1060, 'breach_trailing': 940}
+  Topstep 50k · 2 contr | P(pasar)= 41.3% | mediana si PASA 1.25m | ciclo 3.05m | **3.9 cuentas/año** | P(≤1m)=15.2% P(≤2m)=32.0% | estados {'breach_trailing': 1173, 'target': 827}
+  Topstep 50k · 3 contr | P(pasar)= 35.9% | mediana si PASA 0.76m | ciclo 2.04m | **5.9 cuentas/año** | P(≤1m)=23.9% P(≤2m)=33.4% | estados {'breach_trailing': 1281, 'target': 719}
+  Topstep 50k · 5 contr | P(pasar)= 25.1% | mediana si PASA 0.53m | ciclo 1.58m | **7.6 cuentas/año** | P(≤1m)=20.4% P(≤2m)=24.0% | estados {'breach_trailing': 1499, 'target': 501}
+  Topstep 100k · 1 contr | P(pasar)= 63.1% | mediana si PASA 12.25m | ciclo 18.72m | **0.6 cuentas/año** | P(≤1m)=0.0% P(≤2m)=0.1% | estados {'target': 1263, 'breach_trailing': 737}
+  Topstep 100k · 2 contr | P(pasar)= 41.8% | mediana si PASA 3.71m | ciclo 7.76m | **1.5 cuentas/año** | P(≤1m)=1.0% P(≤2m)=7.3% | estados {'breach_trailing': 1165, 'target': 835}
+
+══ SENSIBILIDADES ══
+  Topstep 50k · min_días=2 (regla oficial) · 2 contr | P(pasar)= 41.3% | mediana si PASA 1.25m | ciclo 3.05m | **3.9 cuentas/año** | P(≤1m)=15.2% P(≤2m)=32.1% | estados {'breach_trailing': 1173, 'target': 827}
+  Topstep 50k · DLL $1,000 terminal · 2 contr | P(pasar)= 37.4% | mediana si PASA 1.22m | ciclo 3.07m | **3.9 cuentas/año** | P(≤1m)=14.8% P(≤2m)=30.3% | estados {'breach_trailing': 897, 'target': 748, 'breach_daily': 355}
+
+══ VEREDICTO H6 (regla congelada) ══
+  50k@2 contratos: P=41.3% (≥45%: NO) · mediana si pasa 1.25m (≤2m: sí)
+  → **H6 FALSADA**

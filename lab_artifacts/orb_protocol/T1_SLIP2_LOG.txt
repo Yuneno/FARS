@@ -1,0 +1,32 @@
+==============================================================================
+T1 — ORB MNQ · reglas Topstep 50K · flat 15:10 CT (V-EOD) · 1 contrato
+==============================================================================
+  SENSIBILIDAD slippage +2.0 ticks/side (n=3594 | E[R]=+0.0034) — sin assert de paridad (corrida derivada)
+  t=+0.30 | trades/mes=18.44 (V1-MULTI) | riesgo/trade=$200 (1 contr)
+  MBB bloque=3 | seed_mbb=2602526572 | seed_iid=1656862755 | B=2000
+  NOTA: 'bloqueada' no aplica en este perfil (sin tope de margen que ate a 1 contr).
+
+  Perfil topstep_50k_profile: start=$50,000 target=$3,000 MLL=$2,000 lock=$50,000
+
+══ ESCENARIOS PREDECLARADOS (1 contrato, flat 15:10 CT) ══
+  A · Base oficial (cons 0.55, min2)         | P(pasar)= 29.4% | P(quemar)= 70.5% | mediana si pasa 13.14m | si muere 8.74m | estados {'breach_trailing': 1411, 'target': 589}
+  B · Conservador (cons 0.50, min2)          | P(pasar)= 29.4% | P(quemar)= 70.5% | mediana si pasa 13.14m | si muere 8.74m | estados {'breach_trailing': 1411, 'target': 589}
+  C · Cons+DLL $1,000 terminal (cota)        | P(pasar)= 29.4% | P(quemar)= 70.5% | mediana si pasa 13.14m | si muere 8.74m | estados {'breach_trailing': 1411, 'target': 589}
+
+══ CONTROLES (mismo motor, mismas reglas; semilla iid declarada) ══
+  sin-deriva: media=-0.0000 · iid emparejado: N(+0.0034,0.6753)
+  CTRL sin-deriva · cons 0.55                | P(pasar)= 26.4% | P(quemar)= 73.6% | mediana si pasa 12.83m | si muere 8.67m | estados {'breach_trailing': 1472, 'target': 528}
+  CTRL iid emparejado · cons 0.55            | P(pasar)= 32.3% | P(quemar)= 67.7% | mediana si pasa 12.14m | si muere 8.21m | estados {'breach_trailing': 1354, 'target': 646}
+  CTRL sin-deriva · cons 0.50                | P(pasar)= 26.4% | P(quemar)= 73.6% | mediana si pasa 12.83m | si muere 8.67m | estados {'breach_trailing': 1472, 'target': 528}
+  CTRL iid emparejado · cons 0.50            | P(pasar)= 32.3% | P(quemar)= 67.7% | mediana si pasa 12.14m | si muere 8.21m | estados {'breach_trailing': 1354, 'target': 646}
+
+══ DELTAS (control − candidato; el signo puede invertirse al subir sizing) ══
+  Escenario A: Δ(sin-deriva)=-3.0 pp · Δ(iid emparejado)=+2.9 pp
+  Escenario B: Δ(sin-deriva)=-3.0 pp · Δ(iid emparejado)=+2.9 pp
+
+══ LECTURA (regla de decisión del plan §5) ══
+  1) ORB vs control sin edge (escenario A): Δ=-3.0 pp (a favor de ORB)
+  2) Sensibilidad +1/+2 ticks: T3 (Codex).
+  3) Reglas verificadas en T5 (55% consistencia CONFIRMADO, flat CONFIRMADO).
+
+FIN T1 — cifras crudas; el análisis va en T1_ORB_TOPSTEP_50K.md

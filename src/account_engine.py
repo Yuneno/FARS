@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, time, timedelta, timezone
 from decimal import Decimal
 from typing import Any, Mapping, Sequence
 
@@ -29,6 +29,7 @@ from src.account_policy import SizingPolicy, SizingPolicyConfig
 from src.backtest.executor import ExecutedTrade
 from src.backtest.history import Bar
 from src.backtest.mae import TradeMaeResult, compute_trade_mae
+from src.session_calendar import session_date
 from src.funded_rules_v2 import (
     AccountRuleInput,
     FundedAccountProfileV2,
@@ -141,14 +142,20 @@ def run_account_simulation(
             max_drawdown_pct=0.0,
         )
 
-    # Ensure profile cadence matches config
-    required_cadence = "intraday_event" if config.trailing_mode == "intraday_event" else "closed_trade"
+    # F1 Fix C (fail-closed): la cadencia del perfil debe calzar con el modo del motor.
+    if config.trailing_mode not in ("closed_trade", "intraday_event"):
+        raise ValueError(f"unsupported trailing_mode={config.trailing_mode!r}")
+    required_cadence = config.trailing_mode
     if profile.maximum_loss.monitoring_cadence != required_cadence:
-        # Re-derive profile with appropriate cadence if needed
-        from src.funded_profiles import apex_profile
-        # derive size from profile_id (e.g. apex-25k-evaluation)
-        size_key = profile.profile_id.split("-")[1]
-        profile = apex_profile(size_key, cadence=required_cadence)
+        # F1 Fix C (fail-closed): negar la corrida en vez de re-derivar en
+        # silencio un perfil Apex (cambiar de proveedor sin avisar es un bug
+        # de seguridad del motor).
+        raise ValueError(
+            f"perfil {profile.profile_id} con monitoring_cadence="
+            f"{profile.maximum_loss.monitoring_cadence!r} no calza con "
+            f"config.trailing_mode={config.trailing_mode!r}; se niega a continuar "
+            f"(cambiar de proveedor en silencio es un bug de seguridad del motor)"
+        )
 
     sim_start = opened_at or trades[0].entry_time
     if sim_start.tzinfo is None:
@@ -168,6 +175,40 @@ def run_account_simulation(
     peak_balance = float(profile.starting_balance)
     max_dd_dollars = 0.0
     degenerate_skipped = 0
+
+    # F1 Fix D: solo los perfiles con update_cadence="end_of_day" (p.ej.
+    # Topstep) necesitan el evento de cierre diario; funded_rules_v2 solo
+    # mueve el HWM con eventos end_of_day. Misma particion de sesion que el
+    # estado (session_timezone/session_boundary, sin salto de fin de semana).
+    emit_eod_on_day_change = profile.maximum_loss.update_cadence == "end_of_day"
+    eod_tz_name = profile.session_timezone or "UTC"
+    eod_boundary = profile.session_boundary or time(0)
+    prev_session = None
+    last_applied_ts: datetime | None = None
+
+    def _emit_end_of_day(ts: datetime) -> bool:
+        """Aplica un evento centralizado end_of_day con el balance/equity vivos.
+
+        F1 ronda 2 (Codex §4.3): único punto de emisión EOD — se llama (a) antes
+        del primer evento de una sesión nueva y (b) una vez al terminar el loop
+        para cerrar el último día. Devuelve True si el evento produjo breach
+        terminal. El timestamp se clampeea a >= último evento aplicado para
+        preservar el orden cronológico que exige FundedAccountStateV2.
+        """
+        nonlocal last_applied_ts
+        eod_ts = ts
+        if last_applied_ts is not None and eod_ts < last_applied_ts:
+            eod_ts = last_applied_ts
+        state.apply(
+            AccountRuleInput(
+                timestamp=eod_ts,
+                event_type="end_of_day",
+                balance=state.balance,
+                equity=state.equity,
+            )
+        )
+        last_applied_ts = eod_ts
+        return bool(state.terminal_breach)
 
     dollar_per_point = Decimal(str(config.dollar_per_point))
     starting_balance = profile.starting_balance
@@ -190,6 +231,32 @@ def run_account_simulation(
             status = "timeout"
             termination_reason = f"trade_entry_exceeded_horizon_{config.horizon_calendar_days}d"
             break
+
+        # F1 Fix D: al cambiar el dia de trading, emitir end_of_day con el
+        # balance de cierre para que funded_rules_v2 mueva el HWM de los
+        # perfiles con update_cadence="end_of_day" (p.ej. Topstep). El piso NO
+        # se mueve por trade en estos perfiles; el breach se sigue evaluando
+        # en closed_trade (monitoring_cadence).
+        if emit_eod_on_day_change:
+            trade_session = session_date(
+                t_entry, tz=eod_tz_name, reset_hour=eod_boundary, skip_weekends=False
+            )
+            exit_session = session_date(
+                t_exit, tz=eod_tz_name, reset_hour=eod_boundary, skip_weekends=False
+            )
+            if exit_session != trade_session:
+                raise ValueError(
+                    f"trade {trade.trade_id} cruza la frontera de sesión "
+                    f"({trade_session} -> {exit_session}) sin mark EOD de la posición "
+                    f"abierta; se niega a continuar (fail-closed: no se atribuye el "
+                    f"balance posterior al día anterior)"
+                )
+            if prev_session is not None and trade_session != prev_session:
+                if _emit_end_of_day(t_entry):
+                    status = "blown"
+                    termination_reason = "maximum_loss_end_of_day_breach"
+                    break
+            prev_session = trade_session
 
         # 2. Sizing calculation with safety buffer cap
         current_balance = state.balance
@@ -292,6 +359,7 @@ def run_account_simulation(
                 has_open_positions=True,
             )
             state.apply(intra_input)
+            last_applied_ts = mae_ts
 
             if state.terminal_breach:
                 status = "blown"
@@ -346,6 +414,7 @@ def run_account_simulation(
             micro_contracts=executed_qty,
         )
         report = state.apply(trade_input)
+        last_applied_ts = t_exit
 
         # Track peak and drawdown. A live account terminates AT its floor, so the
         # post-trade balance is clamped at the pre-trade floor: pierce-through
@@ -391,6 +460,14 @@ def run_account_simulation(
             status = "passed"
             termination_reason = "profit_target_reached"
             break
+
+    # F1 ronda 2 (Codex §4.3): cerrar el último día. Sin este flush, el HWM y el
+    # piso EOD quedan una sesión atrás cuando la corrida termina sin un cambio de
+    # día posterior (un solo trade +$1.000 dejaba HWM $50.000/piso $48.000 en vez
+    # de $51.000/$49.000). Solo si no hubo breach terminal (el estado no acepta
+    # eventos tras un breach).
+    if emit_eod_on_day_change and not state.terminal_breach:
+        _emit_end_of_day(last_applied_ts if last_applied_ts is not None else sim_start)
 
     # Calculate days to outcome
     first_ts = records[0].entry_time if records else sim_start

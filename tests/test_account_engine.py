@@ -185,8 +185,10 @@ def test_trade_winner_that_blows_on_intraday_mae_decisive():
     assert res_closed.final_balance > 25000.0
 
     # Case B: Trailing intraday with MAE (FARS method)
+    # F1 Fix C: perfil con cadencia intraday_event (el re-derive silencioso ya no existe).
+    profile_intraday = apex_25k_profile(cadence="intraday_event")
     cfg_intraday = AccountEngineConfig(risk_pct=0.008, trailing_mode="intraday_event")
-    res_intraday = run_account_simulation(profile, [trade], cfg_intraday, precomputed_maes=precomputed_maes)
+    res_intraday = run_account_simulation(profile_intraday, [trade], cfg_intraday, precomputed_maes=precomputed_maes)
 
     # Under intraday trailing: it detects the dip touching the floor at 09:45 and BURNS immediately!
     assert res_intraday.status == "blown"
