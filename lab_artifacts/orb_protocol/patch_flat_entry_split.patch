@@ -1,0 +1,39 @@
+diff --git a/src/nq_breakout/backtest.py b/src/nq_breakout/backtest.py
+index d6be3e6..6e11804 100644
+--- a/src/nq_breakout/backtest.py
++++ b/src/nq_breakout/backtest.py
+@@ -131,6 +131,12 @@ class Config:
+     window_end: dt.time = dt.time(10, 0)
+     trade_start: dt.time = dt.time(10, 0)
+     trade_end: dt.time = dt.time(14, 30)
++    #: F1 Fix B (entry/flat split, aditivo): fin de la ventana de ENTRADAS.
++    #: None = legacy (usa trade_end; comportamiento bit a bit identico).
++    entry_end: dt.time | None = None
++    #: F1 Fix B (entry/flat split, aditivo): hora de cierre plano de sesion.
++    #: None = legacy (usa trade_end; comportamiento bit a bit identico).
++    flat_time: dt.time | None = None
+     regular_start: dt.time = dt.time(9, 30)
+     regular_end: dt.time = dt.time(16, 0)   # daily Globex maintenance halt
+     max_trades_per_day: int = 2
+@@ -215,7 +221,9 @@ def run_backtest(df_5min: pd.DataFrame, config: Config,
+     day_index = {day: i for i, day in enumerate(trading_days)}
+     first_trading_day = trading_days[0]
+ 
+-    session_mask = (df['time'] >= config.window_start) & (df['time'] <= config.trade_end)
++    session_mask = (df['time'] >= config.window_start) & (
++        df['time'] <= (config.flat_time if config.flat_time is not None else config.trade_end)
++    )
+     session_close_bar = df[session_mask].groupby('trading_day')['date'].max().to_dict()
+ 
+     trades: list[dict] = []
+@@ -339,7 +347,9 @@ def run_backtest(df_5min: pd.DataFrame, config: Config,
+         session_ok = not (flags.require_prev_session and row_trading_day == first_trading_day)
+         if (open_trade is None and not exited_this_bar and window_ready
+                 and daily_trade_count < config.max_trades_per_day
+-                and config.trade_start <= row_time <= config.trade_end
++                and config.trade_start <= row_time <= (
++                    config.entry_end if config.entry_end is not None else config.trade_end
++                )
+                 and allowed_bar and session_ok):
+             direction = None
+             entry_price = None

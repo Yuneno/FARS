@@ -149,6 +149,72 @@ def build_replicate_timeline(
     return timeline
 
 
+def _consistency_effective_target(
+    profit_target_usd: float,
+    best_day_pnl: float,
+    consistency_max_day_ratio: float | None,
+) -> float:
+    """Target efectivo único (F1 ronda 2, Codex §4.2): si el mejor día supera
+    ratio × target, el target SUBE a best_day/ratio. None = sin regla.
+
+    Helper único para evitar divergencia entre el cierre del día previo, el
+    chequeo intradía legacy y el flush del último día."""
+    if (
+        consistency_max_day_ratio is not None
+        and best_day_pnl > consistency_max_day_ratio * profit_target_usd
+    ):
+        return best_day_pnl / consistency_max_day_ratio
+    return profit_target_usd
+
+
+def _validate_terminal_exclusivity(
+    hit_dd: bool,
+    hit_daily: bool,
+    passed: bool,
+    terminal_condition: str,
+) -> None:
+    """Exclusión mutua de estados terminales (F1 ronda 3).
+
+    Cada réplica termina en EXACTAMENTE UN estado: target, breach_trailing,
+    breach_daily u horizon_exhausted. Un breach declarado jamás coexiste con
+    un pase: el flush final de day_close no puede convertir un breach en
+    target. Falla ruidosamente (AssertionError) si el invariante se viola.
+    """
+    if terminal_condition not in (
+        "target",
+        "breach_trailing",
+        "breach_daily",
+        "horizon_exhausted",
+    ):
+        raise AssertionError(
+            f"terminal_condition desconocido: {terminal_condition!r}"
+        )
+    if hit_dd or hit_daily:
+        if terminal_condition not in ("breach_trailing", "breach_daily") or passed:
+            raise AssertionError(
+                f"estado terminal doble: hit_dd={hit_dd} hit_daily={hit_daily} "
+                f"passed={passed} con terminal_condition={terminal_condition!r}"
+            )
+    elif terminal_condition == "target":
+        if not passed:
+            raise AssertionError(
+                "terminal 'target' sin passed=True "
+                f"(passed={passed} hit_dd={hit_dd} hit_daily={hit_daily})"
+            )
+    elif terminal_condition == "horizon_exhausted":
+        if passed:
+            raise AssertionError(
+                "terminal 'horizon_exhausted' con passed=True"
+            )
+    elif (terminal_condition == "breach_trailing" and not hit_dd) or (
+        terminal_condition == "breach_daily" and not hit_daily
+    ):
+        raise AssertionError(
+            f"terminal {terminal_condition!r} sin su flag "
+            f"(hit_dd={hit_dd} hit_daily={hit_daily})"
+        )
+
+
 def simulate_funded_trajectory(
     r_series: np.ndarray,
     timeline: list[datetime],
@@ -165,14 +231,39 @@ def simulate_funded_trajectory(
     use_risk_engine: bool = False,
     rules: FundedAccountRules | None = None,
     dd_floor_ceiling: float | None = None,
+    consistency_max_day_ratio: float | None = None,
+    min_trading_days: int = 0,
+    trailing_update_cadence: str = "intraday_per_trade",
+    consistency_day_consolidation: str = "intraday_max",
 ) -> dict:
     """Simula la trayectoria monetaria y límites de cuenta dentro de una réplica (Fix CRITICAL 1 y 2).
 
-    dd_floor_ceiling: si se fija (p.ej. Apex: starting_balance + $100), el piso del
-    trailing drawdown = min(peak - max_dd_limit_usd, dd_floor_ceiling) y se congela
-    al alcanzarlo (regla real de Apex 2026-07-29: "floor freezes when peak reaches
-    DD + $100"). None = trailing clásico sin techo (comportamiento previo intacto).
-    Tocar el piso exactamente = breach (boundary '<='), como en la spec de Apex.
+    dd_floor_ceiling: si se fija (p.ej. Apex: starting_balance + $100; Topstep:
+    starting_balance), el piso del trailing drawdown =
+    min(peak - max_dd_limit_usd, dd_floor_ceiling) y se congela al alcanzarlo.
+    None = trailing clásico sin techo (comportamiento previo intacto).
+    Tocar el piso exactamente = breach (boundary '<=').
+
+    consistency_max_day_ratio (Topstep Combine, regla SUAVE): si el mejor día
+    supera ratio × profit_target, el target SUBE a best_day/ratio (para ratio
+    0.5: 2×mejor día) — no hay fallo. None = sin regla (default intacto).
+
+    min_trading_days (Topstep): el pase exige ≥N días con operación ejecutada.
+    0 = sin mínimo (default intacto).
+
+    trailing_update_cadence (F1 Fix A): "intraday_per_trade" (default LEGACY: el
+    pico sube tras cada trade, bit a bit idéntico al comportamiento previo) o
+    "end_of_day" (spec Topstep/Apex-EOD: el pico EOD solo se actualiza al
+    cambiar de día de trading según las marcas del timeline; el piso es
+    min(eod_peak - max_dd_limit_usd, dd_floor_ceiling) y el breach se vigila
+    por trade contra ese piso — vigilancia intradía, ratchet EOD).
+
+    consistency_day_consolidation (F1 Fix A): "intraday_max" (default LEGACY:
+    best_day_pnl toma el máximo del acumulado intradía) o "day_close" (spec:
+    best_day_pnl se actualiza al cerrar cada día con el P&L FINAL del día;
+    solo sube — las pérdidas no lo resetean). Con "day_close" (F1 ronda 2,
+    Codex §4.2) el pase SOLO se evalúa al consolidar cada día (día previo al
+    cambiar de día + flush del último día al terminar el loop); nunca intradía.
 
     Reglas aplicadas dentro de la réplica:
     1. Sizing entero: min(equity * 1%, $1000) / ($200 por contrato).
@@ -189,13 +280,37 @@ def simulate_funded_trajectory(
        P(target) = P(target antes del primer breach).
        P(breach total) = P(breach_trailing) + P(breach_daily) (estrictamente disjuntos).
     """
+    if trailing_update_cadence not in ("intraday_per_trade", "end_of_day"):
+        raise ValueError(
+            f"trailing_update_cadence must be 'intraday_per_trade' or 'end_of_day', "
+            f"got {trailing_update_cadence!r}"
+        )
+    if consistency_day_consolidation not in ("intraday_max", "day_close"):
+        raise ValueError(
+            f"consistency_day_consolidation must be 'intraday_max' or 'day_close', "
+            f"got {consistency_day_consolidation!r}"
+        )
+    use_eod_trailing = trailing_update_cadence == "end_of_day"
+    use_day_close_consistency = consistency_day_consolidation == "day_close"
+
     equity = initial_balance
     peak_equity = initial_balance
+    eod_peak_equity = initial_balance  # F1 Fix A: solo se mueve al cerrar el día
     hit_dd = False
     hit_daily = False
     hit_max_ops = False
     passed = False
     terminal_condition = "horizon_exhausted"
+
+    def _pass_declarable() -> bool:
+        # F1 ronda 3: el pase solo se declara sobre una réplica viva — nunca
+        # sobrescribe un terminal_condition ya asignado (breach o target).
+        return (
+            not hit_dd
+            and not hit_daily
+            and not passed
+            and terminal_condition == "horizon_exhausted"
+        )
 
     if use_risk_engine:
         if rules is None:
@@ -224,6 +339,8 @@ def simulate_funded_trajectory(
     current_day: date | None = None
     trades_today = 0
     day_pnl = 0.0
+    best_day_pnl = 0.0
+    days_traded: set = set()
 
     current_month: tuple[int, int] | None = None
     trades_this_month = 0
@@ -240,6 +357,29 @@ def simulate_funded_trajectory(
         consumed_opportunities += 1  # oportunidad EXAMINADA (aunque se descarte)
         t_date = dt.date() if isinstance(dt, datetime) else dt
         if t_date != current_day:
+            if current_day is not None:
+                # F1 Fix A: se cierra el día previo con el balance/P&L FINAL.
+                # El pico EOD solo sube aquí (nunca intra-día); el mejor día
+                # solo sube con el P&L final del día cerrado.
+                if use_eod_trailing:
+                    eod_peak_equity = max(eod_peak_equity, equity)
+                if use_day_close_consistency:
+                    best_day_pnl = max(best_day_pnl, day_pnl)
+                    # F1 ronda 2 (Codex §4.2): con day_close el pase se evalúa
+                    # AQUÍ (día previo ya consolidado, equity al cierre), no
+                    # intradía: el P&L del día decisivo aún no está cerrado.
+                    # F1 ronda 3: solo sobre réplica viva (jamás tras un breach).
+                    if _pass_declarable():
+                        effective = _consistency_effective_target(
+                            profit_target_usd, best_day_pnl, consistency_max_day_ratio
+                        )
+                        if (
+                            equity >= initial_balance + effective
+                            and len(days_traded) >= min_trading_days
+                        ):
+                            passed = True
+                            terminal_condition = "target"
+                            break
             current_day = t_date
             trades_today = 0
             day_pnl = 0.0
@@ -303,12 +443,15 @@ def simulate_funded_trajectory(
 
         trade_pnl = float(r_val) * per_contract_risk * size
         trades_executed += 1
+        days_traded.add(t_date)
         if use_risk_engine:
             trades_applied += 1
             realized += trade_pnl
         equity += trade_pnl
         peak_equity = max(peak_equity, equity)
         day_pnl += trade_pnl
+        if not use_day_close_consistency and day_pnl > best_day_pnl:
+            best_day_pnl = day_pnl
 
         if use_risk_engine:
             # Snapshot POSTERIOR al cierre (Fix R9): sin él, al cambiar de día el
@@ -337,27 +480,61 @@ def simulate_funded_trajectory(
                 terminal_condition = "breach_daily"
                 break
 
+        # F1 Fix A: con "end_of_day" el piso se calcula contra el pico EOD
+        # (ratchet al cierre); el chequeo por trade se mantiene (vigilancia
+        # intradía contra ese piso). Con legacy, ref_peak ES peak_equity:
+        # bit a bit idéntico al comportamiento previo.
+        ref_peak = eod_peak_equity if use_eod_trailing else peak_equity
         if dd_floor_ceiling is None:
             # Rama default: predicado ORIGINAL bit a bit (peak-equity >= max_dd).
             # NO reemplazar por `equity <= peak-max_dd`: bajo IEEE-754 divergen en
             # bordes exactos (contraejemplo Codex R13: peak=30179.25,
             # max_dd=1763.85, equity=28415.40 → viejo False, nuevo True).
-            trailing_dd_usd = peak_equity - equity
+            trailing_dd_usd = ref_peak - equity
             if trailing_dd_usd >= max_dd_limit_usd:
                 hit_dd = True
                 terminal_condition = "breach_trailing"
                 break
         else:
-            floor = min(peak_equity - max_dd_limit_usd, dd_floor_ceiling)
+            floor = min(ref_peak - max_dd_limit_usd, dd_floor_ceiling)
             if equity <= floor:
                 hit_dd = True
                 terminal_condition = "breach_trailing"
                 break
 
-        if equity >= target_equity:
-            passed = True
-            terminal_condition = "target"
-            break
+        # Pase: target efectivo (consistencia Topstep sube el target) + mínimo de días.
+        # F1 ronda 2 (Codex §4.2): el chequeo intradía solo aplica cuando NO es
+        # day_close; con day_close el pase se evalúa al consolidar cada día.
+        # F1 ronda 3: solo sobre réplica viva (jamás tras un breach).
+        if not use_day_close_consistency and _pass_declarable():
+            effective_target_usd = _consistency_effective_target(
+                profit_target_usd, best_day_pnl, consistency_max_day_ratio
+            )
+            if equity >= initial_balance + effective_target_usd and len(days_traded) >= min_trading_days:
+                passed = True
+                terminal_condition = "target"
+                break
+
+    # F1 Fix A + ronda 2 (Codex §4.2): consolida el último día (el horizonte lo
+    # cierra aunque no haya cambio de día posterior) y evalúa el pase con el
+    # target recalculado — sin esto, un pase decidido por el último día nunca
+    # se declararía (y sin diferir, se declararía antes de consolidarlo).
+    if use_eod_trailing:
+        eod_peak_equity = max(eod_peak_equity, equity)
+    if use_day_close_consistency:
+        best_day_pnl = max(best_day_pnl, day_pnl)
+        # F1 ronda 3: el flush final NUNCA sobrescribe un breach ya declarado
+        # (regresión C2: trailing roto + cierre "calificable" => breach queda).
+        if _pass_declarable():
+            effective_target_usd = _consistency_effective_target(
+                profit_target_usd, best_day_pnl, consistency_max_day_ratio
+            )
+            if equity >= initial_balance + effective_target_usd and len(days_traded) >= min_trading_days:
+                passed = True
+                terminal_condition = "target"
+
+    # F1 ronda 3: exclusión mutua de estados terminales — falla ruidosamente.
+    _validate_terminal_exclusivity(hit_dd, hit_daily, passed, terminal_condition)
 
     return {
         "hit_dd": hit_dd,

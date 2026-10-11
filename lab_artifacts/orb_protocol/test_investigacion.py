@@ -665,11 +665,44 @@ def test_apex_floor_lock_trailing(tmp_path=None):
     assert res3["terminal_condition"] == "breach_trailing", res3
 
 
+def test_topstep_consistency_y_min_dias(tmp_path=None):
+    """Reglas Topstep Combine: (a) consistencia SUAVE sube el target a 2×mejor día,
+    (b) mínimo de días de operación para poder pasar. Defaults intactos."""
+    from datetime import datetime
+
+    tl2 = [
+        datetime(2026, 7, 1, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+        datetime(2026, 7, 2, 10, 0, tzinfo=ZoneInfo("America/Chicago")),
+    ]
+    kw = dict(profit_target_usd=3_000.0, max_dd_limit_usd=2_000.0,
+              daily_loss_limit_usd=100_000.0, dd_floor_ceiling=100_000.0)
+
+    # (a) Consistencia: día1 +2.5R (+2500 con size 5) supera 50% del target (1500)
+    # → target sube a 5000. Con trade2 +0.5R (+500): equity 103.000.
+    # Sin regla: PASA (103.000 ≥ 103.000). Con regla: NO pasa (faltan 2.000).
+    r = np.array([2.5, 0.5])
+    sin = bc.simulate_funded_trajectory(r, tl2, **kw)
+    con = bc.simulate_funded_trajectory(r, tl2, consistency_max_day_ratio=0.5, **kw)
+    assert sin["terminal_condition"] == "target", sin
+    assert con["terminal_condition"] == "horizon_exhausted", con
+    assert con["final_equity"] == 103_000.0
+
+    # (b) Mínimo de días: +5R (+5.000) en 1 solo día alcanza el target…
+    r1 = np.array([5.0])
+    tl1 = [tl2[0]]
+    libre = bc.simulate_funded_trajectory(r1, tl1, **kw)
+    con_min = bc.simulate_funded_trajectory(r1, tl1, min_trading_days=3, **kw)
+    assert libre["terminal_condition"] == "target", libre
+    assert con_min["terminal_condition"] == "horizon_exhausted", con_min
+    assert con_min["trades_executed"] == 1
+
+
 if __name__ == "__main__":
     fails = 0
     test_funcs = [
         test_mbb_sin_costura,
         test_apex_floor_lock_trailing,
+        test_topstep_consistency_y_min_dias,
         test_semillas_reproducibles,
         test_sensibilidad_costes_monotona,
         test_separacion_sar_consistente,

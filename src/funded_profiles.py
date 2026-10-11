@@ -232,6 +232,133 @@ def apex_150k_profile(*, cadence: UpdateCadence = "closed_trade") -> FundedAccou
     return apex_profile("150k", cadence=cadence)
 
 
+# ---------------------------------------------------------------------------
+# Topstep — Trading Combine (evaluación). Verificado 2026-10-05 en:
+#  - https://help.topstep.com/en/articles/8284197-trading-combine-parameters
+#  - https://help.topstep.com/en/articles/8284204-what-is-the-maximum-loss-limit
+#  - https://www.topstep.com/express-funded-account-rules
+# Contradicciones entre fuentes declaradas en `unresolved_assumptions`.
+# ---------------------------------------------------------------------------
+
+_TOPSTEP_RETRIEVED = date(2026, 10, 5)
+_TOPSTEP_RULE_SOURCES = (
+    RuleSource("https://help.topstep.com/en/articles/8284197-trading-combine-parameters",
+               _TOPSTEP_RETRIEVED),
+    RuleSource("https://help.topstep.com/en/articles/8284204-what-is-the-maximum-loss-limit",
+               _TOPSTEP_RETRIEVED),
+)
+_TOPSTEP_SESSION_TZ = "America/Chicago"
+_TOPSTEP_SESSION_BOUNDARY = time(17, 0)
+
+_TOPSTEP_SPECS: dict[str, dict[str, Any]] = {
+    # Tamaño: target / MLL (trailing EOD, se LOCKea en starting_balance) / caps
+    "50k": dict(starting_balance=Decimal("50000"), target=Decimal("3000"),
+                mll=Decimal("2000"), max_minis=5, max_micros=50,
+                dll_default=Decimal("1000")),
+    "100k": dict(starting_balance=Decimal("100000"), target=Decimal("6000"),
+                 mll=Decimal("3000"), max_minis=10, max_micros=100,
+                 dll_default=Decimal("2000")),
+    "150k": dict(starting_balance=Decimal("150000"), target=Decimal("9000"),
+                 mll=Decimal("4500"), max_minis=15, max_micros=150,
+                 dll_default=Decimal("3000")),
+}
+
+# F1 ronda 2 (Codex MEDIO 7): se elige SINCRONIZAR (no borrar historia). Las notas
+# rancias "5 días / 50% / 2×" contradecían minimum_trading_days=2 y el advisory 55% /
+# best_day/0.55 ya exportados; ahora ambas cuentan la misma decisión oficial.
+_TOPSTEP_UNRESOLVED = (
+    "minimum_trading_days: fuentes discrepan — help oficial 'as few as two days' vs "
+    "listados de terceros '5'. DECISIÓN: 2 (fuente oficial; sincronizado con "
+    "minimum_trading_days=2 tras F1 Fix E).",
+    "trailing: help oficial = EOD-trailing (no intradía); terceros dicen intradía con "
+    "no-realizado. DECISIÓN: fuente oficial (update_cadence=end_of_day).",
+    "daily_loss (DLL) es OPCIONAL/ajustable en TopstepX (default $1,000-$3,000) y su "
+    "acción al tocarse no está documentada para la Combine. DECISIÓN: daily_loss=None "
+    "(el trader lo desactiva) + sensibilidad aparte.",
+    "consistency (suave, solo Combine): mejor día ≤ 55% del target; al romperla el target "
+    "SUBE a best_day/0.55 (no hay fallo). El enum ConsistencyRule no puede expresar "
+    "denominator=TARGET ni action=raise_target. DECISIÓN: consistency=None en el perfil "
+    "(documentada aquí) y modelada en el análisis con test.",
+)
+
+
+def topstep_profile(account_size: str = "50k") -> FundedAccountProfileV2:
+    """Return a Topstep Trading Combine evaluation account profile.
+
+    Verified 2026-10-05 from Topstep's help center (see _TOPSTEP_RULE_SOURCES):
+    - Profit target / Maximum Loss Limit (trailing) per size: 3k/2k (50k),
+      6k/3k (100k), 9k/4.5k (150k).
+    - MLL is computed from the END-OF-DAY balance high and locks permanently
+      at the starting balance once it reaches it.
+    - Consistency rule (Combine only, soft): best day <= 55% of the profit
+      target; breaching RAISES the target to best_day/0.55 (no failure).
+    - No 25k account exists at Topstep (smallest is 50k).
+    """
+    key = account_size.lower().strip()
+    if key not in _TOPSTEP_SPECS:
+        raise ValueError(
+            f"Unknown Topstep account size {account_size!r}; must be one of {sorted(_TOPSTEP_SPECS)}"
+        )
+    spec = _TOPSTEP_SPECS[key]
+    return FundedAccountProfileV2(
+        profile_id=f"topstep-combine-{key}",
+        profile_version="2026-10-05-spec",
+        provider="Topstep",
+        currency="USD",
+        starting_balance=spec["starting_balance"],
+        profit_target=ProfitTargetRule(
+            target=RuleAmount("absolute", spec["target"]),
+            reference="balance",
+            boundary=">=",
+        ),
+        maximum_loss=MaximumLossRule(
+            distance=RuleAmount("absolute", spec["mll"]),
+            mode="trailing",
+            reference="equity",
+            update_cadence="end_of_day",
+            monitoring_cadence="closed_trade",
+            breach_boundary="<=",
+            threshold_ceiling=spec["starting_balance"],
+        ),
+        session_timezone=_TOPSTEP_SESSION_TZ,
+        session_boundary=_TOPSTEP_SESSION_BOUNDARY,
+        minimum_trading_days=2,
+        daily_loss=None,
+        consistency=None,
+        operational=OperationalRules(
+            maximum_minis=spec["max_minis"],
+            maximum_micros=spec["max_micros"],
+            micros_per_mini=Decimal("10"),
+            news_trading_allowed=True,
+            advisory_constraints={
+                "dll_default_usd": str(spec["dll_default"]),
+                "dll_adjustable": "true",
+                "mll_lock": "permanent at starting balance",
+                "consistency_soft": "best day <= 55% of target; breach raises target to best_day/0.55 (modeled in analysis)",
+                "source_resolutions": " | ".join(_TOPSTEP_UNRESOLVED),
+            },
+        ),
+        rule_sources=_TOPSTEP_RULE_SOURCES,
+        unresolved_assumptions=(),
+        enabled=True,
+    )
+
+
+def topstep_50k_profile() -> FundedAccountProfileV2:
+    """Return Topstep 50K Trading Combine ($3,000 target, $2,000 trailing MLL)."""
+    return topstep_profile("50k")
+
+
+def topstep_100k_profile() -> FundedAccountProfileV2:
+    """Return Topstep 100K Trading Combine ($6,000 target, $3,000 trailing MLL)."""
+    return topstep_profile("100k")
+
+
+def topstep_150k_profile() -> FundedAccountProfileV2:
+    """Return Topstep 150K Trading Combine ($9,000 target, $4,500 trailing MLL)."""
+    return topstep_profile("150k")
+
+
 __all__ = [
     "rapid_25k_profile",
     "apex_profile",
@@ -239,4 +366,8 @@ __all__ = [
     "apex_50k_profile",
     "apex_100k_profile",
     "apex_150k_profile",
+    "topstep_profile",
+    "topstep_50k_profile",
+    "topstep_100k_profile",
+    "topstep_150k_profile",
 ]
