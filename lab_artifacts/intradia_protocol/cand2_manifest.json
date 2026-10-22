@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "title": "Manifest CAND2 zona_rebote intradia",
+    "generated_at_utc": "2026-10-12T16:15:08.010621+00:00",
+    "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "preregistro_sha256": "82330fcdec4cfc9ae1e96e4ea4f0d32c62367bd8000c4d77dd50aa68441f9e1a",
+    "smoke_mode": false
+  },
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "bars_count": 518237,
+    "first": "2019-05-06T00:00:00+00:00",
+    "last": "2026-09-03T23:55:00+00:00",
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge_gap_bars": 0,
+    "warmup_bars": 500,
+    "n_folds": 8,
+    "dev_folds_used": 6,
+    "validation_folds_sealed": [
+      6,
+      7
+    ]
+  },
+  "arm": {
+    "strategy": "ZonasReboteStrategy(ZoneEngine MNQ/M5 session_pools=True, ATR(14) SMA, k=0.5, pools PDH/PDL/ONH/ONL 1R-5R)",
+    "executor": "legacy absolute (sin BE)",
+    "flat_ct": "15:10",
+    "warmup_bars": 500,
+    "slip_levels_ticks": [
+      0,
+      1,
+      2
+    ]
+  },
+  "pins_base": {
+    "initial_balance": 50000.0,
+    "risk_per_trade": 0.01,
+    "dollar_per_point": 2.0,
+    "tick_size": 0.25,
+    "max_contracts": 1000000,
+    "commission_per_side": 0.62,
+    "slippage_points": 0.25,
+    "time_exit_slippage_points": 0.25,
+    "end_of_data_slippage_points": 0.25,
+    "profit_target_pct": 0.06,
+    "max_drawdown_pct": 0.06,
+    "daily_loss_limit_pct": 0.03,
+    "max_trades": null,
+    "max_bars_held": 1000000000,
+    "max_hold_minutes": null,
+    "fixed_quantity": null,
+    "bar_interval_seconds": 300,
+    "pending_limit_entry": false,
+    "pending_order_wait_bars": 0,
+    "cooldown_bars": 0,
+    "time_exit_mode": "market",
+    "session_date_for_ledger": false,
+    "end_of_data_policy": "close",
+    "move_stop_to_break_even": false
+  },
+  "seeds": {
+    "master": 20260928,
+    "seed_mbb": 2602526572,
+    "seed_reserved_t1_iid_slot": 1656862755,
+    "seed_perm": 3478895834,
+    "seed_centered": 162296940
+  },
+  "yardstick": {
+    "engine": "bootstrap_camino",
+    "B": 2000,
+    "trailing_update_cadence": "end_of_day",
+    "consistency_day_consolidation": "day_close",
+    "profile": "topstep_50k",
+    "contracts": 1,
+    "risk_usd_per_R": 200.0
+  },
+  "conditions": {
+    "gate_n100": {
+      "0": {
+        "n_trades": 3672,
+        "pass": true
+      },
+      "1": {
+        "n_trades": 3672,
+        "pass": true
+      },
+      "2": {
+        "n_trades": 3672,
+        "pass": true
+      }
+    },
+    "condicion_A": {
+      "delta_control_menos_candidato": -0.0275,
+      "ci95": [
+        -0.0495,
+        -0.0055
+      ],
+      "cumple": true
+    },
+    "condicion_B": {
+      "delta_control_menos_candidato": -0.0215,
+      "ci95": [
+        -0.042,
+        -0.001
+      ],
+      "cumple": true
+    }
+  },
+  "artifacts_sha256": {
+    "CAND2_DISENO.md": "541b098592542690930aa9ebc8833a21102368c0fdc029c6a632bafeaf78b058",
+    "cand2_ledger_base.csv": "c28fb8c04debfe7973001dfce20b19f47cedfb8562497b28d9cff0b9874c875b",
+    "cand2_ledger_slip+1ticks.csv": "3df02fb9d952f57e1989535930785e6fbb770c601d3c363bd03ce74318c03f54",
+    "cand2_ledger_slip+2ticks.csv": "9854f3774eb1ce8e89e0600770f5ea6cfc12326c317f5dd220ed61b0684ca8c8",
+    "cand2_metrics_base.json": "42cbd7ffb4c7b64d068ce4a674e89a32a863969b4c7df4e69bb52b07c7739052",
+    "cand2_metrics_slip+1ticks.json": "78b4a20b99cb35880a3c7f106ed4261c82d2300f1229869e0eef85e4b8c04aad",
+    "cand2_metrics_slip+2ticks.json": "4733a36c994a507a028b0587588b4e386a52f5f4ee1d8650a63ef9c162a3ee2f",
+    "CAND2_RUN_LOG.txt": "2a9c071d42320cb7315d9a5062327ff5c1f68e6543f9211c6d607f4c723f5208",
+    "cand2_yardstick_base.json": "6ef4b8a7f196b37deaee86543319b10157b1cd059cd2cb1726099e9834de08ad",
+    "cand2_yardstick_base.txt": "15614b210b08b9cce285a5193c586637cbf3e97e8e1ac14974a77dc3d93222bb",
+    "cand2_yardstick_slip+1ticks.json": "dfc22afe3db986cccf9bca15beddb4a1c5d3f883d049797b9da224f13e1ac9a2",
+    "cand2_yardstick_slip+1ticks.txt": "7936d2b5062ae02d6524d6b44b8a553a848f4690a9cb03321cf886af8a18d381",
+    "cand2_yardstick_slip+2ticks.json": "1a2256e759946b382bd1c4af9ee179ced19c10ff1f2c6100e8b18207ae4cfd64",
+    "cand2_yardstick_slip+2ticks.txt": "1c9e0c522529540c57baccd3b979e546b745ffaa8b756f33c54dbc65999c9f75"
+  }
+}

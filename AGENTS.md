@@ -8,8 +8,16 @@ for funded trading account evaluations.
 - **Hermes** is the orchestrator, planner, and reviewer. Hermes decomposes the
   work into bounded tasks with acceptance criteria, inspects the git diff,
   verifies evidence, and independently confirms or rejects claimed improvements.
-- **Codex** is the programmer. Codex implements the bounded tasks and runs the
-  tests, but does NOT decide scope or accept its own work as correct.
+  Hermes is the only agent that applies reviewed changes to the vault notes.
+- **Implementation is assigned per task**, named in the task card (Codex, Muse,
+  Gemini, or another agent). The implementer runs the tests but does NOT decide
+  scope and does NOT accept its own work as correct.
+- **Codex** is the default independent reviewer of implementations by others.
+  When a task assigns implementation to Codex (e.g. documentary work), Hermes or
+  another agent reviews it — never self-acceptance.
+- **Muse** critiques plans and hypotheses; **Opus** is escalation for ambiguous
+  logic/architecture only; **Astra** is escalation at full block closure or for
+  tie-breaks. Roles ratified by Ricardo on 2026-10-20.
 
 A predictive improvement is never considered proven just because the tests
 pass. Hermes must independently verify the evidence.
@@ -18,7 +26,7 @@ pass. Hermes must independently verify the evidence.
 
 1. Hermes freezes a starting point (branch + commit + data/result reference).
 2. Hermes writes bounded tasks, each with acceptance criteria.
-3. Codex implements one task and runs its tests.
+3. The implementer named in the task implements it and runs its tests.
 4. Hermes reviews the diff and the evidence independently.
 5. Only after review passes are changes committed.
 
@@ -63,7 +71,7 @@ Pay special attention to:
 
 ## Review workflow
 
-When reviewing Codex changes:
+When reviewing implementation changes:
 
 1. Inspect the current git diff.
 2. Read relevant project requirements.

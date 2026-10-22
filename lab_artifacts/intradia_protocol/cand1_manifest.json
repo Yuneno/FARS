@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "title": "Manifest CAND1 EMAS intradia",
+    "generated_at_utc": "2026-10-11T23:08:09.654083+00:00",
+    "runtime": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "preregistro_sha256": "bdfef5e81265c09af1003648b8394696ad3368305a00e867b0f7c07e60393a8d",
+    "smoke_mode": false
+  },
+  "dataset": {
+    "archive": "E:\\FARS-LAB\\databento.zip",
+    "member": "databento/MNQ_M5.csv",
+    "bars_count": 518237,
+    "first": "2019-05-06T00:00:00+00:00",
+    "last": "2026-09-03T23:55:00+00:00",
+    "sha256": "fbed6061205b8299af140f85e36b472f5f1d88084977ad9c4ca9aa1f817b8a96"
+  },
+  "walk_forward_plan": {
+    "type": "calendar_rolling",
+    "train_months": 36,
+    "test_months": 6,
+    "step_months": 6,
+    "purge_gap_bars": 0,
+    "warmup_bars": 500,
+    "n_folds": 8,
+    "dev_folds_used": 6,
+    "validation_folds_sealed": [
+      6,
+      7
+    ]
+  },
+  "arm": {
+    "strategy": "EmasStrategy(market=MNQ, target_rr=3.0, log_decisions=True)",
+    "executor": "legacy (f=0.0, sin BE)",
+    "flat_ct": "15:10",
+    "warmup_bars": 500,
+    "slip_levels_ticks": [
+      0,
+      1,
+      2
+    ]
+  },
+  "pins_base": {
+    "initial_balance": 50000.0,
+    "risk_per_trade": 0.01,
+    "dollar_per_point": 2.0,
+    "tick_size": 0.25,
+    "max_contracts": 1000000,
+    "commission_per_side": 0.62,
+    "slippage_points": 0.25,
+    "time_exit_slippage_points": 0.25,
+    "end_of_data_slippage_points": 0.25,
+    "profit_target_pct": 0.06,
+    "max_drawdown_pct": 0.06,
+    "daily_loss_limit_pct": 0.03,
+    "max_trades": null,
+    "max_bars_held": 1000000000,
+    "max_hold_minutes": null,
+    "fixed_quantity": null,
+    "bar_interval_seconds": 300,
+    "pending_limit_entry": false,
+    "pending_order_wait_bars": 0,
+    "cooldown_bars": 0,
+    "time_exit_mode": "market",
+    "session_date_for_ledger": false,
+    "end_of_data_policy": "close",
+    "move_stop_to_break_even": false
+  },
+  "seeds": {
+    "master": 20260928,
+    "seed_mbb": 2602526572,
+    "seed_reserved_t1_iid_slot": 1656862755,
+    "seed_perm": 3478895834,
+    "seed_centered": 162296940
+  },
+  "yardstick": {
+    "engine": "bootstrap_camino",
+    "B": 2000,
+    "trailing_update_cadence": "end_of_day",
+    "consistency_day_consolidation": "day_close",
+    "profile": "topstep_50k",
+    "contracts": 1,
+    "risk_usd_per_R": 200.0
+  },
+  "conditions": {
+    "gate_n100": {
+      "0": {
+        "n_trades": 2360,
+        "pass": true
+      },
+      "1": {
+        "n_trades": 2362,
+        "pass": true
+      },
+      "2": {
+        "n_trades": 2364,
+        "pass": true
+      }
+    },
+    "condicion_A": {
+      "delta_control_menos_candidato": 0.0075,
+      "ci95": [
+        -0.0199,
+        0.0349
+      ],
+      "cumple": false
+    },
+    "condicion_B": {
+      "delta_control_menos_candidato": -0.0015,
+      "ci95": [
+        -0.0279,
+        0.0249
+      ],
+      "cumple": false
+    }
+  },
+  "artifacts_sha256": {
+    "CAND1_DISENO.md": "bee16ea2c24c70610d93a9b98b20fbe890cbc5de3e73e60616d4fcd59e3012d9",
+    "cand1_ledger_base.csv": "55d17675223d28e780859551bdba6058ae8a21e2da2a89ece5687afceb389080",
+    "cand1_ledger_slip+1ticks.csv": "ca21306255b93532aaaf172117db34d999f4cd54b7aa2c4018f8909d3fd92f2a",
+    "cand1_ledger_slip+2ticks.csv": "1ed6455121a3f70ba868241231a5c39d5e4acfa4763d65a7444865df1952908e",
+    "cand1_metrics_base.json": "69873710c32925613fce74e8db00d7a228f06af34e38a8557e1f8fa9a377352a",
+    "cand1_metrics_slip+1ticks.json": "69a8339c9e33ed033e536f044a2d2e8a1c57bc12db809192104c053c45d18420",
+    "cand1_metrics_slip+2ticks.json": "76a0dc6718e75035bebaac0cada534b5e1c229ed7740da3415863c2300317b07",
+    "CAND1_RUN_LOG.txt": "d7527aa80b58ce24a12d41b28dec7dd383871d069edceadbc7820499b00743ab",
+    "cand1_yardstick_base.json": "004b558fcdb630422800102635c61687f0dcf838a1afc88080367f367546266f",
+    "cand1_yardstick_base.txt": "d1ee2aac7e5325313f1e07fb52baa12fc0bcb3ad6ccf070209db78263d54421d",
+    "cand1_yardstick_slip+1ticks.json": "c92cce270299b4990dc0b5687206be3df30ea0e2f929a89fde2a1c5cb7cc1d5f",
+    "cand1_yardstick_slip+1ticks.txt": "a2ba5725fea33ae990af14c27a4c21123be7baddcb78a76093ed71cbab6d9fa4",
+    "cand1_yardstick_slip+2ticks.json": "d20b0da18f803d49ebc8678698fea63146fd6d2b36a63d5e83441f70ab065ec7",
+    "cand1_yardstick_slip+2ticks.txt": "230ea51c2318d62c3d27d9c3988db0c13764a8ad995399b064d4a8a3c4aa48c0"
+  }
+}

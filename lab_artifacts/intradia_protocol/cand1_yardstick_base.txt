@@ -1,0 +1,20 @@
+==============================================================================
+CAND1 — EMAS RR3 flat 15:10 CT · yardstick Topstep 50K · base
+==============================================================================
+  MBB bloque=2 (optimal circular, ceil) | seed_mbb=2602526572 | seed_perm=3478895834 | seed_centered=162296940 | B=2000
+  Perfil topstep_50k_profile: start=$50,000 target=$3,000 MLL=$2,000 lock=$50,000 | 1 contrato (1R == $200)
+  control permutacion: media=+0.0018 (igual que candidata) | control centrado: media=+0.0000
+══ ESCENARIOS PREDECLARADOS (1 contrato, flat 15:10 CT) ══
+  A · Base oficial (cons 0.55, min2)         | P(pasar)= 26.0% | P(quemar)= 74.0% | mediana si pasa 0.92m | si muere 0.53m | estados {'breach_trailing': 1480, 'target': 520}
+  B · Conservador (cons 0.50, min2)          | P(pasar)= 24.6% | P(quemar)= 75.4% | mediana si pasa 0.95m | si muere 0.53m | estados {'breach_trailing': 1509, 'target': 491}
+  C · Cons+DLL $1,000 terminal (cota)        | P(pasar)= 17.1% | P(quemar)= 82.9% | mediana si pasa 0.76m | si muere 0.39m | estados {'breach_trailing': 745, 'breach_daily': 913, 'target': 342}
+══ CONTROLES (mismo motor, mismas reglas; fechas fijas) ══
+  CTRL permutacion · cons 0.55               | P(pasar)= 26.8% | P(quemar)= 73.2% | mediana si pasa 0.79m | si muere 0.49m | estados {'breach_trailing': 1465, 'target': 535}
+  CTRL centrado · cons 0.55                  | P(pasar)= 26.7% | P(quemar)= 73.3% | mediana si pasa 0.82m | si muere 0.49m | estados {'breach_trailing': 1466, 'target': 534}
+  CTRL permutacion · cons 0.50               | P(pasar)= 25.7% | P(quemar)= 74.3% | mediana si pasa 0.85m | si muere 0.49m | estados {'breach_trailing': 1486, 'target': 514}
+  CTRL centrado · cons 0.50                  | P(pasar)= 25.9% | P(quemar)= 74.2% | mediana si pasa 0.89m | si muere 0.49m | estados {'breach_trailing': 1483, 'target': 517}
+══ DELTAS PAREADOS (control − candidato; B replicas comunes) ══
+  Escenario A vs CTRL perm: Δ=+0.8 pp IC95=[-2.0,+3.5] pp (n=2000)
+  Escenario A vs CTRL cent: Δ=+0.7 pp IC95=[-2.0,+3.4] pp (n=2000)
+  Escenario B vs CTRL perm: Δ=+1.1 pp IC95=[-1.5,+3.8] pp (n=2000)
+  Escenario B vs CTRL cent: Δ=+1.3 pp IC95=[-1.4,+4.0] pp (n=2000)

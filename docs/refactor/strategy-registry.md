@@ -1,5 +1,12 @@
 # Registro Canónico de Versiones y Estrategias — FARS Engine
 
+> Nota temporal (2026-10-20, revisada por Hermes): conservar las
+> configuraciones y la revocación A1 que sigue. Las cifras del “pilar promovido”
+> y otros resultados previos quedan históricos bajo esa revocación.
+> Para la fotografía posterior ORB/F1/intradía, consultar
+> [Estado compartido](../../../vault/FARS/Estado.md) y los artefactos citados;
+> este enlace no confirma ni promueve nuevas configuraciones.
+
 Fecha de actualización: 2026-09-14  
 Rama: `bloque-b-reconciliacion`  
 Base commit: `fe295d5` (Bloque B cerrado) / `0f2fb5b` (merge Bloque A1+A2)

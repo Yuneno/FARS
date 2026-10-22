@@ -1,0 +1,164 @@
+{
+  "reg": {
+    "start": 50000.0,
+    "target": 3000.0,
+    "mll": 2000.0,
+    "lock": 50000.0
+  },
+  "cap_usd": 200.0,
+  "contracts": 1,
+  "mbb_block": 2,
+  "B": 2000,
+  "scenarios": {
+    "A": {
+      "nombre": "A · Base oficial (cons 0.55, min2)",
+      "pp": 0.234,
+      "quemar": 0.766,
+      "fracaso": 0.766,
+      "cnt": {
+        "breach_trailing": 1532,
+        "target": 468
+      },
+      "med_p": 0.7720105124835742,
+      "med_f": 0.45992115637319314,
+      "med_all": 0.5584756898817346
+    },
+    "B": {
+      "nombre": "B · Conservador (cons 0.50, min2)",
+      "pp": 0.2255,
+      "quemar": 0.7745,
+      "fracaso": 0.7745,
+      "cnt": {
+        "breach_trailing": 1549,
+        "target": 451
+      },
+      "med_p": 0.8212877792378449,
+      "med_f": 0.45992115637319314,
+      "med_all": 0.5584756898817346
+    },
+    "C": {
+      "nombre": "C · Cons+DLL $1,000 terminal (cota)",
+      "pp": 0.1635,
+      "quemar": 0.8365,
+      "fracaso": 0.8365,
+      "cnt": {
+        "breach_daily": 928,
+        "breach_trailing": 745,
+        "target": 327
+      },
+      "med_p": 0.6241787122207622,
+      "med_f": 0.36136662286465177,
+      "med_all": 0.39421813403416556
+    },
+    "ctrl_perm_A": {
+      "nombre": "CTRL permutacion · cons 0.55",
+      "pp": 0.2325,
+      "quemar": 0.7675,
+      "fracaso": 0.7675,
+      "cnt": {
+        "breach_trailing": 1535,
+        "target": 465
+      },
+      "med_p": 0.8212877792378449,
+      "med_f": 0.49277266754270693,
+      "med_all": 0.5584756898817346
+    },
+    "ctrl_cent_A": {
+      "nombre": "CTRL centrado · cons 0.55",
+      "pp": 0.2675,
+      "quemar": 0.7325,
+      "fracaso": 0.7324999999999999,
+      "cnt": {
+        "breach_trailing": 1465,
+        "target": 535
+      },
+      "med_p": 0.8212877792378449,
+      "med_f": 0.49277266754270693,
+      "med_all": 0.5584756898817346
+    },
+    "ctrl_perm_B": {
+      "nombre": "CTRL permutacion · cons 0.50",
+      "pp": 0.2275,
+      "quemar": 0.7725,
+      "fracaso": 0.7725,
+      "cnt": {
+        "breach_trailing": 1545,
+        "target": 455
+      },
+      "med_p": 0.8869908015768725,
+      "med_f": 0.5256241787122208,
+      "med_all": 0.5749014454664915
+    },
+    "ctrl_cent_B": {
+      "nombre": "CTRL centrado · cons 0.50",
+      "pp": 0.2595,
+      "quemar": 0.7405,
+      "fracaso": 0.7404999999999999,
+      "cnt": {
+        "breach_trailing": 1481,
+        "target": 519
+      },
+      "med_p": 0.8212877792378449,
+      "med_f": 0.49277266754270693,
+      "med_all": 0.5584756898817346
+    }
+  },
+  "deltas": {
+    "A_perm": {
+      "delta_mean": -0.0015,
+      "ci95": [
+        -0.0279,
+        0.0249
+      ],
+      "ci95_excludes_zero": false,
+      "delta_gt_zero_excl_zero": false,
+      "n_replicas": 2000,
+      "n_both_pass": 105,
+      "n_cand_only": 363,
+      "n_ctrl_only": 360,
+      "n_neither": 1172
+    },
+    "A_cent": {
+      "delta_mean": 0.0335,
+      "ci95": [
+        0.0065,
+        0.0605
+      ],
+      "ci95_excludes_zero": true,
+      "delta_gt_zero_excl_zero": true,
+      "n_replicas": 2000,
+      "n_both_pass": 122,
+      "n_cand_only": 346,
+      "n_ctrl_only": 413,
+      "n_neither": 1119
+    },
+    "B_perm": {
+      "delta_mean": 0.002,
+      "ci95": [
+        -0.0241,
+        0.0281
+      ],
+      "ci95_excludes_zero": false,
+      "delta_gt_zero_excl_zero": false,
+      "n_replicas": 2000,
+      "n_both_pass": 99,
+      "n_cand_only": 352,
+      "n_ctrl_only": 356,
+      "n_neither": 1193
+    },
+    "B_cent": {
+      "delta_mean": 0.034,
+      "ci95": [
+        0.0073,
+        0.0607
+      ],
+      "ci95_excludes_zero": true,
+      "delta_gt_zero_excl_zero": true,
+      "n_replicas": 2000,
+      "n_both_pass": 112,
+      "n_cand_only": 339,
+      "n_ctrl_only": 407,
+      "n_neither": 1142
+    }
+  }
+}

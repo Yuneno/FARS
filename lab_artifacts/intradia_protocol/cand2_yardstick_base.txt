@@ -1,0 +1,21 @@
+==============================================================================
+CAND2 — zona_rebote flat 15:10 CT · yardstick Topstep 50K · base
+==============================================================================
+  senales aceptadas (folds dev)=3672 por tipo={'fvg': 513, 'liquidity': 864, 'order_block': 391, 'resistance': 910, 'session_level': 1, 'support': 993} pools={'overnight_high': 713, 'overnight_low': 702, 'prev_day_high': 1166, 'prev_day_low': 1091} borde_sin_fold=1
+  MBB bloque=2 (optimal circular, ceil) | seed_mbb=2602526572 | seed_perm=3478895834 | seed_centered=162296940 | B=2000
+  Perfil topstep_50k_profile: start=$50,000 target=$3,000 MLL=$2,000 lock=$50,000 | 1 contrato (1R == $200)
+  control permutacion: media=-0.0675 (igual que candidata) | control centrado: media=-0.0000
+══ ESCENARIOS PREDECLARADOS (1 contrato, flat 15:10 CT) ══
+  A · Base oficial (cons 0.55, min2)         | P(pasar)= 16.1% | P(quemar)= 84.0% | mediana si pasa 0.76m | si muere 0.33m | estados {'breach_trailing': 1679, 'target': 321}
+  B · Conservador (cons 0.50, min2)          | P(pasar)= 15.1% | P(quemar)= 84.9% | mediana si pasa 0.82m | si muere 0.33m | estados {'breach_trailing': 1698, 'target': 302}
+  C · Cons+DLL $1,000 terminal (cota)        | P(pasar)=  9.2% | P(quemar)= 90.8% | mediana si pasa 0.53m | si muere 0.20m | estados {'breach_daily': 1430, 'breach_trailing': 386, 'target': 184}
+══ CONTROLES (mismo motor, mismas reglas; fechas fijas) ══
+  CTRL permutacion · cons 0.55               | P(pasar)= 13.3% | P(quemar)= 86.7% | mediana si pasa 0.85m | si muere 0.33m | estados {'breach_trailing': 1734, 'target': 266}
+  CTRL centrado · cons 0.55                  | P(pasar)= 26.4% | P(quemar)= 73.6% | mediana si pasa 0.92m | si muere 0.39m | estados {'breach_trailing': 1472, 'target': 528}
+  CTRL permutacion · cons 0.50               | P(pasar)= 12.2% | P(quemar)= 87.8% | mediana si pasa 0.92m | si muere 0.36m | estados {'breach_trailing': 1757, 'target': 243}
+  CTRL centrado · cons 0.50                  | P(pasar)= 25.7% | P(quemar)= 74.4% | mediana si pasa 0.99m | si muere 0.39m | estados {'breach_trailing': 1487, 'target': 513}
+══ DELTAS PAREADOS (control − candidato; B replicas comunes) ══
+  Escenario A vs CTRL perm: Δ=-2.8 pp IC95=[-5.0,-0.5] pp (n=2000)
+  Escenario A vs CTRL cent: Δ=+10.3 pp IC95=[+7.8,+12.8] pp (n=2000)
+  Escenario B vs CTRL perm: Δ=-2.9 pp IC95=[-5.1,-0.8] pp (n=2000)
+  Escenario B vs CTRL cent: Δ=+10.5 pp IC95=[+8.1,+13.0] pp (n=2000)

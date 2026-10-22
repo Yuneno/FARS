@@ -1,5 +1,12 @@
 # Roadmap unificado FARS (post-D)
 
+> Nota temporal (2026-10-20, revisada por Hermes): este documento
+> conserva la planificación y decisiones por bloque, pero sus porcentajes,
+> “sin empezar” y pendientes describen fotografías anteriores.
+> Consultar [Estado compartido](../../../vault/FARS/Estado.md) y sus fuentes
+> para el cierre F1/intradía y los cambios locales. No reejecutar automáticamente
+> tareas antiguas ni sustituir el plan por `E:\FARS\RESEARCH_PLAN.md`.
+
 **Fecha:** 2026-09-15 · **Autor:** Hermes · **Estado:** plan (nada implementado de este doc todavía).
 **Propósito:** responder 1) cuánto falta, 2) si las mejoras de cuenta se integran al código, 3) cómo cambia la forma de avanzar — con **cero procesos abiertos**: cada ítem tiene dueño, criterio de cierre y bloqueo explícito.
 

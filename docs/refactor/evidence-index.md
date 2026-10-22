@@ -1,5 +1,12 @@
 # FARS - Indice de Evidencia y Trazabilidad
 
+> Nota de alcance (2026-10-20, revisada por Hermes): el índice conserva
+> trazabilidad histórica. “Verificado” se interpreta en la versión/alcance indicado
+> y junto con correcciones posteriores; no certifica la vigencia del modelo actual.
+> [Estado compartido](../../../vault/FARS/Estado.md) enlaza la fotografía posterior.
+> `TASKS.json` del pack original es histórico: COMPLETE/REGISTERED no demuestra
+> por sí solo que un módulo siga activo o una estrategia esté ausente.
+
 Este documento establece el indice formal de trazabilidad y reproducibilidad para los artefactos de evaluacion historica y replay en FARS, de acuerdo con el encargo del Bloque A1.
 
 ---
@@ -156,5 +163,3 @@ Resultados de la auditoría y ejecución formal del motor de cuentas reales de e
 | **Comparativa Intradía vs Cerrados (D3)** | `lab_artifacts/d_protocol/intraday_vs_closed_comparison.json` | `bd049dc6548e54d637c690d7f95544d1f1ea394624327476abb048d04c308eed` | Cuantificación del sesgo: quema subestimada hasta 7.25x en trades cerrados | `verificado` |
 | **Rejilla Completa de Sizing (D4)** | `lab_artifacts/d_protocol/sizing_results.json` | `71160829118d675eabea5c0cc5afae2317511b04119f2d0ff660307f44610492` | Matriz de 10 sizings x 4 tamaños de cuenta en Monte Carlo (2.000 runs) | `verificado` |
 | **Portafolio Multicuenta (D5)** | `lab_artifacts/d_protocol/multicuenta_portfolio.json` | `2902af97b0e213e55da61a9ed5bd7a525ad924a8581d7673fa47946264d9ca6b` | 4 cuentas simultáneas (25k-150k) con advertencia de correlación unitaria | `verificado` |
-
-
