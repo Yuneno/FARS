@@ -344,6 +344,10 @@ def test_incremental_equals_block_session_levels():
 # =============================================================================
 # 8. session_pools=False => Paridad exacta con el Oráculo (§5)
 # =============================================================================
+@pytest.mark.skipif(
+    not ZIP_PATH.exists(),
+    reason="dataset databento.zip no disponible (FARS_DATABENTO_ZIP o E:/FARS-LAB)",
+)
 def test_session_pools_false_oracle_parity():
     """Con session_pools=False, la salida en 5.000 barras es bit a bit idéntica al baseline."""
     bars, sha = load_canonical_m5(ZIP_PATH)

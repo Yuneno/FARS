@@ -24,6 +24,7 @@ import csv
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -57,7 +58,7 @@ try:
 except ImportError:
     CircularBlockBootstrap = None
 
-ZIP_PATH = Path("E:/FARS-LAB/databento.zip")
+ZIP_PATH = Path(os.environ.get("FARS_DATABENTO_ZIP", "E:/FARS-LAB/databento.zip"))
 M5_MEMBER = "databento/MNQ_M5.csv"
 CALIBRATION_BARS_COUNT = 500
 MIN_FOLD_TRADES_GATE = 15

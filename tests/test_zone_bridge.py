@@ -74,6 +74,8 @@ def _generate_synthetic_bars(n: int = 50, start_dt: datetime | None = None) -> l
 @pytest.fixture(scope="module")
 def canonical_bars_slice() -> list[Bar]:
     """Carga una rebanada de 3.000 barras canónicas de MNQ M5 para pruebas de integración."""
+    if not ZIP_PATH.exists():
+        pytest.skip("dataset databento.zip no disponible (FARS_DATABENTO_ZIP o E:/FARS-LAB)")
     bars, _ = load_canonical_m5(ZIP_PATH)
     return bars[:3000]
 

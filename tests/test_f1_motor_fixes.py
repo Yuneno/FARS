@@ -14,6 +14,7 @@ Ronda 3 (F1_REVIEW_CODEX_R2): el flush day_close nunca sobrescribe un breach
 """
 from __future__ import annotations
 
+import os
 import sys
 from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
@@ -28,11 +29,16 @@ if str(LAB_ORB) not in sys.path:
 
 import bootstrap_camino as bc  # noqa: E402
 
-EXT_SRC = r"E:\FARS-LAB\ext_review2\nq-intraday-breakout\src"
+EXT_SRC = os.environ.get(
+    "FARS_EXT_NQ_BREAKOUT_SRC", r"E:\FARS-LAB\ext_review2\nq-intraday-breakout\src"
+)
 if EXT_SRC not in sys.path:
     sys.path.insert(0, EXT_SRC)
 
-from nq_breakout.backtest import Config, SimFlags, run_backtest  # noqa: E402
+try:
+    from nq_breakout.backtest import Config, SimFlags, run_backtest  # noqa: E402
+except ModuleNotFoundError:  # repo externo nq-intraday-breakout no disponible (CI)
+    Config = SimFlags = run_backtest = None  # type: ignore[assignment]
 
 from src.account_engine import AccountEngineConfig, run_account_simulation  # noqa: E402
 from src.backtest.executor import ExecutedTrade  # noqa: E402
@@ -270,6 +276,10 @@ def _entry_keys(trades: pd.DataFrame) -> set:
     return {(pd.Timestamp(t), d) for t, d in zip(trades["entry_time"], trades["direction"])}
 
 
+@pytest.mark.skipif(
+    run_backtest is None,
+    reason="nq_breakout externo no disponible (FARS_EXT_NQ_BREAKOUT_SRC)",
+)
 def test_f1b_split_entries_match_legacy_keys():
     """Codex §4.1: con entry_end=14:30 + flat_time=15:10 las ENTRADAS deben ser
     exactamente las del legacy — claves (entry_time, direction) idénticas,
@@ -309,6 +319,10 @@ def _feed_flat_visibility() -> pd.DataFrame:
     return _bars_5min(rows)
 
 
+@pytest.mark.skipif(
+    run_backtest is None,
+    reason="nq_breakout externo no disponible (FARS_EXT_NQ_BREAKOUT_SRC)",
+)
 def test_f1b_scan_false_uses_flat_cutoff():
     """Codex MEDIO 6: con scan_overnight_bars=False el feed se filtra hasta
     flat_time (no trade_end). El short abierto a las 14:25 debe cerrar EOD a
